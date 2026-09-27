@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0f0b16">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="format-detection" content="telephone=no">
+<title>Ruínas de Numeris</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0f0b16;--panel:#1c1624;--panel2:#2a2133;--line:#4a3b52;--ink:#f1eadf;--dim:#a597a8;
+  --st1:#2b221d;--st2:#5a4838;--st3:#8f7458;--st4:#c9ab82;--st5:#e8d3ad;
+  --glow:#3ff2c4;--glow-d:#0f6b57;--amber:#ffb300;--amber-d:#b37a00;--red:#ff3d2e;--green:#39e35f;
+  --px:"Press Start 2P",monospace;--vt:"VT323",monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{background:var(--bg)}
+body{background:var(--bg);color:var(--ink);font-family:var(--vt);font-size:22px;line-height:1.15;min-height:100vh;min-height:100dvh;
+  overflow-x:hidden;-webkit-text-size-adjust:100%;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;
+  -webkit-font-smoothing:none;image-rendering:pixelated}
+button,a{font:inherit;color:inherit;background:none;border:0;text-decoration:none;cursor:pointer;touch-action:manipulation}
+[hidden]{display:none!important}
+.spr{display:block;image-rendering:pixelated}
+#bgc{position:fixed;inset:0;width:100%;height:100%;z-index:0;image-rendering:pixelated}
+.crt{position:fixed;inset:0;pointer-events:none;z-index:80;background:repeating-linear-gradient(0deg,rgba(0,0,0,.22) 0 1px,transparent 1px 3px)}
+#app{position:relative;z-index:1;max-width:440px;margin:0 auto;
+  padding:calc(14px + env(safe-area-inset-top)) calc(16px + env(safe-area-inset-right)) calc(40px + env(safe-area-inset-bottom)) calc(16px + env(safe-area-inset-left))}
+
+/* painéis com canto em degrau */
+.px{background:var(--panel);position:relative;
+  box-shadow:0 -3px 0 0 var(--line),0 3px 0 0 var(--line),-3px 0 0 0 var(--line),3px 0 0 0 var(--line);filter:drop-shadow(5px 5px 0 #000)}
+.pbtn:active{transform:translate(3px,3px);filter:none}
+.label{font-family:var(--px);font-size:9px;letter-spacing:.08em;color:var(--dim);text-transform:uppercase}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:4px 0 18px}
+.back{display:inline-flex;align-items:center;gap:8px;padding:11px 12px;font-family:var(--px);font-size:9px;color:var(--dim)}
+.chip{padding:11px 12px;font-family:var(--px);font-size:9px;color:var(--glow)}
+
+/* marca */
+.brand{display:flex;align-items:center;gap:14px;margin-bottom:20px}
+.logo{flex:none;width:62px;height:62px;display:grid;place-items:center;position:relative;overflow:hidden;
+  font-family:var(--px);font-size:15px;color:var(--glow);text-shadow:2px 2px 0 var(--glow-d);
+  background:var(--st2);box-shadow:0 -3px 0 0 var(--st1),0 3px 0 0 var(--st1),-3px 0 0 0 var(--st1),3px 0 0 0 var(--st1),inset 0 -6px 0 0 var(--st1),inset 0 4px 0 0 var(--st3);
+  filter:drop-shadow(5px 5px 0 #000);touch-action:none}
+.logo::after{content:"";position:absolute;left:0;right:0;bottom:0;height:calc(var(--hold,0)*100%);background:rgba(63,242,196,.25)}
+.brand .t{flex:1;min-width:0}
+.brand .t p{font-family:var(--px);font-size:8px;color:var(--dim);letter-spacing:.1em}
+.brand h1{font-family:var(--px);font-size:15px;line-height:1.45;margin-top:8px;color:var(--st5);text-shadow:3px 3px 0 var(--st1)}
+.snd{flex:none;width:46px;height:46px;display:grid;place-items:center;font-family:var(--px);font-size:8px;color:var(--amber)}
+
+/* terminal */
+.term{padding:14px 16px;margin-bottom:24px;min-height:88px;color:var(--glow);font-size:21px;background:#07140f;
+  box-shadow:0 -3px 0 0 #155446,0 3px 0 0 #155446,-3px 0 0 0 #155446,3px 0 0 0 #155446;filter:drop-shadow(5px 5px 0 #000)}
+.cursor{display:inline-block;width:10px;height:18px;background:var(--glow);vertical-align:-2px;margin-left:2px;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+
+/* câmara (nível) */
+.camara{padding:14px 16px;margin-bottom:24px}
+.cam-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.cam-top b{font-family:var(--px);font-size:11px;color:var(--st5)}
+.cam-top span{color:var(--dim);font-size:20px}
+.syms{display:flex;gap:8px;margin:14px 0 12px}
+.syms .s{flex:1;height:46px;display:grid;place-items:center;align-content:center;gap:3px;background:var(--st2);
+  box-shadow:inset 0 -4px 0 0 var(--st1),inset 0 3px 0 0 var(--st3)}
+.syms .s b{font-family:var(--px);font-size:13px;color:var(--glow);text-shadow:2px 2px 0 var(--glow-d)}
+.syms .s i{font-style:normal;font-size:17px;color:var(--st5);line-height:1}
+.syms .s.lock{background:var(--panel2);box-shadow:inset 0 0 0 3px var(--line)}
+.syms .s.lock b{color:var(--line);text-shadow:none}
+.syms .s.lock i{color:var(--line)}
+.xp{display:flex;gap:3px}
+.xp i{flex:1;height:10px;background:#0b0810;box-shadow:inset 0 0 0 2px var(--line)}
+.xp i.on{background:var(--glow);box-shadow:inset 0 -3px 0 0 var(--glow-d)}
+.xp-l{display:flex;justify-content:space-between;margin-top:8px;color:var(--dim);font-size:19px}
+
+/* turno */
+.turno{padding:14px 16px;margin-bottom:24px}
+.turno-top{display:flex;justify-content:space-between;align-items:baseline}
+.turno-n{font-family:var(--px);font-size:12px;color:var(--amber)}
+.turno-n.all{color:var(--green)}
+.week{display:flex;gap:6px;margin:12px 0 10px}
+.day{flex:1;display:grid;justify-items:center;gap:5px;font-family:var(--px);font-size:8px;color:var(--dim)}
+.day i{width:100%;height:14px;background:#0b0810;box-shadow:inset 0 0 0 2px var(--line)}
+.day.part i{background:var(--amber-d)}
+.day.full i{background:var(--green)}
+.day.today{color:var(--ink)}
+.streak{color:var(--dim);font-size:20px}
+.streak b{color:var(--amber);font-weight:normal}
+
+/* missões */
+.missions{display:grid;gap:18px;margin-bottom:24px}
+.mission{display:grid;grid-template-columns:52px 1fr;gap:12px;align-items:center;padding:14px;text-align:left;width:100%}
+.mission .code{width:52px;height:52px;display:grid;place-items:center;font-family:var(--px);font-size:11px;color:var(--glow);
+  background:var(--st2);box-shadow:inset 0 -5px 0 0 var(--st1),inset 0 3px 0 0 var(--st3)}
+.mission b{display:block;font-family:var(--px);font-size:10px;line-height:1.5;color:var(--ink)}
+.mission small{display:block;color:var(--dim);font-size:19px;margin-top:3px}
+.mission .st{display:flex;align-items:center;gap:6px;margin-top:8px;font-family:var(--px);font-size:8px;color:var(--amber)}
+.mission .st.ok{color:var(--green)}
+.mission .st.mid{color:var(--glow)}
+.mission.done{background:#152019}
+
+.danger{position:relative;display:block;width:100%;text-align:left;padding:16px;margin-bottom:22px;color:#fff;
+  background:repeating-linear-gradient(135deg,rgba(0,0,0,.2) 0 12px,transparent 12px 24px),#8a3a12;
+  box-shadow:0 -3px 0 0 var(--amber),0 3px 0 0 var(--amber),-3px 0 0 0 var(--amber),3px 0 0 0 var(--amber);filter:drop-shadow(5px 5px 0 #000);
+  animation:rumble 2s steps(1) infinite}
+@keyframes rumble{0%,90%{background-color:#8a3a12}92%{background-color:#a4461a}}
+.danger .ey{font-family:var(--px);font-size:8px;letter-spacing:.12em;opacity:.85}
+.danger .ti{font-family:var(--px);font-size:16px;margin:10px 0 8px;line-height:1.3}
+.danger .su{font-size:19px;opacity:.9}
+.danger .ok{position:absolute;top:14px;right:14px;font-family:var(--px);font-size:8px;color:var(--green)}
+.danger.done{animation:none;background:repeating-linear-gradient(135deg,rgba(0,0,0,.2) 0 12px,transparent 12px 24px),#3f2a1c}
+.tabua-btn{display:flex;width:100%;align-items:center;justify-content:center;gap:10px;padding:14px;font-family:var(--px);font-size:10px;color:var(--st5)}
+
+/* jogar */
+.play-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.play-head .label{color:var(--st4)}
+.segs{display:flex;gap:4px;margin-bottom:16px}
+.segs i{flex:1;height:10px;background:#0b0810;box-shadow:inset 0 0 0 2px var(--line)}
+.segs i.on{background:var(--green)}
+.segs i.cur{background:var(--amber)}
+.brief{color:var(--dim);font-size:20px;margin-bottom:16px}
+.brief b{color:var(--st5);font-weight:normal}
+.ask{font-family:var(--px);font-size:11px;line-height:1.6;text-align:center;color:var(--st5);margin:4px 0 14px}
+
+.tablet{position:relative;display:grid;place-items:center;min-height:118px;padding:20px 12px;margin-bottom:18px;
+  background:
+    linear-gradient(90deg,rgba(0,0,0,.12) 0 3px,transparent 3px) 0 0/24px 12px,
+    linear-gradient(0deg,rgba(0,0,0,.14) 0 3px,transparent 3px) 0 0/24px 24px,
+    var(--st3);
+  box-shadow:0 -4px 0 0 var(--st1),0 4px 0 0 var(--st1),-4px 0 0 0 var(--st1),4px 0 0 0 var(--st1),inset 0 -6px 0 0 var(--st2),inset 0 5px 0 0 var(--st4);
+  filter:drop-shadow(5px 5px 0 #000)}
+.glyph{font-family:var(--px);font-size:38px;letter-spacing:.06em;color:var(--glow);text-shadow:-3px -3px 0 var(--st1),3px 3px 0 var(--glow-d);word-break:break-all;text-align:center;line-height:1.3}
+.glyph.num{color:var(--st5);text-shadow:-3px -3px 0 var(--st1),3px 3px 0 var(--st2)}
+.glyph.sm{font-size:26px}
+.glyph .ph{color:var(--st2);text-shadow:none}
+.tablet .cap{position:absolute;top:8px;left:10px;font-family:var(--px);font-size:7px;color:var(--st1);letter-spacing:.1em}
+
+.blocks{display:grid;grid-template-columns:repeat(5,1fr);gap:9px;margin-bottom:14px}
+.blk{height:66px;display:grid;place-items:center;align-content:center;gap:4px;background:var(--st2);
+  box-shadow:0 -3px 0 0 var(--st1),0 3px 0 0 var(--st1),-3px 0 0 0 var(--st1),3px 0 0 0 var(--st1),inset 0 -6px 0 0 var(--st1),inset 0 4px 0 0 var(--st3);
+  filter:drop-shadow(4px 4px 0 #000)}
+.blk b{font-family:var(--px);font-size:20px;color:var(--glow);text-shadow:2px 2px 0 var(--glow-d)}
+.blk i{font-style:normal;font-size:18px;color:var(--st5);line-height:1}
+.blk:active{transform:translate(3px,3px);filter:none}
+.blk.lock{background:var(--panel2);box-shadow:inset 0 0 0 3px var(--line);filter:none}
+.blk.lock b,.blk.lock i{color:var(--line);text-shadow:none}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.ghost{height:52px;display:flex;align-items:center;justify-content:center;gap:8px;font-family:var(--px);font-size:9px;color:var(--dim)}
+.btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;margin-top:14px;padding:17px 12px;font-family:var(--px);font-size:12px;
+  background:var(--amber);color:#1a1200;
+  box-shadow:0 -3px 0 0 var(--amber-d),0 3px 0 0 var(--amber-d),-3px 0 0 0 var(--amber-d),3px 0 0 0 var(--amber-d),inset 0 -5px 0 0 var(--amber-d);
+  filter:drop-shadow(5px 5px 0 #000)}
+.btn:active{transform:translate(4px,4px);filter:none}
+.btn[disabled]{opacity:.45}
+
+.keys{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.key{height:58px;font-family:var(--px);font-size:18px;color:var(--ink)}
+.key.ok{background:var(--amber);color:#1a1200;box-shadow:0 -3px 0 0 var(--amber-d),0 3px 0 0 var(--amber-d),-3px 0 0 0 var(--amber-d),3px 0 0 0 var(--amber-d),inset 0 -5px 0 0 var(--amber-d)}
+
+.opts{display:grid;gap:14px}
+.opt{padding:16px 12px;font-family:var(--px);font-size:18px;color:var(--glow);text-shadow:2px 2px 0 var(--glow-d);text-align:center}
+.opt.n{color:var(--ink);text-shadow:none}
+.opt.bad{opacity:.35;text-decoration:line-through}
+.opt.good{background:#153a26}
+.pair{display:flex;align-items:center;justify-content:center;gap:18px}
+.pair .vs{font-family:var(--px);font-size:10px;color:var(--st1)}
+
+.fb{min-height:0;margin-top:16px;padding:0 14px;font-size:21px;line-height:1.2}
+.fb:not(:empty){padding:12px 14px}
+.fb.ok{color:var(--green);background:#0e2016;box-shadow:inset 3px 0 0 0 var(--green)}
+.fb.no{color:#ffb4aa;background:#2a1011;box-shadow:inset 3px 0 0 0 var(--red)}
+.fb b{font-family:var(--px);font-size:10px;display:block;margin-bottom:6px}
+.fb.ok b{color:var(--green)}.fb.no b{color:var(--red)}
+.fb .eq{color:var(--ink)}
+
+/* desabamento */
+.chamber{position:relative;height:150px;margin-bottom:18px;overflow:hidden;background:#140f10;
+  box-shadow:0 -4px 0 0 var(--st1),0 4px 0 0 var(--st1),-4px 0 0 0 var(--st1),4px 0 0 0 var(--st1);filter:drop-shadow(5px 5px 0 #000)}
+.ceiling{position:absolute;left:0;right:0;top:0;height:10%;
+  background:linear-gradient(90deg,rgba(0,0,0,.18) 0 3px,transparent 3px) 0 0/20px 10px,linear-gradient(0deg,rgba(0,0,0,.2) 0 3px,transparent 3px) 0 0/20px 20px,var(--st2);
+  box-shadow:inset 0 -5px 0 0 var(--st1)}
+.ceiling::after{content:"";position:absolute;left:0;right:0;bottom:-6px;height:6px;
+  background:repeating-linear-gradient(90deg,var(--st1) 0 6px,transparent 6px 18px,var(--st1) 18px 21px,transparent 21px 30px)}
+.floor{position:absolute;left:0;right:0;bottom:0;height:14px;background:var(--st1)}
+.explorer{position:absolute;left:50%;bottom:14px;transform:translateX(-50%)}
+.pebble{position:absolute;width:6px;height:6px;background:var(--st3);animation:fall .9s steps(6) infinite}
+@keyframes fall{from{transform:translateY(0)}to{transform:translateY(120px)}}
+.dcount{position:absolute;right:10px;bottom:22px;font-family:var(--px);font-size:10px;color:var(--st5)}
+.tf{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.tf button{padding:18px 8px;font-family:var(--px);font-size:11px;display:flex;align-items:center;justify-content:center;gap:8px}
+.tf .v{color:var(--green)}.tf .f{color:var(--red)}
+
+/* resultado */
+.result{text-align:center;padding:26px 18px}
+.result h2{font-family:var(--px);font-size:15px;line-height:1.5;color:var(--glow);margin:18px 0 10px}
+.result .score{font-family:var(--px);font-size:28px;color:var(--st5);margin:14px 0 6px}
+.result p{color:var(--dim)}
+.gate{display:grid;place-items:center}
+
+/* sobreposições */
+.overlay{position:fixed;inset:0;z-index:60;display:flex;overflow:auto;-webkit-overflow-scrolling:touch;
+  padding:calc(16px + env(safe-area-inset-top)) 16px calc(16px + env(safe-area-inset-bottom));background:rgba(8,6,12,.93)}
+.modal{width:100%;max-width:400px;padding:22px 18px;margin:auto}
+.modal h2{font-family:var(--px);font-size:12px;color:var(--amber);line-height:1.5;margin-bottom:14px;text-align:center}
+.modal p{color:var(--dim);margin-top:10px}
+.modal ul{list-style:none;display:grid;gap:10px;margin-top:14px}
+.modal li{color:var(--ink);font-size:20px}
+.modal li b{font-family:var(--px);font-size:12px;color:var(--glow);font-weight:normal;margin-right:6px}
+.tsyms{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.tsyms .s{height:70px;display:grid;place-items:center;align-content:center;gap:6px;background:var(--st2);box-shadow:inset 0 -5px 0 0 var(--st1),inset 0 3px 0 0 var(--st3)}
+.tsyms .s b{font-family:var(--px);font-size:18px;color:var(--glow);text-shadow:2px 2px 0 var(--glow-d)}
+.tsyms .s i{font-style:normal;font-size:20px;color:var(--st5)}
+.tsyms .s.lock{background:var(--panel2);box-shadow:inset 0 0 0 3px var(--line)}
+.tsyms .s.lock b,.tsyms .s.lock i{color:var(--line);text-shadow:none}
+.levelup{text-align:center}
+.levelup .big{font-family:var(--px);font-size:48px;color:var(--glow);text-shadow:4px 4px 0 var(--glow-d);margin:18px 0 6px}
+.stat{margin-top:14px}
+.stat .top{display:flex;justify-content:space-between;font-size:20px}
+.stat .top .v{color:var(--dim)}
+.meter{height:10px;background:#0b0810;box-shadow:inset 0 0 0 2px var(--line);margin-top:6px}
+.meter i{display:block;height:100%;background:var(--glow)}
+.errs{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.errs span{background:var(--panel2);padding:4px 8px;font-size:19px}
+.lv{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
+.lv button{padding:12px 0;font-family:var(--px);font-size:10px;color:var(--dim)}
+.lv button.on{color:var(--glow);box-shadow:0 -3px 0 0 var(--glow),0 3px 0 0 var(--glow),-3px 0 0 0 var(--glow),3px 0 0 0 var(--glow)}
+.sep{height:3px;margin:18px 0 4px;background:repeating-linear-gradient(90deg,var(--line) 0 6px,transparent 6px 12px)}
+.shake{animation:shake .3s steps(4)}
+@keyframes shake{25%{transform:translateX(-6px)}50%{transform:translateX(6px)}75%{transform:translateX(-3px)}}
+</style>
+</head>
+<body>
+<canvas id="bgc"></canvas>
+<div class="crt"></div>
+
+<main id="app">
+<!-- MENU -->
+<section class="screen" id="menu">
+  <div class="bar"><a class="back px pbtn" href="../">&lt; Nave-Mãe</a></div>
+  <header class="brand">
+    <div class="logo" id="logo" aria-label="Ruínas de Numeris">XIV</div>
+    <div class="t"><p>PLANETA MATEMÁTICA</p><h1>Ruínas de Numeris</h1></div>
+    <button class="snd px pbtn" id="snd" aria-label="Som">SOM</button>
+  </header>
+  <div class="term"><span id="term"></span><span class="cursor"></span></div>
+
+  <div class="camara px">
+    <div class="cam-top"><b id="camN"></b><span id="camR"></span></div>
+    <div class="syms" id="camSyms"></div>
+    <div class="xp" id="xp"></div>
+    <div class="xp-l"><span id="xpL"></span><span id="xpN"></span></div>
+  </div>
+
+  <div class="turno px">
+    <div class="turno-top"><span class="label">Portões de hoje</span><span class="turno-n" id="turnoN">0 / 3</span></div>
+    <div class="week" id="week"></div>
+    <p class="streak" id="streak"></p>
+  </div>
+
+  <nav class="missions">
+    <button class="mission px pbtn" data-go="montar"><span class="code">M1</span><span><b>Montar a senha</b><small>Monte o número com blocos de pedra</small><span class="st" data-st="montar"></span></span></button>
+    <button class="mission px pbtn" data-go="ler"><span class="code">M2</span><span><b>Ler as inscrições</b><small>Descubra quanto vale cada inscrição</small><span class="st" data-st="ler"></span></span></button>
+    <button class="mission px pbtn" data-go="sub"><span class="code">M3</span><span><b>Portão da subtração</b><small>Quando o menor vem antes do maior</small><span class="st" data-st="sub"></span></span></button>
+  </nav>
+
+  <button class="danger" id="goDes">
+    <div class="ey">DESAFIO OPCIONAL</div>
+    <div class="ti">DESABAMENTO!</div>
+    <div class="su">O teto está caindo. Ache as inscrições falsas antes que ele desabe.</div>
+    <span class="ok" id="desOk" hidden>ESCAPOU HOJE ✓</span>
+  </button>
+
+  <button class="tabua-btn px pbtn" id="openTab"><span id="tabIco"></span>TÁBUA DOS SÍMBOLOS</button>
+</section>
+
+<!-- JOGAR -->
+<section class="screen" id="play" hidden>
+  <div class="bar"><button class="back px pbtn" id="playBack">&lt; Templo</button><button class="chip px pbtn" data-tab>TÁBUA</button></div>
+  <div class="play-head"><span class="label" id="playTitle"></span><span class="label" id="playN"></span></div>
+  <div class="segs" id="segs"></div>
+  <div id="stage"></div>
+  <div class="fb" id="fb"></div>
+</section>
+
+<!-- DESABAMENTO -->
+<section class="screen" id="des" hidden>
+  <div class="bar"><button class="back px pbtn" id="desBack">&lt; Templo</button><button class="chip px pbtn" data-tab>TÁBUA</button></div>
+  <div class="chamber" id="chamber">
+    <div class="ceiling" id="ceiling"></div><div id="pebbles"></div>
+    <div class="explorer" id="explorer"></div><div class="floor"></div>
+    <div class="dcount" id="dcount">0/10</div>
+  </div>
+  <p class="ask">Esta inscrição é verdadeira?</p>
+  <div class="tablet"><span class="glyph" id="dq"></span></div>
+  <div class="tf"><button class="px pbtn v" id="dV">✓ VERDADEIRA</button><button class="px pbtn f" id="dF">✗ FALSA</button></div>
+  <div class="fb" id="dfb"></div>
+  <div id="dStart"></div>
+</section>
+
+<!-- RESULTADO -->
+<section class="screen" id="res" hidden>
+  <div class="result px">
+    <div class="gate" id="resIco"></div>
+    <h2 id="resT"></h2>
+    <div class="score" id="resS"></div>
+    <p id="resP"></p>
+    <button class="btn" id="resMenu">VOLTAR AO TEMPLO</button>
+    <button class="ghost" id="resAgain" style="width:100%;margin-top:10px">JOGAR DE NOVO</button>
+  </div>
+</section>
+</main>
+
+<!-- TÁBUA -->
+<div class="overlay" id="tab" hidden>
+  <div class="modal px">
+    <h2>TÁBUA DOS SÍMBOLOS</h2>
+    <div class="tsyms" id="tSyms"></div>
+    <ul>
+      <li><b>III</b>Iguais lado a lado somam: 1+1+1 = 3</li>
+      <li><b>VI</b>Menor depois do maior soma: 5+1 = 6</li>
+      <li><b>IV</b>Menor antes do maior subtrai: 5−1 = 4</li>
+      <li><b>✗</b>Nunca repita o mesmo símbolo 4 vezes</li>
+      <li><b>✗</b>V e L nunca se repetem</li>
+    </ul>
+    <button class="btn" id="tabClose">ENTENDI</button>
+  </div>
+</div>
+
+<!-- NOVA CÂMARA -->
+<div class="overlay" id="lvup" hidden>
+  <div class="modal px levelup">
+    <div class="label">Nova câmara aberta</div>
+    <div class="big" id="lvBig"></div>
+    <p id="lvTxt"></p>
+    <button class="btn" id="lvOk">EXPLORAR</button>
+  </div>
+</div>
+
+<!-- PAIS -->
+<div class="overlay" id="pais" hidden>
+  <div class="modal px">
+    <h2>ÁREA DOS PAIS</h2>
+    <div id="kStats"></div>
+    <div class="sep"></div>
+    <div class="label" style="margin-top:12px">Erros mais comuns</div>
+    <div class="errs" id="kErrs"></div>
+    <div class="sep"></div>
+    <div class="label" style="margin-top:12px">Câmara atual</div>
+    <div class="lv" id="kLv"></div>
+    <p id="kDays"></p>
+    <button class="btn" id="kClose">FECHAR</button>
+    <button class="ghost" id="kReset" style="width:100%;margin-top:6px">APAGAR HISTÓRICO</button>
+    <div id="kConfirm" hidden>
+      <p>Apagar todo o progresso deste aparelho?</p>
+      <div class="row2" style="margin-top:12px"><button class="ghost px pbtn" id="kNo">NÃO</button><button class="ghost px pbtn" id="kYes" style="color:var(--red)">APAGAR</button></div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* =================== números romanos =================== */
+const TABLE=[[100,'C'],[90,'XC'],[50,'L'],[40,'XL'],[10,'X'],[9,'IX'],[5,'V'],[4,'IV'],[1,'I']];
+const VAL={I:1,V:5,X:10,L:50,C:100};
+function toRoman(n){let s='';for(const[v,r]of TABLE)while(n>=v){s+=r;n-=v}return s}
+function fromRoman(s){let t=0;for(let i=0;i<s.length;i++){const a=VAL[s[i]],b=VAL[s[i+1]]||0;t+=a<b?-a:a}return t}
+const valid=s=>!!s&&toRoman(fromRoman(s))===s;
+function tokens(s){const out=[];let i=0;while(i<s.length){const two=s.slice(i,i+2),t=TABLE.find(([,r])=>r===two)||TABLE.find(([,r])=>r===s[i]);out.push([t[1],t[0]]);i+=t[1].length}return out}
+const hasSub=s=>/IV|IX|XL|XC/.test(s);
+function explainN(n){ // 47 = 40 + 7 → XL + VII
+  const parts=[];let r=n;if(r>=100){parts.push(100);r-=100}const t=r-r%10,u=r%10;if(t)parts.push(t);if(u)parts.push(u);
+  return parts.length>1?`${n} = ${parts.join(' + ')} → ${parts.map(toRoman).join(' + ')}`:`${n} → ${toRoman(n)}`;
+}
+function groups(s){const g=[];for(const t of tokens(s)){const l=g[g.length-1];if(l&&t[0].length===1&&l[0][0]===t[0]&&!/IV|IX|XL|XC/.test(l[0]))l[0]+=t[0],l[1]+=t[1];else g.push([t[0],t[1]])}return g}
+function explainS(s){ // XXIV → XX (20) + IV (5−1) = 24
+  const tk=groups(s),txt=t=>/^(IV|IX|XL|XC)$/.test(t[0])?`${t[0]} (${VAL[t[0][1]]}−${VAL[t[0][0]]})`:`${t[0]} (${t[1]})`;
+  return tk.length>1?`${tk.map(txt).join(' + ')} = ${fromRoman(s)}`:`${txt(tk[0])} = ${fromRoman(s)}`;
+}
+
+/* =================== câmaras (níveis) =================== */
+const LEVELS=[
+  {n:'I',max:10,from:1,syms:['I','V','X'],need:24,range:'I a X'},
+  {n:'II',max:20,from:11,syms:['I','V','X'],need:30,range:'I a XX'},
+  {n:'III',max:50,from:21,syms:['I','V','X','L'],need:36,range:'I a L'},
+  {n:'IV',max:100,from:51,syms:['I','V','X','L','C'],need:0,range:'I a C'},
+];
+const ALL=['I','V','X','L','C'];
+const L=()=>LEVELS[S.level-1];
+const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+function pickN(filter=()=>true){ // 60% no trecho novo da câmara
+  const l=L();let pool=[];for(let n=1;n<=l.max;n++)if(filter(n))pool.push(n);
+  const fresh=pool.filter(n=>n>=l.from);return pick(fresh.length&&Math.random()<.6?fresh:pool);
+}
+function uniqueList(k,gen,keyf=x=>JSON.stringify(x)){const out=[],seen=new Set();let g=0;
+  while(out.length<k&&g++<400){const q=gen(),kk=keyf(q);if(seen.has(kk)&&g<200)continue;seen.add(kk);out.push(q)}return out}
+
+/* =================== memória local =================== */
+const STORE='numeris-stats-v1',ROUNDS=8,MODES=['montar','ler','sub'];
+const fresh=()=>({level:1,xp:0,modes:{montar:{a:0,c:0},ler:{a:0,c:0},sub:{a:0,c:0},desafio:{a:0,c:0}},erros:{},days:{},run:{},sound:true});
+let S=(()=>{try{const o=JSON.parse(localStorage.getItem(STORE));return o?Object.assign(fresh(),o):fresh()}catch(e){return fresh()}})();
+const save=()=>{try{localStorage.setItem(STORE,JSON.stringify(S))}catch(e){}};
+const dkey=(d=new Date())=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+const doneToday=()=>S.days[dkey()]||[];
+const mainDone=k=>(S.days[k]||[]).filter(m=>m!=='desafio').length;
+function markDone(m){const k=dkey(),l=S.days[k]||[];if(!l.includes(m)){l.push(m);S.days[k]=l}
+  const ks=Object.keys(S.days).sort();while(ks.length>120)delete S.days[ks.shift()];save()}
+function streak(){const d=new Date();let n=0;if(mainDone(dkey(d))<3)d.setDate(d.getDate()-1);while(mainDone(dkey(d))>=3){n++;d.setDate(d.getDate()-1)}return n}
+let pendingLevel=false;
+function record(mode,ok,errKey){const m=S.modes[mode];m.a++;if(ok){m.c++;if(S.level<4){S.xp++;if(S.xp>=L().need){S.level++;S.xp=0;pendingLevel=true}}}
+  else if(errKey)S.erros[errKey]=(S.erros[errKey]||0)+1;save()}
+const pilot=(()=>{try{return (JSON.parse(localStorage.getItem('navemae-v1'))||{}).pilot||''}catch(e){return ''}})();
+
+/* =================== sprites =================== */
+const SPR={
+  gate:{pal:{'s':'#8f7458','d':'#5a4838','k':'#2b221d','g':'#3ff2c4','h':'#c9ab82'},rows:[
+    "..hhhhhhh..",".hsssssssh.","hssdddddssh","hsdkkkkkdsh","hsdkkgkkdsh","hsdkgkgkdsh","hsdkkgkkdsh","hsdkkkkkdsh","hsdkkkkkdsh","hsdkkkkkdsh","hhhhhhhhhhh"]},
+  gateOpen:{pal:{'s':'#8f7458','d':'#5a4838','g':'#3ff2c4','y':'#b6fff0','h':'#c9ab82'},rows:[
+    "..hhhhhhh..",".hsssssssh.","hssdddddssh","hsdgggggdsh","hsdgyyygdsh","hsdgyyygdsh","hsdgyyygdsh","hsdgggggdsh","hsdgggggdsh","hsdgggggdsh","hhhhhhhhhhh"]},
+  tablet:{pal:{'s':'#8f7458','d':'#5a4838','h':'#c9ab82','g':'#3ff2c4'},rows:[
+    ".hhhhhhh.","hsssssssd","hsgsgsgsd","hsgsgsgsd","hsgsgsgsd","hsgssgsd.","hsssssssd","hsssssssd",".ddddddd."]},
+  man:{pal:{'h':'#ffb300','s':'#f1c9a0','b':'#3ff2c4','d':'#1f7a66','k':'#2b221d'},rows:[
+    "..hhh..",".hhhhh.","..sss..","..sks..",".bbbbb.","b.bbb.b","..bdb..","..b.b..",".kk.kk."]},
+  tab:{pal:{'s':'#c9ab82','g':'#3ff2c4'},rows:["sssssss","sgsgsgs","sgsgsgs","sssssss"]},
+  check:{pal:{'#':'#39e35f'},rows:["......#",".....##","#...##.","##.##..",".###...","..#...."]},
+};
+function sprite(n,s=3){const{pal,rows}=SPR[n],h=rows.length,w=rows[0].length;let r='';
+  rows.forEach((row,y)=>{let x=0;while(x<w){const c=row[x];if(!pal[c]){x++;continue}let k=1;while(row[x+k]===c)k++;r+=`<rect x="${x}" y="${y}" width="${k}" height="1" fill="${pal[c]}"/>`;x+=k}});
+  return `<svg class="spr" viewBox="0 0 ${w} ${h}" width="${w*s}" height="${h*s}" shape-rendering="crispEdges" aria-hidden="true">${r}</svg>`}
+
+/* =================== som =================== */
+let AC=null;
+function tone(f,d=.08,t=0,v=.06,type='square'){if(!S.sound)return;try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();
+  const o=AC.createOscillator(),g=AC.createGain(),n=AC.currentTime+t;o.type=type;o.frequency.setValueAtTime(f,n);
+  g.gain.setValueAtTime(v,n);g.gain.setValueAtTime(0,n+d);o.connect(g).connect(AC.destination);o.start(n);o.stop(n+d+.02)}catch(e){}}
+document.addEventListener('touchstart',function u(){try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();AC.resume&&AC.resume()}catch(e){}document.removeEventListener('touchstart',u)},{passive:true});
+const sfx={
+  tap:()=>tone(520,.04),
+  stone:()=>{tone(180,.05,0,.07);tone(140,.05,.04,.05)},
+  ok:()=>{tone(660,.07);tone(880,.07,.07);tone(1320,.09,.14)},
+  no:()=>{tone(220,.12);tone(160,.16,.12)},
+  win:()=>[392,523,659,784,1047,1319].forEach((f,i)=>tone(f,.09,i*.09)),
+  rumble:()=>{tone(70,.18,0,.08);tone(55,.2,.12,.07)},
+  lose:()=>[440,370,311,262,196].forEach((f,i)=>tone(f,.12,i*.12)),
+};
+
+/* =================== navegação =================== */
+const $=s=>document.querySelector(s);
+let current='menu';
+function show(id){current=id;document.querySelectorAll('#app>.screen').forEach(s=>s.hidden=s.id!==id);window.scrollTo(0,0);if(id==='menu')renderMenu()}
+
+/* =================== menu =================== */
+const WD=['D','S','T','Q','Q','S','S'];let typing=null;
+function renderMenu(){
+  const l=L();
+  $('#camN').textContent=`CÂMARA ${l.n}`;$('#camR').textContent=`números de ${l.range}`;
+  $('#camSyms').innerHTML=ALL.map(s=>{const on=l.syms.includes(s);return `<span class="s${on?'':' lock'}"><b>${on?s:'?'}</b><i>${on?VAL[s]:'—'}</i></span>`}).join('');
+  if(S.level<4){const need=l.need,k=Math.round(S.xp/need*12);$('#xp').innerHTML=Array.from({length:12},(_,i)=>`<i class="${i<k?'on':''}"></i>`).join('');
+    $('#xpL').textContent=`Próxima câmara: ${LEVELS[S.level].range}`;$('#xpN').textContent=`${S.xp}/${need}`;$('#xp').hidden=false}
+  else{$('#xp').hidden=true;$('#xpL').textContent='Todas as câmaras abertas!';$('#xpN').textContent=''}
+  const done=doneToday(),n=done.filter(m=>m!=='desafio').length,all=n>=3;
+  $('#turnoN').textContent=`${n} / 3`;$('#turnoN').classList.toggle('all',all);
+  let w='';for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);const c=mainDone(dkey(d));
+    w+=`<span class="day${c>=3?' full':c?' part':''}${i===0?' today':''}"><i></i>${WD[d.getDay()]}</span>`}
+  $('#week').innerHTML=w;
+  const s=streak();
+  $('#streak').innerHTML=s?(all?`<b>${s} ${s===1?'dia':'dias'}</b> seguidos com os portões abertos. Volte amanhã!`:`Sequência de <b>${s} ${s===1?'dia':'dias'}</b>. Abra os 3 portões hoje para chegar a ${s+1}!`)
+    :'Abra os 3 portões hoje para começar uma sequência.';
+  document.querySelectorAll('[data-st]').forEach(el=>{const m=el.dataset.st,ok=done.includes(m),r=S.run[m];
+    el.className='st'+(ok?' ok':r?' mid':'');
+    el.innerHTML=ok?sprite('check',2)+'PORTÃO ABERTO':r?`EM ANDAMENTO ${r.i}/${ROUNDS}`:'FECHADO';
+    el.closest('button').classList.toggle('done',ok)});
+  const dOk=done.includes('desafio');$('#desOk').hidden=!dOk;$('#goDes').classList.toggle('done',dOk);
+  const hr=new Date().getHours(),hi=hr<12?'Bom dia':hr<18?'Boa tarde':'Boa noite',who=pilot?`, explorador ${pilot}`:', explorador';
+  const txt=n===0?`> ${hi}${who}.\n> Inscrições antigas nas paredes. 3 portões esperam por você.`
+    :all?`> Os 3 portões estão abertos.\n> Pode treinar mais se quiser. Até amanhã${who}.`
+    :`> Bom trabalho${who}.\n> ${3-n===1?'Falta 1 portão':`Faltam ${3-n} portões`} para hoje.`;
+  const el=$('#term');clearInterval(typing);let i=0;el.textContent='';
+  typing=setInterval(()=>{i++;el.innerHTML=txt.slice(0,i).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/\n/g,'<br>');if(i>=txt.length)clearInterval(typing)},20);
+}
+document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{sfx.tap();startMission(b.dataset.go)});
+
+/* =================== missões =================== */
+const TITLES={montar:'M1 · Montar a senha',ler:'M2 · Ler as inscrições',sub:'M3 · Portão da subtração'};
+function genQs(mode){
+  if(mode==='montar')return uniqueList(ROUNDS,()=>({n:pickN()}));
+  if(mode==='ler')return uniqueList(ROUNDS,()=>({s:toRoman(pickN())}));
+  // subtração: números que têm IV, IX, XL ou XC
+  return uniqueList(ROUNDS,()=>{
+    const n=pickN(n=>hasSub(toRoman(n))),s=toRoman(n),kind=pick(['val','write','cmp','val','write']);
+    if(kind==='cmp'){const alt=swapFirst(s);if(alt&&valid(alt))return{kind,a:s,b:alt};}
+    if(kind==='write'){const opts=uniq([s,additive(s),swapFirst(s)].filter(Boolean));if(opts.length>=3)return{kind,n,opts:shuffle(opts)}}
+    const wrong=uniq([n,addAll(s),n+1,n-1,n+2].filter(v=>v>0)).slice(0,3);if(!wrong.includes(n))wrong[2]=n;
+    return{kind:'val',s,opts:shuffle(wrong)};
+  },q=>q.kind+(q.s||q.n||q.a));
+}
+const uniq=a=>[...new Set(a)];
+const additive=s=>s.replace('XC','LXXXX').replace('XL','XXXX').replace('IX','VIIII').replace('IV','IIII');
+const addAll=s=>[...s].reduce((t,c)=>t+VAL[c],0);
+function swapFirst(s){const m=s.match(/IV|IX|XL|XC/);if(!m)return null;return s.replace(m[0],m[0][1]+m[0][0])}
+
+let R=null,mode=null,locked=false;
+function startMission(m){
+  mode=m;R=S.run[m]||{qs:genQs(m),i:0,firsts:0,miss:false,built:'',typed:''};S.run[m]=R;save();
+  $('#playTitle').textContent=TITLES[m];show('play');renderQ();
+  if(!S.seenTab){S.seenTab=true;save();openTab()}
+}
+function renderSegs(){$('#segs').innerHTML=Array.from({length:ROUNDS},(_,i)=>`<i class="${i<R.i?'on':i===R.i?'cur':''}"></i>`).join('');$('#playN').textContent=`${Math.min(R.i+1,ROUNDS)}/${ROUNDS}`}
+function fb(kind,title,body){const f=$('#fb');f.className='fb '+(kind||'');f.innerHTML=kind?`<b>${title}</b>${body||''}`:''}
+function renderQ(){
+  locked=false;fb();renderSegs();const q=R.qs[R.i],st=$('#stage');
+  if(mode==='montar'){
+    const syms=L().syms;
+    st.innerHTML=`<p class="brief">Toque nos blocos para montar o número em <b>romano</b>. Os valores estão embaixo de cada bloco.</p>
+      <div class="tablet"><span class="cap">MONTE O NÚMERO</span><span class="glyph num">${q.n}</span></div>
+      <div class="tablet" style="min-height:92px"><span class="cap">SUA SENHA</span><span class="glyph sm" id="built"></span></div>
+      <div class="blocks">${ALL.map(s=>syms.includes(s)?`<button class="blk" data-s="${s}"><b>${s}</b><i>${VAL[s]}</i></button>`:`<span class="blk lock" aria-hidden="true"><b>?</b><i>—</i></span>`).join('')}</div>
+      <div class="row2"><button class="ghost px pbtn" id="bDel">⌫ APAGAR</button><button class="ghost px pbtn" id="bClr">LIMPAR</button></div>
+      <button class="btn" id="bOk">CONFIRMAR</button>`;
+    const upd=()=>{$('#built').innerHTML=R.built||'<span class="ph">_</span>';$('#bOk').disabled=!R.built};upd();
+    st.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>{if(locked||R.built.length>=9)return;sfx.stone();R.built+=b.dataset.s;save();upd()});
+    $('#bDel').onclick=()=>{if(locked)return;sfx.tap();R.built=R.built.slice(0,-1);save();upd()};
+    $('#bClr').onclick=()=>{if(locked)return;sfx.tap();R.built='';save();upd()};
+    $('#bOk').onclick=()=>{if(locked||!R.built)return;const want=toRoman(q.n),b=R.built;
+      if(b===want)return right(`<span class="eq">${explainN(q.n)}</span>`);
+      let why;const v=fromRoman(b);
+      if(v===q.n){why=/IIII|XXXX|CCCC/.test(b)?'Vale '+q.n+', mas o mesmo símbolo não pode aparecer 4 vezes.':/VV|LL/.test(b)?'Vale '+q.n+', mas V e L nunca se repetem.':'Vale '+q.n+', mas não é a forma certa.'}
+      else why=valid(b)?`${b} vale ${v}, não ${q.n}.`:`${b} não é um número romano válido.`;
+      wrong(`${why}<br><span class="eq">${explainN(q.n)}</span>`,`${q.n}`,()=>{R.built='';save();upd()},`${why}<br>${hintN(q.n)}`);
+    };
+  }
+  else if(mode==='ler'){
+    st.innerHTML=`<p class="brief">Quanto vale esta inscrição? Some os símbolos e lembre: <b>menor antes do maior subtrai</b>.</p>
+      <div class="tablet"><span class="cap">INSCRIÇÃO</span><span class="glyph">${q.s}</span></div>
+      <div class="tablet" style="min-height:84px"><span class="cap">VALOR</span><span class="glyph num sm" id="typed"></span></div>
+      <div class="keys">${[1,2,3,4,5,6,7,8,9].map(d=>`<button class="key px pbtn" data-k="${d}">${d}</button>`).join('')}
+        <button class="key px pbtn" data-k="del">⌫</button><button class="key px pbtn" data-k="0">0</button><button class="key ok pbtn" data-k="ok">OK</button></div>`;
+    const upd=()=>{$('#typed').innerHTML=R.typed||'<span class="ph">_</span>'};upd();
+    st.querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{if(locked)return;const k=b.dataset.k;
+      if(k==='del'){sfx.tap();R.typed=R.typed.slice(0,-1)}
+      else if(k==='ok'){if(!R.typed)return;const v=+R.typed,want=fromRoman(q.s);
+        if(v===want)return right(`<span class="eq">${explainS(q.s)}</span>`);
+        wrong(`${q.s} não vale ${v}.<br><span class="eq">${explainS(q.s)}</span>`,q.s,()=>{R.typed='';save();upd()},`${q.s} não vale ${v}.<br>Dica: separe em partes: <span class="eq">${groups(q.s).map(g=>g[0]).join(' | ')}</span>`);return}
+      else{if(R.typed.length>=3)return;sfx.tap();R.typed=(R.typed+k).replace(/^0+/,'')}
+      save();upd()});
+  }
+  else{ // subtração
+    const pairTxt=s=>{const m=s.match(/IV|IX|XL|XC/);return m?`No ${m[0]}, o ${m[0][0]} vem antes do ${m[0][1]}: ${VAL[m[0][1]]} − ${VAL[m[0][0]]} = ${VAL[m[0][1]]-VAL[m[0][0]]}.`:''};
+    let html=`<p class="brief">Quando um símbolo <b>menor vem antes</b> de um maior, ele é <b>subtraído</b>: IV = 5 − 1 = 4.</p>`;
+    if(q.kind==='val')html+=`<p class="ask">Quanto vale?</p><div class="tablet"><span class="glyph">${q.s}</span></div><div class="opts">${q.opts.map(o=>`<button class="opt n px pbtn" data-o="${o}">${o}</button>`).join('')}</div>`;
+    if(q.kind==='write')html+=`<p class="ask">Qual é o jeito certo de escrever</p><div class="tablet"><span class="glyph num">${q.n}</span></div><div class="opts">${q.opts.map(o=>`<button class="opt px pbtn" data-o="${o}">${o}</button>`).join('')}</div>`;
+    if(q.kind==='cmp'){const o=shuffle([q.a,q.b]);html+=`<p class="ask">Qual inscrição vale MAIS?</p><div class="opts">${o.map(x=>`<button class="opt px pbtn" data-o="${x}">${x}</button>`).join('')}</div>`}
+    st.innerHTML=html;
+    st.querySelectorAll('[data-o]').forEach(b=>b.onclick=()=>{if(locked||b.classList.contains('bad'))return;const o=b.dataset.o;let ok,exp,key;
+      if(q.kind==='val'){ok=+o===fromRoman(q.s);exp=`${pairTxt(q.s)}<br><span class="eq">${explainS(q.s)}</span>`;key=q.s}
+      if(q.kind==='write'){const w=toRoman(q.n);ok=o===w;exp=ok?`<span class="eq">${q.n} → ${w}</span>`:`${o===additive(w)?'Não se repete um símbolo 4 vezes.':`${o} vale ${fromRoman(o)}.`}<br><span class="eq">${q.n} → ${w}</span>`;key=String(q.n)}
+      if(q.kind==='cmp'){const hi=fromRoman(q.a)>fromRoman(q.b)?q.a:q.b,lo=hi===q.a?q.b:q.a;ok=o===hi;exp=`<span class="eq">${hi} = ${fromRoman(hi)} e ${lo} = ${fromRoman(lo)}</span>`;key=q.a+'/'+q.b}
+      const hint={val:'Dica: ache o par em que o menor vem antes do maior. Ele subtrai.',write:'Dica: nunca repita o mesmo símbolo 4 vezes. Use a subtração.',cmp:'Dica: um símbolo menor antes do maior tira. Depois do maior, soma.'}[q.kind];
+      if(ok){b.classList.add('good');right(exp)}else{b.classList.add('bad');wrong(exp,key,null,hint)}});
+  }
+}
+function right(body){locked=true;sfx.ok();if(!R.miss){R.firsts++;record(mode,true)}fb('ok',R.miss?'AGORA SIM!':'CORRETO!',body);
+  setTimeout(()=>{R.i++;R.miss=false;R.built='';R.typed='';save();if(R.i>=ROUNDS)finishMission();else renderQ()},1500)}
+function wrong(body,key,reset,hint){sfx.no();$('#stage').classList.remove('shake');void $('#stage').offsetWidth;$('#stage').classList.add('shake');
+  const first=!R.miss;if(first)record(mode,false,key);R.miss=(R.miss|0)+1;save();
+  fb('no','QUASE!',(first&&hint?hint:body)+'<br>Tente de novo.');if(reset)reset()}
+function hintN(n){const p=[];let r=n;if(r>=100){p.push(100);r-=100}const t=r-r%10,u=r%10;if(t)p.push(t);if(u)p.push(u);
+  if(p.length>1)return `Dica: separe ${n} = ${p.join(' + ')} e monte cada parte.`;
+  const nx={4:5,9:10,40:50,90:100}[n];
+  if(nx)return `Dica: ${n} é ${nx} − ${nx-n}. O menor vai antes do maior.`;
+  return `Dica: comece pelo maior bloco que cabe em ${n} e vá somando.`}
+function finishMission(){
+  const f=R.firsts;delete S.run[mode];markDone(mode);save();sfx.win();
+  $('#resIco').innerHTML=sprite('gateOpen',8);$('#resT').textContent='PORTÃO ABERTO!';
+  $('#resS').textContent=`${f}/${ROUNDS}`;$('#resP').textContent=f===ROUNDS?'Todas de primeira. Você é um mestre das ruínas!':'acertos de primeira. Cada treino deixa as inscrições mais fáceis.';
+  $('#resAgain').onclick=()=>startMission(mode);show('res');checkLevel();
+}
+$('#resMenu').onclick=()=>show('menu');
+$('#playBack').onclick=()=>{sfx.tap();show('menu')};
+
+/* =================== nova câmara =================== */
+function checkLevel(){if(!pendingLevel)return;pendingLevel=false;const l=L(),nw=l.syms.filter(s=>!LEVELS[S.level-2].syms.includes(s));
+  $('#lvBig').textContent=nw.length?nw.join(' '):l.range.split(' a ')[1];
+  $('#lvTxt').innerHTML=nw.length?`Novo símbolo: ${nw.map(s=>`<b style="color:var(--glow)">${s} = ${VAL[s]}</b>`).join(', ')}. Agora as inscrições vão até ${l.range.split(' a ')[1]} (${l.max}).`
+    :`Agora as inscrições vão até ${l.range.split(' a ')[1]} (${l.max}).`;
+  setTimeout(()=>{sfx.win();$('#lvup').hidden=false},600)}
+$('#lvOk').onclick=()=>{$('#lvup').hidden=true};
+
+/* =================== desabamento =================== */
+const NEED=10;let D=null;
+function fakes(){ // inscrições falsas possíveis na câmara atual
+  const l=L(),out=[];
+  for(let n=1;n<=l.max;n++){const s=toRoman(n);
+    const add=(f,why)=>{if(f!==s&&!valid(f)&&[...f].every(c=>l.syms.includes(c)))out.push({s:f,ok:false,why})};
+    if(s.endsWith('IV'))add(s.replace(/IV$/,'IIII'),`O I não pode aparecer 4 vezes. ${n} = ${s}.`);
+    if(s.endsWith('IX'))add(s.replace(/IX$/,'VIIII'),`O I não pode aparecer 4 vezes. ${n} = ${s}.`);
+    if(s.includes('XL'))add(s.replace('XL','XXXX'),`O X não pode aparecer 4 vezes. ${n} = ${s}.`);
+    if(s.endsWith('VIII'))add(s.replace(/VIII$/,'IIX'),`Só um símbolo menor pode vir antes. ${n} = ${s}.`);
+    if(s.endsWith('III')&&!s.endsWith('VIII'))add(s.replace(/III$/,'IIV'),`Só um símbolo menor pode vir antes. ${n} = ${s}.`);
+    if(/X$/.test(s)&&n%10===0&&n<40)add(s.replace(/X$/,'VV'),`V nunca se repete. ${n} = ${s}.`);
+    if(n%10===5)add(s.replace(/V$/,'VX'),`V nunca vem antes de um maior. ${n} = ${s}.`);
+    if(n===49)add('IL','O I só pode vir antes de V e X. 49 = XLIX.');
+    if(n===99)add('IC','O I só pode vir antes de V e X. 99 = XCIX.');
+    if(n===100)add('LL','L nunca se repete. 100 = C.');
+    if(n===45)add('VL','V nunca vem antes de um maior. 45 = XLV.');
+  }
+  return out;
+}
+function desQ(){const f=fakes();if(Math.random()<.5&&f.length)return pick(f);const n=pickN();return{s:toRoman(n),ok:true,why:`${explainS(toRoman(n))}`}}
+function openDes(){
+  const saved=(S.run.desafio||{}).c||0;
+  D={c:saved,danger:saved?.3:.1,run:false,pause:false,q:null,last:0,lost:false};
+  $('#explorer').innerHTML=sprite('man',4);show('des');drawDes();
+  $('#dq').textContent='???';$('#dfb').className='fb';$('#dfb').innerHTML='';
+  $('#dStart').innerHTML=`<button class="btn" id="dGo">${saved?`CONTINUAR (${saved}/${NEED})`:'COMEÇAR'}</button>`;
+  $('#dV').disabled=$('#dF').disabled=true;$('#dGo').onclick=()=>{$('#dStart').innerHTML='';D.run=true;$('#dV').disabled=$('#dF').disabled=false;nextD();D.last=performance.now();requestAnimationFrame(tickD)};
+}
+function nextD(){let q;do q=desQ();while(D.q&&q.s===D.q.s);D.q=q;$('#dq').textContent=q.s;$('#dfb').className='fb';$('#dfb').innerHTML=''}
+function drawDes(){$('#ceiling').style.height=(10+D.danger*72)+'%';$('#dcount').textContent=`${D.c}/${NEED}`;
+  const p=$('#pebbles');const k=Math.round(D.danger*6);if(p.childElementCount!==k)p.innerHTML=Array.from({length:k},(_,i)=>`<i class="pebble" style="left:${12+i*15}%;top:${8+D.danger*60}%;animation-delay:${i*.13}s"></i>`).join('')}
+function tickD(t){if(!D||!D.run||current!=='des')return;const dt=(t-D.last)/1000;D.last=t;
+  if(!D.pause){const secs=[50,42,38,34][S.level-1];D.danger+=dt/secs;
+    if(D.danger>=1){D.danger=1;drawDes();return loseD()}
+    if(Math.random()<dt*.35)sfx.rumble();drawDes()}
+  requestAnimationFrame(tickD)}
+function answerD(said){if(!D.run||D.pause)return;const q=D.q,ok=said===q.ok;
+  if(ok){sfx.ok();D.c++;D.danger=Math.max(0,D.danger-.12);record('desafio',true);S.run.desafio={c:D.c};save();drawDes();
+    if(D.c>=NEED)return winD();
+    D.pause=true;$('#dfb').className='fb ok';$('#dfb').innerHTML=`<b>ISSO!</b>${q.ok?'':q.why}`;setTimeout(()=>{D.pause=false;D.last=performance.now();nextD()},q.ok?600:1600)}
+  else{sfx.no();D.danger=Math.min(.99,D.danger+.1);record('desafio',false,q.s);drawDes();$('#chamber').classList.remove('shake');void $('#chamber').offsetWidth;$('#chamber').classList.add('shake');
+    D.pause=true;$('#dfb').className='fb no';$('#dfb').innerHTML=`<b>${q.ok?'ERA VERDADEIRA':'ERA FALSA'}</b>${q.why}`;setTimeout(()=>{D.pause=false;D.last=performance.now();nextD()},2400)}}
+$('#dV').onclick=()=>answerD(true);$('#dF').onclick=()=>answerD(false);
+function winD(){D.run=false;delete S.run.desafio;markDone('desafio');save();sfx.win();
+  $('#resIco').innerHTML=sprite('man',8);$('#resT').textContent='VOCÊ ESCAPOU!';$('#resS').textContent=`${NEED}/${NEED}`;
+  $('#resP').textContent='Você achou as inscrições falsas antes do teto desabar.';$('#resAgain').onclick=()=>{S.run.desafio={c:0};openDes()};show('res');checkLevel()}
+function loseD(){D.run=false;S.run.desafio={c:0};save();sfx.lose();$('#dV').disabled=$('#dF').disabled=true;
+  $('#dfb').className='fb no';$('#dfb').innerHTML=`<b>O TETO DESABOU!</b>Você fez ${D.c} de ${NEED}. Respire e tente de novo.`;
+  $('#dStart').innerHTML=`<button class="btn" id="dGo2">TENTAR DE NOVO</button>`;$('#dGo2').onclick=()=>openDes()}
+$('#goDes').onclick=()=>{sfx.tap();openDes()};
+$('#desBack').onclick=()=>{if(D)D.run=false;sfx.tap();show('menu')};
+
+/* =================== tábua =================== */
+function openTab(){const l=L();$('#tSyms').innerHTML=ALL.map(s=>{const on=l.syms.includes(s);return `<span class="s${on?'':' lock'}"><b>${on?s:'?'}</b><i>${on?VAL[s]:'—'}</i></span>`}).join('');
+  $('#tab').hidden=false;if(D)D.pause=true}
+$('#openTab').onclick=()=>{sfx.tap();openTab()};
+document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{sfx.tap();openTab()});
+$('#tabClose').onclick=()=>{$('#tab').hidden=true;if(D&&D.run){D.pause=false;D.last=performance.now()}};
+
+/* =================== pais: segurar o logo 3 s =================== */
+const LABELS={montar:'M1 Montar',ler:'M2 Ler',sub:'M3 Subtração',desafio:'Desabamento'};
+function openPais(){
+  $('#kStats').innerHTML=Object.keys(LABELS).map(k=>{const m=S.modes[k],p=m.a?Math.round(m.c/m.a*100):0;
+    return `<div class="stat"><div class="top"><span>${LABELS[k]}</span><span class="v">${m.a?`${m.c} de ${m.a} · ${p}%`:'não jogou'}</span></div><div class="meter"><i style="width:${p}%"></i></div></div>`}).join('');
+  const e=Object.entries(S.erros).sort((a,b)=>b[1]-a[1]).slice(0,12);
+  $('#kErrs').innerHTML=e.length?e.map(([f,n])=>`<span>${f} ×${n}</span>`).join(''):'<p>Nenhum erro ainda.</p>';
+  $('#kLv').innerHTML=LEVELS.map((l,i)=>`<button class="px pbtn${S.level===i+1?' on':''}" data-lv="${i+1}">${l.n}</button>`).join('');
+  $('#kLv').querySelectorAll('[data-lv]').forEach(b=>b.onclick=()=>{S.level=+b.dataset.lv;S.xp=0;S.run={};save();openPais()});
+  const days=Object.keys(S.days).length,full=Object.keys(S.days).filter(k=>mainDone(k)>=3).length;
+  $('#kDays').textContent=`Câmara ${L().n}: números de ${L().range}. Dias jogados: ${days} · com os 3 portões: ${full} · sequência: ${streak()}. Trocar a câmara reinicia as missões em andamento.`;
+  $('#kConfirm').hidden=true;$('#kReset').hidden=false;$('#pais').hidden=false}
+(function(){let h=0,raf=0;const lg=$('#logo');
+  const tick=()=>{const p=Math.min(1,(performance.now()-h)/3000);lg.style.setProperty('--hold',p);if(p>=1){end();sfx.tap();openPais();return}raf=requestAnimationFrame(tick)};
+  const end=()=>{cancelAnimationFrame(raf);lg.style.setProperty('--hold',0)};
+  lg.addEventListener('pointerdown',e=>{e.preventDefault();h=performance.now();raf=requestAnimationFrame(tick)});
+  ['pointerup','pointerleave','pointercancel'].forEach(ev=>lg.addEventListener(ev,end));lg.addEventListener('contextmenu',e=>e.preventDefault())})();
+$('#kClose').onclick=()=>{$('#pais').hidden=true;renderMenu()};
+$('#kReset').onclick=()=>{$('#kConfirm').hidden=false;$('#kReset').hidden=true};
+$('#kNo').onclick=()=>{$('#kConfirm').hidden=true;$('#kReset').hidden=false};
+$('#kYes').onclick=()=>{const snd=S.sound;S=fresh();S.sound=snd;save();openPais()};
+
+/* =================== som on/off =================== */
+function renderSnd(){$('#snd').textContent=S.sound?'SOM':'MUDO';$('#snd').style.color=S.sound?'var(--amber)':'var(--dim)'}
+$('#snd').onclick=()=>{S.sound=!S.sound;save();renderSnd();sfx.tap()};
+
+/* =================== fundo (poeira e tochas) =================== */
+(function(){const c=$('#bgc'),x=c.getContext('2d');let P=[];
+  function size(){c.width=Math.ceil(innerWidth/3);c.height=Math.ceil(innerHeight/3);
+    P=Array.from({length:Math.round(c.width*c.height/260)},()=>({x:Math.random()*c.width,y:Math.random()*c.height,v:Math.random()*.08+.02,b:Math.random()}))}
+  size();addEventListener('resize',size);
+  (function f(t){x.fillStyle='#0f0b16';x.fillRect(0,0,c.width,c.height);
+    for(let y=0;y<c.height;y+=8)for(let i=((y/8)%2)*6;i<c.width;i+=12){x.fillStyle='#140f1c';x.fillRect(i|0,y,11,7)}
+    P.forEach(p=>{p.y+=p.v;if(p.y>c.height)p.y=0;x.fillStyle=p.b>.85?'#3ff2c4':p.b>.6?'#5a4838':'#2a2133';x.fillRect(p.x|0,p.y|0,1,1)});
+    requestAnimationFrame(f)})(0);
+})();
+
+/* =================== início =================== */
+$('#tabIco').innerHTML=sprite('tab',3);
+renderSnd();
+addEventListener('pageshow',()=>{if(current==='menu')renderMenu()});
+show('menu');
+</script>
+</body>
+</html>

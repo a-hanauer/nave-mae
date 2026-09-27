@@ -247,6 +247,17 @@ const APPS=[
        extra:{label:'Fuja do Alien',ok:(days[dkey()]||[]).includes('desafio')},
        full:k=>main(k)>=3};
    }},
+  {id:'numeris',planet:'mat',name:'Ruínas de Numeris',tag:'Números romanos',icon:'ruins',
+   url:'numeris/',
+   desc:'Ruínas antigas cobertas de inscrições. Decifre os números romanos para abrir os portões do templo.',
+   // progresso: 3 portões por dia + desafio opcional "Desabamento"
+   progress(){
+     const s=readLS('numeris-stats-v1'),days=(s&&s.days)||{};
+     const main=k=>Math.min(3,(days[k]||[]).filter(m=>m!=='desafio').length);
+     return{played:!!s,done:main(dkey()),total:3,
+       extra:{label:'Desabamento',ok:(days[dkey()]||[]).includes('desafio')},
+       full:k=>main(k)>=3};
+   }},
 ];
 
 /* ---------- utilidades ---------- */
@@ -263,6 +274,8 @@ const SPR={
   fl2:{pal:{'f':'#ffb300','y':'#fff3a0','r':'#ff3d2e'},rows:["..y.y..","..f.f..","..r.r.."]},
   station:{pal:{'#':'#40d8ff','d':'#1f5fc2','h':'#d8d6ff','s':'#8f8cc7','a':'#ffb300'},rows:[
     "#d.....d#","#d..h..d#","#d.hhh.d#","#ssshsss#","#d.hah.d#","#ssshsss#","#d.hhh.d#","#d..h..d#","#d.....d#"]},
+  ruins:{pal:{'s':'#8f7458','d':'#5a4838','h':'#c9ab82','k':'#2b221d','g':'#3ff2c4'},rows:[
+    ".hhhhhhh.","hsssssssd","hsdkkkdsd","hsdkgkdsd","hsdgkgdsd","hsdkgkdsd","hsdkkkdsd","hsdkkkdsd","hhhhhhhhh"]},
   flame:{pal:{'#':'#ff3d2e','o':'#ffb300','y':'#fff3a0'},rows:[
     "..#..",".##..",".###.","##o##","#ooo#","#oyo#",".###."]},
   flameOff:{pal:{'#':'#4a4790','o':'#3b3780','y':'#5f5ca8'},rows:[

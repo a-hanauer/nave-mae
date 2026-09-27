@@ -9,6 +9,7 @@ Publicado em `https://a-hanauer.github.io/nave-mae/`.
 | Planeta | App | Pasta |
 |---|---|---|
 | Matemática | Estação Nostro-9 (divisão) | `nostro-9/` |
+| Matemática | Ruínas de Numeris (números romanos) | `numeris/` |
 | Português | em breve | |
 | Ciências | em breve | |
 | Inglês | em breve | |
