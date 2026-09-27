@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0c0b1d">
+<style>*,*::before,*::after{box-sizing:border-box}body{margin:0}img{max-width:100%}[hidden]{display:none!important}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
+<title>Estação Nostro-9</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap">
+<style>
+:root{
+  color-scheme:dark;
+  --bg:#0c0b1d; --panel:#1a1936; --panel2:#231f48; --edge:#4a4690;
+  --text:#f1f0ff; --dim:#9b98d4;
+  --amber:#ffb300; --amber-d:#a8600a; --ok:#39e35f; --ok-d:#16622b;
+  --alert:#ff3d2e; --alert-d:#8f1209; --hazard:#ffd000; --cyan:#40d8ff; --ink:#0c0b1d;
+  --px:"Press Start 2P",ui-monospace,"Courier New",monospace;
+  --vt:"VT323",ui-monospace,Menlo,monospace;
+}
+*,*::before,*::after{border-radius:0!important}
+html,body{height:100%}
+body{
+  background-color:var(--bg);
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' shape-rendering='crispEdges'%3E%3Crect x='6' y='9' width='1' height='1' fill='%234a4690'/%3E%3Crect x='41' y='5' width='1' height='1' fill='%239b98d4'/%3E%3Crect x='27' y='30' width='1' height='1' fill='%234a4690'/%3E%3Crect x='55' y='38' width='1' height='1' fill='%234a4690'/%3E%3Crect x='14' y='50' width='1' height='1' fill='%239b98d4'/%3E%3Crect x='47' y='57' width='1' height='1' fill='%234a4690'/%3E%3Crect x='33' y='19' width='1' height='1' fill='%23312e66'/%3E%3C/svg%3E");
+  background-size:128px 128px;
+  color:var(--text);font-family:var(--vt);font-size:22px;line-height:1.15;
+  padding-inline:16px;-webkit-tap-highlight-color:transparent;-webkit-font-smoothing:none;
+}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:50;background:repeating-linear-gradient(0deg,rgba(0,0,0,.18) 0 2px,transparent 2px 4px)}
+#app{max-width:480px;margin:0 auto;padding-block:20px 48px;padding-inline:4px}
+button{font:inherit;color:inherit;touch-action:manipulation;cursor:pointer;-webkit-user-select:none;user-select:none;border:0}
+button:focus-visible{outline:4px solid var(--hazard);outline-offset:6px}
+button:disabled{cursor:default}
+.screen{display:flex;flex-direction:column;gap:20px}
+b{color:var(--amber);font-weight:400}
+.spr{display:block;image-rendering:pixelated;flex:none}
+
+/* ---- molduras em pixel ---- */
+.px,.pbtn{
+  --b:var(--edge);background:var(--bg-c,var(--panel));
+  box-shadow:0 -4px 0 0 var(--b),0 4px 0 0 var(--b),-4px 0 0 0 var(--b),4px 0 0 0 var(--b),8px 8px 0 0 rgba(0,0,0,.55);
+}
+.pbtn{
+  box-shadow:0 -4px 0 0 var(--b),0 4px 0 0 var(--b),-4px 0 0 0 var(--b),4px 0 0 0 var(--b),8px 8px 0 0 rgba(0,0,0,.55),
+    inset -4px -4px 0 0 rgba(0,0,0,.32),inset 4px 4px 0 0 rgba(255,255,255,.14);
+}
+.pbtn:not(:disabled):active{transform:translate(4px,4px);
+  box-shadow:0 -4px 0 0 var(--b),0 4px 0 0 var(--b),-4px 0 0 0 var(--b),4px 0 0 0 var(--b),4px 4px 0 0 rgba(0,0,0,.55),
+    inset 4px 4px 0 0 rgba(0,0,0,.32)}
+
+/* ---- tipografia ---- */
+h1{margin:0;font-family:var(--px);font-size:14px;line-height:1.6;font-weight:400;color:var(--text);text-shadow:3px 3px 0 var(--alert-d);text-wrap:balance}
+h2{margin:0;font-family:var(--px);font-size:14px;line-height:1.7;font-weight:400;text-wrap:balance;text-shadow:3px 3px 0 rgba(0,0,0,.7)}
+.eyebrow{margin:0;font-family:var(--px);font-size:8px;line-height:1.6;color:var(--dim);text-transform:uppercase;letter-spacing:.06em}
+.label{font-family:var(--px);font-size:9px;line-height:1.6;color:var(--dim);text-transform:uppercase;letter-spacing:.04em}
+.brief{margin:0;font-size:23px;line-height:1.15}
+.msg{margin:0;min-height:1.2em;font-size:21px;color:var(--dim)}
+.msg.err{color:var(--alert)}
+.msg.good{color:var(--ok)}
+.note{margin:0;font-size:20px;color:var(--dim)}
+
+/* ---- a conta em destaque ---- */
+.conta{--b:var(--amber);--bg-c:#141128;display:flex;align-items:flex-start;justify-content:center;gap:10px;padding:18px 8px 14px}
+.conta .cn{display:flex;flex-direction:column;align-items:center;gap:10px;min-width:56px}
+.conta strong{font-family:var(--px);font-weight:400;font-size:32px;line-height:1;color:var(--text);text-shadow:3px 3px 0 #000}
+.conta small{font-size:18px;line-height:1;color:var(--dim);text-align:center}
+.conta .op{font-family:var(--px);font-size:26px;line-height:32px;color:var(--amber);text-shadow:3px 3px 0 #000}
+.conta .ans strong{min-width:68px;text-align:center;padding-bottom:6px;color:var(--amber);box-shadow:inset 0 -4px 0 0 var(--amber)}
+.conta.win{--b:var(--ok)}
+.conta.win .ans strong{color:var(--ok);box-shadow:inset 0 -4px 0 0 var(--ok)}
+.conta.bad .ans strong{color:var(--alert);box-shadow:inset 0 -4px 0 0 var(--alert)}
+.conta.pop{animation:pop .3s steps(3)}
+@keyframes pop{50%{transform:scale(1.06)}}
+.story{margin:0;font-size:20px;line-height:1.15;color:var(--dim)}
+.qn{font-family:var(--px);font-size:18px;color:var(--amber);white-space:nowrap}
+
+/* ---- menu ---- */
+.brand{display:flex;align-items:center;gap:16px}
+.logo{--b:var(--amber);position:relative;flex:none;width:60px;height:60px;display:grid;place-items:center;font-family:var(--px);font-size:16px;color:var(--amber);text-shadow:3px 3px 0 var(--amber-d);overflow:hidden;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;touch-action:none}
+.logo::after{content:"";position:absolute;left:0;right:0;bottom:0;height:calc(var(--hold,0)*100%);background:rgba(255,179,0,.25)}
+.brand .t{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px}
+.icon-btn{flex:none;width:52px;height:44px;font-family:var(--px);font-size:8px;color:var(--dim)}
+.icon-btn[aria-pressed="true"]{color:var(--amber)}
+.terminal{--b:var(--amber-d);--bg-c:#110f06;padding:12px 14px;font-family:var(--vt);font-size:25px;line-height:1.05;color:var(--amber)}
+.cursor{display:inline-block;width:12px;height:20px;background:var(--amber);vertical-align:-3px;margin-left:4px;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+
+.turno{padding:14px;display:flex;flex-direction:column;gap:12px}
+.turno-top{display:flex;justify-content:space-between;align-items:center}
+.turno-n{font-family:var(--px);font-size:18px;color:var(--amber);text-shadow:3px 3px 0 var(--amber-d)}
+.turno-n.all{color:var(--ok);text-shadow:3px 3px 0 var(--ok-d)}
+.week{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
+.day{display:flex;flex-direction:column;align-items:center;gap:6px;font-family:var(--px);font-size:8px;color:var(--dim)}
+.day i{display:block;width:100%;max-width:30px;aspect-ratio:1;background:var(--panel2);box-shadow:inset 0 0 0 3px var(--edge)}
+.day.part i{background:linear-gradient(to top,var(--amber-d) 50%,var(--panel2) 50%);box-shadow:inset 0 0 0 3px var(--amber-d)}
+.day.full i{background:var(--amber);box-shadow:inset 0 0 0 3px var(--amber-d),inset -6px -6px 0 0 rgba(0,0,0,.18)}
+.day.today{color:var(--text)}
+.day.today i{outline:3px solid var(--text);outline-offset:3px}
+.streak{margin:0;font-size:21px}
+
+.missions{display:flex;flex-direction:column;gap:20px}
+.mission{display:grid;grid-template-columns:44px 1fr auto;align-items:center;gap:14px;text-align:left;padding:14px}
+.mission .ico{display:flex;flex-direction:column;align-items:center;gap:6px}
+.mission .ico em{font-style:normal;font-family:var(--px);font-size:8px;color:var(--dim)}
+.mission .t{display:flex;flex-direction:column;gap:6px;min-width:0}
+.mission .t strong{font-family:var(--px);font-size:11px;line-height:1.5;font-weight:400}
+.mission .t small{font-size:20px;line-height:1;color:var(--dim)}
+.mission.done{--b:var(--ok-d)}
+.check{display:flex;align-items:center;gap:6px;font-family:var(--px);font-size:7px;line-height:1;color:var(--dim);white-space:nowrap;text-transform:uppercase}
+.check.ok{color:var(--ok)}
+
+.alien-btn{--b:var(--hazard);--bg-c:var(--alert);position:relative;display:grid;grid-template-columns:44px 1fr;align-items:center;gap:14px;padding:18px 14px;text-align:left;color:#fff;
+  background-image:repeating-linear-gradient(135deg,rgba(0,0,0,.22) 0 10px,transparent 10px 20px);
+  animation:alarm 1s steps(1) infinite}
+@keyframes alarm{50%{--bg-c:var(--alert-d);background-color:var(--alert-d)}}
+.alien-btn .t{display:flex;flex-direction:column;gap:8px}
+.alien-btn .a-eyebrow{font-family:var(--px);font-size:8px;color:var(--hazard);text-shadow:2px 2px 0 #000}
+.alien-btn .a-title{font-family:var(--px);font-size:17px;line-height:1.3;text-shadow:3px 3px 0 #000}
+.alien-btn .a-sub{font-size:20px;line-height:1;text-shadow:2px 2px 0 rgba(0,0,0,.6)}
+.alien-btn .check{position:absolute;top:10px;right:12px;color:#fff;text-shadow:2px 2px 0 #000}
+.alien-btn.done{animation:none}
+
+/* ---- barras de progresso ---- */
+.segs{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:6px}
+.segs i{display:block;height:14px;background:var(--panel2);box-shadow:inset 0 0 0 2px var(--edge)}
+.segs i.on{background:var(--amber);box-shadow:inset 0 0 0 2px var(--amber-d),inset -3px -3px 0 0 rgba(0,0,0,.2)}
+.segs i.cur{box-shadow:inset 0 0 0 2px var(--amber);animation:blink 1s steps(1) infinite}
+.segs.ok i.on{background:var(--ok);box-shadow:inset 0 0 0 2px var(--ok-d)}
+.segs.mini{gap:3px;margin-top:4px;max-width:180px}
+.segs.mini i{height:8px}
+.segs.mini i.cur{animation:none}
+.check.go{color:var(--amber);animation:blink 1.2s steps(1) infinite}
+.alien-btn .segs.mini i{background:rgba(0,0,0,.35);box-shadow:inset 0 0 0 2px rgba(0,0,0,.5)}
+.alien-btn .segs.mini i.on{background:var(--hazard);box-shadow:inset 0 0 0 2px #7a5c00}
+
+/* ---- barra superior das missões ---- */
+.bar{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.back{padding:10px 12px;font-family:var(--px);font-size:9px;color:var(--dim)}
+.prog{font-family:var(--px);font-size:9px;line-height:1.5;color:var(--dim);text-align:right}
+
+/* ---- perguntas ---- */
+.ask{--b:var(--amber);padding:16px;display:flex;flex-direction:column;gap:16px}
+.ask+.ask{margin-top:20px}
+.ask .q{margin:0;font-size:24px;line-height:1.1}
+.opts{display:flex;flex-wrap:wrap;gap:16px}
+.opt{--bg-c:var(--panel2);min-width:64px;padding:14px 16px;font-family:var(--px);font-size:18px;line-height:1}
+.opt.txt{font-family:var(--vt);font-size:24px;padding:10px 14px}
+.opt.right{--b:var(--ok);--bg-c:var(--ok-d);color:#fff}
+.opt.wrong{--b:var(--alert);opacity:.45;text-decoration:line-through}
+.eq{font-family:var(--px);font-size:24px;line-height:1.4;color:var(--amber);text-shadow:3px 3px 0 var(--amber-d)}
+.eq small{font-size:13px;color:var(--text);text-shadow:2px 2px 0 rgba(0,0,0,.6)}
+.explain{margin:0;font-size:22px}
+.primary{--b:var(--amber-d);--bg-c:var(--amber);width:100%;padding:16px;color:var(--ink);font-family:var(--px);font-size:12px;line-height:1.4}
+.ghost{width:100%;padding:14px;font-family:var(--px);font-size:9px;line-height:1.5;color:var(--text)}
+
+/* ---- M1 ---- */
+.depot,.corridor{--bg-c:var(--panel2);--b:var(--dim);padding:12px;display:flex;flex-direction:column;gap:10px}
+.bats{display:flex;flex-wrap:wrap;gap:6px 4px;justify-content:center;min-height:30px}
+.rooms{display:grid;gap:20px 16px;grid-template-columns:repeat(var(--k),minmax(0,1fr))}
+.room{display:flex;flex-direction:column}
+.room-add{flex:1;background:none;padding:10px 4px;display:flex;flex-direction:column;align-items:center;gap:10px;min-height:136px}
+.room-add:active{background:rgba(255,179,0,.14)}
+.room-sub{background:var(--panel2);box-shadow:inset 0 4px 0 0 var(--edge);padding:10px 2px 8px;font-family:var(--px);font-size:7px;color:var(--dim)}
+.room-sub:disabled{opacity:.4}
+
+/* ---- M2 ---- */
+.scope{--bg-c:#08071a;--b:var(--cyan);position:relative;width:100%;max-width:100%;aspect-ratio:4/3;overflow:hidden;
+  background-image:
+   repeating-linear-gradient(90deg,rgba(64,216,255,.12) 0 2px,transparent 2px 16.66%),
+   repeating-linear-gradient(0deg,rgba(64,216,255,.12) 0 2px,transparent 2px 20%)}
+.dot{position:absolute;width:32px;height:32px;transform:translate(-50%,-50%);padding:0;background:rgba(64,216,255,.18);
+  box-shadow:0 -3px 0 0 var(--cyan),0 3px 0 0 var(--cyan),-3px 0 0 0 var(--cyan),3px 0 0 0 var(--cyan);
+  font-family:var(--px);font-size:10px;color:var(--ink)}
+.dot::after{content:"";position:absolute;inset:0;margin:auto;width:8px;height:8px;background:var(--cyan)}
+.dot.sel{background:var(--amber);box-shadow:0 -3px 0 0 #fff,0 3px 0 0 #fff,-3px 0 0 0 #fff,3px 0 0 0 #fff}
+.dot.sel::after{background:var(--ink)}
+.dot.team{background:var(--tc);box-shadow:0 -3px 0 0 var(--tc),0 3px 0 0 var(--tc),-3px 0 0 0 var(--tc),3px 0 0 0 var(--tc),inset -3px -3px 0 0 rgba(0,0,0,.25)}
+.dot.team::after{display:none}
+.row{display:flex;gap:16px}
+.row>*{flex:1}
+
+/* ---- M3 hangar ---- */
+.stepper{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 14px}
+.stepper .sv{display:flex;flex-direction:column;align-items:center;gap:8px}
+.stepper .sv strong{font-family:var(--px);font-size:24px;font-weight:400;color:var(--amber);text-shadow:3px 3px 0 var(--amber-d)}
+.step{width:56px;height:52px;font-family:var(--px);font-size:22px}
+.hangar{--bg-c:#100e22;padding:10px;display:flex;flex-direction:column;gap:6px}
+.rail{display:flex;align-items:center;gap:8px;min-height:32px;padding:3px 4px;box-shadow:inset 0 -3px 0 0 var(--edge)}
+.rail .rl{flex:none;width:26px;font-family:var(--px);font-size:8px;color:var(--dim)}
+.rail .crates{display:flex;gap:2px;flex-wrap:nowrap}
+.rail.part .crates{opacity:.55}
+.rail.over{background:rgba(255,61,46,.14);box-shadow:inset 0 -3px 0 0 var(--alert)}
+.rail.over .rl{color:var(--alert)}
+.hangar.win .rail{box-shadow:inset 0 -3px 0 0 var(--ok)}
+.fam{display:flex;flex-direction:column;gap:6px}
+
+/* ---- Fuja do Alien ---- */
+.danger-title{color:var(--alert);text-shadow:3px 3px 0 #000;text-transform:uppercase}
+.radar-wrap{--b:var(--cyan);--bg-c:#08071a;padding:6px}
+#radar{display:block;width:100%;height:auto;aspect-ratio:120/66;image-rendering:pixelated}
+.readout{display:flex;justify-content:space-between;align-items:center}
+.readout .d{font-family:var(--px);font-size:20px;color:var(--amber);text-shadow:3px 3px 0 var(--amber-d)}
+.readout .d.near{color:var(--alert);text-shadow:3px 3px 0 var(--alert-d);animation:blink .4s steps(1) infinite}
+.readout .h{font-family:var(--px);font-size:12px;color:var(--dim)}
+.problem{display:flex;align-items:center;justify-content:center;gap:12px;font-family:var(--px);font-size:34px;line-height:1;padding-block:10px;text-shadow:3px 3px 0 #000}
+.answer{min-width:92px;min-height:46px;padding-bottom:6px;box-shadow:inset 0 -4px 0 0 var(--amber);text-align:center;color:var(--amber)}
+.shake{animation:shake .3s steps(4)}
+@keyframes shake{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.pad{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.key{padding:14px 0;font-family:var(--px);font-size:20px;line-height:1}
+.key.ok{--b:var(--amber-d);--bg-c:var(--amber);color:var(--ink);font-size:14px}
+.key.del{font-size:8px;color:var(--dim)}
+.hintbtn{align-self:center;padding:10px 16px;font-family:var(--px);font-size:9px;color:var(--dim)}
+
+/* ---- fim + pais ---- */
+.big{font-family:var(--px);font-size:40px;line-height:1.2;color:var(--amber);text-shadow:4px 4px 0 var(--amber-d)}
+.big.lose{color:var(--alert);text-shadow:4px 4px 0 var(--alert-d)}
+.stat{display:flex;flex-direction:column;gap:8px;padding-block:12px;box-shadow:inset 0 -2px 0 0 var(--edge)}
+.stat .top{display:flex;justify-content:space-between;gap:8px;font-size:20px}
+.stat .v{color:var(--dim);white-space:nowrap}
+.meter{height:14px;background:var(--panel2);box-shadow:inset 0 0 0 2px var(--edge);padding:3px}
+.meter i{display:block;height:100%;background:repeating-linear-gradient(90deg,var(--amber) 0 8px,transparent 8px 10px)}
+.chips{display:flex;flex-wrap:wrap;gap:16px}
+.chip{padding:8px 10px;font-family:var(--px);font-size:10px;line-height:1}
+.chip span{color:var(--alert)}
+.confirm{--b:var(--alert);padding:14px;display:flex;flex-direction:column;gap:14px}
+.danger{--b:var(--alert-d);--bg-c:var(--alert);color:#fff}
+
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- MENU -->
+<section class="screen" id="menu">
+  <div class="bar"><a class="back pbtn" href="../" style="text-decoration:none;display:inline-block">&lt; Nave-Mãe</a></div>
+  <header class="brand">
+    <div class="logo px" id="logo" aria-label="Estação Nostro-9">N9</div>
+    <div class="t">
+      <p class="eyebrow">Terminal de bordo</p>
+      <h1>Estação Nostro-9</h1>
+    </div>
+    <button class="icon-btn pbtn" id="mute" aria-pressed="true" aria-label="Som ligado">SOM</button>
+  </header>
+  <div class="terminal px"><span id="term"></span><span class="cursor"></span></div>
+  <div class="turno px">
+    <div class="turno-top"><span class="label">Turno de hoje</span><span class="turno-n" id="turnoN">0/3</span></div>
+    <div class="week" id="week"></div>
+    <p class="streak" id="streak"></p>
+  </div>
+  <nav class="missions">
+    <button class="mission pbtn" data-go="partilha"><span class="ico"><span data-spr="bat" data-s="4"></span><em>M1</em></span><span class="t"><strong>Dividir baterias</strong><small>Partes iguais para cada sala</small><span class="segs mini" data-segs="partilha"></span></span><span class="check" data-check="partilha"></span></button>
+    <button class="mission pbtn" data-go="grupos"><span class="ico"><span data-spr="radar" data-s="4"></span><em>M2</em></span><span class="t"><strong>Equipes de busca</strong><small>Quantos grupos cabem?</small><span class="segs mini" data-segs="grupos"></span></span><span class="check" data-check="grupos"></span></button>
+    <button class="mission pbtn" data-go="hangar"><span class="ico"><span data-spr="crate" data-s="4"></span><em>M3</em></span><span class="t"><strong>Carga do hangar</strong><small>Resolva a conta e confira</small><span class="segs mini" data-segs="hangar"></span></span><span class="check" data-check="hangar"></span></button>
+  </nav>
+  <button class="alien-btn pbtn" data-go="desafio"><span data-spr="siren" data-s="5"></span><span class="t"><span class="a-eyebrow">!! Desafio extra !!</span><span class="a-title">Fuja do Alien</span><span class="a-sub">Opcional: tabuada da divisão contra o relógio</span><span class="segs mini" data-segs="desafio" hidden></span></span><span class="check" data-check="desafio"></span></button>
+</section>
+
+<!-- M1 PARTILHA -->
+<section class="screen" id="partilha" hidden>
+  <div class="bar"><button class="back pbtn" data-back>&lt; Ponte</button><span class="prog" id="p-prog"></span></div>
+  <div class="segs" id="p-segs"></div>
+  <div class="conta px" id="p-conta"></div>
+  <p class="story" id="p-brief"></p>
+  <div class="depot px"><span class="label" id="p-dlabel"></span><div class="bats" id="p-depot"></div></div>
+  <div class="rooms" id="p-rooms"></div>
+  <p class="msg" id="p-msg"></p>
+  <div id="p-ask"></div>
+</section>
+
+<!-- M2 GRUPOS -->
+<section class="screen" id="grupos" hidden>
+  <div class="bar"><button class="back pbtn" data-back>&lt; Ponte</button><span class="prog" id="g-prog"></span></div>
+  <div class="segs" id="g-segs"></div>
+  <div class="conta px" id="g-conta"></div>
+  <p class="story" id="g-brief"></p>
+  <div class="scope px" id="g-scope"></div>
+  <p class="msg" id="g-msg"></p>
+  <div class="row" id="g-tools"><button class="ghost pbtn" id="g-undo">Desfazer equipe</button></div>
+  <div id="g-ask"></div>
+</section>
+
+<!-- M3 HANGAR -->
+<section class="screen" id="hangar" hidden>
+  <div class="bar"><button class="back pbtn" data-back>&lt; Ponte</button><span class="prog" id="h-prog"></span></div>
+  <div class="segs" id="h-segs"></div>
+  <div class="conta px" id="h-conta"></div>
+  <p class="story" id="h-brief"></p>
+  <div class="stepper px">
+    <button class="step pbtn" id="h-minus" aria-label="Diminuir resposta">-</button>
+    <div class="sv"><span class="label">Sua resposta</span><strong id="h-w">1</strong></div>
+    <button class="step pbtn" id="h-plus" aria-label="Aumentar resposta">+</button>
+  </div>
+  <button class="primary pbtn" id="h-load">Carregar e conferir</button>
+  <div class="hangar px" id="h-grid"></div>
+  <p class="msg" id="h-msg"></p>
+  <div id="h-ask"></div>
+</section>
+
+<!-- FUJA DO ALIEN -->
+<section class="screen" id="desafio" hidden>
+  <div class="bar"><button class="back pbtn" data-back>&lt; Ponte</button><span class="prog" id="d-prog"></span></div>
+  <div id="d-choose" class="screen">
+    <h2 class="danger-title">Fuja do Alien</h2>
+    <button class="primary pbtn" id="d-resume" hidden></button>
+    <p class="brief">O Alien está nos dutos e vem na sua direção. Cada resposta certa faz ele recuar. Acerte <b>10 contas</b> antes que ele chegue até você.</p>
+    <div class="missions">
+      <button class="mission pbtn" data-level="1"><span class="ico"><span data-spr="bat" data-s="4"></span><em>2-5</em></span><span class="t"><strong>Tabuada do 2 ao 5</strong><small>O Alien anda devagar</small></span><span></span></button>
+      <button class="mission pbtn" data-level="2" style="--b:var(--alert)"><span class="ico"><span data-spr="siren" data-s="4"></span><em>2-9</em></span><span class="t"><strong>Tabuada do 2 ao 9</strong><small>O Alien anda mais rápido</small></span><span></span></button>
+    </div>
+  </div>
+  <div id="d-play" class="screen" hidden>
+    <div class="radar-wrap px"><canvas id="radar" width="120" height="66"></canvas></div>
+    <div class="readout"><span class="d" id="d-dist">40m</span><span class="h" id="d-hits">0/10</span></div>
+    <div class="segs" id="d-segs"></div>
+    <div class="problem" id="d-problem"><span id="d-q">24÷6=</span><span class="answer" id="d-ans"></span></div>
+    <p class="msg" id="d-msg" style="text-align:center"></p>
+    <button class="hintbtn pbtn" id="d-hint">Dica</button>
+    <div class="pad" id="d-pad"></div>
+  </div>
+</section>
+
+<!-- FIM -->
+<section class="screen" id="fim" hidden>
+  <p class="eyebrow">Relatório da missão</p>
+  <div class="big" id="f-big"></div>
+  <h2 id="f-title"></h2>
+  <p class="brief" id="f-text"></p>
+  <button class="primary pbtn" id="f-again">Jogar de novo</button>
+  <button class="ghost pbtn" data-back>Voltar à ponte</button>
+</section>
+
+<!-- PAIS -->
+<section class="screen" id="pais" hidden>
+  <div class="bar"><button class="back pbtn" data-back>&lt; Ponte</button><span class="prog">Área dos pais</span></div>
+  <h2>Como está indo</h2>
+  <p class="note">Conta só as respostas dadas de primeira. Os dados ficam salvos apenas neste aparelho.</p>
+  <div id="k-stats"></div>
+  <p class="note" id="k-read"></p>
+  <p class="note" id="k-days"></p>
+  <span class="label">Contas que ele mais errou</span>
+  <div class="chips" id="k-errs"></div>
+  <button class="ghost pbtn" id="k-reset">Apagar histórico</button>
+  <div class="confirm px" id="k-confirm" hidden>
+    <p class="note" style="color:var(--text)">Apagar todo o histórico deste aparelho?</p>
+    <div class="row"><button class="ghost pbtn" id="k-no">Cancelar</button><button class="primary pbtn danger" id="k-yes">Apagar</button></div>
+  </div>
+</section>
+
+</div>
+
+<script>
+const $=s=>document.querySelector(s);
+const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const NAMES=['A','B','C','D'];
+
+/* ---------- sprites em pixel ---------- */
+const SPR={
+  bat:{pal:{'#':'#a8600a','o':'#ffb300','t':'#ffe38a'},rows:[
+    "..###..","#######","#.....#","#.....#","#ooooo#","#ottoo#","#ooooo#","#ooooo#","#######"]},
+  crew:{pal:{'#':'#f1f0ff','v':'#40d8ff','s':'#9b98d4'},rows:[
+    ".#####.","##vvv##","#vvvvv#","##vvv##",".#####.","#######","##s#s##","#.###.#","..#.#..",".##.##."]},
+  radar:{pal:{'#':'#40d8ff','r':'#ff3d2e'},rows:[
+    "..#######..",".#.......#.","#..#####..#","#.#.....#.#","#.#..r..#.#","#.#.....#.#","#..#####..#",".#.......#.","..#######.."]},
+  pod:{pal:{'#':'#9b98d4','v':'#40d8ff','f':'#ffb300','r':'#ff3d2e'},rows:[
+    "...###...","..#####..",".##vvv##.",".#vvvvv#.",".##vvv##.",".#######.","##.###.##","..f.f.f..",".r.f.f.r."]},
+  siren:{pal:{'#':'#ffd000','k':'#0c0b1d'},rows:[
+    "....#....","...###...","...#k#...","..##k##..","..##k##..",".###k###.",".#######.","####k####","#########"]},
+  crate:{pal:{'#':'#a8600a','o':'#ffb300','.':'#6b3d07'},rows:[
+    "########","#o....o#","#.o..o.#","#..oo..#","#..oo..#","#.o..o.#","#o....o#","########"]},
+  check:{pal:{'#':'#39e35f'},rows:[
+    "......#",".....##","#...##.","##.##..",".###...","..#...."]},
+};
+function sprite(name,s=3){
+  const {pal,rows}=SPR[name],h=rows.length,w=rows[0].length;let r='';
+  rows.forEach((row,y)=>[...row].forEach((c,x)=>{if(pal[c])r+=`<rect x="${x}" y="${y}" width="1" height="1" fill="${pal[c]}"/>`}));
+  return `<svg class="spr" viewBox="0 0 ${w} ${h}" width="${w*s}" height="${h*s}" shape-rendering="crispEdges" aria-hidden="true">${r}</svg>`;
+}
+document.querySelectorAll('[data-spr]').forEach(el=>el.innerHTML=sprite(el.dataset.spr,+el.dataset.s||3));
+const BAT=sprite('bat',3),CRATE=sprite('crate',3),CHECK=sprite('check',2);
+
+/* ---------- memória local ---------- */
+const STORE='nostro9-stats-v1';
+const fresh=()=>({partilha:{a:0,c:0},grupos:{a:0,c:0},hangar:{a:0,c:0},desafio:{a:0,c:0},erros:{},days:{},prog:{}});
+let stats=(()=>{try{return Object.assign(fresh(),JSON.parse(localStorage.getItem(STORE))||{})}catch(e){return fresh()}})();
+function save(){try{localStorage.setItem(STORE,JSON.stringify(stats))}catch(e){}}
+function record(mode,ok,fact){stats[mode].a++;if(ok)stats[mode].c++;else if(fact)stats.erros[fact]=(stats.erros[fact]||0)+1;save()}
+
+/* ---------- turno diário ---------- */
+const MODES=['partilha','grupos','hangar']; /* o desafio é extra e não conta para o turno */
+const dkey=(d=new Date())=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+const doneToday=()=>stats.days[dkey()]||[];
+const countReq=l=>MODES.filter(m=>l.includes(m)).length;
+const isFull=k=>countReq(stats.days[k]||[])>=MODES.length;
+function markDone(m){
+  const k=dkey(),l=stats.days[k]||[];
+  if(l.includes(m))return false;
+  l.push(m);stats.days[k]=l;
+  const keys=Object.keys(stats.days).sort();while(keys.length>120)delete stats.days[keys.shift()];
+  save();return true;
+}
+function streak(){
+  const d=new Date();let n=0;
+  if(!isFull(dkey(d)))d.setDate(d.getDate()-1);
+  while(isFull(dkey(d))){n++;d.setDate(d.getDate()-1)}
+  return n;
+}
+function turnoLine(){
+  const n=countReq(doneToday());
+  if(n>=MODES.length){const s=streak();return `<b>Turno completo!</b> Sequência de ${s} ${s===1?'dia':'dias'} seguidos.`}
+  return `Turno de hoje: <b>${n} de ${MODES.length}</b> missões feitas.`;
+}
+const WD=['D','S','T','Q','Q','S','S'];
+function renderMenu(){
+  const done=doneToday(),n=countReq(done),all=n>=MODES.length,alienDone=done.includes('desafio');
+  document.querySelectorAll('[data-check]').forEach(el=>{
+    const m=el.dataset.check,ok=done.includes(m);
+    const pr=getProg(m);
+    el.innerHTML=pr?'Continuar':ok?CHECK+(m==='desafio'?'Escapou':'Feita'):(m==='desafio'?'':'A fazer');
+    el.classList.toggle('ok',ok&&!pr);el.classList.toggle('go',!!pr);el.closest('button').classList.toggle('done',ok);
+  });
+  document.querySelectorAll('[data-segs]').forEach(el=>{
+    const m=el.dataset.segs,pr=getProg(m),ok=done.includes(m);
+    const i=pr?(m==='desafio'?pr.hits:pr.i):ok?TOTALS[m]:0;
+    segs(el,pr?i:(ok?i:-1),TOTALS[m],pr?'':ok?'ok':'');
+    el.hidden=m==='desafio'&&!pr;
+  });
+  const tn=$('#turnoN');tn.textContent=`${n}/${MODES.length}`;tn.classList.toggle('all',all);
+  let w='';
+  for(let i=6;i>=0;i--){
+    const d=new Date();d.setDate(d.getDate()-i);const c=countReq(stats.days[dkey(d)]||[]);
+    w+=`<span class="day${c>=MODES.length?' full':c?' part':''}${i===0?' today':''}"><i></i>${WD[d.getDay()]}</span>`;
+  }
+  $('#week').innerHTML=w;
+  const s=streak();
+  $('#streak').innerHTML=s
+    ? (all?`<b>${s} ${s===1?'dia':'dias'}</b> seguidos com o turno completo. Volte amanhã!`
+          :`Sequência de <b>${s} ${s===1?'dia':'dias'}</b>. Complete o turno hoje para chegar a ${s+1}!`)
+    : 'Complete as 3 missões hoje para começar uma sequência.';
+  const left=MODES.length-n;
+  $('#term').innerHTML=
+    n===0?'&gt; ALERTA: forma de vida desconhecida a bordo.<br>&gt; Técnico, 3 missões esperam por você hoje.'
+    :all?(alienDone?'&gt; TURNO COMPLETO. Você até fugiu do Alien!<br>&gt; A estação está segura. Até amanhã!'
+                   :'&gt; TURNO COMPLETO. A estação está segura.<br>&gt; Coragem para o desafio extra? Fuja do Alien!')
+    :`&gt; Bom trabalho, técnico.<br>&gt; ${left===1?'Falta 1 missão':`Faltam ${left} missões`} para fechar o turno.`;
+}
+
+/* ---------- som 8-bit ---------- */
+let actx=null,soundOn=true;
+function tone(f,d=.08,type='square',vol=.04,delay=0){
+  if(!soundOn)return;
+  try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();
+    const t=actx.currentTime+delay,o=actx.createOscillator(),g=actx.createGain();
+    o.type=type;o.frequency.value=f;g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(.0001,t+d);
+    o.connect(g);g.connect(actx.destination);o.start(t);o.stop(t+d+.02)}catch(e){}
+}
+const good=()=>{tone(523,.08);tone(659,.08,'square',.04,.08);tone(784,.12,'square',.04,.16)};
+const bad=()=>{tone(196,.12,'square',.05);tone(147,.2,'square',.05,.12)};
+const click=()=>tone(440,.035,'square',.025);
+const fanfare=()=>[523,659,784,1047,784,1047].forEach((f,i)=>tone(f,.11,'square',.045,i*.11));
+$('#mute').onclick=e=>{soundOn=!soundOn;const b=e.currentTarget;b.setAttribute('aria-pressed',soundOn);b.textContent=soundOn?'SOM':'MUDO';b.setAttribute('aria-label',soundOn?'Som ligado':'Som desligado')};
+
+/* ---------- navegação ---------- */
+function show(id){if(id==='menu')renderMenu();document.querySelectorAll('#app>.screen').forEach(s=>s.hidden=s.id!==id);window.scrollTo(0,0)}
+document.addEventListener('click',e=>{
+  if(e.target.closest('[data-back]')){click();stopDesafio();show('menu')}
+  const go=e.target.closest('[data-go]');
+  if(go){click();START[go.dataset.go]()}
+});
+
+/* ---------- pergunta de múltipla escolha ---------- */
+function choices(correct,spread=2,min=1){
+  const s=new Set([correct]);let guard=0;
+  while(s.size<3&&guard++<50){const v=correct+rnd(-spread-1,spread+1);if(v>=min&&v!==correct)s.add(v)}
+  return shuffle([...s]);
+}
+function ask(host,question,opts,correct,done){
+  const box=document.createElement('div');box.className='ask px';
+  box.innerHTML=`<p class="q">${question}</p><div class="opts"></div>`;
+  const wrap=box.querySelector('.opts');let first=true;
+  opts.forEach(o=>{
+    const b=document.createElement('button');b.className='opt pbtn'+(typeof o==='string'?' txt':'');b.textContent=o;
+    b.onclick=()=>{
+      if(box.dataset.done)return;
+      if(o===correct){b.classList.add('right');box.dataset.done=1;good();done(first,box)}
+      else{b.classList.add('wrong');b.disabled=true;first=false;bad()}
+    };
+    wrap.appendChild(b);
+  });
+  host.appendChild(box);box.scrollIntoView({behavior:'smooth',block:'nearest'});
+  return box;
+}
+function explain(box,html,label,fn){
+  const d=document.createElement('div');d.style.cssText='display:flex;flex-direction:column;gap:16px';
+  d.innerHTML=html;
+  if(label){const b=document.createElement('button');b.className='primary pbtn';b.textContent=label;b.onclick=()=>{click();fn()};d.appendChild(b)}
+  box.appendChild(d);d.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function conta(sel,a,la,b,lb,lc,c='?',state=''){
+  const el=$(sel);el.className='conta px'+(state?' '+state:'');
+  el.innerHTML=`<span class="cn"><strong>${a}</strong><small>${la}</small></span><span class="op">÷</span><span class="cn"><strong>${b}</strong><small>${lb}</small></span><span class="op">=</span><span class="cn ans"><strong>${c}</strong><small>${lc}</small></span>`;
+  if(state==='win'||state==='bad'){void el.offsetWidth;el.classList.add('pop')}
+}
+function setMsg(sel,t,cls=''){const m=$(sel);m.textContent=t;m.className='msg '+cls}
+
+/* ---------- progresso salvo de cada missão ---------- */
+const TOTALS={partilha:5,grupos:5,hangar:4,desafio:10};
+const getProg=m=>(stats.prog||{})[m];
+function saveProg(m,o){stats.prog=stats.prog||{};stats.prog[m]=o;save()}
+function clearProg(m){if(stats.prog&&stats.prog[m]){delete stats.prog[m];save()}}
+function segs(el,i,total,cls=''){
+  el.className='segs'+(el.classList.contains('mini')?' mini':'')+(cls?' '+cls:'');
+  el.innerHTML=Array.from({length:total},(_,k)=>`<i class="${k<i?'on':k===i&&cls!=='ok'?'cur':''}"></i>`).join('');
+}
+/* depois de responder: guarda o avanço e, na última tarefa, já marca a missão como feita */
+function advance(mode,S){
+  S.i++;
+  if(S.i>=S.total){S.nw=markDone(mode);clearProg(mode);return true}
+  saveProg(mode,{i:S.i,firsts:S.firsts,next:true});return false;
+}
+
+/* ---------- fim de missão ---------- */
+let againFn=null;
+function finish(big,title,text,again,lose){
+  $('#f-big').textContent=big;$('#f-big').classList.toggle('lose',!!lose);
+  $('#f-title').textContent=title;$('#f-text').innerHTML=text;againFn=again;show('fim');
+  if(!lose)fanfare();
+}
+$('#f-again').onclick=()=>{click();againFn&&againFn()};
+function missionEnd(mode,S,again,what){
+  const {firsts,total,nw}=S,all=firsts===total;
+  finish(`${firsts}/${total}`,all?'Missão cumprida sem erros!':'Missão cumprida!',
+    `${what} ${firsts} de ${total} tarefas foram resolvidas de primeira.${all?'':' Jogue de novo para treinar mais.'}<br><br>${nw?'Missão marcada como feita hoje. ':''}${turnoLine()}`,again);
+}
+/* abre a missão: continua de onde parou ou começa do zero */
+function resume(mode,S,newFn,restoreFn,fresh){
+  const pr=getProg(mode);
+  if(!fresh&&pr){S.i=pr.i;S.firsts=pr.firsts;if(pr.task){Object.assign(S,pr.task);restoreFn()}else newFn()}
+  else{S.i=0;S.firsts=0;newFn()}
+}
+
+/* ================= M1 PARTILHA ================= */
+const P={total:5};
+function pStart(fresh){resume('partilha',P,pNew,pSetup,fresh);show('partilha')}
+function pNew(){
+  const k=rnd(2,4),q=rnd(2,6);
+  Object.assign(P,{k,q,n:k*q,depot:k*q,rooms:Array(k).fill(0),done:false});
+  pSetup();
+}
+function pSave(){saveProg('partilha',{i:P.i,firsts:P.firsts,task:{k:P.k,q:P.q,n:P.n,depot:P.depot,rooms:P.rooms,done:P.done}})}
+function pSetup(){
+  $('#p-prog').textContent=`Tarefa ${P.i+1}/${P.total}`;segs($('#p-segs'),P.i,P.total);
+  conta('#p-conta',P.n,'baterias',P.k,'salas','cada sala');
+  $('#p-brief').innerHTML=`Divida as baterias entre as salas seguras. Toque numa sala para levar uma bateria até ela. Todas precisam ficar iguais.`;
+  $('#p-ask').innerHTML='';setMsg('#p-msg','');pRender();pSave();
+  if(P.done)pAsk(true);
+}
+const bats=n=>BAT.repeat(n);
+function pRender(){
+  $('#p-dlabel').textContent=P.depot?`Depósito: ${P.depot} baterias`:'Depósito vazio';
+  $('#p-depot').innerHTML=bats(P.depot);
+  const r=$('#p-rooms');r.style.setProperty('--k',P.k);
+  r.innerHTML=P.rooms.map((c,i)=>`<div class="room px"><button class="room-add" data-add="${i}"><span class="label">Sala ${NAMES[i]}</span><span class="bats">${bats(c)}</span></button><button class="room-sub" data-sub="${i}" ${c&&!P.done?'':'disabled'}>Tirar 1</button></div>`).join('');
+}
+$('#p-rooms').addEventListener('click',e=>{
+  if(P.done)return;
+  const a=e.target.closest('[data-add]'),s=e.target.closest('[data-sub]');
+  if(a&&P.depot>0){P.rooms[+a.dataset.add]++;P.depot--;click();pRender();pCheck();pSave()}
+  if(s&&P.rooms[+s.dataset.sub]>0){P.rooms[+s.dataset.sub]--;P.depot++;click();setMsg('#p-msg','');pRender();pSave()}
+});
+function pCheck(){
+  if(P.depot>0)return;
+  if(!P.rooms.every(r=>r===P.rooms[0])){setMsg('#p-msg','As salas estão com quantidades diferentes. Use "Tirar 1" e leve a bateria para outra sala.','err');bad();return}
+  P.done=true;pRender();good();pAsk();
+}
+function pAsk(restored){
+  setMsg('#p-msg','Todas as salas estão iguais!','good');
+  ask($('#p-ask'),`Quanto é <span class="qn">${P.n} ÷ ${P.k}</span>?`,choices(P.q),P.q,(first,box)=>{
+    record('partilha',first,`${P.n}÷${P.k}`);if(first)P.firsts++;
+    conta('#p-conta',P.n,'baterias',P.k,'salas','cada sala',P.q,'win');
+    const last=advance('partilha',P);segs($('#p-segs'),P.i,P.total);
+    explain(box,`<div class="eq">${P.n}÷${P.k}=${P.q}</div><p class="explain">${P.n} dividido em ${P.k} partes iguais dá ${P.q} para cada uma.</p>`,
+      last?'Ver relatório':'Próxima tarefa',last?()=>missionEnd('partilha',P,()=>pStart(true),'Todas as salas receberam energia.'):pNew);
+  });
+}
+
+/* ================= M2 GRUPOS ================= */
+const G={total:5};
+const TEAM=['#ffb300','#39e35f','#ff6ad5','#8f9bff','#ff7a3d'];
+function gStart(fresh){resume('grupos',G,gNew,gSetup,fresh);show('grupos')}
+function gNew(){
+  const g=rnd(2,5),t=rnd(2,5),n=g*t;
+  const cells=shuffle([...Array(30).keys()]).slice(0,n);
+  Object.assign(G,{g,t,n,groups:[],team:Array(n).fill(-1),done:false,
+    pos:cells.map(c=>({x:((c%6)+.5)/6*100+rnd(-3,3),y:(Math.floor(c/6)+.5)/5*100+rnd(-3,3)}))});
+  gSetup();
+}
+function gSave(){saveProg('grupos',{i:G.i,firsts:G.firsts,task:{g:G.g,t:G.t,n:G.n,groups:G.groups,team:G.team,done:G.done,pos:G.pos}})}
+function gSetup(){
+  G.sel=[];
+  $('#g-prog').textContent=`Tarefa ${G.i+1}/${G.total}`;segs($('#g-segs'),G.i,G.total);
+  conta('#g-conta',G.n,'sinais',G.g,'por equipe','equipes');
+  $('#g-brief').innerHTML=`Cada equipe de busca cobre ${G.g} sinais do detector. Toque em ${G.g} sinais para formar uma equipe.`;
+  $('#g-ask').innerHTML='';$('#g-tools').hidden=G.done;gRender();gSave();
+  if(G.done)gAsk();
+}
+function gRender(){
+  $('#g-scope').innerHTML=G.pos.map((p,i)=>{
+    const t=G.team[i],sel=G.sel.includes(i);
+    return `<button class="dot${sel?' sel':''}${t>=0?' team':''}" data-i="${i}" style="left:${p.x}%;top:${p.y}%;${t>=0?`--tc:${TEAM[t%TEAM.length]}`:''}" aria-label="sinal">${t>=0?t+1:''}</button>`;
+  }).join('');
+  const free=G.team.filter(t=>t<0).length;
+  if(!G.done)setMsg('#g-msg',`Equipes: ${G.groups.length} · Sinais sem equipe: ${free}${G.sel.length?` · Selecionados: ${G.sel.length} de ${G.g}`:''}`);
+  $('#g-undo').disabled=!G.groups.length||G.done;
+}
+$('#g-scope').addEventListener('click',e=>{
+  const d=e.target.closest('[data-i]');if(!d||G.done)return;
+  const i=+d.dataset.i;if(G.team[i]>=0)return;
+  G.sel=G.sel.includes(i)?G.sel.filter(x=>x!==i):[...G.sel,i];click();
+  if(G.sel.length===G.g){const id=G.groups.length;G.sel.forEach(x=>G.team[x]=id);G.groups.push(G.sel);G.sel=[];tone(880,.06);tone(1175,.08,'square',.03,.06)}
+  if(G.team.every(t=>t>=0)){G.done=true;$('#g-tools').hidden=true;good();gRender();gSave();gAsk();return}
+  gRender();gSave();
+});
+$('#g-undo').onclick=()=>{const last=G.groups.pop();if(last){last.forEach(x=>G.team[x]=-1);click();gRender();gSave()}};
+function gAsk(){
+  setMsg('#g-msg','Todos os sinais estão cobertos!','good');
+  ask($('#g-ask'),`Quanto é <span class="qn">${G.n} ÷ ${G.g}</span>?`,choices(G.t),G.t,(first,box)=>{
+    record('grupos',first,`${G.n}÷${G.g}`);if(first)G.firsts++;
+    conta('#g-conta',G.n,'sinais',G.g,'por equipe','equipes',G.t,'win');
+    const last=advance('grupos',G);segs($('#g-segs'),G.i,G.total);
+    explain(box,`<div class="eq">${G.n}÷${G.g}=${G.t}</div><p class="explain">Dentro de ${G.n} cabem ${G.t} grupos de ${G.g}. Dividir também mostra <b>quantos grupos</b> dá para formar.</p>`,
+      last?'Ver relatório':'Próxima tarefa',last?()=>missionEnd('grupos',G,()=>gStart(true),'A estação inteira foi vasculhada.'):gNew);
+  });
+}
+
+/* ================= M3 HANGAR ================= */
+const H={total:4};
+function hStart(fresh){resume('hangar',H,hNew,hSetup,fresh);show('hangar')}
+function hNew(){
+  const k=rnd(2,5),q=rnd(3,7),n=k*q;
+  Object.assign(H,{k,q,n,w:1,loaded:0,firstTry:true,done:false});
+  hSetup();
+}
+function hSave(){saveProg('hangar',{i:H.i,firsts:H.firsts,task:{k:H.k,q:H.q,n:H.n,w:H.w,loaded:H.loaded,firstTry:H.firstTry,done:H.done}})}
+function hSetup(){
+  $('#h-prog').textContent=`Tarefa ${H.i+1}/${H.total}`;segs($('#h-segs'),H.i,H.total);
+  $('#h-brief').innerHTML=`Escolha a resposta com <b>-</b> e <b>+</b>, depois toque em Carregar para conferir nos trilhos do hangar.`;
+  $('#h-ask').innerHTML='';$('#h-load').hidden=H.done;setMsg('#h-msg','');
+  $('#h-grid').classList.toggle('win',H.done);hRender();hSave();
+  if(H.done){hShow('win');hAsk()}
+  else if(H.loaded&&H.loaded!==H.q){hShow(H.loaded===H.w?'bad':'');hExplainMiss()}
+  else hShow();
+}
+function hShow(state){conta('#h-conta',H.n,'caixas',H.k,'trilhos','por fileira',H.w,state||'')}
+function hRender(){
+  $('#h-w').textContent=H.w;
+  $('#h-minus').disabled=H.done||H.w<=1;$('#h-plus').disabled=H.done||H.w>=10;$('#h-load').disabled=H.done;
+  let html='';
+  if(!H.loaded){
+    for(let r=0;r<H.k;r++)html+=`<div class="rail"><span class="rl">T${r+1}</span><span class="crates"></span></div>`;
+    $('#h-grid').innerHTML=`<span class="label">${H.n} caixas esperando</span>`+html;return;
+  }
+  const w=H.loaded,rows=Math.ceil(H.n/w);
+  for(let r=0;r<Math.max(rows,H.k);r++){
+    const cnt=Math.max(0,Math.min(w,H.n-r*w)),rail=r<H.k;
+    html+=`<div class="rail${rail?'':' over'}${cnt&&cnt<w?' part':''}"><span class="rl">${rail?'T'+(r+1):'!!'}</span><span class="crates">${CRATE.repeat(cnt)}</span></div>`;
+  }
+  $('#h-grid').innerHTML=html;
+}
+function hStep(d){if(H.done)return;H.w=Math.min(10,Math.max(1,H.w+d));click();hShow();$('#h-w').textContent=H.w;$('#h-minus').disabled=H.w<=1;$('#h-plus').disabled=H.w>=10;hSave()}
+$('#h-minus').onclick=()=>hStep(-1);
+$('#h-plus').onclick=()=>hStep(1);
+function hExplainMiss(){
+  const w=H.loaded,rows=Math.ceil(H.n/w);
+  if(rows>H.k)setMsg('#h-msg',`${H.n} ÷ ${H.k} não é ${w}: sobraram fileiras sem trilho. A resposta é maior.`,'err');
+  else if(rows<H.k)setMsg('#h-msg',`${H.n} ÷ ${H.k} não é ${w}: ficou trilho vazio. A resposta é menor.`,'err');
+  else setMsg('#h-msg',`${H.n} ÷ ${H.k} não é ${w}: as fileiras ficaram diferentes. Tente outro número.`,'err');
+}
+$('#h-load').onclick=()=>{
+  if(H.done)return;
+  H.loaded=H.w;hRender();
+  if(H.w===H.q){H.done=true;$('#h-grid').classList.add('win');$('#h-load').hidden=true;hRender();hShow('win');good();hSave();hAsk();return}
+  H.firstTry=false;bad();hShow('bad');hExplainMiss();hSave();
+};
+function hAsk(){
+  setMsg('#h-msg',`Isso! ${H.n} ÷ ${H.k} = ${H.q}. Cada trilho ficou com ${H.q} caixas.`,'good');
+  const {k,q,n}=H;
+  ask($('#h-ask'),`Agora conte as fileiras no hangar. Quanto é <span class="qn">${n} ÷ ${q}</span>?`,choices(k),k,(first,box)=>{
+    const ok=H.firstTry&&first;record('hangar',ok,`${n}÷${k}`);if(ok)H.firsts++;
+    const last=advance('hangar',H);segs($('#h-segs'),H.i,H.total);
+    explain(box,`<div class="fam eq"><span>${n}÷${k}=${q}</span><span>${n}÷${q}=${k}</span></div><p class="explain">O mesmo hangar mostra duas divisões: ${n} caixas em ${k} trilhos dão ${q} por fileira, e ${n} caixas em fileiras de ${q} dão ${k} fileiras.</p>`,
+      last?'Ver relatório':'Próxima tarefa',last?()=>missionEnd('hangar',H,()=>hStart(true),'O hangar está organizado.'):hNew);
+  });
+}
+
+/* ================= FUJA DO ALIEN ================= */
+const D={goal:10,running:false};let raf=0;
+const RC=$('#radar').getContext('2d');
+function drawRadar(dist,now,wob){
+  const cx=60,cy=63;
+  RC.fillStyle='#08071a';RC.fillRect(0,0,120,66);
+  RC.fillStyle='#2e2b66';
+  for(const Rr of [15,30,45,60]){for(let a=Math.PI;a<=2*Math.PI+1e-6;a+=1/Rr)RC.fillRect(Math.round(cx+Rr*Math.cos(a)),Math.round(cy+Rr*Math.sin(a)),1,1)}
+  for(const ang of [-Math.PI/2,-Math.PI/4,-3*Math.PI/4])for(let r=4;r<=60;r+=2)RC.fillRect(Math.round(cx+r*Math.cos(ang)),Math.round(cy+r*Math.sin(ang)),1,1);
+  const sw=Math.PI+((now/1600)%1)*Math.PI;
+  RC.fillStyle='#1f5f73';for(let r=3;r<=60;r++)RC.fillRect(Math.round(cx+r*Math.cos(sw-.06)),Math.round(cy+r*Math.sin(sw-.06)),1,1);
+  RC.fillStyle='#40d8ff';for(let r=3;r<=60;r++)RC.fillRect(Math.round(cx+r*Math.cos(sw)),Math.round(cy+r*Math.sin(sw)),1,1);
+  RC.fillStyle='#ffb300';RC.fillRect(cx-1,cy-2,3,3);
+  const rad=5+Math.max(0,dist)*.55,ang=-Math.PI/2+Math.sin(wob*.7)*.55;
+  const bx=Math.round(cx+rad*Math.cos(ang)),by=Math.round(cy+rad*Math.sin(ang));
+  const rr=3+((now%900)/900)*8;
+  RC.fillStyle='rgba(255,61,46,.55)';for(let a=0;a<2*Math.PI;a+=1/rr)RC.fillRect(Math.round(bx+rr*Math.cos(a)),Math.round(by+rr*Math.sin(a)),1,1);
+  RC.fillStyle='#ff3d2e';RC.fillRect(bx-2,by-2,5,5);
+  if(Math.floor(now/220)%2===0){RC.fillStyle='#ffd000';RC.fillRect(bx-1,by-1,3,3)}
+}
+$('#d-choose').addEventListener('click',e=>{const b=e.target.closest('[data-level]');if(b){click();clearProg('desafio');dPlay(+b.dataset.level)}});
+$('#d-resume').onclick=()=>{const pr=getProg('desafio');if(pr){click();dPlay(pr.level,pr.hits)}};
+function dStart(){
+  stopDesafio();$('#d-choose').hidden=false;$('#d-play').hidden=true;$('#d-prog').textContent='Escolha o nível';
+  const pr=getProg('desafio'),r=$('#d-resume');r.hidden=!pr;
+  if(pr)r.innerHTML=`Continuar fuga · ${pr.hits}/10 · nível ${pr.level===1?'2-5':'2-9'}`;
+  show('desafio');
+}
+function dPlay(level,hits=0){
+  Object.assign(D,{level,maxDiv:level===1?5:9,speed:level===1?2.2:3.2,dist:60,hits,ans:'',last:'',wob:0,nextBeep:0,prev:performance.now(),running:true});
+  $('#d-choose').hidden=true;$('#d-play').hidden=false;$('#d-prog').textContent=level===1?'Nível 2-5':'Nível 2-9';
+  dNewQ();raf=requestAnimationFrame(dLoop);
+}
+function dNewQ(){
+  let a,b,key,guard=0;
+  do{b=rnd(2,D.maxDiv);a=rnd(1,10);key=`${a*b}÷${b}`}while(key===D.last&&guard++<20);
+  Object.assign(D,{b,q:a,n:a*b,last:key,firstTry:true,ans:''});
+  $('#d-q').textContent=`${D.n}÷${b}=`;$('#d-ans').textContent='';setMsg('#d-msg','');
+  $('#d-hint').hidden=false;$('#d-hits').textContent=`${D.hits}/${D.goal}`;segs($('#d-segs'),D.hits,D.goal);
+}
+function showHint(){$('#d-hint').hidden=true;setMsg('#d-msg',`Dica: quantos grupos de ${D.b} cabem em ${D.n}?`)}
+$('#d-hint').onclick=()=>{click();showHint()};
+const KEYS=['1','2','3','4','5','6','7','8','9','del','0','ok'];
+$('#d-pad').innerHTML=KEYS.map(k=>`<button class="key pbtn${k==='ok'?' ok':''}${k==='del'?' del':''}" data-k="${k}">${k==='del'?'Apagar':k==='ok'?'OK':k}</button>`).join('');
+$('#d-pad').addEventListener('click',e=>{
+  const b=e.target.closest('[data-k]');if(!b||!D.running)return;const k=b.dataset.k;
+  if(k==='del'){D.ans=D.ans.slice(0,-1);click()}
+  else if(k==='ok'){dCheck();return}
+  else if(D.ans.length<2){D.ans+=k;click()}
+  $('#d-ans').textContent=D.ans;
+});
+function dCheck(){
+  if(!D.ans)return;
+  const ok=+D.ans===D.q;
+  if(D.firstTry)record('desafio',ok,`${D.n}÷${D.b}`);
+  if(ok){
+    good();D.hits++;D.dist=Math.min(100,D.dist+22);
+    if(D.hits>=D.goal){
+      stopDesafio();clearProg('desafio');const nw=markDone('desafio');
+      finish('10/10','Você fugiu do Alien!',`Você acertou 10 contas e o Alien voltou para os dutos. Nível ${D.level===1?'2 a 5':'2 a 9'} concluído.<br><br>${nw?'Desafio extra marcado como feito hoje. ':''}${turnoLine()}`,()=>{show('desafio');dPlay(D.level)});
+      return;
+    }
+    saveProg('desafio',{level:D.level,hits:D.hits});dNewQ();
+  }else{
+    bad();D.firstTry=false;D.dist-=12;D.ans='';$('#d-ans').textContent='';
+    const p=$('#d-problem');p.classList.remove('shake');void p.offsetWidth;p.classList.add('shake');
+    showHint();
+  }
+}
+function dLoop(now){
+  if(!D.running)return;
+  const dt=Math.min(.1,(now-D.prev)/1000);D.prev=now;
+  D.dist-=D.speed*dt;D.wob+=dt;
+  if(D.dist<=0){
+    stopDesafio();clearProg('desafio');[220,185,147,110].forEach((f,i)=>tone(f,.18,'square',.06,i*.16));
+    finish(`${D.hits}/10`,'O Alien te alcançou!','Desta vez ele chegou perto demais. Respire fundo e tente de novo: a dica da tabuada ajuda bastante. O desafio só conta como feito quando você escapa.',()=>{show('desafio');dPlay(D.level)},true);
+    return;
+  }
+  const m=Math.max(0,Math.round(D.dist*.6));
+  const el=$('#d-dist');el.textContent=`${m}m`;el.classList.toggle('near',m<15);
+  drawRadar(D.dist,now,D.wob);
+  if(now>=D.nextBeep){tone(1320,.05,'square',.03);D.nextBeep=now+250+D.dist*12}
+  raf=requestAnimationFrame(dLoop);
+}
+function stopDesafio(){D.running=false;cancelAnimationFrame(raf)}
+document.addEventListener('visibilitychange',()=>{D.prev=performance.now()});
+
+/* ================= ÁREA DOS PAIS ================= */
+let holdStart=0,holdRaf=0;
+const logo=$('#logo');
+function holdTick(){const p=Math.min(1,(performance.now()-holdStart)/3000);logo.style.setProperty('--hold',p);if(p>=1){holdEnd();click();openPais();return}holdRaf=requestAnimationFrame(holdTick)}
+function holdEnd(){cancelAnimationFrame(holdRaf);logo.style.setProperty('--hold',0)}
+logo.addEventListener('pointerdown',e=>{e.preventDefault();holdStart=performance.now();holdRaf=requestAnimationFrame(holdTick)});
+['pointerup','pointerleave','pointercancel'].forEach(ev=>logo.addEventListener(ev,holdEnd));
+logo.addEventListener('contextmenu',e=>e.preventDefault());
+
+const LABELS={partilha:'M1 · Dividir em partes iguais',grupos:'M2 · Formar grupos',hangar:'M3 · Resolver a conta escrita',desafio:'Fuja do Alien · Tabuada da divisão'};
+function openPais(){
+  $('#k-stats').innerHTML=Object.keys(LABELS).map(k=>{const s=stats[k],pct=s.a?Math.round(s.c/s.a*100):0;
+    return `<div class="stat"><div class="top"><span>${LABELS[k]}</span><span class="v">${s.a?`${s.c} de ${s.a} · ${pct}%`:'não jogou'}</span></div><div class="meter"><i style="width:${pct}%"></i></div></div>`}).join('');
+  const played=Object.keys(LABELS).filter(k=>stats[k].a>=3);
+  if(played.length){const w=played.sort((a,b)=>stats[a].c/stats[a].a-stats[b].c/stats[b].a)[0];
+    $('#k-read').textContent=`Ponto que mais precisa de atenção agora: ${LABELS[w].split('· ')[1].toLowerCase()}.`}
+  else $('#k-read').textContent='Ainda há poucas respostas para tirar conclusões. Volte depois de algumas partidas.';
+  const fullDays=Object.keys(stats.days).filter(isFull).length,anyDays=Object.keys(stats.days).length;
+  $('#k-days').textContent=anyDays?`Dias jogados: ${anyDays} · Turnos completos: ${fullDays} · Sequência atual: ${streak()}`:'Ainda nenhum dia jogado.';
+  const errs=Object.entries(stats.erros).sort((a,b)=>b[1]-a[1]).slice(0,12);
+  $('#k-errs').innerHTML=errs.length?errs.map(([f,n])=>`<span class="chip px">${f} <span>x${n}</span></span>`).join(''):'<p class="note">Nenhum erro registrado ainda.</p>';
+  $('#k-confirm').hidden=true;$('#k-reset').hidden=false;show('pais');
+}
+$('#k-reset').onclick=()=>{$('#k-confirm').hidden=false;$('#k-reset').hidden=true};
+$('#k-no').onclick=()=>{$('#k-confirm').hidden=true;$('#k-reset').hidden=false};
+$('#k-yes').onclick=()=>{stats=fresh();save();openPais()};
+
+const START={partilha:pStart,grupos:gStart,hangar:hStart,desafio:dStart};
+renderMenu();
+</script>
+</body>
+</html>
