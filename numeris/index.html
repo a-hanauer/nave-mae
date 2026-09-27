@@ -58,23 +58,14 @@ button,a{font:inherit;color:inherit;background:none;border:0;text-decoration:non
 .cursor{display:inline-block;width:10px;height:18px;background:var(--glow);vertical-align:-2px;margin-left:2px;animation:blink 1s steps(1) infinite}
 @keyframes blink{50%{opacity:0}}
 
-/* câmara (nível) */
-.camara{padding:14px 16px;margin-bottom:24px}
-.cam-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
-.cam-top b{font-family:var(--px);font-size:11px;color:var(--st5)}
-.cam-top span{color:var(--dim);font-size:20px}
-.syms{display:flex;gap:8px;margin:14px 0 12px}
-.syms .s{flex:1;height:46px;display:grid;place-items:center;align-content:center;gap:3px;background:var(--st2);
-  box-shadow:inset 0 -4px 0 0 var(--st1),inset 0 3px 0 0 var(--st3)}
-.syms .s b{font-family:var(--px);font-size:13px;color:var(--glow);text-shadow:2px 2px 0 var(--glow-d)}
-.syms .s i{font-style:normal;font-size:17px;color:var(--st5);line-height:1}
-.syms .s.lock{background:var(--panel2);box-shadow:inset 0 0 0 3px var(--line)}
-.syms .s.lock b{color:var(--line);text-shadow:none}
-.syms .s.lock i{color:var(--line)}
-.xp{display:flex;gap:3px}
-.xp i{flex:1;height:10px;background:#0b0810;box-shadow:inset 0 0 0 2px var(--line)}
-.xp i.on{background:var(--glow);box-shadow:inset 0 -3px 0 0 var(--glow-d)}
-.xp-l{display:flex;justify-content:space-between;margin-top:8px;color:var(--dim);font-size:19px}
+/* nível */
+.nivel{display:flex;align-items:center;gap:14px;padding:16px;margin-bottom:24px}
+.nivel .n{font-family:var(--px);font-size:22px;color:var(--glow);text-shadow:3px 3px 0 var(--glow-d);min-width:34px;text-align:center}
+.nivel b{display:block;font-family:var(--px);font-size:10px;line-height:1.5;color:var(--st5)}
+.nivel span{display:block;color:var(--dim);font-size:19px;margin-top:2px}
+.pips{display:flex;gap:6px;margin-left:auto;flex:none}
+.pips i{width:14px;height:14px;background:#0b0810;box-shadow:inset 0 0 0 3px var(--line)}
+.pips i.on{background:var(--glow);box-shadow:inset 0 -3px 0 0 var(--glow-d)}
 
 /* turno */
 .turno{padding:14px 16px;margin-bottom:24px}
@@ -192,6 +183,8 @@ button,a{font:inherit;color:inherit;background:none;border:0;text-decoration:non
 .tf{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .tf button{padding:18px 8px;font-family:var(--px);font-size:11px;display:flex;align-items:center;justify-content:center;gap:8px}
 .tf .v{color:var(--green)}.tf .f{color:var(--red)}
+.tf button[disabled]{opacity:.35;filter:none}
+.count{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--px);font-size:44px;color:var(--amber);text-shadow:4px 4px 0 #000;background:rgba(0,0,0,.35)}
 
 /* resultado */
 .result{text-align:center;padding:26px 18px}
@@ -247,12 +240,7 @@ button,a{font:inherit;color:inherit;background:none;border:0;text-decoration:non
   </header>
   <div class="term"><span id="term"></span><span class="cursor"></span></div>
 
-  <div class="camara px">
-    <div class="cam-top"><b id="camN"></b><span id="camR"></span></div>
-    <div class="syms" id="camSyms"></div>
-    <div class="xp" id="xp"></div>
-    <div class="xp-l"><span id="xpL"></span><span id="xpN"></span></div>
-  </div>
+  <div class="nivel px"><div><b id="nvT"></b><span id="nvS"></span></div><div class="pips" id="nvP"></div></div>
 
   <div class="turno px">
     <div class="turno-top"><span class="label">Portões de hoje</span><span class="turno-n" id="turnoN">0 / 3</span></div>
@@ -261,15 +249,15 @@ button,a{font:inherit;color:inherit;background:none;border:0;text-decoration:non
   </div>
 
   <nav class="missions">
-    <button class="mission px pbtn" data-go="montar"><span class="code">M1</span><span><b>Montar a senha</b><small>Monte o número com blocos de pedra</small><span class="st" data-st="montar"></span></span></button>
-    <button class="mission px pbtn" data-go="ler"><span class="code">M2</span><span><b>Ler as inscrições</b><small>Descubra quanto vale cada inscrição</small><span class="st" data-st="ler"></span></span></button>
-    <button class="mission px pbtn" data-go="sub"><span class="code">M3</span><span><b>Portão da subtração</b><small>Quando o menor vem antes do maior</small><span class="st" data-st="sub"></span></span></button>
+    <button class="mission px pbtn" data-go="montar"><span class="code">M1</span><span><b>Montar a senha</b><small>Número → romano</small><span class="st" data-st="montar"></span></span></button>
+    <button class="mission px pbtn" data-go="ler"><span class="code">M2</span><span><b>Ler as inscrições</b><small>Romano → número</small><span class="st" data-st="ler"></span></span></button>
+    <button class="mission px pbtn" data-go="sub"><span class="code">M3</span><span><b>Portão da subtração</b><small>IV, IX, XL…</small><span class="st" data-st="sub"></span></span></button>
   </nav>
 
   <button class="danger" id="goDes">
     <div class="ey">DESAFIO OPCIONAL</div>
     <div class="ti">DESABAMENTO!</div>
-    <div class="su">O teto está caindo. Ache as inscrições falsas antes que ele desabe.</div>
+    <div class="su">Ache as inscrições falsas antes do teto cair.</div>
     <span class="ok" id="desOk" hidden>ESCAPOU HOJE ✓</span>
   </button>
 
@@ -291,7 +279,7 @@ button,a{font:inherit;color:inherit;background:none;border:0;text-decoration:non
   <div class="chamber" id="chamber">
     <div class="ceiling" id="ceiling"></div><div id="pebbles"></div>
     <div class="explorer" id="explorer"></div><div class="floor"></div>
-    <div class="dcount" id="dcount">0/10</div>
+    <div class="dcount" id="dcount">0/10</div><div class="count" id="dCount" hidden></div>
   </div>
   <p class="ask">Esta inscrição é verdadeira?</p>
   <div class="tablet"><span class="glyph" id="dq"></span></div>
@@ -332,7 +320,7 @@ button,a{font:inherit;color:inherit;background:none;border:0;text-decoration:non
 <!-- NOVA CÂMARA -->
 <div class="overlay" id="lvup" hidden>
   <div class="modal px levelup">
-    <div class="label">Nova câmara aberta</div>
+    <div class="label">Novo nível</div>
     <div class="big" id="lvBig"></div>
     <p id="lvTxt"></p>
     <button class="btn" id="lvOk">EXPLORAR</button>
@@ -348,7 +336,7 @@ button,a{font:inherit;color:inherit;background:none;border:0;text-decoration:non
     <div class="label" style="margin-top:12px">Erros mais comuns</div>
     <div class="errs" id="kErrs"></div>
     <div class="sep"></div>
-    <div class="label" style="margin-top:12px">Câmara atual</div>
+    <div class="label" style="margin-top:12px">Nível atual</div>
     <div class="lv" id="kLv"></div>
     <p id="kDays"></p>
     <button class="btn" id="kClose">FECHAR</button>
@@ -381,10 +369,10 @@ function explainS(s){ // XXIV → XX (20) + IV (5−1) = 24
 
 /* =================== câmaras (níveis) =================== */
 const LEVELS=[
-  {n:'I',max:10,from:1,syms:['I','V','X'],need:24,range:'I a X'},
-  {n:'II',max:20,from:11,syms:['I','V','X'],need:30,range:'I a XX'},
-  {n:'III',max:50,from:21,syms:['I','V','X','L'],need:36,range:'I a L'},
-  {n:'IV',max:100,from:51,syms:['I','V','X','L','C'],need:0,range:'I a C'},
+  {n:1,max:10,from:1,syms:['I','V','X'],range:'I a X'},
+  {n:2,max:20,from:11,syms:['I','V','X'],range:'I a XX'},
+  {n:3,max:50,from:21,syms:['I','V','X','L'],range:'I a L'},
+  {n:4,max:100,from:51,syms:['I','V','X','L','C'],range:'I a C'},
 ];
 const ALL=['I','V','X','L','C'];
 const L=()=>LEVELS[S.level-1];
@@ -399,18 +387,20 @@ function uniqueList(k,gen,keyf=x=>JSON.stringify(x)){const out=[],seen=new Set()
   while(out.length<k&&g++<400){const q=gen(),kk=keyf(q);if(seen.has(kk)&&g<200)continue;seen.add(kk);out.push(q)}return out}
 
 /* =================== memória local =================== */
-const STORE='numeris-stats-v1',ROUNDS=8,MODES=['montar','ler','sub'];
-const fresh=()=>({level:1,xp:0,modes:{montar:{a:0,c:0},ler:{a:0,c:0},sub:{a:0,c:0},desafio:{a:0,c:0}},erros:{},days:{},run:{},sound:true});
+const STORE='numeris-stats-v1',ROUNDS=5,LVDAYS=2,MODES=['montar','ler','sub'];
+const fresh=()=>({level:1,lvDays:[],modes:{montar:{a:0,c:0},ler:{a:0,c:0},sub:{a:0,c:0},desafio:{a:0,c:0}},erros:{},days:{},run:{},sound:true});
+let pendingLevel=false;
 let S=(()=>{try{const o=JSON.parse(localStorage.getItem(STORE));return o?Object.assign(fresh(),o):fresh()}catch(e){return fresh()}})();
 const save=()=>{try{localStorage.setItem(STORE,JSON.stringify(S))}catch(e){}};
 const dkey=(d=new Date())=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 const doneToday=()=>S.days[dkey()]||[];
 const mainDone=k=>(S.days[k]||[]).filter(m=>m!=='desafio').length;
 function markDone(m){const k=dkey(),l=S.days[k]||[];if(!l.includes(m)){l.push(m);S.days[k]=l}
+  // sobe de nível ao abrir os 3 portões em LVDAYS dias diferentes
+  if(m!=='desafio'&&mainDone(k)>=3&&S.level<4&&!S.lvDays.includes(k)){S.lvDays.push(k);if(S.lvDays.length>=LVDAYS){S.level++;S.lvDays=[];pendingLevel=true}}
   const ks=Object.keys(S.days).sort();while(ks.length>120)delete S.days[ks.shift()];save()}
 function streak(){const d=new Date();let n=0;if(mainDone(dkey(d))<3)d.setDate(d.getDate()-1);while(mainDone(dkey(d))>=3){n++;d.setDate(d.getDate()-1)}return n}
-let pendingLevel=false;
-function record(mode,ok,errKey){const m=S.modes[mode];m.a++;if(ok){m.c++;if(S.level<4){S.xp++;if(S.xp>=L().need){S.level++;S.xp=0;pendingLevel=true}}}
+function record(mode,ok,errKey){const m=S.modes[mode];m.a++;if(ok){m.c++}
   else if(errKey)S.erros[errKey]=(S.erros[errKey]||0)+1;save()}
 const pilot=(()=>{try{return (JSON.parse(localStorage.getItem('navemae-v1'))||{}).pilot||''}catch(e){return ''}})();
 
@@ -456,28 +446,27 @@ function show(id){current=id;document.querySelectorAll('#app>.screen').forEach(s
 const WD=['D','S','T','Q','Q','S','S'];let typing=null;
 function renderMenu(){
   const l=L();
-  $('#camN').textContent=`CÂMARA ${l.n}`;$('#camR').textContent=`números de ${l.range}`;
-  $('#camSyms').innerHTML=ALL.map(s=>{const on=l.syms.includes(s);return `<span class="s${on?'':' lock'}"><b>${on?s:'?'}</b><i>${on?VAL[s]:'—'}</i></span>`}).join('');
-  if(S.level<4){const need=l.need,k=Math.round(S.xp/need*12);$('#xp').innerHTML=Array.from({length:12},(_,i)=>`<i class="${i<k?'on':''}"></i>`).join('');
-    $('#xpL').textContent=`Próxima câmara: ${LEVELS[S.level].range}`;$('#xpN').textContent=`${S.xp}/${need}`;$('#xp').hidden=false}
-  else{$('#xp').hidden=true;$('#xpL').textContent='Todas as câmaras abertas!';$('#xpN').textContent=''}
+  const top=l.range.split(' a ')[1];
+  $('#nvT').textContent=`NÍVEL ${l.n} · ATÉ ${top}`;
+  if(S.level<4){$('#nvS').textContent=`Abra os 3 portões em ${LVDAYS} dias para subir`;
+    $('#nvP').innerHTML=Array.from({length:LVDAYS},(_,i)=>`<i class="${i<S.lvDays.length?'on':''}"></i>`).join('')}
+  else{$('#nvS').textContent='Nível máximo!';$('#nvP').innerHTML=''}
   const done=doneToday(),n=done.filter(m=>m!=='desafio').length,all=n>=3;
   $('#turnoN').textContent=`${n} / 3`;$('#turnoN').classList.toggle('all',all);
   let w='';for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);const c=mainDone(dkey(d));
     w+=`<span class="day${c>=3?' full':c?' part':''}${i===0?' today':''}"><i></i>${WD[d.getDay()]}</span>`}
   $('#week').innerHTML=w;
   const s=streak();
-  $('#streak').innerHTML=s?(all?`<b>${s} ${s===1?'dia':'dias'}</b> seguidos com os portões abertos. Volte amanhã!`:`Sequência de <b>${s} ${s===1?'dia':'dias'}</b>. Abra os 3 portões hoje para chegar a ${s+1}!`)
-    :'Abra os 3 portões hoje para começar uma sequência.';
+  $('#streak').innerHTML=s?`Sequência: <b>${s} ${s===1?'dia':'dias'}</b>`:'Abra os 3 portões para começar uma sequência.';
   document.querySelectorAll('[data-st]').forEach(el=>{const m=el.dataset.st,ok=done.includes(m),r=S.run[m];
     el.className='st'+(ok?' ok':r?' mid':'');
-    el.innerHTML=ok?sprite('check',2)+'PORTÃO ABERTO':r?`EM ANDAMENTO ${r.i}/${ROUNDS}`:'FECHADO';
+    el.innerHTML=ok?sprite('check',2)+'ABERTO':r?`${r.i}/${ROUNDS}`:'FECHADO';
     el.closest('button').classList.toggle('done',ok)});
   const dOk=done.includes('desafio');$('#desOk').hidden=!dOk;$('#goDes').classList.toggle('done',dOk);
   const hr=new Date().getHours(),hi=hr<12?'Bom dia':hr<18?'Boa tarde':'Boa noite',who=pilot?`, explorador ${pilot}`:', explorador';
-  const txt=n===0?`> ${hi}${who}.\n> Inscrições antigas nas paredes. 3 portões esperam por você.`
-    :all?`> Os 3 portões estão abertos.\n> Pode treinar mais se quiser. Até amanhã${who}.`
-    :`> Bom trabalho${who}.\n> ${3-n===1?'Falta 1 portão':`Faltam ${3-n} portões`} para hoje.`;
+  const txt=n===0?`> ${hi}${who}.\n> 3 portões fechados hoje.`
+    :all?`> Portões abertos. Até amanhã!`
+    :`> ${3-n===1?'Falta 1 portão':`Faltam ${3-n} portões`}.`;
   const el=$('#term');clearInterval(typing);let i=0;el.textContent='';
   typing=setInterval(()=>{i++;el.innerHTML=txt.slice(0,i).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/\n/g,'<br>');if(i>=txt.length)clearInterval(typing)},20);
 }
@@ -514,8 +503,7 @@ function renderQ(){
   locked=false;fb();renderSegs();const q=R.qs[R.i],st=$('#stage');
   if(mode==='montar'){
     const syms=L().syms;
-    st.innerHTML=`<p class="brief">Toque nos blocos para montar o número em <b>romano</b>. Os valores estão embaixo de cada bloco.</p>
-      <div class="tablet"><span class="cap">MONTE O NÚMERO</span><span class="glyph num">${q.n}</span></div>
+    st.innerHTML=`<div class="tablet"><span class="cap">MONTE EM ROMANO</span><span class="glyph num">${q.n}</span></div>
       <div class="tablet" style="min-height:92px"><span class="cap">SUA SENHA</span><span class="glyph sm" id="built"></span></div>
       <div class="blocks">${ALL.map(s=>syms.includes(s)?`<button class="blk" data-s="${s}"><b>${s}</b><i>${VAL[s]}</i></button>`:`<span class="blk lock" aria-hidden="true"><b>?</b><i>—</i></span>`).join('')}</div>
       <div class="row2"><button class="ghost px pbtn" id="bDel">⌫ APAGAR</button><button class="ghost px pbtn" id="bClr">LIMPAR</button></div>
@@ -533,8 +521,7 @@ function renderQ(){
     };
   }
   else if(mode==='ler'){
-    st.innerHTML=`<p class="brief">Quanto vale esta inscrição? Some os símbolos e lembre: <b>menor antes do maior subtrai</b>.</p>
-      <div class="tablet"><span class="cap">INSCRIÇÃO</span><span class="glyph">${q.s}</span></div>
+    st.innerHTML=`<div class="tablet"><span class="cap">QUANTO VALE?</span><span class="glyph">${q.s}</span></div>
       <div class="tablet" style="min-height:84px"><span class="cap">VALOR</span><span class="glyph num sm" id="typed"></span></div>
       <div class="keys">${[1,2,3,4,5,6,7,8,9].map(d=>`<button class="key px pbtn" data-k="${d}">${d}</button>`).join('')}
         <button class="key px pbtn" data-k="del">⌫</button><button class="key px pbtn" data-k="0">0</button><button class="key ok pbtn" data-k="ok">OK</button></div>`;
@@ -543,22 +530,22 @@ function renderQ(){
       if(k==='del'){sfx.tap();R.typed=R.typed.slice(0,-1)}
       else if(k==='ok'){if(!R.typed)return;const v=+R.typed,want=fromRoman(q.s);
         if(v===want)return right(`<span class="eq">${explainS(q.s)}</span>`);
-        wrong(`${q.s} não vale ${v}.<br><span class="eq">${explainS(q.s)}</span>`,q.s,()=>{R.typed='';save();upd()},`${q.s} não vale ${v}.<br>Dica: separe em partes: <span class="eq">${groups(q.s).map(g=>g[0]).join(' | ')}</span>`);return}
+        wrong(`${q.s} não vale ${v}.<br><span class="eq">${explainS(q.s)}</span>`,q.s,()=>{R.typed='';save();upd()},`Dica: separe <span class="eq">${groups(q.s).map(g=>g[0]).join(' | ')}</span>`);return}
       else{if(R.typed.length>=3)return;sfx.tap();R.typed=(R.typed+k).replace(/^0+/,'')}
       save();upd()});
   }
   else{ // subtração
     const pairTxt=s=>{const m=s.match(/IV|IX|XL|XC/);return m?`No ${m[0]}, o ${m[0][0]} vem antes do ${m[0][1]}: ${VAL[m[0][1]]} − ${VAL[m[0][0]]} = ${VAL[m[0][1]]-VAL[m[0][0]]}.`:''};
-    let html=`<p class="brief">Quando um símbolo <b>menor vem antes</b> de um maior, ele é <b>subtraído</b>: IV = 5 − 1 = 4.</p>`;
+    let html=`<p class="brief">Menor antes do maior <b>subtrai</b>: IV = 5 − 1</p>`;
     if(q.kind==='val')html+=`<p class="ask">Quanto vale?</p><div class="tablet"><span class="glyph">${q.s}</span></div><div class="opts">${q.opts.map(o=>`<button class="opt n px pbtn" data-o="${o}">${o}</button>`).join('')}</div>`;
-    if(q.kind==='write')html+=`<p class="ask">Qual é o jeito certo de escrever</p><div class="tablet"><span class="glyph num">${q.n}</span></div><div class="opts">${q.opts.map(o=>`<button class="opt px pbtn" data-o="${o}">${o}</button>`).join('')}</div>`;
+    if(q.kind==='write')html+=`<p class="ask">Como se escreve</p><div class="tablet"><span class="glyph num">${q.n}</span></div><div class="opts">${q.opts.map(o=>`<button class="opt px pbtn" data-o="${o}">${o}</button>`).join('')}</div>`;
     if(q.kind==='cmp'){const o=shuffle([q.a,q.b]);html+=`<p class="ask">Qual inscrição vale MAIS?</p><div class="opts">${o.map(x=>`<button class="opt px pbtn" data-o="${x}">${x}</button>`).join('')}</div>`}
     st.innerHTML=html;
     st.querySelectorAll('[data-o]').forEach(b=>b.onclick=()=>{if(locked||b.classList.contains('bad'))return;const o=b.dataset.o;let ok,exp,key;
       if(q.kind==='val'){ok=+o===fromRoman(q.s);exp=`${pairTxt(q.s)}<br><span class="eq">${explainS(q.s)}</span>`;key=q.s}
       if(q.kind==='write'){const w=toRoman(q.n);ok=o===w;exp=ok?`<span class="eq">${q.n} → ${w}</span>`:`${o===additive(w)?'Não se repete um símbolo 4 vezes.':`${o} vale ${fromRoman(o)}.`}<br><span class="eq">${q.n} → ${w}</span>`;key=String(q.n)}
       if(q.kind==='cmp'){const hi=fromRoman(q.a)>fromRoman(q.b)?q.a:q.b,lo=hi===q.a?q.b:q.a;ok=o===hi;exp=`<span class="eq">${hi} = ${fromRoman(hi)} e ${lo} = ${fromRoman(lo)}</span>`;key=q.a+'/'+q.b}
-      const hint={val:'Dica: ache o par em que o menor vem antes do maior. Ele subtrai.',write:'Dica: nunca repita o mesmo símbolo 4 vezes. Use a subtração.',cmp:'Dica: um símbolo menor antes do maior tira. Depois do maior, soma.'}[q.kind];
+      const hint={val:'Dica: ache o menor antes do maior.',write:'Dica: nada se repete 4 vezes.',cmp:'Dica: antes tira, depois soma.'}[q.kind];
       if(ok){b.classList.add('good');right(exp)}else{b.classList.add('bad');wrong(exp,key,null,hint)}});
   }
 }
@@ -566,16 +553,16 @@ function right(body){locked=true;sfx.ok();if(!R.miss){R.firsts++;record(mode,tru
   setTimeout(()=>{R.i++;R.miss=false;R.built='';R.typed='';save();if(R.i>=ROUNDS)finishMission();else renderQ()},1500)}
 function wrong(body,key,reset,hint){sfx.no();$('#stage').classList.remove('shake');void $('#stage').offsetWidth;$('#stage').classList.add('shake');
   const first=!R.miss;if(first)record(mode,false,key);R.miss=(R.miss|0)+1;save();
-  fb('no','QUASE!',(first&&hint?hint:body)+'<br>Tente de novo.');if(reset)reset()}
+  fb('no','QUASE!',first&&hint?hint:body);if(reset)reset()}
 function hintN(n){const p=[];let r=n;if(r>=100){p.push(100);r-=100}const t=r-r%10,u=r%10;if(t)p.push(t);if(u)p.push(u);
-  if(p.length>1)return `Dica: separe ${n} = ${p.join(' + ')} e monte cada parte.`;
+  if(p.length>1)return `Dica: ${n} = ${p.join(' + ')}`;
   const nx={4:5,9:10,40:50,90:100}[n];
-  if(nx)return `Dica: ${n} é ${nx} − ${nx-n}. O menor vai antes do maior.`;
-  return `Dica: comece pelo maior bloco que cabe em ${n} e vá somando.`}
+  if(nx)return `Dica: ${n} = ${nx} − ${nx-n}`;
+  return `Dica: comece pelo bloco maior.`}
 function finishMission(){
   const f=R.firsts;delete S.run[mode];markDone(mode);save();sfx.win();
   $('#resIco').innerHTML=sprite('gateOpen',8);$('#resT').textContent='PORTÃO ABERTO!';
-  $('#resS').textContent=`${f}/${ROUNDS}`;$('#resP').textContent=f===ROUNDS?'Todas de primeira. Você é um mestre das ruínas!':'acertos de primeira. Cada treino deixa as inscrições mais fáceis.';
+  $('#resS').textContent=`${f}/${ROUNDS}`;$('#resP').textContent=f===ROUNDS?'Todas de primeira!':'acertos de primeira';
   $('#resAgain').onclick=()=>startMission(mode);show('res');checkLevel();
 }
 $('#resMenu').onclick=()=>show('menu');
@@ -583,9 +570,8 @@ $('#playBack').onclick=()=>{sfx.tap();show('menu')};
 
 /* =================== nova câmara =================== */
 function checkLevel(){if(!pendingLevel)return;pendingLevel=false;const l=L(),nw=l.syms.filter(s=>!LEVELS[S.level-2].syms.includes(s));
-  $('#lvBig').textContent=nw.length?nw.join(' '):l.range.split(' a ')[1];
-  $('#lvTxt').innerHTML=nw.length?`Novo símbolo: ${nw.map(s=>`<b style="color:var(--glow)">${s} = ${VAL[s]}</b>`).join(', ')}. Agora as inscrições vão até ${l.range.split(' a ')[1]} (${l.max}).`
-    :`Agora as inscrições vão até ${l.range.split(' a ')[1]} (${l.max}).`;
+  const top=l.range.split(' a ')[1];$('#lvBig').textContent=nw.length?`${nw[0]} = ${VAL[nw[0]]}`:`${top}`;
+  $('#lvTxt').innerHTML=`Nível ${l.n}: números até ${top} (${l.max}).${nw.length?' Novo símbolo liberado!':''}`;
   setTimeout(()=>{sfx.win();$('#lvup').hidden=false},600)}
 $('#lvOk').onclick=()=>{$('#lvup').hidden=true};
 
@@ -612,42 +598,48 @@ function fakes(){ // inscrições falsas possíveis na câmara atual
 function desQ(){const f=fakes();if(Math.random()<.5&&f.length)return pick(f);const n=pickN();return{s:toRoman(n),ok:true,why:`${explainS(toRoman(n))}`}}
 function openDes(){
   const saved=(S.run.desafio||{}).c||0;
-  D={c:saved,danger:saved?.3:.1,run:false,pause:false,q:null,last:0,lost:false};
+  D={c:saved,danger:saved?.3:.1,run:false,pause:false,tab:false,q:null,last:0,to:0};
   $('#explorer').innerHTML=sprite('man',4);show('des');drawDes();
-  $('#dq').textContent='???';$('#dfb').className='fb';$('#dfb').innerHTML='';
-  $('#dStart').innerHTML=`<button class="btn" id="dGo">${saved?`CONTINUAR (${saved}/${NEED})`:'COMEÇAR'}</button>`;
-  $('#dV').disabled=$('#dF').disabled=true;$('#dGo').onclick=()=>{$('#dStart').innerHTML='';D.run=true;$('#dV').disabled=$('#dF').disabled=false;nextD();D.last=performance.now();requestAnimationFrame(tickD)};
+  $('#dfb').className='fb';$('#dfb').innerHTML='';$('#dStart').innerHTML='';
+  nextD();setBtns(false);
+  // contagem 3-2-1 e começa sozinho
+  const c=$('#dCount');let k=3;c.hidden=false;c.textContent=k;sfx.tap();
+  const iv=setInterval(()=>{if(current!=='des'){clearInterval(iv);c.hidden=true;return}k--;
+    if(k>0){c.textContent=k;sfx.tap()}else{clearInterval(iv);c.hidden=true;D.run=true;setBtns(true);D.last=performance.now();requestAnimationFrame(tickD)}},700);
 }
+function setBtns(on){$('#dV').disabled=$('#dF').disabled=!on}
+function resume(){clearTimeout(D.to);D.pause=false;D.last=performance.now();nextD()}
 function nextD(){let q;do q=desQ();while(D.q&&q.s===D.q.s);D.q=q;$('#dq').textContent=q.s;$('#dfb').className='fb';$('#dfb').innerHTML=''}
 function drawDes(){$('#ceiling').style.height=(10+D.danger*72)+'%';$('#dcount').textContent=`${D.c}/${NEED}`;
   const p=$('#pebbles');const k=Math.round(D.danger*6);if(p.childElementCount!==k)p.innerHTML=Array.from({length:k},(_,i)=>`<i class="pebble" style="left:${12+i*15}%;top:${8+D.danger*60}%;animation-delay:${i*.13}s"></i>`).join('')}
 function tickD(t){if(!D||!D.run||current!=='des')return;const dt=(t-D.last)/1000;D.last=t;
-  if(!D.pause){const secs=[50,42,38,34][S.level-1];D.danger+=dt/secs;
+  if(!D.pause&&!D.tab){const secs=[50,42,38,34][S.level-1];D.danger+=dt/secs;
     if(D.danger>=1){D.danger=1;drawDes();return loseD()}
     if(Math.random()<dt*.35)sfx.rumble();drawDes()}
   requestAnimationFrame(tickD)}
-function answerD(said){if(!D.run||D.pause)return;const q=D.q,ok=said===q.ok;
+function answerD(said){if(!D||!D.run||D.tab)return;if(D.pause)return resume(); // tocar durante o aviso pula para a próxima
+  const q=D.q,ok=said===q.ok;
   if(ok){sfx.ok();D.c++;D.danger=Math.max(0,D.danger-.12);record('desafio',true);S.run.desafio={c:D.c};save();drawDes();
     if(D.c>=NEED)return winD();
-    D.pause=true;$('#dfb').className='fb ok';$('#dfb').innerHTML=`<b>ISSO!</b>${q.ok?'':q.why}`;setTimeout(()=>{D.pause=false;D.last=performance.now();nextD()},q.ok?600:1600)}
+    D.pause=true;$('#dfb').className='fb ok';$('#dfb').innerHTML=`<b>ISSO!</b>${q.ok?'':q.why}`;D.to=setTimeout(resume,q.ok?700:1800)}
   else{sfx.no();D.danger=Math.min(.99,D.danger+.1);record('desafio',false,q.s);drawDes();$('#chamber').classList.remove('shake');void $('#chamber').offsetWidth;$('#chamber').classList.add('shake');
-    D.pause=true;$('#dfb').className='fb no';$('#dfb').innerHTML=`<b>${q.ok?'ERA VERDADEIRA':'ERA FALSA'}</b>${q.why}`;setTimeout(()=>{D.pause=false;D.last=performance.now();nextD()},2400)}}
+    D.pause=true;$('#dfb').className='fb no';$('#dfb').innerHTML=`<b>${q.ok?'ERA VERDADEIRA':'ERA FALSA'}</b>${q.why}`;D.to=setTimeout(resume,2600)}}
 $('#dV').onclick=()=>answerD(true);$('#dF').onclick=()=>answerD(false);
 function winD(){D.run=false;delete S.run.desafio;markDone('desafio');save();sfx.win();
   $('#resIco').innerHTML=sprite('man',8);$('#resT').textContent='VOCÊ ESCAPOU!';$('#resS').textContent=`${NEED}/${NEED}`;
-  $('#resP').textContent='Você achou as inscrições falsas antes do teto desabar.';$('#resAgain').onclick=()=>{S.run.desafio={c:0};openDes()};show('res');checkLevel()}
-function loseD(){D.run=false;S.run.desafio={c:0};save();sfx.lose();$('#dV').disabled=$('#dF').disabled=true;
-  $('#dfb').className='fb no';$('#dfb').innerHTML=`<b>O TETO DESABOU!</b>Você fez ${D.c} de ${NEED}. Respire e tente de novo.`;
+  $('#resP').textContent='O teto não te pegou!';$('#resAgain').onclick=()=>{S.run.desafio={c:0};openDes()};show('res');checkLevel()}
+function loseD(){D.run=false;S.run.desafio={c:0};save();sfx.lose();setBtns(false);
+  $('#dfb').className='fb no';$('#dfb').innerHTML=`<b>O TETO DESABOU!</b>Você fez ${D.c} de ${NEED}.`;
   $('#dStart').innerHTML=`<button class="btn" id="dGo2">TENTAR DE NOVO</button>`;$('#dGo2').onclick=()=>openDes()}
 $('#goDes').onclick=()=>{sfx.tap();openDes()};
-$('#desBack').onclick=()=>{if(D)D.run=false;sfx.tap();show('menu')};
+$('#desBack').onclick=()=>{if(D){D.run=false;clearTimeout(D.to)}sfx.tap();show('menu')};
 
 /* =================== tábua =================== */
 function openTab(){const l=L();$('#tSyms').innerHTML=ALL.map(s=>{const on=l.syms.includes(s);return `<span class="s${on?'':' lock'}"><b>${on?s:'?'}</b><i>${on?VAL[s]:'—'}</i></span>`}).join('');
-  $('#tab').hidden=false;if(D)D.pause=true}
+  $('#tab').hidden=false;if(D)D.tab=true}
 $('#openTab').onclick=()=>{sfx.tap();openTab()};
 document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{sfx.tap();openTab()});
-$('#tabClose').onclick=()=>{$('#tab').hidden=true;if(D&&D.run){D.pause=false;D.last=performance.now()}};
+$('#tabClose').onclick=()=>{$('#tab').hidden=true;if(D){D.tab=false;D.last=performance.now()}};
 
 /* =================== pais: segurar o logo 3 s =================== */
 const LABELS={montar:'M1 Montar',ler:'M2 Ler',sub:'M3 Subtração',desafio:'Desabamento'};
@@ -657,9 +649,9 @@ function openPais(){
   const e=Object.entries(S.erros).sort((a,b)=>b[1]-a[1]).slice(0,12);
   $('#kErrs').innerHTML=e.length?e.map(([f,n])=>`<span>${f} ×${n}</span>`).join(''):'<p>Nenhum erro ainda.</p>';
   $('#kLv').innerHTML=LEVELS.map((l,i)=>`<button class="px pbtn${S.level===i+1?' on':''}" data-lv="${i+1}">${l.n}</button>`).join('');
-  $('#kLv').querySelectorAll('[data-lv]').forEach(b=>b.onclick=()=>{S.level=+b.dataset.lv;S.xp=0;S.run={};save();openPais()});
+  $('#kLv').querySelectorAll('[data-lv]').forEach(b=>b.onclick=()=>{S.level=+b.dataset.lv;S.lvDays=[];S.run={};save();openPais()});
   const days=Object.keys(S.days).length,full=Object.keys(S.days).filter(k=>mainDone(k)>=3).length;
-  $('#kDays').textContent=`Câmara ${L().n}: números de ${L().range}. Dias jogados: ${days} · com os 3 portões: ${full} · sequência: ${streak()}. Trocar a câmara reinicia as missões em andamento.`;
+  $('#kDays').textContent=`Nível ${L().n}: ${L().range}. Sobe ao abrir os 3 portões em ${LVDAYS} dias. Dias jogados: ${days} · completos: ${full} · sequência: ${streak()}. Trocar o nível reinicia missões em andamento.`;
   $('#kConfirm').hidden=true;$('#kReset').hidden=false;$('#pais').hidden=false}
 (function(){let h=0,raf=0;const lg=$('#logo');
   const tick=()=>{const p=Math.min(1,(performance.now()-h)/3000);lg.style.setProperty('--hold',p);if(p>=1){end();sfx.tap();openPais();return}raf=requestAnimationFrame(tick)};
