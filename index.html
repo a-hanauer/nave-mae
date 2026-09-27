@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0c0b1d">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Nave-Mãe">
+<meta name="format-detection" content="telephone=no">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.json">
+<title>Nave-Mãe</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0c0b1d;--panel:#16143a;--panel2:#221f55;--line:#3b3780;--ink:#eceaff;--dim:#8f8cc7;
+  --amber:#ffb300;--amber-d:#b37a00;--green:#39e35f;--red:#ff3d2e;--cyan:#40d8ff;
+  --px:"Press Start 2P",monospace;--vt:"VT323",monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{background:var(--bg)}
+body{background:var(--bg);color:var(--ink);font-family:var(--vt);font-size:22px;line-height:1.15;min-height:100vh;min-height:100dvh;overflow-x:hidden;-webkit-text-size-adjust:100%;
+  -webkit-touch-callout:none;-webkit-user-select:none;user-select:none;overscroll-behavior-y:none;
+  -webkit-font-smoothing:none;image-rendering:pixelated}
+button,input{font:inherit;color:inherit;background:none;border:0}
+button{cursor:pointer;touch-action:manipulation}
+.spr{display:block;image-rendering:pixelated}
+[hidden]{display:none!important}
+
+/* fundo */
+#stars{position:fixed;inset:0;width:100%;height:100%;z-index:0;image-rendering:pixelated}
+.crt{position:fixed;inset:0;pointer-events:none;z-index:50;
+  background:repeating-linear-gradient(0deg,rgba(0,0,0,.22) 0 1px,transparent 1px 3px)}
+#app{position:relative;z-index:1;max-width:440px;margin:0 auto;
+  padding:calc(16px + env(safe-area-inset-top)) calc(16px + env(safe-area-inset-right)) calc(40px + env(safe-area-inset-bottom)) calc(16px + env(safe-area-inset-left))}
+
+/* painel pixelado (cantos em degrau) */
+.px{background:var(--panel);position:relative;
+  box-shadow:0 -3px 0 0 var(--line),0 3px 0 0 var(--line),-3px 0 0 0 var(--line),3px 0 0 0 var(--line);
+  filter:drop-shadow(5px 5px 0 #000)}
+.label{font-family:var(--px);font-size:9px;letter-spacing:.08em;color:var(--dim);text-transform:uppercase}
+
+/* topo */
+.top{display:flex;align-items:center;justify-content:space-between;margin:4px 0 22px}
+.logo{display:flex;align-items:center;gap:10px;user-select:none;-webkit-user-select:none;touch-action:none}
+.logo b{display:block;font-family:var(--px);font-size:16px;color:var(--amber);text-shadow:3px 3px 0 #7a3a00;letter-spacing:.02em}
+.logo small{display:block;font-family:var(--px);font-size:8px;color:var(--dim);margin-top:7px;letter-spacing:.12em}
+.hold{position:absolute;left:0;bottom:-8px;height:3px;width:0;background:var(--amber)}
+.snd{width:44px;height:44px;display:grid;place-items:center}
+.snd:active{transform:translate(2px,2px);filter:none}
+
+/* piloto */
+.pilot{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;margin-bottom:22px}
+.pilot .name{font-family:var(--px);font-size:15px;margin-top:8px;color:var(--ink);word-break:break-all}
+.streak{display:flex;align-items:center;gap:8px;flex-shrink:0;background:var(--panel2);padding:8px 10px;
+  box-shadow:0 -2px 0 0 var(--line),0 2px 0 0 var(--line),-2px 0 0 0 var(--line),2px 0 0 0 var(--line)}
+.streak b{display:block;font-family:var(--px);font-size:14px;color:var(--amber);margin-bottom:5px}
+.streak span{display:block;font-family:var(--px);font-size:7px;color:var(--dim);line-height:1.5}
+.streak.zero b{color:var(--dim)}
+
+/* terminal */
+.terminal{padding:14px 16px;margin-bottom:30px;min-height:92px;color:var(--green);font-size:21px;background:#07130b;
+  box-shadow:0 -3px 0 0 #1d5a2a,0 3px 0 0 #1d5a2a,-3px 0 0 0 #1d5a2a,3px 0 0 0 #1d5a2a;filter:drop-shadow(5px 5px 0 #000)}
+.cursor{display:inline-block;width:10px;height:18px;background:var(--green);vertical-align:-2px;margin-left:2px;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+
+/* mapa */
+.sec{display:flex;align-items:center;gap:10px;margin:0 0 6px}
+.sec::after{content:"";flex:1;height:3px;background:repeating-linear-gradient(90deg,var(--line) 0 6px,transparent 6px 12px)}
+.map{position:relative}
+.orbit{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.row{position:relative;display:flex;align-items:center;width:100%;height:136px;text-align:left}
+.row.r{flex-direction:row-reverse;text-align:right}
+.row .globe{width:50%;height:100%;display:grid;place-items:center;position:relative}
+.row .globe .spr{transition:transform .12s steps(2)}
+.row:active .globe .spr{transform:scale(.92)}
+.row .info{width:50%;padding:0 4px}
+.row .pname{font-family:var(--px);font-size:11px;line-height:1.4;color:var(--ink)}
+.row .pstat{margin-top:6px;font-size:20px;white-space:nowrap;color:var(--dim);display:flex;align-items:center;gap:6px}
+.row.r .pstat{justify-content:flex-end}
+.pstat.go{color:var(--amber)}
+.pstat.ok{color:var(--green)}
+.row.off .globe .spr{filter:saturate(.25) brightness(.55)}
+.row.off .pname{color:var(--dim)}
+.beacon{flex-shrink:0;width:10px;height:10px;background:var(--amber);animation:beacon .8s steps(1) infinite}
+@keyframes beacon{50%{background:var(--red)}}
+.ship{position:absolute;pointer-events:none;z-index:2;animation:bob 1.2s steps(4) infinite}
+@keyframes bob{50%{transform:translateY(-6px)}}
+.flame .f2{display:none}
+.flame{animation:none}
+.ship .f1{animation:f1 .24s steps(1) infinite}.ship .f2{animation:f2 .24s steps(1) infinite}
+@keyframes f1{50%{visibility:hidden}}@keyframes f2{0%{visibility:hidden}50%{visibility:visible}}
+
+/* planeta (tela) */
+.back{display:inline-flex;align-items:center;gap:8px;font-family:var(--px);font-size:10px;color:var(--ink);padding:12px 14px;margin:4px 0 8px}
+.back:active{transform:translate(3px,3px);filter:none}
+.hero{display:grid;place-items:center;padding:10px 0 8px;animation:land .35s steps(5)}
+@keyframes land{from{transform:scale(.4);opacity:0}}
+.hero h1{font-family:var(--px);font-size:18px;margin-top:18px;text-align:center;line-height:1.4}
+.hero p{color:var(--dim);margin-top:8px;text-align:center}
+.missions{display:grid;gap:22px;margin-top:14px}
+.card{padding:16px}
+.card-h{display:flex;gap:14px;align-items:center}
+.icon{width:60px;height:60px;flex-shrink:0;display:grid;place-items:center;background:var(--panel2);
+  box-shadow:0 -3px 0 0 var(--line),0 3px 0 0 var(--line),-3px 0 0 0 var(--line),3px 0 0 0 var(--line)}
+.card h2{font-family:var(--px);font-size:12px;line-height:1.45}
+.card .tag{color:var(--cyan);font-size:20px;margin-top:4px}
+.card .desc{color:var(--dim);margin-top:14px}
+.prog{margin-top:16px}
+.prog-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+.prog-top em{font-style:normal;font-family:var(--px);font-size:10px;color:var(--amber)}
+.prog-top em.all{color:var(--green)}
+.segs{display:flex;gap:6px}
+.segs i{flex:1;height:14px;background:#0a0920;box-shadow:inset 0 0 0 3px var(--line)}
+.segs i.on{background:var(--green);box-shadow:inset 0 -4px 0 0 #1f9a3a}
+.extra{display:flex;align-items:center;gap:8px;margin-top:12px;font-size:20px;color:var(--dim)}
+.extra.ok{color:var(--green)}
+.extra .dot{width:10px;height:10px;background:var(--line)}
+.extra.ok .dot{background:var(--green)}
+.new{display:inline-block;font-family:var(--px);font-size:8px;background:var(--red);color:#fff;padding:5px 6px;margin-left:6px;vertical-align:2px}
+.btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;margin-top:18px;padding:16px;font-family:var(--px);font-size:13px;
+  background:var(--amber);color:#1a1200;
+  box-shadow:0 -3px 0 0 var(--amber-d),0 3px 0 0 var(--amber-d),-3px 0 0 0 var(--amber-d),3px 0 0 0 var(--amber-d),inset 0 -5px 0 0 var(--amber-d);
+  filter:drop-shadow(5px 5px 0 #000)}
+.btn:active{transform:translate(4px,4px);filter:none;box-shadow:0 -3px 0 0 var(--amber-d),0 3px 0 0 var(--amber-d),-3px 0 0 0 var(--amber-d),3px 0 0 0 var(--amber-d)}
+.empty{padding:22px 18px;text-align:center}
+.empty h2{font-family:var(--px);font-size:11px;color:var(--dim);margin:14px 0 10px;line-height:1.5}
+.empty p{color:var(--dim)}
+.slot{padding:18px;text-align:center;color:var(--dim);background:transparent;
+  box-shadow:none;filter:none;outline:3px dashed var(--line);outline-offset:-3px}
+.slot b{display:block;font-family:var(--px);font-size:9px;margin-bottom:8px}
+
+/* warp */
+#warp{position:fixed;inset:0;z-index:60;pointer-events:none;image-rendering:pixelated}
+
+/* modais */
+.overlay{position:fixed;inset:0;z-index:40;display:grid;place-items:center;padding:calc(16px + env(safe-area-inset-top)) 16px calc(16px + env(safe-area-inset-bottom));background:rgba(7,6,20,.92)}
+.modal{width:100%;max-width:400px;padding:22px 18px;text-align:center}
+.modal h2{font-family:var(--px);font-size:13px;color:var(--amber);line-height:1.5;margin:18px 0 10px}
+.modal p{color:var(--dim)}
+.modal .ship-big{display:grid;place-items:center;animation:bob 1.2s steps(4) infinite}
+.field{display:block;width:100%;margin-top:18px;padding:14px 12px;font-family:var(--px);font-size:16px;text-transform:uppercase;text-align:center;-webkit-user-select:text;user-select:text;-webkit-appearance:none;appearance:none;
+  background:#07061a;color:var(--ink);box-shadow:inset 0 0 0 3px var(--line);outline:0;border-radius:0}
+.field:focus{box-shadow:inset 0 0 0 3px var(--amber)}
+.field::placeholder{color:#4a4790}
+.ghost{margin-top:14px;font-family:var(--px);font-size:9px;color:var(--dim);padding:10px}
+.foot{text-align:center;color:#4a4790;font-size:18px;margin-top:34px}
+</style>
+</head>
+<body>
+<canvas id="stars"></canvas>
+<div class="crt"></div>
+<canvas id="warp" hidden></canvas>
+
+<main id="app">
+  <!-- MAPA -->
+  <section id="home">
+    <header class="top">
+      <div class="logo" id="logo" aria-label="Nave-Mãe">
+        <span id="logoShip"></span>
+        <span><b>NAVE-MÃE</b><small>BASE ESCOLAR</small></span>
+        <span class="hold" id="hold"></span>
+      </div>
+      <button class="snd px" id="snd" aria-label="Som"></button>
+    </header>
+
+    <div class="pilot px">
+      <div><div class="label">Piloto</div><div class="name" id="pilotName"></div></div>
+      <div class="streak" id="streak"></div>
+    </div>
+
+    <div class="terminal"><span id="term"></span><span class="cursor"></span></div>
+
+    <div class="sec"><span class="label">Mapa estelar</span></div>
+    <div class="map" id="map"></div>
+    <p class="foot">Toque num planeta para ver as missões</p>
+  </section>
+
+  <!-- PLANETA -->
+  <section id="planet" hidden>
+    <button class="back px" id="back"><span id="backIco"></span>MAPA</button>
+    <div class="hero" id="hero"></div>
+    <div class="sec" style="margin-top:22px"><span class="label">Missões neste planeta</span></div>
+    <div class="missions" id="missions"></div>
+  </section>
+</main>
+
+<!-- primeiro acesso -->
+<div class="overlay" id="onboard" hidden>
+  <form class="modal px" id="onForm">
+    <div class="ship-big" id="onShip"></div>
+    <h2>NOVO PILOTO<br>DETECTADO</h2>
+    <p>Digite seu nome de piloto para entrar na nave.</p>
+    <input class="field" id="onName" maxlength="12" autocomplete="off" autocapitalize="characters" placeholder="SEU NOME" aria-label="Nome do piloto">
+    <button class="btn" type="submit">ENTRAR NA NAVE</button>
+  </form>
+</div>
+
+<!-- área dos pais -->
+<div class="overlay" id="pais" hidden>
+  <form class="modal px" id="paisForm">
+    <div class="label">Área dos pais</div>
+    <h2>NOME DO PILOTO</h2>
+    <input class="field" id="paisName" maxlength="12" autocomplete="off" autocapitalize="characters" aria-label="Nome do piloto">
+    <button class="btn" type="submit">SALVAR</button>
+    <button class="ghost" type="button" id="paisClose">FECHAR</button>
+  </form>
+</div>
+
+<script>
+/* =========================================================
+   CONFIGURAÇÃO — para adicionar um app novo, inclua um item
+   em APPS com o id do planeta. O progresso é lido do
+   localStorage do app (mesmo domínio github.io).
+   ========================================================= */
+const PLANETS=[
+  {id:'mat',name:'Matemática',tag:'Números, contas e padrões.',
+   pal:['#5a1f0a','#c2410c','#ff8a1f','#ffd08a'],ring:['#9b98d4','#5f5ca8'],feat:'bands'},
+  {id:'por',name:'Português',tag:'Palavras, leitura e escrita.',
+   pal:['#2a0e4f','#6a2fb5','#a970ff','#e2cbff'],feat:'craters'},
+  {id:'cie',name:'Ciências',tag:'Corpo, natureza e experimentos.',
+   pal:['#0a3b1a','#1f8a3c','#39e35f','#c6ffcf'],feat:'spots'},
+  {id:'ing',name:'Inglês',tag:'Palavras de outra galáxia.',
+   pal:['#0a2250','#1f5fc2','#40a8ff','#c9ecff'],ring:['#ffb300','#a86f00'],feat:'bands'},
+  {id:'his',name:'História',tag:'Viagens ao passado.',
+   pal:['#3b220c','#8a5a26','#d9a066','#f6dcb6'],feat:'craters'},
+  {id:'geo',name:'Geografia',tag:'Mapas, lugares e paisagens.',
+   pal:['#062f3a','#0d6f86','#2ed3e0','#bff7ff'],land:['#14502a','#2a9a45','#6be07f'],feat:'land'},
+];
+
+const dkey=(d=new Date())=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+function readLS(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}}
+
+const APPS=[
+  {id:'nostro9',planet:'mat',name:'Estação Nostro-9',tag:'Divisão',icon:'station',
+   url:'nostro-9/',
+   desc:'Um Alien invadiu a estação. Divida baterias, forme equipes e carregue o hangar para salvar a tripulação.',
+   // progresso: 3 missões por dia + desafio opcional "Fuja do Alien"
+   progress(){
+     const s=readLS('nostro9-stats-v1'),days=(s&&s.days)||{};
+     const main=k=>Math.min(3,(days[k]||[]).filter(m=>m!=='desafio').length);
+     return{played:!!s,done:main(dkey()),total:3,
+       extra:{label:'Fuja do Alien',ok:(days[dkey()]||[]).includes('desafio')},
+       full:k=>main(k)>=3};
+   }},
+];
+
+/* ---------- utilidades ---------- */
+const $=s=>document.querySelector(s);
+const ST='navemae-v1';
+let st=Object.assign({pilot:'',sound:true,last:'mat'},readLS(ST)||{});
+const save=()=>{try{localStorage.setItem(ST,JSON.stringify(st))}catch(e){}};
+
+/* ---------- sprites ---------- */
+const SPR={
+  ship:{pal:{'#':'#d8d6ff','s':'#8f8cc7','c':'#40d8ff','r':'#ff3d2e'},rows:[
+    "...#...","..###..","..#c#..","..#c#..",".##s##.","#######","r.###.r","..#.#.."]},
+  fl1:{pal:{'f':'#ffb300','y':'#fff3a0'},rows:["..f.f..","..y.y..","..f.f.."]},
+  fl2:{pal:{'f':'#ffb300','y':'#fff3a0','r':'#ff3d2e'},rows:["..y.y..","..f.f..","..r.r.."]},
+  station:{pal:{'#':'#40d8ff','d':'#1f5fc2','h':'#d8d6ff','s':'#8f8cc7','a':'#ffb300'},rows:[
+    "#d.....d#","#d..h..d#","#d.hhh.d#","#ssshsss#","#d.hah.d#","#ssshsss#","#d.hhh.d#","#d..h..d#","#d.....d#"]},
+  flame:{pal:{'#':'#ff3d2e','o':'#ffb300','y':'#fff3a0'},rows:[
+    "..#..",".##..",".###.","##o##","#ooo#","#oyo#",".###."]},
+  flameOff:{pal:{'#':'#4a4790','o':'#3b3780','y':'#5f5ca8'},rows:[
+    "..#..",".##..",".###.","##o##","#ooo#","#oyo#",".###."]},
+  sndOn:{pal:{'#':'#eceaff','w':'#ffb300'},rows:[
+    "...#.....","..##..w..","####...w.","####.w.w.","####...w.","..##..w..","...#....."]},
+  sndOff:{pal:{'#':'#8f8cc7','x':'#ff3d2e'},rows:[
+    "...#.....","..##.....","####.x.x.","####..x..","####.x.x.","..##.....","...#....."]},
+  check:{pal:{'#':'#39e35f'},rows:["......#",".....##","#...##.","##.##..",".###...","..#...."]},
+  back:{pal:{'#':'#eceaff'},rows:["...#","..##",".###","####",".###","..##","...#"]},
+  go:{pal:{'#':'#1a1200'},rows:["#...","##..","###.","####","###.","##..","#..."]},
+  nosig:{pal:{'#':'#8f8cc7','x':'#ff3d2e'},rows:[
+    "....#....","...#.#...","..#...#..","....#....","...#.#...","....#....","....#....","..#####..","x.......x"]},
+};
+function svgRows(rows,pal,s){
+  const h=rows.length,w=rows[0].length;let r='';
+  rows.forEach((row,y)=>{let x=0;while(x<w){const c=row[x];if(!pal[c]){x++;continue}let n=1;while(row[x+n]===c)n++;
+    r+=`<rect x="${x}" y="${y}" width="${n}" height="1" fill="${pal[c]}"/>`;x+=n}});
+  return `<svg class="spr" viewBox="0 0 ${w} ${h}" width="${w*s}" height="${h*s}" shape-rendering="crispEdges" aria-hidden="true">${r}</svg>`;
+}
+const sprite=(n,s=3)=>svgRows(SPR[n].rows,SPR[n].pal,s);
+function shipSVG(s){
+  return `<span style="display:grid;justify-items:center">${sprite('ship',s)}<span style="position:relative;height:${3*s}px;width:${7*s}px">
+  <span class="f1" style="position:absolute;inset:0">${sprite('fl1',s)}</span><span class="f2" style="position:absolute;inset:0">${sprite('fl2',s)}</span></span></span>`;
+}
+
+/* ---------- planetas gerados pixel a pixel ---------- */
+const BAYER=[[0,8,2,10],[12,4,14,6],[3,11,1,9],[15,7,13,5]];
+function hash(x,y,s){let h=x*374761393+y*668265263+s*982451653;h=(h^(h>>13))*1274126177;return((h^(h>>16))>>>0)/4294967295}
+function noise(x,y,s){const g=4,x0=Math.floor(x/g),y0=Math.floor(y/g),fx=x/g-x0,fy=y/g-y0;
+  const a=hash(x0,y0,s),b=hash(x0+1,y0,s),c=hash(x0,y0+1,s),d=hash(x0+1,y0+1,s);
+  return a+(b-a)*fx+(c-a)*fy+(a-b-c+d)*fx*fy}
+function planetSVG(p,s=3,r=12){
+  const ring=!!p.ring,ra=r*1.8,rb=r*.46,W=ring?Math.ceil(ra)*2+2:r*2+2,H=r*2+2,cx=W/2,cy=H/2;
+  const L=[-.55,-.62,.56],rows=[];
+  const seed=p.id.charCodeAt(0)*7+p.id.charCodeAt(1);
+  const craters=[[-.35,-.2,.24],[.3,.35,.18],[.15,-.5,.13],[-.1,.45,.12]];
+  const tilt=-.28,ct=Math.cos(tilt),sn=Math.sin(tilt);
+  for(let y=0;y<H;y++){const row=[];for(let x=0;x<W;x++){
+    const dx=x+.5-cx,dy=y+.5-cy,inP=dx*dx+dy*dy<=r*r;
+    let col=null;
+    if(inP){
+      const nx=dx/r,ny=dy/r,nz=Math.sqrt(Math.max(0,1-nx*nx-ny*ny));
+      let sh=nx*L[0]+ny*L[1]+nz*L[2];
+      let pal=p.pal;
+      if(p.feat==='bands')sh+=.18*Math.sin(ny*10+1);
+      if(p.feat==='craters')for(const[c1,c2,cr]of craters){const q=(nx-c1)**2+(ny-c2)**2;if(q<cr*cr){sh-=.32;if(q>(cr*.7)**2&&nx-c1<0)sh+=.25}}
+      if(p.feat==='spots'&&noise(x*1.6,y*1.6,seed)>.62)sh-=.3;
+      if(p.feat==='land'&&noise(x,y,seed)>.55)pal=p.land.concat(p.pal[3]);
+      const t=Math.max(0,Math.min(3,Math.floor((sh+.15)*3.2+(BAYER[y%4][x%4]/16-.5))));
+      col=pal[t];
+      if(dx*dx+dy*dy>(r-1)*(r-1)&&sh<.1)col=p.pal[0];
+    }
+    if(ring){
+      const rx=dx*ct+dy*sn,ry=-dx*sn+dy*ct,e=(rx/ra)**2+(ry/rb)**2;
+      if(e>.62&&e<=1&&!(e>.78&&e<.84)&&(!inP||ry>0))col=e>.84?p.ring[0]:p.ring[1];
+    }
+    row.push(col)}rows.push(row)}
+  let out='';
+  rows.forEach((row,y)=>{let x=0;while(x<W){const c=row[x];if(!c){x++;continue}let n=1;while(row[x+n]===c)n++;
+    out+=`<rect x="${x}" y="${y}" width="${n}" height="1" fill="${c}"/>`;x+=n}});
+  return `<svg class="spr" viewBox="0 0 ${W} ${H}" width="${W*s}" height="${H*s}" shape-rendering="crispEdges" aria-hidden="true">${out}</svg>`;
+}
+
+/* ---------- som (onda quadrada) ---------- */
+let AC=null;
+function tone(f,d=.08,t=0,v=.06){if(!st.sound)return;try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();
+  const o=AC.createOscillator(),g=AC.createGain(),n=AC.currentTime+t;o.type='square';o.frequency.setValueAtTime(f,n);
+  g.gain.setValueAtTime(v,n);g.gain.setValueAtTime(0,n+d);o.connect(g).connect(AC.destination);o.start(n);o.stop(n+d+.02)}catch(e){}}
+document.addEventListener('touchstart',function u(){try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();AC.resume&&AC.resume()}catch(e){}document.removeEventListener('touchstart',u)},{passive:true});
+const blip=()=>{tone(660,.05);tone(990,.05,.05)};
+const launch=()=>[262,330,392,523,659,784,1047].forEach((f,i)=>tone(f,.07,i*.07));
+
+/* ---------- estado dos apps ---------- */
+function appsOf(pid){return APPS.filter(a=>a.planet===pid)}
+function planetState(pid){
+  const apps=appsOf(pid);if(!apps.length)return{kind:'off'};
+  let left=0;apps.forEach(a=>{const p=a.progress();left+=p.total-p.done});
+  return left?{kind:'go',left,n:apps.length}:{kind:'ok',n:apps.length};
+}
+function streak(){
+  const fullOn=k=>APPS.some(a=>a.progress().full(k));
+  const d=new Date();let n=0;if(!fullOn(dkey(d)))d.setDate(d.getDate()-1);
+  while(fullOn(dkey(d))&&n<999){n++;d.setDate(d.getDate()-1)}return n;
+}
+
+/* ---------- tela do mapa ---------- */
+const ROW=136;
+function renderHome(){
+  $('#pilotName').textContent=st.pilot||'—';
+  const s=streak();
+  $('#streak').className='streak'+(s?'':' zero');
+  $('#streak').innerHTML=`${sprite(s?'flame':'flameOff',3)}<div><b>${s}</b><span>${s===1?'DIA':'DIAS'}<br>SEGUIDOS</span></div>`;
+
+  const map=$('#map');
+  let h='';
+  PLANETS.forEach((p,i)=>{
+    const ps=planetState(p.id),r=i%2?' r':'';
+    let stat;
+    if(ps.kind==='off')stat=`<div class="pstat">${sprite('nosig',2)}Sem sinal</div>`;
+    else if(ps.kind==='go')stat=`<div class="pstat go"><i class="beacon"></i>${ps.left} ${ps.left===1?'tarefa':'tarefas'} hoje</div>`;
+    else stat=`<div class="pstat ok">${sprite('check',2)}Tudo feito</div>`;
+    h+=`<button class="row${r}${ps.kind==='off'?' off':''}" data-p="${p.id}" aria-label="${p.name}">
+      <span class="globe">${planetSVG(p,3)}</span>
+      <span class="info"><span class="pname">${p.name.toUpperCase()}</span>${stat}</span></button>`;
+  });
+  map.innerHTML=`<svg class="orbit" id="orbit"></svg>${h}<span class="ship" id="ship">${shipSVG(3)}</span>`;
+  map.querySelectorAll('.row').forEach(b=>b.onclick=()=>{blip();openPlanet(b.dataset.p)});
+  drawOrbit();
+  typeTerm();
+}
+function drawOrbit(){
+  const map=$('#map'),w=map.clientWidth,n=PLANETS.length,H=n*ROW,o=$('#orbit');
+  o.setAttribute('viewBox',`0 0 ${w} ${H}`);
+  const pt=i=>[i%2?w*.75:w*.25,i*ROW+ROW/2];
+  let d='';for(let i=0;i<n-1;i++){const[a,b]=pt(i),[c,e]=pt(i+1);d+=`M${a} ${b} C${a} ${b+ROW*.6} ${c} ${e-ROW*.6} ${c} ${e} `}
+  o.innerHTML=`<path d="${d}" fill="none" stroke="#3b3780" stroke-width="3" stroke-dasharray="6 9"/>`;
+  // nave estacionada ao lado do último planeta visitado
+  const idx=Math.max(0,PLANETS.findIndex(p=>p.id===st.last)),[sx,sy]=pt(idx),ship=$('#ship');
+  const left=idx%2?sx-100:sx+62;
+  ship.style.left=Math.max(0,Math.min(w-21,left))+'px';ship.style.top=(sy-44)+'px';
+}
+let typing=null;
+function typeTerm(){
+  const hr=new Date().getHours(),hi=hr<12?'BOM DIA':hr<18?'BOA TARDE':'BOA NOITE';
+  const pending=PLANETS.map(p=>({p,s:planetState(p.id)})).filter(x=>x.s.kind==='go');
+  const any=APPS.length;
+  let l2;
+  if(pending.length===1)l2=`> Planeta ${pending[0].p.name.toUpperCase()}: ${pending[0].s.left} ${pending[0].s.left===1?'tarefa pendente':'tarefas pendentes'}.`;
+  else if(pending.length>1)l2=`> ${pending.length} planetas com tarefas hoje.`;
+  else l2=any?'> Todas as missões de hoje cumpridas. Nave segura.':'> Nenhuma missão ativa ainda.';
+  const txt=`> ${hi}, piloto ${st.pilot||''}.\n${l2}`;
+  const el=$('#term');clearInterval(typing);let i=0;el.textContent='';
+  typing=setInterval(()=>{i++;el.innerHTML=txt.slice(0,i).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/\n/g,'<br>');if(i>=txt.length)clearInterval(typing)},22);
+}
+
+/* ---------- tela do planeta ---------- */
+function openPlanet(pid){
+  const p=PLANETS.find(x=>x.id===pid);st.last=pid;save();
+  $('#hero').innerHTML=`${planetSVG(p,5)}<h1>${p.name.toUpperCase()}</h1><p>${p.tag}</p>`;
+  const apps=appsOf(pid);let h='';
+  if(!apps.length){
+    h=`<div class="empty px">${sprite('nosig',4).replace('class="spr"','class="spr" style="margin:0 auto"')}
+      <h2>SEM SINAL NESTE PLANETA</h2><p>Nenhuma missão pousou aqui ainda. Novas missões estão a caminho.</p></div>`;
+  }else{
+    apps.forEach(a=>{
+      const pr=a.progress(),all=pr.done>=pr.total;
+      let segs='';for(let i=0;i<pr.total;i++)segs+=`<i class="${i<pr.done?'on':''}"></i>`;
+      h+=`<article class="card px">
+        <div class="card-h"><div class="icon">${sprite(a.icon,5)}</div>
+          <div><h2>${a.name.toUpperCase()}${pr.played?'':'<span class="new">NOVA</span>'}</h2><div class="tag">${a.tag}</div></div></div>
+        <p class="desc">${a.desc}</p>
+        <div class="prog"><div class="prog-top"><span class="label">Missões de hoje</span><em class="${all?'all':''}">${pr.done} / ${pr.total}</em></div>
+          <div class="segs">${segs}</div>
+          ${pr.extra?`<div class="extra${pr.extra.ok?' ok':''}"><span class="dot"></span>${pr.extra.label}${pr.extra.ok?' — feito':' — opcional'}</div>`:''}</div>
+        <button class="btn" data-go="${a.id}">${all?'JOGAR DE NOVO':'DECOLAR'}${sprite('go',3)}</button>
+      </article>`;
+    });
+    h+=`<div class="slot"><b>SLOT VAZIO</b>Nova missão em breve</div>`;
+  }
+  $('#missions').innerHTML=h;
+  $('#missions').querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>takeoff(APPS.find(a=>a.id===b.dataset.go)));
+  $('#home').hidden=true;$('#planet').hidden=false;window.scrollTo(0,0);
+}
+$('#back').onclick=()=>{blip();$('#planet').hidden=true;$('#home').hidden=false;renderHome();window.scrollTo(0,0)};
+
+/* ---------- decolagem (warp) ---------- */
+function takeoff(a){
+  launch();
+  const c=$('#warp'),x=c.getContext('2d'),W=c.width=Math.ceil(innerWidth/3),H=c.height=Math.ceil(innerHeight/3);
+  c.style.width='100%';c.style.height='100%';c.hidden=false;
+  const pts=Array.from({length:90},()=>({a:Math.random()*6.283,r:Math.random()*8+2,v:Math.random()*.6+.4,c:['#eceaff','#40d8ff','#ffb300'][Math.random()*3|0]}));
+  const t0=performance.now();
+  (function f(t){const k=(t-t0)/700;x.fillStyle=`rgba(12,11,29,${.35})`;x.fillRect(0,0,W,H);
+    pts.forEach(p=>{const r0=p.r,r1=p.r+=p.v*(2+k*14);x.strokeStyle=p.c;x.lineWidth=1;x.beginPath();
+      x.moveTo(W/2+Math.cos(p.a)*r0|0,H/2+Math.sin(p.a)*r0|0);x.lineTo(W/2+Math.cos(p.a)*r1|0,H/2+Math.sin(p.a)*r1|0);x.stroke()});
+    if(k<1)requestAnimationFrame(f);else{x.fillStyle='#fff';x.fillRect(0,0,W,H);setTimeout(()=>{location.href=a.url},60)}})(t0);
+}
+addEventListener('pageshow',()=>{$('#warp').hidden=true;if(!$('#home').hidden)renderHome()});
+
+/* ---------- estrelas ---------- */
+(function(){const c=$('#stars'),x=c.getContext('2d');let S=[];
+  function size(){c.width=Math.ceil(innerWidth/3);c.height=Math.ceil(innerHeight/3);
+    S=Array.from({length:Math.round(c.width*c.height/140)},()=>({x:Math.random()*c.width|0,y:Math.random()*c.height|0,b:Math.random(),t:Math.random()*6}))}
+  size();addEventListener('resize',()=>{size();if(!$('#home').hidden)drawOrbit()});
+  (function f(t){x.fillStyle='#0c0b1d';x.fillRect(0,0,c.width,c.height);
+    S.forEach(s=>{const on=Math.sin(t/700+s.t)>-.6;x.fillStyle=s.b>.9?'#ffb300':s.b>.75?'#40d8ff':on?'#6b68b0':'#2a2860';x.fillRect(s.x,s.y,1,1)});
+    requestAnimationFrame(f)})(0);
+})();
+
+/* ---------- som on/off ---------- */
+function renderSnd(){$('#snd').innerHTML=sprite(st.sound?'sndOn':'sndOff',3);$('#snd').setAttribute('aria-label',st.sound?'Desligar som':'Ligar som')}
+$('#snd').onclick=()=>{st.sound=!st.sound;save();renderSnd();blip()};
+
+/* ---------- primeiro acesso ---------- */
+$('#onForm').onsubmit=e=>{e.preventDefault();const v=$('#onName').value.trim().toUpperCase();if(!v){$('#onName').focus();return}
+  st.pilot=v;save();launch();$('#onboard').hidden=true;renderHome()};
+
+/* ---------- área dos pais: segurar o logo 3 s ---------- */
+(function(){let t=null,s=0;const bar=$('#hold'),logo=$('#logo');
+  const start=e=>{e.preventDefault();s=performance.now();bar.style.transition='none';bar.style.width='0';
+    requestAnimationFrame(()=>{bar.style.transition='width 3s steps(12)';bar.style.width='100%'});
+    t=setTimeout(()=>{end();$('#paisName').value=st.pilot;$('#pais').hidden=false},3000)};
+  const end=()=>{clearTimeout(t);bar.style.transition='none';bar.style.width='0'};
+  logo.addEventListener('pointerdown',start);['pointerup','pointerleave','pointercancel'].forEach(ev=>logo.addEventListener(ev,end));
+  logo.addEventListener('contextmenu',e=>e.preventDefault());
+})();
+$('#paisForm').onsubmit=e=>{e.preventDefault();const v=$('#paisName').value.trim().toUpperCase();if(v){st.pilot=v;save()}$('#pais').hidden=true;renderHome()};
+$('#paisClose').onclick=()=>$('#pais').hidden=true;
+
+/* ---------- início ---------- */
+$('#logoShip').innerHTML=sprite('ship',4);
+$('#backIco').innerHTML=sprite('back',2);
+$('#onShip').innerHTML=shipSVG(6);
+renderSnd();
+if(!st.pilot){$('#onboard').hidden=false}
+renderHome();
+</script>
+</body>
+</html>
