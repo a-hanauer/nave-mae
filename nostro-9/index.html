@@ -252,11 +252,11 @@ h2{margin:0;font-family:var(--px);font-size:14px;line-height:1.7;font-weight:400
     <p class="streak" id="streak"></p>
   </div>
   <nav class="missions">
-    <button class="mission pbtn" data-go="partilha"><span class="ico"><span data-spr="bat" data-s="4"></span><em>M1</em></span><span class="t"><strong>Dividir baterias</strong><small>Partes iguais para cada sala</small><span class="segs mini" data-segs="partilha"></span></span><span class="check" data-check="partilha"></span></button>
-    <button class="mission pbtn" data-go="grupos"><span class="ico"><span data-spr="radar" data-s="4"></span><em>M2</em></span><span class="t"><strong>Equipes de busca</strong><small>Quantos grupos cabem?</small><span class="segs mini" data-segs="grupos"></span></span><span class="check" data-check="grupos"></span></button>
-    <button class="mission pbtn" data-go="hangar"><span class="ico"><span data-spr="crate" data-s="4"></span><em>M3</em></span><span class="t"><strong>Carga do hangar</strong><small>Resolva a conta e confira</small><span class="segs mini" data-segs="hangar"></span></span><span class="check" data-check="hangar"></span></button>
+    <button class="mission pbtn" data-go="partilha"><span class="ico"><span data-spr="bat" data-s="3"></span><em>M1</em></span><span class="t"><strong>Dividir baterias</strong><small>Partes iguais</small><span class="segs mini" data-segs="partilha"></span></span><span class="check" data-check="partilha"></span></button>
+    <button class="mission pbtn" data-go="grupos"><span class="ico"><span data-spr="radar" data-s="3"></span><em>M2</em></span><span class="t"><strong>Equipes de busca</strong><small>Quantos grupos?</small><span class="segs mini" data-segs="grupos"></span></span><span class="check" data-check="grupos"></span></button>
+    <button class="mission pbtn" data-go="hangar"><span class="ico"><span data-spr="crate" data-s="3"></span><em>M3</em></span><span class="t"><strong>Carga do hangar</strong><small>Resolva e confira</small><span class="segs mini" data-segs="hangar"></span></span><span class="check" data-check="hangar"></span></button>
   </nav>
-  <button class="alien-btn pbtn" data-go="desafio"><span data-spr="siren" data-s="5"></span><span class="t"><span class="a-eyebrow">!! Desafio extra !!</span><span class="a-title">Fuja do Alien</span><span class="a-sub">Opcional: tabuada da divisão contra o relógio</span><span class="segs mini" data-segs="desafio" hidden></span></span><span class="check" data-check="desafio"></span></button>
+  <button class="alien-btn pbtn" data-go="desafio"><span data-spr="siren" data-s="3"></span><span class="t"><span class="a-eyebrow">!! Desafio extra !!</span><span class="a-title">Fuja do Alien</span><span class="a-sub">Tabuada contra o relógio</span><span class="segs mini" data-segs="desafio" hidden></span></span><span class="check" data-check="desafio"></span></button>
 </section>
 
 <!-- M1 PARTILHA -->
@@ -306,10 +306,10 @@ h2{margin:0;font-family:var(--px);font-size:14px;line-height:1.7;font-weight:400
   <div id="d-choose" class="screen">
     <h2 class="danger-title">Fuja do Alien</h2>
     <button class="primary pbtn" id="d-resume" hidden></button>
-    <p class="brief">O Alien está nos dutos e vem na sua direção. Cada resposta certa faz ele recuar. Acerte <b>10 contas</b> antes que ele chegue até você.</p>
+    <p class="brief">Cada acerto afasta o Alien. Acerte <b>10</b> antes que ele chegue.</p>
     <div class="missions">
-      <button class="mission pbtn" data-level="1"><span class="ico"><span data-spr="bat" data-s="4"></span><em>2-5</em></span><span class="t"><strong>Tabuada do 2 ao 5</strong><small>O Alien anda devagar</small></span><span></span></button>
-      <button class="mission pbtn" data-level="2" style="--b:var(--alert)"><span class="ico"><span data-spr="siren" data-s="4"></span><em>2-9</em></span><span class="t"><strong>Tabuada do 2 ao 9</strong><small>O Alien anda mais rápido</small></span><span></span></button>
+      <button class="mission pbtn" data-level="1"><span class="ico"><span data-spr="bat" data-s="2"></span><em>2-5</em></span><span class="t"><strong>Tabuada do 2 ao 5</strong><small>Alien devagar</small></span><span></span></button>
+      <button class="mission pbtn" data-level="2" style="--b:var(--alert)"><span class="ico"><span data-spr="siren" data-s="3"></span><em>2-9</em></span><span class="t"><strong>Tabuada do 2 ao 9</strong><small>Alien rápido</small></span><span></span></button>
     </div>
   </div>
   <div id="d-play" class="screen" hidden>
@@ -337,7 +337,7 @@ h2{margin:0;font-family:var(--px);font-size:14px;line-height:1.7;font-weight:400
 <section class="screen" id="pais" hidden>
   <div class="bar"><button class="back pbtn" data-back>&lt; Ponte</button><span class="prog">Área dos pais</span></div>
   <h2>Como está indo</h2>
-  <p class="note">Conta só as respostas dadas de primeira. Os dados ficam salvos apenas neste aparelho.</p>
+  <p class="note">Só respostas de primeira. Dados salvos neste aparelho.</p>
   <div id="k-stats"></div>
   <p class="note" id="k-read"></p>
   <p class="note" id="k-days"></p>
@@ -359,29 +359,19 @@ const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()
 const NAMES=['A','B','C','D'];
 
 /* ---------- sprites em pixel ---------- */
-const SPR={
-  bat:{pal:{'#':'#a8600a','o':'#ffb300','t':'#ffe38a'},rows:[
-    "..###..","#######","#.....#","#.....#","#ooooo#","#ottoo#","#ooooo#","#ooooo#","#######"]},
-  crew:{pal:{'#':'#f1f0ff','v':'#40d8ff','s':'#9b98d4'},rows:[
-    ".#####.","##vvv##","#vvvvv#","##vvv##",".#####.","#######","##s#s##","#.###.#","..#.#..",".##.##."]},
-  radar:{pal:{'#':'#40d8ff','r':'#ff3d2e'},rows:[
-    "..#######..",".#.......#.","#..#####..#","#.#.....#.#","#.#..r..#.#","#.#.....#.#","#..#####..#",".#.......#.","..#######.."]},
-  pod:{pal:{'#':'#9b98d4','v':'#40d8ff','f':'#ffb300','r':'#ff3d2e'},rows:[
-    "...###...","..#####..",".##vvv##.",".#vvvvv#.",".##vvv##.",".#######.","##.###.##","..f.f.f..",".r.f.f.r."]},
-  siren:{pal:{'#':'#ffd000','k':'#0c0b1d'},rows:[
-    "....#....","...###...","...#k#...","..##k##..","..##k##..",".###k###.",".#######.","####k####","#########"]},
-  crate:{pal:{'#':'#a8600a','o':'#ffb300','.':'#6b3d07'},rows:[
-    "########","#o....o#","#.o..o.#","#..oo..#","#..oo..#","#.o..o.#","#o....o#","########"]},
-  check:{pal:{'#':'#39e35f'},rows:[
-    "......#",".....##","#...##.","##.##..",".###...","..#...."]},
-};
-function sprite(name,s=3){
-  const {pal,rows}=SPR[name],h=rows.length,w=rows[0].length;let r='';
-  rows.forEach((row,y)=>[...row].forEach((c,x)=>{if(pal[c])r+=`<rect x="${x}" y="${y}" width="1" height="1" fill="${pal[c]}"/>`}));
-  return `<svg class="spr" viewBox="0 0 ${w} ${h}" width="${w*s}" height="${h*s}" shape-rendering="crispEdges" aria-hidden="true">${r}</svg>`;
-}
-document.querySelectorAll('[data-spr]').forEach(el=>el.innerHTML=sprite(el.dataset.spr,+el.dataset.s||3));
-const BAT=sprite('bat',3),CRATE=sprite('crate',3),CHECK=sprite('check',2);
+/* ---------- sprites 16-bit (paleta compartilhada) ---------- */
+const PAL={"A":"#ffe066","C":"#c8faff","D":"#5f5ca8","E":"#34316e","G":"#b6ffcf","L":"#d8d6ff","M":"#9b98d4","O":"#ffb300","W":"#ffffff","Y":"#fff3a0","a":"#e0a800","b":"#1f6fa8","c":"#40d8ff","g":"#39e35f","h":"#1f9a3a","k":"#0b0a1a","n":"#123a66","o":"#d97a00","r":"#e03a26","u":"#8a4a00"};
+const SPR={"bat":["...kkkk...","...kLMk...",".kkkkkkkk.","kWLLLLLMDk","kLkkkkkkDk","kLkYOOOkDk","kLkOOOokDk","kLkkkkkkDk","kLkYOOOkDk","kLkOOOokDk","kLkkkkkkDk","kLkYOOOkDk","kLkOOOokDk","kLkkkkkkDk","kMMMMMDDEk",".kkkkkkkk."],
+"radar":["....kkkkkk....","..kknnnnnnkk..",".knnnbnnbnnnk.",".knbnnnnnCcbk.","knnnnbbbCcnnnk","knbnbnnCcbnbnk","knnnbnnCnnbrnk","kbbbbbbCbbbbbk","knnnbnnnnnbnnk","knbnnbnnnbnbnk",".knnnnbbbnnnk.",".knbnnnnnnbnk.","..kknnnnnnkk..","....kkkkkk...."],
+"crate":["kkkkkkkkkkkk","kYYOOOOOOOok","kYkkkkkkkkok","kOkOkOkOkkuk","kOkOkOkokkuk","kOkOkokokkuk","kOkkkkkkkkuk","kYYOOOOOOOok","kOkkkkkkkkuk","kOkOkOkokkuk","kOkOkokokkuk","kOkkkkkkkkuk","kouuuuuuuuuk","kkkkkkkkkkkk"],
+"siren":[".......kk.......","......kAak......","......kAak......",".....kAAaak.....",".....kAkkak.....","....kAAkkaak....","....kAAkkaak....","...kAAAkkaaak...","...kAAAkkaaak...","..kAAAAAaaaaak..","..kAAAAkkaaaak..",".kAAAAAAaaaaaak.",".kkkkkkkkkkkkkk."],
+"check":["........kk",".......kGk","kk....kGgk","kGk..kGgk.","kgGkkGgk..",".kgGGgk...","..kghk....","...kk....."]};
+function sprite(n,s=2){const rows=SPR[n],h=rows.length,w=rows[0].length;let r='';
+  rows.forEach((row,y)=>{let x=0;while(x<w){const c=row[x];if(c==='.'){x++;continue}let k=1;while(row[x+k]===c)k++;r+=`<rect x="${x}" y="${y}" width="${k}" height="1" fill="${PAL[c]}"/>`;x+=k}});
+  return `<svg class="spr" viewBox="0 0 ${w} ${h}" width="${w*s}" height="${h*s}" shape-rendering="crispEdges" aria-hidden="true">${r}</svg>`}
+
+document.querySelectorAll('[data-spr]').forEach(el=>el.innerHTML=sprite(el.dataset.spr,+el.dataset.s||2));
+const BAT=sprite('bat',2),CRATE=sprite('crate',2),CHECK=sprite('check',2);
 
 /* ---------- memória local ---------- */
 const STORE='nostro9-stats-v1';
@@ -411,8 +401,8 @@ function streak(){
 }
 function turnoLine(){
   const n=countReq(doneToday());
-  if(n>=MODES.length){const s=streak();return `<b>Turno completo!</b> Sequência de ${s} ${s===1?'dia':'dias'} seguidos.`}
-  return `Turno de hoje: <b>${n} de ${MODES.length}</b> missões feitas.`;
+  if(n>=MODES.length){const s=streak();return `<b>Turno completo!</b> Sequência: ${s} ${s===1?'dia':'dias'}.`}
+  return `Turno: <b>${n} de ${MODES.length}</b>.`;
 }
 const WD=['D','S','T','Q','Q','S','S'];
 function renderMenu(){
@@ -438,15 +428,14 @@ function renderMenu(){
   $('#week').innerHTML=w;
   const s=streak();
   $('#streak').innerHTML=s
-    ? (all?`<b>${s} ${s===1?'dia':'dias'}</b> seguidos com o turno completo. Volte amanhã!`
-          :`Sequência de <b>${s} ${s===1?'dia':'dias'}</b>. Complete o turno hoje para chegar a ${s+1}!`)
-    : 'Complete as 3 missões hoje para começar uma sequência.';
+    ? `Sequência: <b>${s} ${s===1?'dia':'dias'}</b>`
+    : 'Faça as 3 missões para começar a sequência.';
   const left=MODES.length-n;
   $('#term').innerHTML=
-    n===0?'&gt; ALERTA: forma de vida desconhecida a bordo.<br>&gt; Técnico, 3 missões esperam por você hoje.'
-    :all?(alienDone?'&gt; TURNO COMPLETO. Você até fugiu do Alien!<br>&gt; A estação está segura. Até amanhã!'
-                   :'&gt; TURNO COMPLETO. A estação está segura.<br>&gt; Coragem para o desafio extra? Fuja do Alien!')
-    :`&gt; Bom trabalho, técnico.<br>&gt; ${left===1?'Falta 1 missão':`Faltam ${left} missões`} para fechar o turno.`;
+    n===0?'&gt; ALERTA: Alien a bordo!<br>&gt; 3 missões hoje.'
+    :all?(alienDone?'&gt; Turno completo.<br>&gt; Você fugiu do Alien!'
+                   :'&gt; Turno completo!<br>&gt; Encara o Alien?')
+    :`&gt; ${left===1?'Falta 1 missão':`Faltam ${left} missões`}.`;
 }
 
 /* ---------- som 8-bit ---------- */
@@ -534,7 +523,7 @@ $('#f-again').onclick=()=>{click();againFn&&againFn()};
 function missionEnd(mode,S,again,what){
   const {firsts,total,nw}=S,all=firsts===total;
   finish(`${firsts}/${total}`,all?'Missão cumprida sem erros!':'Missão cumprida!',
-    `${what} ${firsts} de ${total} tarefas foram resolvidas de primeira.${all?'':' Jogue de novo para treinar mais.'}<br><br>${nw?'Missão marcada como feita hoje. ':''}${turnoLine()}`,again);
+    `${firsts} de ${total} de primeira.<br><br>${turnoLine()}`,again);
 }
 /* abre a missão: continua de onde parou ou começa do zero */
 function resume(mode,S,newFn,restoreFn,fresh){
@@ -555,7 +544,7 @@ function pSave(){saveProg('partilha',{i:P.i,firsts:P.firsts,task:{k:P.k,q:P.q,n:
 function pSetup(){
   $('#p-prog').textContent=`Tarefa ${P.i+1}/${P.total}`;segs($('#p-segs'),P.i,P.total);
   conta('#p-conta',P.n,'baterias',P.k,'salas','cada sala');
-  $('#p-brief').innerHTML=`Divida as baterias entre as salas seguras. Toque numa sala para levar uma bateria até ela. Todas precisam ficar iguais.`;
+  $('#p-brief').innerHTML=`Toque nas salas até todas ficarem <b>iguais</b>.`;
   $('#p-ask').innerHTML='';setMsg('#p-msg','');pRender();pSave();
   if(P.done)pAsk(true);
 }
@@ -574,16 +563,16 @@ $('#p-rooms').addEventListener('click',e=>{
 });
 function pCheck(){
   if(P.depot>0)return;
-  if(!P.rooms.every(r=>r===P.rooms[0])){setMsg('#p-msg','As salas estão com quantidades diferentes. Use "Tirar 1" e leve a bateria para outra sala.','err');bad();return}
+  if(!P.rooms.every(r=>r===P.rooms[0])){setMsg('#p-msg','Salas diferentes. Use "Tirar 1".','err');bad();return}
   P.done=true;pRender();good();pAsk();
 }
 function pAsk(restored){
-  setMsg('#p-msg','Todas as salas estão iguais!','good');
+  setMsg('#p-msg','Salas iguais!','good');
   ask($('#p-ask'),`Quanto é <span class="qn">${P.n} ÷ ${P.k}</span>?`,choices(P.q),P.q,(first,box)=>{
     record('partilha',first,`${P.n}÷${P.k}`);if(first)P.firsts++;
     conta('#p-conta',P.n,'baterias',P.k,'salas','cada sala',P.q,'win');
     const last=advance('partilha',P);segs($('#p-segs'),P.i,P.total);
-    explain(box,`<div class="eq">${P.n}÷${P.k}=${P.q}</div><p class="explain">${P.n} dividido em ${P.k} partes iguais dá ${P.q} para cada uma.</p>`,
+    explain(box,`<div class="eq">${P.n}÷${P.k}=${P.q}</div><p class="explain">${P.k} partes iguais de ${P.q}.</p>`,
       last?'Ver relatório':'Próxima tarefa',last?()=>missionEnd('partilha',P,()=>pStart(true),'Todas as salas receberam energia.'):pNew);
   });
 }
@@ -604,7 +593,7 @@ function gSetup(){
   G.sel=[];
   $('#g-prog').textContent=`Tarefa ${G.i+1}/${G.total}`;segs($('#g-segs'),G.i,G.total);
   conta('#g-conta',G.n,'sinais',G.g,'por equipe','equipes');
-  $('#g-brief').innerHTML=`Cada equipe de busca cobre ${G.g} sinais do detector. Toque em ${G.g} sinais para formar uma equipe.`;
+  $('#g-brief').innerHTML=`Toque em <b>${G.g} sinais</b> para formar uma equipe.`;
   $('#g-ask').innerHTML='';$('#g-tools').hidden=G.done;gRender();gSave();
   if(G.done)gAsk();
 }
@@ -614,7 +603,7 @@ function gRender(){
     return `<button class="dot${sel?' sel':''}${t>=0?' team':''}" data-i="${i}" style="left:${p.x}%;top:${p.y}%;${t>=0?`--tc:${TEAM[t%TEAM.length]}`:''}" aria-label="sinal">${t>=0?t+1:''}</button>`;
   }).join('');
   const free=G.team.filter(t=>t<0).length;
-  if(!G.done)setMsg('#g-msg',`Equipes: ${G.groups.length} · Sinais sem equipe: ${free}${G.sel.length?` · Selecionados: ${G.sel.length} de ${G.g}`:''}`);
+  if(!G.done)setMsg('#g-msg',`Equipes: ${G.groups.length} · Soltos: ${free}${G.sel.length?` · ${G.sel.length}/${G.g}`:''}`);
   $('#g-undo').disabled=!G.groups.length||G.done;
 }
 $('#g-scope').addEventListener('click',e=>{
@@ -627,12 +616,12 @@ $('#g-scope').addEventListener('click',e=>{
 });
 $('#g-undo').onclick=()=>{const last=G.groups.pop();if(last){last.forEach(x=>G.team[x]=-1);click();gRender();gSave()}};
 function gAsk(){
-  setMsg('#g-msg','Todos os sinais estão cobertos!','good');
+  setMsg('#g-msg','Todos cobertos!','good');
   ask($('#g-ask'),`Quanto é <span class="qn">${G.n} ÷ ${G.g}</span>?`,choices(G.t),G.t,(first,box)=>{
     record('grupos',first,`${G.n}÷${G.g}`);if(first)G.firsts++;
     conta('#g-conta',G.n,'sinais',G.g,'por equipe','equipes',G.t,'win');
     const last=advance('grupos',G);segs($('#g-segs'),G.i,G.total);
-    explain(box,`<div class="eq">${G.n}÷${G.g}=${G.t}</div><p class="explain">Dentro de ${G.n} cabem ${G.t} grupos de ${G.g}. Dividir também mostra <b>quantos grupos</b> dá para formar.</p>`,
+    explain(box,`<div class="eq">${G.n}÷${G.g}=${G.t}</div><p class="explain">Em ${G.n} cabem ${G.t} grupos de ${G.g}.</p>`,
       last?'Ver relatório':'Próxima tarefa',last?()=>missionEnd('grupos',G,()=>gStart(true),'A estação inteira foi vasculhada.'):gNew);
   });
 }
@@ -648,7 +637,7 @@ function hNew(){
 function hSave(){saveProg('hangar',{i:H.i,firsts:H.firsts,task:{k:H.k,q:H.q,n:H.n,w:H.w,loaded:H.loaded,firstTry:H.firstTry,done:H.done}})}
 function hSetup(){
   $('#h-prog').textContent=`Tarefa ${H.i+1}/${H.total}`;segs($('#h-segs'),H.i,H.total);
-  $('#h-brief').innerHTML=`Escolha a resposta com <b>-</b> e <b>+</b>, depois toque em Carregar para conferir nos trilhos do hangar.`;
+  $('#h-brief').innerHTML=`Escolha com <b>−</b> e <b>+</b> e carregue.`;
   $('#h-ask').innerHTML='';$('#h-load').hidden=H.done;setMsg('#h-msg','');
   $('#h-grid').classList.toggle('win',H.done);hRender();hSave();
   if(H.done){hShow('win');hAsk()}
@@ -676,9 +665,9 @@ $('#h-minus').onclick=()=>hStep(-1);
 $('#h-plus').onclick=()=>hStep(1);
 function hExplainMiss(){
   const w=H.loaded,rows=Math.ceil(H.n/w);
-  if(rows>H.k)setMsg('#h-msg',`${H.n} ÷ ${H.k} não é ${w}: sobraram fileiras sem trilho. A resposta é maior.`,'err');
-  else if(rows<H.k)setMsg('#h-msg',`${H.n} ÷ ${H.k} não é ${w}: ficou trilho vazio. A resposta é menor.`,'err');
-  else setMsg('#h-msg',`${H.n} ÷ ${H.k} não é ${w}: as fileiras ficaram diferentes. Tente outro número.`,'err');
+  if(rows>H.k)setMsg('#h-msg',`Não é ${w}. Sobrou caixa: tente um número maior.`,'err');
+  else if(rows<H.k)setMsg('#h-msg',`Não é ${w}. Trilho vazio: tente um número menor.`,'err');
+  else setMsg('#h-msg',`Não é ${w}. Tente outro número.`,'err');
 }
 $('#h-load').onclick=()=>{
   if(H.done)return;
@@ -687,12 +676,12 @@ $('#h-load').onclick=()=>{
   H.firstTry=false;bad();hShow('bad');hExplainMiss();hSave();
 };
 function hAsk(){
-  setMsg('#h-msg',`Isso! ${H.n} ÷ ${H.k} = ${H.q}. Cada trilho ficou com ${H.q} caixas.`,'good');
+  setMsg('#h-msg',`Isso! ${H.q} caixas por trilho.`,'good');
   const {k,q,n}=H;
-  ask($('#h-ask'),`Agora conte as fileiras no hangar. Quanto é <span class="qn">${n} ÷ ${q}</span>?`,choices(k),k,(first,box)=>{
+  ask($('#h-ask'),`E <span class="qn">${n} ÷ ${q}</span>?`,choices(k),k,(first,box)=>{
     const ok=H.firstTry&&first;record('hangar',ok,`${n}÷${k}`);if(ok)H.firsts++;
     const last=advance('hangar',H);segs($('#h-segs'),H.i,H.total);
-    explain(box,`<div class="fam eq"><span>${n}÷${k}=${q}</span><span>${n}÷${q}=${k}</span></div><p class="explain">O mesmo hangar mostra duas divisões: ${n} caixas em ${k} trilhos dão ${q} por fileira, e ${n} caixas em fileiras de ${q} dão ${k} fileiras.</p>`,
+    explain(box,`<div class="fam eq"><span>${n}÷${k}=${q}</span><span>${n}÷${q}=${k}</span></div><p class="explain">O mesmo hangar mostra as duas contas.</p>`,
       last?'Ver relatório':'Próxima tarefa',last?()=>missionEnd('hangar',H,()=>hStart(true),'O hangar está organizado.'):hNew);
   });
 }
@@ -737,7 +726,7 @@ function dNewQ(){
   $('#d-q').textContent=`${D.n}÷${b}=`;$('#d-ans').textContent='';setMsg('#d-msg','');
   $('#d-hint').hidden=false;$('#d-hits').textContent=`${D.hits}/${D.goal}`;segs($('#d-segs'),D.hits,D.goal);
 }
-function showHint(){$('#d-hint').hidden=true;setMsg('#d-msg',`Dica: quantos grupos de ${D.b} cabem em ${D.n}?`)}
+function showHint(){$('#d-hint').hidden=true;setMsg('#d-msg',`Quantos ${D.b} cabem em ${D.n}?`)}
 $('#d-hint').onclick=()=>{click();showHint()};
 const KEYS=['1','2','3','4','5','6','7','8','9','del','0','ok'];
 $('#d-pad').innerHTML=KEYS.map(k=>`<button class="key pbtn${k==='ok'?' ok':''}${k==='del'?' del':''}" data-k="${k}">${k==='del'?'Apagar':k==='ok'?'OK':k}</button>`).join('');
@@ -756,7 +745,7 @@ function dCheck(){
     good();D.hits++;D.dist=Math.min(100,D.dist+22);
     if(D.hits>=D.goal){
       stopDesafio();clearProg('desafio');const nw=markDone('desafio');
-      finish('10/10','Você fugiu do Alien!',`Você acertou 10 contas e o Alien voltou para os dutos. Nível ${D.level===1?'2 a 5':'2 a 9'} concluído.<br><br>${nw?'Desafio extra marcado como feito hoje. ':''}${turnoLine()}`,()=>{show('desafio');dPlay(D.level)});
+      finish('10/10','Você fugiu do Alien!',`O Alien voltou para os dutos.<br><br>${turnoLine()}`,()=>{show('desafio');dPlay(D.level)});
       return;
     }
     saveProg('desafio',{level:D.level,hits:D.hits});dNewQ();
@@ -772,7 +761,7 @@ function dLoop(now){
   D.dist-=D.speed*dt;D.wob+=dt;
   if(D.dist<=0){
     stopDesafio();clearProg('desafio');[220,185,147,110].forEach((f,i)=>tone(f,.18,'square',.06,i*.16));
-    finish(`${D.hits}/10`,'O Alien te alcançou!','Desta vez ele chegou perto demais. Respire fundo e tente de novo: a dica da tabuada ajuda bastante. O desafio só conta como feito quando você escapa.',()=>{show('desafio');dPlay(D.level)},true);
+    finish(`${D.hits}/10`,'O Alien te alcançou!','Tente de novo. Use a Dica se travar.',()=>{show('desafio');dPlay(D.level)},true);
     return;
   }
   const m=Math.max(0,Math.round(D.dist*.6));

@@ -238,7 +238,7 @@ function readLS(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){retur
 const APPS=[
   {id:'nostro9',planet:'mat',name:'Estação Nostro-9',tag:'Divisão',icon:'station',
    url:'nostro-9/',
-   desc:'Um Alien invadiu a estação. Divida baterias, forme equipes e carregue o hangar para salvar a tripulação.',
+   desc:'Salve a estação dividindo baterias, equipes e caixas.',
    // progresso: 3 missões por dia + desafio opcional "Fuja do Alien"
    progress(){
      const s=readLS('nostro9-stats-v1'),days=(s&&s.days)||{};
@@ -249,7 +249,7 @@ const APPS=[
    }},
   {id:'numeris',planet:'mat',name:'Ruínas de Numeris',tag:'Números romanos',icon:'ruins',
    url:'numeris/',
-   desc:'Ruínas antigas cobertas de inscrições. Decifre os números romanos para abrir os portões do templo.',
+   desc:'Decifre números romanos e abra o templo.',
    // progresso: 3 portões por dia + desafio opcional "Desabamento"
    progress(){
      const s=readLS('numeris-stats-v1'),days=(s&&s.days)||{};
@@ -267,38 +267,27 @@ let st=Object.assign({pilot:'',sound:true,last:'mat'},readLS(ST)||{});
 const save=()=>{try{localStorage.setItem(ST,JSON.stringify(st))}catch(e){}};
 
 /* ---------- sprites ---------- */
-const SPR={
-  ship:{pal:{'#':'#d8d6ff','s':'#8f8cc7','c':'#40d8ff','r':'#ff3d2e'},rows:[
-    "...#...","..###..","..#c#..","..#c#..",".##s##.","#######","r.###.r","..#.#.."]},
-  fl1:{pal:{'f':'#ffb300','y':'#fff3a0'},rows:["..f.f..","..y.y..","..f.f.."]},
-  fl2:{pal:{'f':'#ffb300','y':'#fff3a0','r':'#ff3d2e'},rows:["..y.y..","..f.f..","..r.r.."]},
-  station:{pal:{'#':'#40d8ff','d':'#1f5fc2','h':'#d8d6ff','s':'#8f8cc7','a':'#ffb300'},rows:[
-    "#d.....d#","#d..h..d#","#d.hhh.d#","#ssshsss#","#d.hah.d#","#ssshsss#","#d.hhh.d#","#d..h..d#","#d.....d#"]},
-  ruins:{pal:{'s':'#8f7458','d':'#5a4838','h':'#c9ab82','k':'#2b221d','g':'#3ff2c4'},rows:[
-    ".hhhhhhh.","hsssssssd","hsdkkkdsd","hsdkgkdsd","hsdgkgdsd","hsdkgkdsd","hsdkkkdsd","hsdkkkdsd","hhhhhhhhh"]},
-  flame:{pal:{'#':'#ff3d2e','o':'#ffb300','y':'#fff3a0'},rows:[
-    "..#..",".##..",".###.","##o##","#ooo#","#oyo#",".###."]},
-  flameOff:{pal:{'#':'#4a4790','o':'#3b3780','y':'#5f5ca8'},rows:[
-    "..#..",".##..",".###.","##o##","#ooo#","#oyo#",".###."]},
-  sndOn:{pal:{'#':'#eceaff','w':'#ffb300'},rows:[
-    "...#.....","..##..w..","####...w.","####.w.w.","####...w.","..##..w..","...#....."]},
-  sndOff:{pal:{'#':'#8f8cc7','x':'#ff3d2e'},rows:[
-    "...#.....","..##.....","####.x.x.","####..x..","####.x.x.","..##.....","...#....."]},
-  check:{pal:{'#':'#39e35f'},rows:["......#",".....##","#...##.","##.##..",".###...","..#...."]},
-  back:{pal:{'#':'#eceaff'},rows:["...#","..##",".###","####",".###","..##","...#"]},
-  go:{pal:{'#':'#1a1200'},rows:["#...","##..","###.","####","###.","##..","#..."]},
-  nosig:{pal:{'#':'#8f8cc7','x':'#ff3d2e'},rows:[
-    "....#....","...#.#...","..#...#..","....#....","...#.#...","....#....","....#....","..#####..","x.......x"]},
-};
-function svgRows(rows,pal,s){
-  const h=rows.length,w=rows[0].length;let r='';
-  rows.forEach((row,y)=>{let x=0;while(x<w){const c=row[x];if(!pal[c]){x++;continue}let n=1;while(row[x+n]===c)n++;
-    r+=`<rect x="${x}" y="${y}" width="${n}" height="1" fill="${pal[c]}"/>`;x+=n}});
-  return `<svg class="spr" viewBox="0 0 ${w} ${h}" width="${w*s}" height="${h*s}" shape-rendering="crispEdges" aria-hidden="true">${r}</svg>`;
-}
-const sprite=(n,s=3)=>svgRows(SPR[n].rows,SPR[n].pal,s);
+/* ---------- sprites 16-bit (paleta compartilhada) ---------- */
+const PAL={"C":"#c8faff","D":"#5f5ca8","E":"#34316e","F":"#ffffff","G":"#b6ffcf","L":"#d8d6ff","M":"#9b98d4","O":"#ffb300","R":"#ff7a66","S":"#f6dcb6","W":"#ffffff","X":"#3ff2c4","Y":"#fff3a0","b":"#1f6fa8","c":"#40d8ff","g":"#39e35f","h":"#1f9a3a","k":"#0b0a1a","n":"#123a66","o":"#d97a00","q":"#8a1a10","r":"#e03a26","s":"#d9a066","t":"#a8703a","v":"#6b4520","x":"#1f9a7e"};
+const SPR={"ship":["........kk........",".......kWLk.......",".......kWLk.......","......kWLMLk......","......kLLMMk......","......kLCcMk......",".....kLCcbcMk.....",".....kLccbbMk.....",".....kLbbnnMk.....",".....kLkkkkMk.....","....kLLRRrrMMk....","....kLLrrqqMMk....","...kkLLLLMMMMkk...","..kRkWLLMDMMLkrk..",".kRrkLLLMDMMMkqrk.","kRrqkLLMMDDMMkqqrk","kLMMkLLMDEDMMkDDMk","kLMDkMMDDEEDDkEDMk","kMDEkDEEEEEEEkEEDk",".kkkkEkkkkkkEkkkk.","....kDkMkkDkEk....",".....kkkkkkkk....."],
+"fl1":[".....kYkYYkYk.....",".....kOkOOkOk.....","......O.OO.O......","......r.rr.r......"],
+"fl2":[".....kYkYYkYk.....",".....kYkYYkYk.....",".....kOkOOkOk.....","......O.OO.O......","......r.rr.r......"],
+"station":["kkkkk......kkkkk","kcCck......kbcbk","kbcbk......knbnk","kcbck......kbnbk","kbcbkMkkkkDknbnk","kcbckkLWLMkkbnbk","kbcbkLWLMLMknbnk","kkkkkLLCcMMkkkkk","....kLCcbcMk....","....kLcOobMk....","kkkkkLbbnnMkkkkk","kcCckLLLMMMkbcbk","kbcbkkMLMDkknbnk","kcbckMkkkkDkbnbk","kbcbk......knbnk","kkkkk......kkkkk"],
+"ruins":[".....kkkkkk.....","...kkSSSssskk...",".kkSSSSstsssskk.","kSSSSssstttssssk","kkkkkkkkkkkkkkkk",".kSsktttvvvktsk.",".kSsktkkkkvktsk.",".kSsktkXxkvktsk.",".kSsktkxxkvktsk.",".kSsktkXxkvktsk.",".kSsktkkkkvktsk.",".kSsktttvvvktsk.",".kSsktttvvvktsk.","kkkkkkkkkkkkkkkk","kSSSSssstttssssk","kkkkkkkkkkkkkkkk"],
+"flame":["....k.....","...kRk....","...kRrk...","..kRYrk.k.","..kRYOrkRk",".kRYYOrrRk",".kRYFYOrrk","kRYFFYOork","kRYFFYOOrk","kROYYYOork",".krOOOorqk","..kkrrrqk.","...kkkkk.."],
+"flameOff":["....k.....","...kDk....","...kDEk...","..kDDEk.k.","..kDDEEkDk",".kDDDEEEDk",".kDDMDEEEk","kDDMMDEEEk","kDDMMDEEEk","kDEDDDEEEk",".kEEEEEEkk","..kkEEEkk.","...kkkkk.."],
+"sndOn":["...kk......","..kLk...O..","kkLLk.O..O.","kLLLk..O..O","kLLLk..O..O","kkLLk.O..O.","..kLk...O..","...kk......"],
+"sndOff":["...kk......","..kMk......","kkMMk.r...r","kMMMk..r.r.","kMMMk...r..","kkMMk..r.r.","..kMk.r...r","...kk......"],
+"check":["........kk",".......kGk","kk....kGgk","kGk..kGgk.","kgGkkGgk..",".kgGGgk...","..kghk....","...kk....."],
+"back":["...k","..kL",".kLL","kLLL",".kLL","..kL","...k"],
+"go":["k...","kk..","kkk.","kkkk","kkk.","kk..","k..."],
+"nosig":["...k.....k..","..kD.....Dk.",".kD..kkk..Dk",".kD.kMLMk.Dk",".kD..kLk..Dk","..kD.kLk.Dk.",".....kMk....","....kLMDk...","....kMkDk...","...kMk.kDk..","..kkkkkkkkk.",".....rq....."]};
+function sprite(n,s=2){const rows=SPR[n],h=rows.length,w=rows[0].length;let r='';
+  rows.forEach((row,y)=>{let x=0;while(x<w){const c=row[x];if(c==='.'){x++;continue}let k=1;while(row[x+k]===c)k++;r+=`<rect x="${x}" y="${y}" width="${k}" height="1" fill="${PAL[c]}"/>`;x+=k}});
+  return `<svg class="spr" viewBox="0 0 ${w} ${h}" width="${w*s}" height="${h*s}" shape-rendering="crispEdges" aria-hidden="true">${r}</svg>`}
+
 function shipSVG(s){
-  return `<span style="display:grid;justify-items:center">${sprite('ship',s)}<span style="position:relative;height:${3*s}px;width:${7*s}px">
+  return `<span style="display:grid;justify-items:center">${sprite('ship',s)}<span style="position:relative;height:${5*s}px;width:${18*s}px;margin-top:${-s}px">
   <span class="f1" style="position:absolute;inset:0">${sprite('fl1',s)}</span><span class="f2" style="position:absolute;inset:0">${sprite('fl2',s)}</span></span></span>`;
 }
 
@@ -368,7 +357,7 @@ function renderHome(){
   $('#pilotName').textContent=st.pilot||'—';
   const s=streak();
   $('#streak').className='streak'+(s?'':' zero');
-  $('#streak').innerHTML=`${sprite(s?'flame':'flameOff',3)}<div><b>${s}</b><span>${s===1?'DIA':'DIAS'}<br>SEGUIDOS</span></div>`;
+  $('#streak').innerHTML=`${sprite(s?'flame':'flameOff',2)}<div><b>${s}</b><span>${s===1?'DIA':'DIAS'}<br>SEGUIDOS</span></div>`;
 
   const map=$('#map');
   let h='';
@@ -382,7 +371,7 @@ function renderHome(){
       <span class="globe">${planetSVG(p,3)}</span>
       <span class="info"><span class="pname">${p.name.toUpperCase()}</span>${stat}</span></button>`;
   });
-  map.innerHTML=`<svg class="orbit" id="orbit"></svg>${h}<span class="ship" id="ship">${shipSVG(3)}</span>`;
+  map.innerHTML=`<svg class="orbit" id="orbit"></svg>${h}<span class="ship" id="ship">${shipSVG(2)}</span>`;
   map.querySelectorAll('.row').forEach(b=>b.onclick=()=>{blip();openPlanet(b.dataset.p)});
   drawOrbit();
   typeTerm();
@@ -396,7 +385,7 @@ function drawOrbit(){
   // nave estacionada ao lado do último planeta visitado
   const idx=Math.max(0,PLANETS.findIndex(p=>p.id===st.last)),[sx,sy]=pt(idx),ship=$('#ship');
   const left=idx%2?sx-100:sx+62;
-  ship.style.left=Math.max(0,Math.min(w-21,left))+'px';ship.style.top=(sy-44)+'px';
+  ship.style.left=Math.max(0,Math.min(w-36,left))+'px';ship.style.top=(sy-58)+'px';
 }
 let typing=null;
 function typeTerm(){
@@ -418,14 +407,14 @@ function openPlanet(pid){
   $('#hero').innerHTML=`${planetSVG(p,5)}<h1>${p.name.toUpperCase()}</h1><p>${p.tag}</p>`;
   const apps=appsOf(pid);let h='';
   if(!apps.length){
-    h=`<div class="empty px">${sprite('nosig',4).replace('class="spr"','class="spr" style="margin:0 auto"')}
+    h=`<div class="empty px">${sprite('nosig',3).replace('class="spr"','class="spr" style="margin:0 auto"')}
       <h2>SEM SINAL NESTE PLANETA</h2><p>Nenhuma missão pousou aqui ainda. Novas missões estão a caminho.</p></div>`;
   }else{
     apps.forEach(a=>{
       const pr=a.progress(),all=pr.done>=pr.total;
       let segs='';for(let i=0;i<pr.total;i++)segs+=`<i class="${i<pr.done?'on':''}"></i>`;
       h+=`<article class="card px">
-        <div class="card-h"><div class="icon">${sprite(a.icon,5)}</div>
+        <div class="card-h"><div class="icon">${sprite(a.icon,3)}</div>
           <div><h2>${a.name.toUpperCase()}${pr.played?'':'<span class="new">NOVA</span>'}</h2><div class="tag">${a.tag}</div></div></div>
         <p class="desc">${a.desc}</p>
         <div class="prog"><div class="prog-top"><span class="label">Missões de hoje</span><em class="${all?'all':''}">${pr.done} / ${pr.total}</em></div>
@@ -487,9 +476,9 @@ $('#paisForm').onsubmit=e=>{e.preventDefault();const v=$('#paisName').value.trim
 $('#paisClose').onclick=()=>$('#pais').hidden=true;
 
 /* ---------- início ---------- */
-$('#logoShip').innerHTML=sprite('ship',4);
+$('#logoShip').innerHTML=sprite('ship',2);
 $('#backIco').innerHTML=sprite('back',2);
-$('#onShip').innerHTML=shipSVG(6);
+$('#onShip').innerHTML=shipSVG(4);
 renderSnd();
 if(!st.pilot){$('#onboard').hidden=false}
 renderHome();
