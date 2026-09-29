@@ -212,6 +212,22 @@ button{cursor:pointer;touch-action:manipulation}
 </div>
 
 <script>
+/* som toca mesmo com a chave do iPhone no silencioso */
+(function(){
+  try{if(navigator.audioSession)navigator.audioSession.type='playback'}catch(e){}  // iOS 17+
+  if(navigator.audioSession)return;
+  // iOS antigo: um áudio mudo em loop coloca a página no modo "mídia", que ignora a chave
+  let a=null;
+  function wav(){const n=4410,b=new ArrayBuffer(44+n*2),v=new DataView(b),w=(o,s)=>[...s].forEach((c,i)=>v.setUint8(o+i,c.charCodeAt(0)));
+    w(0,'RIFF');v.setUint32(4,36+n*2,true);w(8,'WAVE');w(12,'fmt ');v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,1,true);
+    v.setUint32(24,44100,true);v.setUint32(28,88200,true);v.setUint16(32,2,true);v.setUint16(34,16,true);w(36,'data');v.setUint32(40,n*2,true);
+    return URL.createObjectURL(new Blob([b],{type:'audio/wav'}))}
+  function unlock(){if(a)return;try{a=new Audio(wav());a.loop=true;a.setAttribute('playsinline','');a.play().catch(()=>{a=null})}catch(e){a=null}}
+  ['touchstart','pointerdown'].forEach(ev=>document.addEventListener(ev,unlock,{passive:true}));
+  document.addEventListener('visibilitychange',()=>{if(!a)return;document.hidden?a.pause():a.play().catch(()=>{})});
+})();
+</script>
+<script>
 /* =========================================================
    CONFIGURAÇÃO — para adicionar um app novo, inclua um item
    em APPS com o id do planeta. O progresso é lido do
