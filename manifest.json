@@ -1,1 +1,1 @@
-{"name":"Nave-Mãe","short_name":"Nave-Mãe","start_url":"./","scope":"./","display":"standalone","background_color":"#0c0b1d","theme_color":"#0c0b1d","icons":[{"src":"apple-touch-icon.png","sizes":"180x180","type":"image/png"}]}
+{"name": "Nave-Mãe", "short_name": "Nave-Mãe", "start_url": "./", "scope": "./", "display": "standalone", "background_color": "#0c0b1d", "theme_color": "#0c0b1d", "icons": [{"src": "apple-touch-icon-v2.png", "sizes": "180x180", "type": "image/png"}, {"src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"}]}
