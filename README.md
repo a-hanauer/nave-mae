@@ -21,9 +21,28 @@ Publicado em `https://a-hanauer.github.io/nave-mae/`.
 - **Primeiro acesso:** a criança digita o nome de piloto.
 - **Mapa estelar:** mostra quantas tarefas faltam hoje em cada planeta e a sequência de dias seguidos com o turno completo.
 - **Tela do planeta:** lista os apps, com o progresso do dia e o botão DECOLAR.
-- **Área dos pais:** segure o logo da Nave-Mãe por 3 segundos para trocar o nome do piloto.
 
 Cada app tem um botão "< Nave-Mãe" na tela inicial para voltar ao mapa.
+
+## Perfil do piloto
+
+Toque no painel do piloto para abrir o perfil, que tem três abas:
+
+- **Piloto:** nome, título, capacete, viseira, traje e tom de pele.
+- **Nave:** modelo (foguete, caça, cargueiro, disco, interceptor), pintura e cor do propulsor.
+- **Conquistas:** 18 objetivos com barra de progresso. Cada um libera itens.
+
+As conquistas medem o total de missões, os dias seguidos, os acertos de primeira, as fugas do Alien, os escapes do Desabamento e o nível em Numeris. O que foi conquistado fica guardado e não volta a travar.
+
+## Configurações e backup
+
+Toque na engrenagem no topo para abrir as configurações:
+
+- **Som:** liga ou desliga.
+- **Exportar:** gera um código de texto com todo o progresso (Nave-Mãe e apps). Guarde no WhatsApp ou nas Notas.
+- **Importar:** cole o código para restaurar. Isso substitui o progresso do aparelho.
+
+Ao criar um app novo, informe em `APPS` o campo `store` com a chave do `localStorage` do app, para ele entrar no backup.
 
 ## iPhone
 
