@@ -465,10 +465,10 @@ addEventListener('pageshow',()=>{$('#warp').hidden=true;if(!$('#home').hidden)re
 /* ---------- estrelas ---------- */
 (function(){const c=$('#stars'),x=c.getContext('2d');let S=[];
   function size(){c.width=Math.ceil(innerWidth/3);c.height=Math.ceil(innerHeight/3);
-    S=Array.from({length:Math.round(c.width*c.height/140)},()=>({x:Math.random()*c.width|0,y:Math.random()*c.height|0,b:Math.random(),t:Math.random()*6}))}
+    S=Array.from({length:Math.round(c.width*c.height/220)},()=>({x:Math.random()*c.width|0,y:Math.random()*c.height|0,b:Math.random(),t:Math.random()*6}))}
   size();addEventListener('resize',()=>{size();if(!$('#home').hidden)drawOrbit()});
   (function f(t){x.fillStyle='#0c0b1d';x.fillRect(0,0,c.width,c.height);
-    S.forEach(s=>{const on=Math.sin(t/700+s.t)>-.6;x.fillStyle=s.b>.9?'#ffb300':s.b>.75?'#40d8ff':on?'#6b68b0':'#2a2860';x.fillRect(s.x,s.y,1,1)});
+    S.forEach(s=>{const on=Math.sin(t/700+s.t)>-.6;x.fillStyle=s.b>.93?'#4f4a86':s.b>.8?'#2f4a63':on?'#34316a':'#1f1d44';x.fillRect(s.x,s.y,1,1)});
     requestAnimationFrame(f)})(0);
 })();
 

@@ -687,7 +687,7 @@ $('#snd').onclick=()=>{S.sound=!S.sound;save();renderSnd();sfx.tap()};
   size();addEventListener('resize',size);
   (function f(t){x.fillStyle='#0f0b16';x.fillRect(0,0,c.width,c.height);
     for(let y=0;y<c.height;y+=8)for(let i=((y/8)%2)*6;i<c.width;i+=12){x.fillStyle='#140f1c';x.fillRect(i|0,y,11,7)}
-    P.forEach(p=>{p.y+=p.v;if(p.y>c.height)p.y=0;x.fillStyle=p.b>.85?'#3ff2c4':p.b>.6?'#5a4838':'#2a2133';x.fillRect(p.x|0,p.y|0,1,1)});
+    P.forEach(p=>{p.y+=p.v;if(p.y>c.height)p.y=0;x.fillStyle=p.b>.9?'#1f5a4c':p.b>.6?'#3a2f2a':'#241c2c';x.fillRect(p.x|0,p.y|0,1,1)});
     requestAnimationFrame(f)})(0);
 })();
 
