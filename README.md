@@ -29,7 +29,7 @@ Cada app tem um botão "< Nave-Mãe" na tela inicial para voltar ao mapa.
 A barra inferior tem quatro abas:
 
 - **Mapa:** planetas e missões do dia. O painel do piloto leva ao Hangar. É a única tela com o cabeçalho NAVE-MÃE e a engrenagem das configurações; nas outras, o topo é o título da seção ou o botão de voltar.
-- **Missões:** lista do que falta fazer hoje em todos os apps, agrupada por jogo. As obrigatórias aparecem primeiro, depois os extras, e as feitas ficam riscadas no fim. Tocar numa missão abre o jogo já dentro dela (link `app/#m=missao`). Um selo na aba mostra quantas faltam; com tudo feito ele vira um check verde.
+- **Missões:** lista do que falta fazer hoje em todos os apps, agrupada por jogo. As obrigatórias aparecem primeiro, depois os extras, e as feitas ficam riscadas no fim. Tocar numa missão abre o jogo já dentro dela (link `app/#m=missao`). Um selo na aba mostra quantas faltam; com tudo feito ele vira um check verde. Cada jogo abre e fecha tocando no cabeçalho: começa aberto quando falta missão e fechado quando está completo (fechado, mostra só o progresso).
   Quando todas as missões do dia estão feitas, a aba mostra a nave em velocidade de cruzeiro, uma frase do dia, a sequência, o total de missões e quanto falta para as novas. Os desafios extras que faltam ficam em "Treino extra" e as missões feitas ficam recolhidas. Na primeira vez do dia toca uma musiquinha.
 - **Hangar:** uma página só, com a chave **PILOTO | NAVE** no topo.
   - **Piloto (Vestiário):** traje EVA industrial. Use ◀ ▶ para trocar título, capacete, viseira, traje, tom de pele, emblema no ombro e equipamento (lanterna, tanques de O₂, rastreador, maçarico, jetpack).

@@ -221,7 +221,14 @@ button{cursor:pointer;touch-action:manipulation}
 .tsegs i{flex:1;height:12px;background:#0a0920;box-shadow:inset 0 0 0 2px var(--edge2)}
 .tsegs i.on{background:var(--green);box-shadow:inset 0 -4px 0 0 #1f9a3a}
 .tapp{padding:14px 14px 6px;margin-bottom:20px}
-.tapp-h{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.tapp-h{display:flex;align-items:center;gap:12px;width:100%;margin:0;padding:0 0 8px;text-align:left}
+.tapp.open .tapp-h{margin-bottom:12px;padding-bottom:0}
+.tapp-h .chev{flex:none;display:grid;place-items:center;width:20px;height:20px}
+.tapp.open .tapp-h .chev .spr{transform:rotate(90deg)}
+.tapp-h .mini{display:flex;gap:3px;margin-top:6px}
+.tapp-h .mini i{width:14px;height:6px;background:rgba(0,0,0,.4);box-shadow:inset 0 0 0 2px var(--edge2)}
+.tapp-h .mini i.on{background:var(--green);box-shadow:none}
+.tapp.open .tapp-h .mini{display:none}
 .tapp-h .ic{flex:none;width:44px;height:44px;display:grid;place-items:center;background:var(--panel2);box-shadow:inset 0 0 0 3px var(--line)}
 .tapp-h b{display:block;font-family:var(--px);font-size:10px;line-height:1.4}
 .tapp-h span{display:block;font-size:18px;color:var(--dim);margin-top:2px}
@@ -601,7 +608,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 
 <script>
 /* atualização automática: compara com version.json e recarrega quando sai versão nova */
-const APP_V='20261004150853';
+const APP_V='20261004151004';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     if(v&&v!==APP_V&&sessionStorage.getItem('upd')!==v){sessionStorage.setItem('upd',v);location.replace(location.pathname+'?v='+v+H0)}}catch(e){}}
@@ -1193,21 +1200,25 @@ function renderTasks(){
   h+=APPS.map(a=>{const ts=appTasks(a).filter(t=>!allDone||!(t.opt&&!t.done)),r=ts.filter(t=>!t.opt),d=r.filter(t=>t.done).length;
     const order=[...ts.filter(t=>!t.done&&!t.opt),...ts.filter(t=>!t.done&&t.opt),...ts.filter(t=>t.done)];
     const pl=PLANETS.find(p=>p.id===a.planet);
-    return `<div class="tapp px"><div class="tapp-h"><span class="ic">${sprite(a.icon,2)}</span><div><b>${a.name.toUpperCase()}</b><span>${pl?pl.name:''} · ${a.tag}</span></div><em class="${d===r.length?'all':''}">${d}/${r.length}</em></div>
-      ${order.map(t=>`<button class="task${t.done?' done':''}${t.opt?' opt':''}${a.id+':'+t.id===nx?' next':''}" data-a="${a.id}" data-m="${t.id}">
+    const open=a.id in tFold?tFold[a.id]:d<r.length; // aberto por padrão só quando falta missão
+    return `<div class="tapp px${open?' open':''}"><button class="tapp-h" data-fold="${a.id}" aria-expanded="${open}"><span class="ic">${sprite(a.icon,2)}</span><div><b>${a.name.toUpperCase()}</b><span>${pl?pl.name:''} · ${a.tag}</span>
+      <span class="mini">${r.map(t=>`<i class="${t.done?'on':''}"></i>`).join('')}</span></div><em class="${d===r.length?'all':''}">${d}/${r.length}</em><span class="chev">${sprite('fwd',2)}</span></button>
+      ${!open?'':order.map(t=>`<button class="task${t.done?' done':''}${t.opt?' opt':''}${a.id+':'+t.id===nx?' next':''}" data-a="${a.id}" data-m="${t.id}">
         <span class="box">${t.done?sprite('check',2):''}</span>
         <span><b>${t.n.toUpperCase()}${t.opt?'<span class="xtra">EXTRA</span>':''}</b><small>${t.sub}</small></span>
         <span class="go2">${t.done?'DE NOVO':a.id+':'+t.id===nx?'PRÓXIMA':'IR'}${sprite('fwd',2)}</span></button>`).join('')}</div>`}).join('');
   $('#tList').innerHTML=h;bindTasks()}
 /* check branco do selo (pixel na grade de 2px) */
 const BADGE_OK=(()=>{const R=['......WW','.....WW.','W...WW..','WW.WW...','.WWW....','..W.....'];let r='';R.forEach((row,y)=>[...row].forEach((c,x)=>{if(c==='W')r+=`<rect x="${x}" y="${y}" width="1" height="1" fill="#fff"/>`}));return `<svg viewBox="0 0 8 6" width="16" height="12" shape-rendering="crispEdges" aria-label="Tudo feito">${r}</svg>`})();
+const tFold={}; // escolha de abrir/fechar cada jogo na aba Missões (vale enquanto o app está aberto)
 let tDoneOpen=false,AD_ST=null;
 /* céu da cena: três camadas de estrelas em velocidades diferentes (cada camada repete na metade direita) */
 function adStars(){if(!AD_ST){const L=(n,cls)=>{let b='';for(let i=0;i<n;i++){const x=Math.random()*50,y=4+Math.random()*90;b+=`<b style="left:${x}%;top:${y|0}%"></b><b style="left:${x+50}%;top:${y|0}%"></b>`}return `<div class="ly ${cls}">${b}</div>`};
   AD_ST=L(18,'l1')+L(9,'l2')+L(4,'l3')}return AD_ST}
 const ADMSG=['Base em segurança, {n}.','Todas as estações operando. Bom trabalho!','O comando está orgulhoso de você, {n}.','Missões do dia cumpridas. Descanse os motores.','Turno encerrado. A galáxia agradece!','Relatório enviado: nota máxima, {n}!','Combustível cheio para amanhã.'];
 function bindTasks(){$('#tList').querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>takeoff(APPS.find(a=>a.id===b.dataset.a),'#m='+b.dataset.m));
-  const tg=$('#tDoneTg');if(tg)tg.onclick=()=>{tDoneOpen=!tDoneOpen;SND.open();renderTasks()}}
+  const tg=$('#tDoneTg');if(tg)tg.onclick=()=>{tDoneOpen=!tDoneOpen;SND.open();renderTasks()};
+  $('#tList').querySelectorAll('[data-fold]').forEach(b=>b.onclick=()=>{const id=b.dataset.fold;tFold[id]=b.getAttribute('aria-expanded')!=='true';SND.tab(tFold[id]?1:0);renderTasks()})}
 let toastT=0;function toast(t){const el=$('#toast');el.textContent=t;el.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>el.hidden=true,2600)}
 $('#pilotBtn').onclick=()=>{SND.open();go('vest')};
 document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>{b.closest('.overlay').hidden=true});
