@@ -45,6 +45,21 @@ Toque na engrenagem no topo para abrir as configurações:
 - **Exportar:** gera um código de texto com todo o progresso (Nave-Mãe e apps). Guarde no WhatsApp ou nas Notas.
 - **Importar:** cole o código para restaurar. Isso substitui o progresso do aparelho.
 
+## Área dos pais
+
+Escondida nas configurações: **segure o título CONFIGURAÇÕES por 3 segundos** (uma linha amarela enche embaixo dele). Os jogos não têm mais área dos pais própria.
+
+A interface é limpa, sem o estilo 16-bits, e tem filtro de período no topo (7 dias, 30 dias, tudo):
+
+- **Visão geral:** acerto de primeira, missões concluídas, dias com turno completo, dias seguidos (e recorde), calendário das últimas 5 semanas, destaques (missão que precisa de atenção e ponto forte) e lista de matérias.
+- **Matéria:** números da matéria e cada jogo com suas missões.
+- **Jogo:** números do jogo, missões, gráfico dos últimos 14 dias, erros mais comuns, troca de nível (Numeris) e apagar histórico do jogo.
+- **Missão:** acerto, respostas, dias concluída, última vez, acerto por dia (14 dias) e o que mais errou. Os botões no topo trocam entre as missões do jogo.
+
+Faixas: Ótimo (85% ou mais), Bom (65% a 84%), Atenção (abaixo de 65%), Poucos dados (menos de 5 respostas).
+
+Para isso, cada jogo grava no seu `localStorage` um `log` diário (`{data:{missao:[respostas,certas]}}`) e os erros por missão (`errM`). Esses dois começaram a ser gravados nesta versão; os totais e os erros gerais vêm de antes.
+
 Ao criar um app novo, informe em `APPS` o campo `store` com a chave do `localStorage` do app, para ele entrar no backup.
 
 ## iPhone
