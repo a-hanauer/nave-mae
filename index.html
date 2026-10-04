@@ -24,7 +24,7 @@
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html{background:var(--bg)}
-body{background:var(--bg);color:var(--ink);font-family:var(--vt);font-size:22px;line-height:1.15;min-height:100vh;min-height:100dvh;overflow-x:hidden;-webkit-text-size-adjust:100%;
+body{background:var(--bg);color:var(--ink);font-family:var(--vt);font-size:22px;line-height:1.15;min-height:100vh;min-height:100dvh;overflow-x:hidden;overflow-x:clip;-webkit-text-size-adjust:100%;
   -webkit-touch-callout:none;-webkit-user-select:none;user-select:none;overscroll-behavior-y:none;
   -webkit-font-smoothing:none;image-rendering:pixelated}
 button,input{font:inherit;color:inherit;background:none;border:0}
@@ -173,7 +173,7 @@ button{cursor:pointer;touch-action:manipulation}
 .vtitle{display:flex;align-items:baseline;justify-content:space-between;margin:2px 0 14px}
 .vtitle h2{font-family:var(--px);font-size:14px;color:var(--ink)}
 .vtitle span{font-family:var(--px);font-size:9px;color:var(--dim)}
-.stage{position:relative;height:270px;overflow:hidden;margin-bottom:0;
+.stage{position:sticky;top:env(safe-area-inset-top);z-index:6;height:250px;overflow:hidden;margin-bottom:0;
   box-shadow:0 -3px 0 0 var(--line),0 3px 0 0 var(--line),-3px 0 0 0 var(--line),3px 0 0 0 var(--line);filter:drop-shadow(5px 5px 0 #000)}
 .stage .floor{position:absolute;left:0;right:0;bottom:0;height:44px}
 .st-vest{background:repeating-linear-gradient(90deg,#1f1c40 0 46px,#1a1838 46px 48px),#1f1c40}
