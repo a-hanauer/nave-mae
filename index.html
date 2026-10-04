@@ -571,6 +571,8 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
   <div class="modal px cfg">
     <h2 id="cfgTitle">CONFIGURAÇÕES</h2>
     <div class="row2"><span class="label">Som</span><button class="tog px" id="cfgSnd"></button></div>
+    <div class="row2"><span class="label">Tocar no silencioso</span><button class="tog px" id="cfgSil"></button></div>
+    <p class="note" id="cfgSilNote"></p>
     <div class="sec" style="margin-top:26px"><span class="label">Exportar progresso</span></div>
     <p class="note">Gere um código e guarde no WhatsApp ou nas Notas.</p>
     <button class="btn alt" id="expGo">GERAR CÓDIGO</button>
@@ -616,7 +618,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 
 <script>
 /* atualização automática: compara com version.json e recarrega quando sai versão nova */
-const APP_V='20261004173438';
+const APP_V='20261004173652';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     if(v&&v!==APP_V&&sessionStorage.getItem('upd')!==v){sessionStorage.setItem('upd',v);location.replace(location.pathname+'?v='+v+H0)}}catch(e){}}
@@ -624,9 +626,13 @@ const APP_V='20261004173438';
 })();
 </script>
 <script>
-/* som: modo "ambiente" mistura com a música ou o podcast que estiver tocando no celular (não interrompe outras mídias).
-   Regra do iOS: nesse modo a chave de silencioso do iPhone também silencia o app. */
-try{if(navigator.audioSession)navigator.audioSession.type='ambient'}catch(e){}
+/* som no iPhone (opção "Tocar no silencioso" das configurações da Nave-Mãe):
+   desligada = modo "ambiente": mistura com a música do celular, e a chave de silencioso cala o app;
+   ligada = modo "reprodução": toca mesmo no silencioso, mas o iOS pausa as outras mídias.
+   O iOS não oferece a sites um modo que faça as duas coisas. */
+function navAudioMode(){let on=false;try{on=!!(JSON.parse(localStorage.getItem('navemae-v1'))||{}).silentPlay}catch(e){}
+  try{if(navigator.audioSession)navigator.audioSession.type=on?'playback':'ambient'}catch(e){}}
+navAudioMode();addEventListener('pageshow',navAudioMode);
 /* vibração leve a cada toque.
    iPhone: o Safari não tem API de vibração; o único jeito é o toque do próprio dedo cair num interruptor nativo
    (<input type=checkbox switch>, iOS 18+). Por isso cada botão recebe por dentro um <label> invisível que cobre
@@ -1334,9 +1340,12 @@ async function readCode(code){code=code.replace(/\s+/g,'');const m=code.match(/^
   let bytes=ub64(m[2]);if(m[1]){if(!window.DecompressionStream)throw 1;bytes=await pipe(bytes,DecompressionStream)}
   const o=JSON.parse(new TextDecoder().decode(bytes));if(!o||o.v!==1||typeof o.d!=='object')throw 0;
   const keys=Object.keys(o.d);if(!keys.length||keys.some(k=>!BACKUP().includes(k)))throw 0;keys.forEach(k=>JSON.parse(o.d[k]));return o}
-function renderCfg(){const b=$('#cfgSnd');b.textContent=st.sound?'LIGADO':'DESLIGADO';b.classList.toggle('on',st.sound)}
+function renderCfg(){const b=$('#cfgSnd');b.textContent=st.sound?'LIGADO':'DESLIGADO';b.classList.toggle('on',st.sound);
+  const s=$('#cfgSil');s.textContent=st.silentPlay?'LIGADO':'DESLIGADO';s.classList.toggle('on',!!st.silentPlay);
+  $('#cfgSilNote').textContent=st.silentPlay?'O som sai mesmo com a chave no silencioso, mas pausa a música do celular.':'Toca junto com a música do celular. Com a chave no silencioso, o app fica mudo.'}
 $('#cfgBtn').onclick=()=>{SND.open();renderCfg();$('#expBox').hidden=true;$('#impWarn').hidden=true;$('#impErr').hidden=true;$('#impCode').value='';$('#cfg').hidden=false};
 $('#cfgSnd').onclick=()=>{st.sound=!st.sound;save();renderCfg();renderSnd();SND.toggle()};
+$('#cfgSil').onclick=()=>{st.silentPlay=!st.silentPlay;save();navAudioMode();renderCfg();SND.toggle()};
 $('#expGo').onclick=async()=>{SND.data();$('#expCode').value=await makeCode();$('#expMsg').textContent='';$('#expBox').hidden=false};
 $('#expCopy').onclick=async()=>{const t=$('#expCode');let ok=false;
   try{await navigator.clipboard.writeText(t.value);ok=true}catch(e){try{t.focus();t.select();t.setSelectionRange(0,t.value.length);ok=document.execCommand('copy')}catch(e2){}}
