@@ -41,6 +41,10 @@ Missão feita aparece sempre como **FEITO**. Jogar de novo uma missão feita no 
 
 Itens bloqueados aparecem como prévia com cadeado e mostram o objetivo que falta. Os itens só dependem das missões diárias: total de missões, dias seguidos, acertos de primeira nas missões e nível em Numeris. Os desafios extras (Fuja do Alien, Desabamento) dão medalhas de honra, contadas a cada fuga, sem itens. O que foi conquistado fica guardado e não volta a travar.
 
+## Arte 16-bit
+
+Todo desenho usa a mesma grade: cada pixel de arte ocupa 2px na tela. Os sprites continuam escritos em linhas de texto (`SPR`), e o `spriteRows(rows, s, cores)` amplia a arte com Scale2x/Scale3x até a grade de 2px (`s` 4 → 2x, `s` 6 → 3x), aplica luz de cima-esquerda, sombra embaixo-direita, faixas de volume com pontilhado e contorno colorido. Use sempre `s` par (2, 4, 6, 8). Os planetas são gerados direto na resolução final, com rampa de 7 tons.
+
 ## Configurações e backup
 
 Toque na engrenagem no topo para abrir as configurações:
