@@ -295,7 +295,7 @@ button{cursor:pointer;touch-action:manipulation}
         <span id="logoShip"></span>
         <span><b>NAVE-MÃE</b><small>BASE ESCOLAR</small></span>
       </div>
-      <div class="tools"><button class="snd px" id="snd" aria-label="Som"></button><button class="snd px" id="cfgBtn" aria-label="Configurações"></button></div>
+      <div class="tools"><button class="snd px" id="cfgBtn" aria-label="Configurações"></button></div>
     </header>
   <!-- MAPA -->
   <section id="home">
@@ -887,8 +887,7 @@ addEventListener('pageshow',()=>{$('#warp').hidden=true;checkGoals();go(view==='
 })();
 
 /* ---------- som on/off ---------- */
-function renderSnd(){$('#snd').innerHTML=sprite(st.sound?'sndOn':'sndOff',3);$('#snd').setAttribute('aria-label',st.sound?'Desligar som':'Ligar som')}
-$('#snd').onclick=()=>{st.sound=!st.sound;save();renderSnd();blip()};
+function renderSnd(){} /* o som fica só nas configurações */
 
 
 /* =================== TELAS =================== */
