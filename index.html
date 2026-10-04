@@ -178,7 +178,9 @@ button{cursor:pointer;touch-action:manipulation}
 .vtitle{display:flex;align-items:baseline;justify-content:space-between;margin:0 0 14px}
 .vtitle h2{font-family:var(--px);font-size:14px;color:var(--ink)}
 .vtitle span{font-family:var(--px);font-size:9px;color:var(--dim)}
-.stage{position:sticky;top:calc(16px + env(safe-area-inset-top));z-index:6;height:250px;overflow:hidden;margin-bottom:0;
+/* cabeçalho, chave PILOTO|NAVE e palco ficam no topo (abaixo da Dynamic Island) enquanto as opções rolam */
+.ctop{position:sticky;top:0;z-index:6;background:var(--bg);margin:calc(-32px - env(safe-area-inset-top)) -16px 0;padding:calc(32px + env(safe-area-inset-top)) 16px 0}
+.stage{position:relative;height:250px;overflow:hidden;margin-bottom:0;
   box-shadow:0 -4px 0 0 var(--line),0 4px 0 0 var(--line),-4px 0 0 0 var(--line),4px 0 0 0 var(--line);filter:drop-shadow(4px 4px 0 #000)}
 /* faixa que cobre o respiro acima do palco quando ele gruda no topo */
 #topCover{position:fixed;left:0;right:0;top:0;height:calc(16px + env(safe-area-inset-top));background:var(--bg);z-index:5;pointer-events:none}
@@ -487,21 +489,16 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 
   <!-- HANGAR: piloto + nave -->
   <section id="crew" hidden>
-    <div class="vtitle"><h2>HANGAR</h2></div>
+    <div class="ctop">    <div class="vtitle"><h2>HANGAR</h2></div>
     <div class="seg" id="seg"><button class="px" data-s="vest"><span data-ico="t_pil"></span>PILOTO</button><button class="px" data-s="hang"><span data-ico="t_hng"></span>NAVE</button></div>
-    <div id="vest">
-    <div class="stage st-vest">
+    <div class="stage st-vest" id="vStage">
       <div class="glow"></div><div class="lamp"></div>
       <div class="lockers l" data-lk="2"></div><div class="lockers r" data-lk="2"></div>
       <div class="floor"></div>
       <div class="vhero" id="vHero"></div>
       <span class="ptag" id="vTag" hidden>🔒 PRÉVIA</span>
     </div>
-    <div class="plate"><div><span class="ptitle" id="vTitle"></span><b id="vName"></b></div><button class="small px" id="nmEdit">EDITAR NOME</button></div>
-    <div class="sels" id="vSels"></div>
-    </div>
-    <div id="hang" hidden>
-    <div class="stage st-hang" id="hStage">
+    <div class="stage st-hang" id="hStage" hidden>
       <div class="win" id="hWin"></div>
       <div class="beam l"></div><div class="beam r"></div><i class="lite l"></i><i class="lite r"></i>
       <div class="floor"></div>
@@ -509,6 +506,12 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
       <div class="hship" id="hShip"></div>
       <span class="ptag" id="hTag" hidden>🔒 PRÉVIA</span>
     </div>
+    </div>
+    <div id="vest">
+    <div class="plate"><div><span class="ptitle" id="vTitle"></span><b id="vName"></b></div><button class="small px" id="nmEdit">EDITAR NOME</button></div>
+    <div class="sels" id="vSels"></div>
+    </div>
+    <div id="hang" hidden>
     <div class="plate"><div><span class="ptitle">Nave de</span><b id="hName"></b></div></div>
     <div class="sels" id="hSels"></div>
     </div>
@@ -612,7 +615,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 
 <script>
 /* atualização automática: compara com version.json e recarrega quando sai versão nova */
-const APP_V='20261004171705';
+const APP_V='20261004171816';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     if(v&&v!==APP_V&&sessionStorage.getItem('upd')!==v){sessionStorage.setItem('upd',v);location.replace(location.pathname+'?v='+v+H0)}}catch(e){}}
@@ -1183,11 +1186,11 @@ function go(v){if(v==='vest'||v==='hang'){sub=v;v='crew'}view=v;draft=null;VIEWS
   $('#topHdr').hidden=v!=='home'; // cabeçalho NAVE-MÃE só no mapa
   document.querySelectorAll('.tabbar [data-v]').forEach(b=>b.classList.toggle('on',b.dataset.v===(v==='planet'?'home':v)));
   if(v==='home')renderHome();if(v==='tasks')renderTasks();if(v==='medals')renderMedals();
-  if(v==='crew'){$('#vest').hidden=sub!=='vest';$('#hang').hidden=sub!=='hang';
+  if(v==='crew'){$('#vest').hidden=$('#vStage').hidden=sub!=='vest';$('#hang').hidden=$('#hStage').hidden=sub!=='hang';
     document.querySelectorAll('#seg [data-s]').forEach(b=>b.classList.toggle('on',b.dataset.s===sub));sub==='vest'?renderVest():renderHang()}
   window.scrollTo(0,0);coverTop()}
 /* respiro do topo: quando o palco do hangar gruda, cobre o que passa por cima dele */
-function coverTop(){const s=view==='crew'?[...document.querySelectorAll('#crew .stage')].find(x=>x.offsetParent):null;
+function coverTop(){const s=null; // os blocos fixos agora têm fundo próprio
   $('#topCover').hidden=!(s&&s.getBoundingClientRect().top<=parseFloat(getComputedStyle(s).top)+.5)}
 addEventListener('scroll',coverTop,{passive:true});
 document.querySelectorAll('.tabbar [data-v]').forEach(b=>b.onclick=()=>{SND.tab(['home','tasks','crew','medals'].indexOf(b.dataset.v));go(b.dataset.v)});
