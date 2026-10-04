@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#0f0b16">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -12,6 +12,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
 <style>
+/* sem zoom de dois toques (cada área com rolagem precisa da regra) */
+*{touch-action:manipulation}
 :root{
   --bg:#0f0b16;--panel:#1c1624;--panel2:#2a2133;--line:#4a3b52;--ink:#f1eadf;--dim:#a597a8;
   --st1:#2b221d;--st2:#5a4838;--st3:#8f7458;--st4:#c9ab82;--st5:#e8d3ad;
@@ -223,6 +225,12 @@ button,a{font:inherit;color:inherit;background:none;border:0;text-decoration:non
 .shake{animation:shake .3s steps(4)}
 @keyframes shake{25%{transform:translateX(-6px)}50%{transform:translateX(6px)}75%{transform:translateX(-3px)}}
 </style>
+<script>
+/* sem zoom: bloqueia pinça e dois toques no app inteiro */
+['gesturestart','gesturechange','gestureend'].forEach(t=>document.addEventListener(t,e=>e.preventDefault(),{passive:false}));
+document.addEventListener('touchmove',e=>{if(e.touches.length>1)e.preventDefault()},{passive:false});
+document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
+</script>
 </head>
 <body>
 <canvas id="bgc"></canvas>
@@ -328,7 +336,7 @@ button,a{font:inherit;color:inherit;background:none;border:0;text-decoration:non
 
 <script>
 /* atualização automática: compara com version.json e recarrega quando sai versão nova */
-const APP_V='20261004104151';
+const APP_V='20261004104346';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     if(v&&v!==APP_V&&sessionStorage.getItem('upd')!==v){sessionStorage.setItem('upd',v);location.replace(location.pathname+'?v='+v+H0)}}catch(e){}}
