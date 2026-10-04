@@ -32,7 +32,7 @@ body{
   padding-inline:16px;-webkit-tap-highlight-color:transparent;-webkit-font-smoothing:none;
 }
 body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:50;background:repeating-linear-gradient(0deg,rgba(0,0,0,.18) 0 2px,transparent 2px 4px)}
-#app{max-width:480px;margin:0 auto;padding-block:32px 48px;padding-inline:4px}
+#app{max-width:480px;margin:0 auto;padding-block:32px 16px;padding-inline:4px}
 button{font:inherit;color:inherit;touch-action:manipulation;cursor:pointer;-webkit-user-select:none;user-select:none;border:0}
 button:focus-visible{outline:4px solid var(--hazard);outline-offset:6px}
 button:disabled{cursor:default}
@@ -223,6 +223,17 @@ h2{margin:0;font-family:var(--px);font-size:14px;line-height:1.7;font-weight:400
 .key.ok{--b:var(--amber-d);--bg-c:var(--amber);color:var(--ink);font-size:14px}
 .key.del{font-size:8px;color:var(--dim)}
 .hintbtn{align-self:center;padding:10px 16px;font-family:var(--px);font-size:9px;color:var(--dim)}
+/* ---- telas de jogo cabem na tela do celular, sem rolar ---- */
+#partilha,#grupos,#hangar,#desafio,#d-play{gap:14px}
+#radar{width:auto;max-width:100%;height:min(190px,20dvh);margin:0 auto}
+.readout .hintbtn{padding:9px 12px}
+.asking .story,#hangar.asking .stepper{display:none}
+/* pergunta final da tarefa sobe como painel fixo no rodapé */
+.ask{position:fixed;left:0;right:0;bottom:0;z-index:30;max-width:480px;margin:0 auto;max-height:72dvh;overflow:auto;
+  padding:16px 16px calc(16px + env(safe-area-inset-bottom));animation:sheet .24s steps(4)}
+.ask+.ask{margin-top:0}
+@keyframes sheet{from{transform:translateY(100%)}}
+@media (max-height:700px){#partilha,#grupos,#hangar,#desafio,#d-play{gap:10px}.stepper{padding:8px 14px}.story{font-size:18px}.hangar{gap:4px;padding:8px}.conta{padding:12px 8px 10px}.conta strong{font-size:26px}.key{padding:11px 0}#radar{height:min(150px,18dvh)}}
 
 /* ---- fim + pais ---- */
 .big{font-family:var(--px);font-size:40px;line-height:1.2;color:var(--amber);text-shadow:4px 4px 0 var(--amber-d)}
@@ -329,11 +340,10 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
   </div>
   <div id="d-play" class="screen" hidden>
     <div class="radar-wrap px"><canvas id="radar" width="120" height="66"></canvas></div>
-    <div class="readout"><span class="d" id="d-dist">40m</span><span class="h" id="d-hits">0/10</span></div>
+    <div class="readout"><span class="d" id="d-dist">40m</span><button class="hintbtn pbtn" id="d-hint">Dica</button><span class="h" id="d-hits">0/10</span></div>
     <div class="segs" id="d-segs"></div>
     <div class="problem" id="d-problem"><span id="d-q">24÷6=</span><span class="answer" id="d-ans"></span></div>
     <p class="msg" id="d-msg" style="text-align:center"></p>
-    <button class="hintbtn pbtn" id="d-hint">Dica</button>
     <div class="pad" id="d-pad"></div>
   </div>
 </section>
@@ -352,7 +362,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 
 <script>
 /* atualização automática: compara com version.json e recarrega quando sai versão nova */
-const APP_V='20261004112339';
+const APP_V='20261004113446';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     if(v&&v!==APP_V&&sessionStorage.getItem('upd')!==v){sessionStorage.setItem('upd',v);location.replace(location.pathname+'?v='+v+H0)}}catch(e){}}
@@ -510,6 +520,7 @@ function ask(host,question,opts,correct,done){
     };
     wrap.appendChild(b);
   });
+  host.closest('.screen').classList.add('asking');
   host.appendChild(box);box.scrollIntoView({behavior:'smooth',block:'nearest'});
   return box;
 }
@@ -576,7 +587,7 @@ function pSetup(){
   $('#p-prog').textContent=`Tarefa ${P.i+1}/${P.total}`;segs($('#p-segs'),P.i,P.total);
   conta('#p-conta',P.n,'baterias',P.k,'salas','cada sala');
   $('#p-brief').innerHTML=`Toque nas salas até todas ficarem <b>iguais</b>.`;
-  $('#p-ask').innerHTML='';setMsg('#p-msg','');pRender();pSave();
+  $('#p-ask').innerHTML='';$('#partilha').classList.remove('asking');setMsg('#p-msg','');pRender();pSave();
   if(P.done)pAsk(true);
 }
 const bats=n=>BAT.repeat(n);
@@ -625,7 +636,7 @@ function gSetup(){
   $('#g-prog').textContent=`Tarefa ${G.i+1}/${G.total}`;segs($('#g-segs'),G.i,G.total);
   conta('#g-conta',G.n,'sinais',G.g,'por equipe','equipes');
   $('#g-brief').innerHTML=`Toque em <b>${G.g} sinais</b> para formar uma equipe.`;
-  $('#g-ask').innerHTML='';$('#g-tools').hidden=G.done;gRender();gSave();
+  $('#g-ask').innerHTML='';$('#grupos').classList.remove('asking');$('#g-tools').hidden=G.done;gRender();gSave();
   if(G.done)gAsk();
 }
 function gRender(){
@@ -669,7 +680,7 @@ function hSave(){saveProg('hangar',{i:H.i,firsts:H.firsts,task:{k:H.k,q:H.q,n:H.
 function hSetup(){
   $('#h-prog').textContent=`Tarefa ${H.i+1}/${H.total}`;segs($('#h-segs'),H.i,H.total);
   $('#h-brief').innerHTML=`Escolha com <b>−</b> e <b>+</b> e carregue.`;
-  $('#h-ask').innerHTML='';$('#h-load').hidden=H.done;setMsg('#h-msg','');
+  $('#h-ask').innerHTML='';$('#hangar').classList.remove('asking');$('#h-load').hidden=H.done;setMsg('#h-msg','');
   $('#h-grid').classList.toggle('win',H.done);hRender();hSave();
   if(H.done){hShow('win');hAsk()}
   else if(H.loaded&&H.loaded!==H.q){hShow(H.loaded===H.w?'bad':'');hExplainMiss()}
