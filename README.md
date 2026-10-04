@@ -28,9 +28,11 @@ Cada app tem um botão "< Nave-Mãe" na tela inicial para voltar ao mapa.
 
 A barra inferior tem quatro abas:
 
-- **Mapa:** planetas e missões do dia. O painel do piloto leva ao Vestiário.
-- **Piloto (Vestiário):** o piloto de corpo inteiro. Traje EVA industrial. Use ◀ ▶ para trocar título, capacete, viseira, traje, tom de pele, emblema no ombro e equipamento (lanterna, tanques de O₂, rastreador, maçarico, jetpack).
-- **Hangar:** a nave na plataforma. Use ◀ ▶ para trocar modelo (foguete, caça, cargueiro, disco, interceptor), pintura e propulsor.
+- **Mapa:** planetas e missões do dia. O painel do piloto leva ao Hangar.
+- **Missões:** lista do que falta fazer hoje em todos os apps, agrupada por jogo. As obrigatórias aparecem primeiro, depois os extras, e as feitas ficam riscadas no fim. Tocar numa missão abre o jogo já dentro dela (link `app/#m=missao`). Um selo na aba mostra quantas faltam.
+- **Hangar:** uma página só, com a chave **PILOTO | NAVE** no topo.
+  - **Piloto (Vestiário):** traje EVA industrial. Use ◀ ▶ para trocar título, capacete, viseira, traje, tom de pele, emblema no ombro e equipamento (lanterna, tanques de O₂, rastreador, maçarico, jetpack).
+  - **Nave:** a nave na plataforma. Use ◀ ▶ para trocar modelo (foguete, caça, cargueiro, disco, interceptor), pintura e propulsor.
 - **Conquistas:** parede de medalhas por categoria (bronze, prata, ouro e níveis acima). Tocar numa medalha mostra o progresso e as recompensas.
 
 Itens bloqueados aparecem como prévia com cadeado e mostram o objetivo que falta. Os objetivos medem o total de missões, os dias seguidos, os acertos de primeira, as fugas do Alien, os escapes do Desabamento e o nível em Numeris. O que foi conquistado fica guardado e não volta a travar.
@@ -62,7 +64,8 @@ Abra o link no Safari, toque em Compartilhar e escolha **Adicionar à Tela de In
 
 Os ids dos planetas são `mat`, `por`, `cie`, `ing`, `his` e `geo`.
 
-3. Na tela inicial do app, inclua o link de volta: `<a href="../">&lt; Nave-Mãe</a>`.
+3. Liste as missões do app no campo `tasks` (id, nome, subtítulo e `opt:true` para extras). No app, leia `#m=<id>` no carregamento para abrir a missão direto.
+4. Na tela inicial do app, inclua o link de volta: `<a href="../">&lt; Nave-Mãe</a>`.
 
 ## Dados
 

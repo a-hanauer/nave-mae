@@ -203,6 +203,38 @@ button{cursor:pointer;touch-action:manipulation}
   box-shadow:0 3px 0 0 var(--line),-3px 0 0 0 var(--line),3px 0 0 0 var(--line)}
 .plate b{display:block;font-family:var(--px);font-size:13px;margin-top:6px;word-break:break-all}
 .small{padding:10px 12px;font-family:var(--px);font-size:8px;color:var(--amber)}
+/* ---------- chave piloto | nave ---------- */
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px}
+.seg button{display:flex;align-items:center;justify-content:center;gap:10px;padding:12px 0;font-family:var(--px);font-size:10px;color:var(--dim)}
+.seg button .spr{opacity:.5}
+.seg button.on{color:var(--amber);box-shadow:0 -3px 0 0 var(--amber),0 3px 0 0 var(--amber),-3px 0 0 0 var(--amber),3px 0 0 0 var(--amber)}
+.seg button.on .spr{opacity:1}
+/* ---------- missões ---------- */
+.tsegs{display:flex;gap:5px;margin-bottom:22px}
+.tsegs i{flex:1;height:12px;background:#0a0920;box-shadow:inset 0 0 0 2px var(--line)}
+.tsegs i.on{background:var(--green);box-shadow:inset 0 -3px 0 0 #1f9a3a}
+.tapp{padding:14px 14px 6px;margin-bottom:20px}
+.tapp-h{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.tapp-h .ic{flex:none;width:44px;height:44px;display:grid;place-items:center;background:var(--panel2);box-shadow:inset 0 0 0 3px var(--line)}
+.tapp-h b{display:block;font-family:var(--px);font-size:10px;line-height:1.4}
+.tapp-h span{display:block;font-size:18px;color:var(--dim);margin-top:2px}
+.tapp-h em{margin-left:auto;font-style:normal;font-family:var(--px);font-size:9px;color:var(--amber)}
+.tapp-h em.all{color:var(--green)}
+.task{display:grid;grid-template-columns:28px 1fr auto;gap:12px;align-items:center;width:100%;padding:12px 2px;text-align:left;box-shadow:0 -2px 0 0 #2a2760}
+.task:first-of-type{box-shadow:none}
+.task .box{width:22px;height:22px;display:grid;place-items:center;box-shadow:inset 0 0 0 3px var(--amber)}
+.task.opt .box{box-shadow:inset 0 0 0 3px var(--line)}
+.task b{display:block;font-family:var(--px);font-size:9px;line-height:1.5;color:var(--ink)}
+.task small{display:block;font-size:18px;color:var(--dim)}
+.task .go2{display:flex;align-items:center;gap:8px;font-family:var(--px);font-size:8px;color:var(--amber)}
+.task .xtra{font-family:var(--px);font-size:7px;color:#1a1200;background:var(--cyan);padding:4px 5px;margin-left:8px;vertical-align:2px}
+.task.done .box{box-shadow:none}
+.task.done b{color:var(--dim);text-decoration:line-through}
+.task.done .go2{color:var(--dim)}
+.task:active{background:var(--panel2)}
+.alldone{display:grid;justify-items:center;gap:12px;padding:20px 16px;margin-bottom:20px;text-align:center}
+.alldone b{font-family:var(--px);font-size:11px;color:var(--green);line-height:1.5}
+.alldone p{color:var(--dim)}
 /* ---------- seletores ◀ ▶ ---------- */
 .sels{display:grid;gap:12px}
 .sel{padding:12px 12px 12px 16px}
@@ -270,7 +302,7 @@ button{cursor:pointer;touch-action:manipulation}
 
     <button class="pilot px" id="pilotBtn" aria-label="Abrir perfil">
       <span class="pport" id="pPort"></span>
-      <span class="pinfo"><span class="ptitle" id="pTitle"></span><span class="name" id="pilotName"></span><span class="pedit" style="display:block;font-family:var(--px);font-size:7px;color:var(--dim);margin-top:8px">VESTIÁRIO ▸</span></span>
+      <span class="pinfo"><span class="ptitle" id="pTitle"></span><span class="name" id="pilotName"></span><span class="pedit" style="display:block;font-family:var(--px);font-size:7px;color:var(--dim);margin-top:8px">HANGAR ▸</span></span>
       <span class="streak" id="streak"></span>
     </button>
 
@@ -281,9 +313,18 @@ button{cursor:pointer;touch-action:manipulation}
     <p class="foot">Toque num planeta para ver as missões</p>
   </section>
 
-  <!-- VESTIÁRIO -->
-  <section id="vest" hidden>
-    <div class="vtitle"><h2>VESTIÁRIO</h2></div>
+  <!-- MISSÕES -->
+  <section id="tasks" hidden>
+    <div class="vtitle"><h2>MISSÕES DE HOJE</h2><span id="tCount"></span></div>
+    <div class="tsegs" id="tSegs"></div>
+    <div id="tList"></div>
+  </section>
+
+  <!-- HANGAR: piloto + nave -->
+  <section id="crew" hidden>
+    <div class="vtitle"><h2>HANGAR</h2></div>
+    <div class="seg" id="seg"><button class="px" data-s="vest"><span data-ico="t_pil"></span>PILOTO</button><button class="px" data-s="hang"><span data-ico="t_hng"></span>NAVE</button></div>
+    <div id="vest">
     <div class="stage st-vest">
       <div class="glow"></div><div class="lamp"></div>
       <div class="lockers l" data-lk="2"></div><div class="lockers r" data-lk="2"></div>
@@ -293,11 +334,8 @@ button{cursor:pointer;touch-action:manipulation}
     </div>
     <div class="plate"><div><span class="ptitle" id="vTitle"></span><b id="vName"></b></div><button class="small px" id="nmEdit">EDITAR NOME</button></div>
     <div class="sels" id="vSels"></div>
-  </section>
-
-  <!-- HANGAR -->
-  <section id="hang" hidden>
-    <div class="vtitle"><h2>HANGAR</h2></div>
+    </div>
+    <div id="hang" hidden>
     <div class="stage st-hang" id="hStage">
       <div class="win" id="hWin"></div>
       <div class="beam l"></div><div class="beam r"></div><i class="lite l"></i><i class="lite r"></i>
@@ -308,6 +346,7 @@ button{cursor:pointer;touch-action:manipulation}
     </div>
     <div class="plate"><div><span class="ptitle">Nave de</span><b id="hName"></b></div></div>
     <div class="sels" id="hSels"></div>
+    </div>
   </section>
 
   <!-- CONQUISTAS -->
@@ -388,8 +427,8 @@ button{cursor:pointer;touch-action:manipulation}
 
 <nav class="tabbar"><div class="in">
   <button data-v="home" class="on"><span data-ico="t_map"></span>MAPA</button>
-  <button data-v="vest"><span data-ico="t_pil"></span>PILOTO</button>
-  <button data-v="hang"><span data-ico="t_hng"></span>HANGAR</button>
+  <button data-v="tasks"><span data-ico="t_mis"></span>MISSÕES<i class="badge" id="tBadge" hidden></i></button>
+  <button data-v="crew"><span data-ico="t_hng"></span>HANGAR</button>
   <button data-v="medals"><span data-ico="t_med"></span>CONQUISTAS<i class="badge" id="mBadge" hidden></i></button>
 </div></nav>
 
@@ -436,6 +475,8 @@ function readLS(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){retur
 const APPS=[
   {id:'nostro9',planet:'mat',name:'Estação Nostro-9',tag:'Divisão',icon:'station',
    url:'nostro-9/',store:'nostro9-stats-v1',
+   tasks:[{id:'partilha',n:'Dividir baterias',sub:'Partes iguais'},{id:'grupos',n:'Equipes de busca',sub:'Quantos grupos?'},
+          {id:'hangar',n:'Carga do hangar',sub:'Resolva e confira'},{id:'desafio',n:'Fuja do Alien',sub:'Tabuada contra o relógio',opt:true}],
    desc:'Salve a estação dividindo baterias, equipes e caixas.',
    // progresso: 3 missões por dia + desafio opcional "Fuja do Alien"
    progress(){
@@ -447,6 +488,8 @@ const APPS=[
    }},
   {id:'numeris',planet:'mat',name:'Ruínas de Numeris',tag:'Números romanos',icon:'ruins',
    url:'numeris/',store:'numeris-stats-v1',
+   tasks:[{id:'montar',n:'Montar a senha',sub:'Número → romano'},{id:'ler',n:'Ler as inscrições',sub:'Romano → número'},
+          {id:'sub',n:'Portão da subtração',sub:'IV, IX, XL…'},{id:'desafio',n:'Desabamento',sub:'Ache as falsas',opt:true}],
    desc:'Decifre números romanos e abra o templo.',
    // progresso: 3 portões por dia + desafio opcional "Desabamento"
    progress(){
@@ -503,6 +546,7 @@ const SPR={"m_rocket":["........kk........",".......kWLk.......",".......kWLk...
 function spriteRows(rows,s=2,ov){const h=rows.length,w=rows[0].length;let r='';
   rows.forEach((row,y)=>{let x=0;while(x<w){const c=row[x];if(c==='.'){x++;continue}let k=1;while(row[x+k]===c)k++;r+=`<rect x="${x}" y="${y}" width="${k}" height="1" fill="${(ov&&ov[c])||PAL[c]}"/>`;x+=k}});
   return `<svg class="spr" viewBox="0 0 ${w} ${h}" width="${w*s}" height="${h*s}" shape-rendering="crispEdges" aria-hidden="true">${r}</svg>`}
+SPR.t_mis=["....kkkk....","..kkkMMkkk..",".kSSkkkkSSk.",".kSSSSSSSSk.",".kSgkSkkkSk.",".kSSSSSSSSk.",".kSgkSkkkSk.",".kSSSSSSSSk.",".kSOkSkkkSk.",".kSSSSSSSSk.",".kkkkkkkkkk.","............"];
 const sprite=(n,s=2,ov)=>spriteRows(SPR[n],s,ov);
 /* piloto EVA: emblema no ombro + equipamento em camadas */
 const PATCH_AT=[1, 16];
@@ -730,6 +774,7 @@ function renderHome(){
   $('#pilotName').textContent=st.pilot||'—';$('#pTitle').textContent=item('title',L.title).n;
   $('#pPort').innerHTML=pilotSVG(2,L);$('#logoShip').innerHTML=shipOnly(2,L);
   const fresh=st.got.filter(g=>!st.seen.includes(g)).length;$('#mBadge').hidden=!fresh;$('#mBadge').textContent=fresh;
+  const pend=pendingCount();$('#tBadge').hidden=!pend;$('#tBadge').textContent=pend;
   const s=streak();
   $('#streak').className='streak'+(s?'':' zero');
   $('#streak').innerHTML=`${sprite(s?'flame':'flameOff',2)}<div><b>${s}</b><span>${s===1?'DIA':'DIAS'}<br>SEGUIDOS</span></div>`;
@@ -807,7 +852,7 @@ function openPlanet(pid){
 $('#back').onclick=()=>{blip();go('home')};
 
 /* ---------- decolagem (warp) ---------- */
-function takeoff(a){
+function takeoff(a,hash=''){
   launch();
   const c=$('#warp'),x=c.getContext('2d'),W=c.width=Math.ceil(innerWidth/3),H=c.height=Math.ceil(innerHeight/3);
   c.style.width='100%';c.style.height='100%';c.hidden=false;
@@ -816,7 +861,7 @@ function takeoff(a){
   (function f(t){const k=(t-t0)/700;x.fillStyle=`rgba(12,11,29,${.35})`;x.fillRect(0,0,W,H);
     pts.forEach(p=>{const r0=p.r,r1=p.r+=p.v*(2+k*14);x.strokeStyle=p.c;x.lineWidth=1;x.beginPath();
       x.moveTo(W/2+Math.cos(p.a)*r0|0,H/2+Math.sin(p.a)*r0|0);x.lineTo(W/2+Math.cos(p.a)*r1|0,H/2+Math.sin(p.a)*r1|0);x.stroke()});
-    if(k<1)requestAnimationFrame(f);else{x.fillStyle='#fff';x.fillRect(0,0,W,H);setTimeout(()=>{location.href=a.url},60)}})(t0);
+    if(k<1)requestAnimationFrame(f);else{x.fillStyle='#fff';x.fillRect(0,0,W,H);setTimeout(()=>{location.href=a.url+hash},60)}})(t0);
 }
 addEventListener('pageshow',()=>{$('#warp').hidden=true;if(!$('#home').hidden)renderHome()});
 
@@ -836,12 +881,34 @@ $('#snd').onclick=()=>{st.sound=!st.sound;save();renderSnd();blip()};
 
 
 /* =================== TELAS =================== */
-const VIEWS=['home','planet','vest','hang','medals'];let view='home';
-function go(v){view=v;draft=null;VIEWS.forEach(x=>$('#'+x).hidden=x!==v);
+const VIEWS=['home','planet','tasks','crew','medals'];let view='home',sub='vest';
+function go(v){if(v==='vest'||v==='hang'){sub=v;v='crew'}view=v;draft=null;VIEWS.forEach(x=>$('#'+x).hidden=x!==v);
   document.querySelectorAll('.tabbar [data-v]').forEach(b=>b.classList.toggle('on',b.dataset.v===(v==='planet'?'home':v)));
-  if(v==='home')renderHome();if(v==='vest')renderVest();if(v==='hang')renderHang();if(v==='medals')renderMedals();
+  if(v==='home')renderHome();if(v==='tasks')renderTasks();if(v==='medals')renderMedals();
+  if(v==='crew'){$('#vest').hidden=sub!=='vest';$('#hang').hidden=sub!=='hang';
+    document.querySelectorAll('#seg [data-s]').forEach(b=>b.classList.toggle('on',b.dataset.s===sub));sub==='vest'?renderVest():renderHang()}
   window.scrollTo(0,0)}
 document.querySelectorAll('.tabbar [data-v]').forEach(b=>b.onclick=()=>{blip();go(b.dataset.v)});
+document.querySelectorAll('#seg [data-s]').forEach(b=>b.onclick=()=>{if(b.dataset.s===sub)return;blip();go(b.dataset.s)});
+
+/* ---- missões de hoje ---- */
+function appTasks(a){const d=((readLS(a.store)||{}).days||{})[dkey()]||[];return (a.tasks||[]).map(t=>Object.assign({},t,{done:d.includes(t.id),app:a}))}
+function pendingCount(){return APPS.flatMap(appTasks).filter(t=>!t.opt&&!t.done).length}
+function renderTasks(){
+  const all=APPS.flatMap(appTasks),req=all.filter(t=>!t.opt),ok=req.filter(t=>t.done).length;
+  $('#tCount').textContent=`${ok} / ${req.length}`;
+  $('#tSegs').innerHTML=req.map((t,i)=>`<i class="${i<ok?'on':''}"></i>`).join('');
+  let h=ok===req.length?`<div class="alldone px">${sprite('check',4)}<b>TUDO FEITO HOJE!</b><p>Os extras continuam abertos.</p></div>`:'';
+  h+=APPS.map(a=>{const ts=appTasks(a),r=ts.filter(t=>!t.opt),d=r.filter(t=>t.done).length;
+    const order=[...ts.filter(t=>!t.done&&!t.opt),...ts.filter(t=>!t.done&&t.opt),...ts.filter(t=>t.done)];
+    const pl=PLANETS.find(p=>p.id===a.planet);
+    return `<div class="tapp px"><div class="tapp-h"><span class="ic">${sprite(a.icon,2)}</span><div><b>${a.name.toUpperCase()}</b><span>${pl?pl.name:''} · ${a.tag}</span></div><em class="${d===r.length?'all':''}">${d}/${r.length}</em></div>
+      ${order.map(t=>`<button class="task${t.done?' done':''}${t.opt?' opt':''}" data-a="${a.id}" data-m="${t.id}">
+        <span class="box">${t.done?sprite('check',2):''}</span>
+        <span><b>${t.n.toUpperCase()}${t.opt?'<span class="xtra">EXTRA</span>':''}</b><small>${t.sub}</small></span>
+        <span class="go2">${t.done?'DE NOVO':'IR'}${sprite('fwd',2)}</span></button>`).join('')}</div>`}).join('');
+  $('#tList').innerHTML=h;
+  $('#tList').querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>takeoff(APPS.find(a=>a.id===b.dataset.a),'#m='+b.dataset.m))}
 let toastT=0;function toast(t){const el=$('#toast');el.textContent=t;el.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>el.hidden=true,2600)}
 $('#pilotBtn').onclick=()=>{blip();go('vest')};
 document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>{b.closest('.overlay').hidden=true});
