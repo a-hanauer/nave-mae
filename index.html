@@ -224,7 +224,7 @@ button{cursor:pointer;touch-action:manipulation}
 .tapp-h span{display:block;font-size:18px;color:var(--dim);margin-top:2px}
 .tapp-h em{margin-left:auto;font-style:normal;font-family:var(--px);font-size:9px;color:var(--amber)}
 .tapp-h em.all{color:var(--green)}
-.task{display:grid;grid-template-columns:28px 1fr auto;gap:12px;align-items:center;width:100%;padding:12px 2px;text-align:left;box-shadow:0 -2px 0 0 #2a2760}
+.task{display:grid;grid-template-columns:28px 1fr auto;gap:12px;align-items:center;width:calc(100% + 20px);margin:0 -10px;padding:12px 12px;text-align:left;box-shadow:0 -2px 0 0 #2a2760}
 .task:first-of-type{box-shadow:none}
 .task .box{width:22px;height:22px;display:grid;place-items:center;box-shadow:inset 0 0 0 3px var(--amber)}
 .task.opt .box{box-shadow:inset 0 0 0 3px var(--line)}
@@ -232,9 +232,23 @@ button{cursor:pointer;touch-action:manipulation}
 .task small{display:block;font-size:18px;color:var(--dim)}
 .task .go2{display:flex;align-items:center;gap:8px;font-family:var(--px);font-size:8px;color:var(--amber)}
 .task .xtra{font-family:var(--px);font-size:7px;color:#1a1200;background:var(--cyan);padding:4px 5px;margin-left:8px;vertical-align:2px}
+/* feita: fundo verde e tudo apagado; próxima: moldura âmbar e seta piscando */
+.task.done{background:#10241a}
 .task.done .box{box-shadow:none}
-.task.done b{color:var(--dim);text-decoration:line-through}
+.task.done b{color:var(--dim);text-decoration:line-through;text-decoration-thickness:2px}
+.task.done b,.task.done small,.task.done .go2{opacity:.55}
 .task.done .go2{color:var(--dim)}
+.task.done+.task.done{box-shadow:0 -2px 0 0 #1c3a28}
+.task.next{background:var(--panel2);box-shadow:inset 0 0 0 3px var(--amber)!important}
+.task.next+.task{box-shadow:none}
+.task.next .go2{color:var(--amber)}
+.task:not(.next):not(.done) .go2{color:var(--dim)}
+.task.next .go2 .spr{animation:nudge .8s steps(2) infinite}
+@keyframes nudge{50%{transform:translateX(4px)}}
+.card.done{background:#10241a}
+.card.done .card-h .icon,.card.done .card-h .tag,.card.done .desc,.card.done .extra{opacity:.55}
+.card.done .card-h h2{color:var(--dim)}
+.card.done .ok-tag{display:inline-block;margin-left:8px;padding:4px 5px;font-size:7px;color:#062b12;background:var(--green);vertical-align:2px;text-decoration:none}
 .task:active{background:var(--panel2)}
 .alldone{display:grid;justify-items:center;gap:12px;padding:20px 16px;margin-bottom:20px;text-align:center}
 .alldone b{font-family:var(--px);font-size:11px;color:var(--green);line-height:1.5}
@@ -553,7 +567,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 
 <script>
 /* atualização automática: compara com version.json e recarrega quando sai versão nova */
-const APP_V='20261004110332';
+const APP_V='20261004111004';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     if(v&&v!==APP_V&&sessionStorage.getItem('upd')!==v){sessionStorage.setItem('upd',v);location.replace(location.pathname+'?v='+v+H0)}}catch(e){}}
@@ -975,17 +989,17 @@ function openPlanet(pid){
     h=`<div class="empty px">${sprite('nosig',3).replace('class="spr"','class="spr" style="margin:0 auto"')}
       <h2>SEM SINAL NESTE PLANETA</h2><p>Nenhuma missão pousou aqui ainda. Novas missões estão a caminho.</p></div>`;
   }else{
-    apps.forEach(a=>{
-      const pr=a.progress(),all=pr.done>=pr.total;
+    apps.map(a=>[a,a.progress()]).sort((x,y)=>(x[1].done>=x[1].total)-(y[1].done>=y[1].total)).forEach(([a,pr])=>{ // completos vão para o fim
+      const all=pr.done>=pr.total;
       let segs='';for(let i=0;i<pr.total;i++)segs+=`<i class="${i<pr.done?'on':''}"></i>`;
-      h+=`<article class="card px">
+      h+=`<article class="card px${all?' done':''}">
         <div class="card-h"><div class="icon">${sprite(a.icon,3)}</div>
-          <div><h2>${a.name.toUpperCase()}${pr.played?'':'<span class="new">NOVA</span>'}</h2><div class="tag">${a.tag}</div></div></div>
+          <div><h2>${a.name.toUpperCase()}${pr.played?'':'<span class="new">NOVA</span>'}${all?'<span class="ok-tag">FEITO HOJE</span>':''}</h2><div class="tag">${a.tag}</div></div></div>
         <p class="desc">${a.desc}</p>
         <div class="prog"><div class="prog-top"><span class="label">Missões de hoje</span><em class="${all?'all':''}">${pr.done} / ${pr.total}</em></div>
           <div class="segs">${segs}</div>
           ${pr.extra?`<div class="extra${pr.extra.ok?' ok':''}"><span class="dot"></span>${pr.extra.label}${pr.extra.ok?' — feito':' — opcional'}</div>`:''}</div>
-        <button class="btn" data-go="${a.id}">${all?'JOGAR DE NOVO':'DECOLAR'}${sprite('go',3)}</button>
+        <button class="btn${all?' alt':''}" data-go="${a.id}">${all?'JOGAR DE NOVO':'DECOLAR'}${sprite('go',3)}</button>
       </article>`;
     });
     h+=`<div class="slot"><b>SLOT VAZIO</b>Nova missão em breve</div>`;
@@ -1048,14 +1062,15 @@ function renderTasks(){
   $('#tCount').textContent=`${ok} / ${req.length}`;
   $('#tSegs').innerHTML=req.map((t,i)=>`<i class="${i<ok?'on':''}"></i>`).join('');
   let h=ok===req.length?`<div class="alldone px">${sprite('check',4)}<b>TUDO FEITO HOJE!</b><p>Os extras continuam abertos.</p></div>`:'';
+  const nxA=APPS.find(a=>appTasks(a).some(t=>!t.opt&&!t.done)),nx=nxA&&nxA.id+':'+appTasks(nxA).find(t=>!t.opt&&!t.done).id; // próxima obrigatória (só uma na lista)
   h+=APPS.map(a=>{const ts=appTasks(a),r=ts.filter(t=>!t.opt),d=r.filter(t=>t.done).length;
     const order=[...ts.filter(t=>!t.done&&!t.opt),...ts.filter(t=>!t.done&&t.opt),...ts.filter(t=>t.done)];
     const pl=PLANETS.find(p=>p.id===a.planet);
     return `<div class="tapp px"><div class="tapp-h"><span class="ic">${sprite(a.icon,2)}</span><div><b>${a.name.toUpperCase()}</b><span>${pl?pl.name:''} · ${a.tag}</span></div><em class="${d===r.length?'all':''}">${d}/${r.length}</em></div>
-      ${order.map(t=>`<button class="task${t.done?' done':''}${t.opt?' opt':''}" data-a="${a.id}" data-m="${t.id}">
+      ${order.map(t=>`<button class="task${t.done?' done':''}${t.opt?' opt':''}${a.id+':'+t.id===nx?' next':''}" data-a="${a.id}" data-m="${t.id}">
         <span class="box">${t.done?sprite('check',2):''}</span>
         <span><b>${t.n.toUpperCase()}${t.opt?'<span class="xtra">EXTRA</span>':''}</b><small>${t.sub}</small></span>
-        <span class="go2">${t.done?'DE NOVO':'IR'}${sprite('fwd',2)}</span></button>`).join('')}</div>`}).join('');
+        <span class="go2">${t.done?'DE NOVO':a.id+':'+t.id===nx?'PRÓXIMA':'IR'}${sprite('fwd',2)}</span></button>`).join('')}</div>`}).join('');
   $('#tList').innerHTML=h;
   $('#tList').querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>takeoff(APPS.find(a=>a.id===b.dataset.a),'#m='+b.dataset.m))}
 let toastT=0;function toast(t){const el=$('#toast');el.textContent=t;el.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>el.hidden=true,2600)}
