@@ -41,7 +41,7 @@ Itens bloqueados aparecem como prévia com cadeado e mostram o objetivo que falt
 
 Toque na engrenagem no topo para abrir as configurações:
 
-- **Som:** liga ou desliga.
+- **Som:** liga ou desliga em todo o app, inclusive nos jogos (é o único lugar com essa opção).
 - **Exportar:** gera um código de texto com todo o progresso (Nave-Mãe e apps). Guarde no WhatsApp ou nas Notas.
 - **Importar:** cole o código para restaurar. Isso substitui o progresso do aparelho.
 
