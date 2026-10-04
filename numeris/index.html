@@ -236,7 +236,6 @@ button,a{font:inherit;color:inherit;background:none;border:0;text-decoration:non
   <header class="brand">
     <div class="logo" id="logo" aria-label="Ruínas de Numeris">XIV</div>
     <div class="t"><p>PLANETA MATEMÁTICA</p><h1>Ruínas de Numeris</h1></div>
-    <button class="snd px pbtn" id="snd" aria-label="Som">SOM</button>
   </header>
   <div class="term"><span id="term"></span><span class="cursor"></span></div>
 
@@ -436,7 +435,9 @@ function sprite(n,s=2){const rows=SPR[n],h=rows.length,w=rows[0].length;let r=''
 
 /* =================== som =================== */
 let AC=null;
-function tone(f,d=.08,t=0,v=.06,type='square'){if(!S.sound)return;try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();
+const navSound=()=>{try{return (JSON.parse(localStorage.getItem('navemae-v1'))||{}).sound!==false}catch(e){return true}}; /* som definido nas configurações da Nave-Mãe */
+let soundOn=navSound();addEventListener('pageshow',()=>{soundOn=navSound()});
+function tone(f,d=.08,t=0,v=.06,type='square'){if(!soundOn)return;try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();
   const o=AC.createOscillator(),g=AC.createGain(),n=AC.currentTime+t;o.type=type;o.frequency.setValueAtTime(f,n);
   g.gain.setValueAtTime(v,n);g.gain.setValueAtTime(0,n+d);o.connect(g).connect(AC.destination);o.start(n);o.stop(n+d+.02)}catch(e){}}
 document.addEventListener('touchstart',function u(){try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();AC.resume&&AC.resume()}catch(e){}document.removeEventListener('touchstart',u)},{passive:true});
@@ -677,8 +678,6 @@ $('#kNo').onclick=()=>{$('#kConfirm').hidden=true;$('#kReset').hidden=false};
 $('#kYes').onclick=()=>{const snd=S.sound;S=fresh();S.sound=snd;save();openPais()};
 
 /* =================== som on/off =================== */
-function renderSnd(){$('#snd').textContent=S.sound?'SOM':'MUDO';$('#snd').style.color=S.sound?'var(--amber)':'var(--dim)'}
-$('#snd').onclick=()=>{S.sound=!S.sound;save();renderSnd();sfx.tap()};
 
 /* =================== fundo (poeira e tochas) =================== */
 (function(){const c=$('#bgc'),x=c.getContext('2d');let P=[];
@@ -694,7 +693,6 @@ $('#snd').onclick=()=>{S.sound=!S.sound;save();renderSnd();sfx.tap()};
 /* =================== início =================== */
 $('#tabIco').innerHTML=sprite('tab',2);
 document.querySelectorAll('[data-ico]').forEach(el=>el.innerHTML=sprite(el.dataset.ico,el.dataset.ico==='tab'?3:2));
-renderSnd();
 addEventListener('pageshow',()=>{if(current==='menu')renderMenu()});
 show('menu');
 /* atalho vindo da Nave-Mãe: #m=montar abre a missão direto */

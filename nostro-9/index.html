@@ -243,7 +243,6 @@ h2{margin:0;font-family:var(--px);font-size:14px;line-height:1.7;font-weight:400
       <p class="eyebrow">Terminal de bordo</p>
       <h1>Estação Nostro-9</h1>
     </div>
-    <button class="icon-btn pbtn" id="mute" aria-pressed="true" aria-label="Som ligado">SOM</button>
   </header>
   <div class="terminal px"><span id="term"></span><span class="cursor"></span></div>
   <div class="turno px">
@@ -455,7 +454,9 @@ function renderMenu(){
 }
 
 /* ---------- som 8-bit ---------- */
-let actx=null,soundOn=true;
+const navSound=()=>{try{return (JSON.parse(localStorage.getItem('navemae-v1'))||{}).sound!==false}catch(e){return true}}; /* som definido nas configurações da Nave-Mãe */
+let actx=null,soundOn=navSound();
+addEventListener('pageshow',()=>{soundOn=navSound()});
 function tone(f,d=.08,type='square',vol=.04,delay=0){
   if(!soundOn)return;
   try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();
@@ -467,7 +468,6 @@ const good=()=>{tone(523,.08);tone(659,.08,'square',.04,.08);tone(784,.12,'squar
 const bad=()=>{tone(196,.12,'square',.05);tone(147,.2,'square',.05,.12)};
 const click=()=>tone(440,.035,'square',.025);
 const fanfare=()=>[523,659,784,1047,784,1047].forEach((f,i)=>tone(f,.11,'square',.045,i*.11));
-$('#mute').onclick=e=>{soundOn=!soundOn;const b=e.currentTarget;b.setAttribute('aria-pressed',soundOn);b.textContent=soundOn?'SOM':'MUDO';b.setAttribute('aria-label',soundOn?'Som ligado':'Som desligado')};
 
 /* ---------- navegação ---------- */
 function show(id){if(id==='menu')renderMenu();document.querySelectorAll('#app>.screen').forEach(s=>s.hidden=s.id!==id);window.scrollTo(0,0)}
