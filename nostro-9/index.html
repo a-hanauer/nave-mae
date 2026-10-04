@@ -15,7 +15,7 @@
 <style>
 :root{
   color-scheme:dark;
-  --bg:#0c0b1d; --panel:#1a1936; --panel2:#231f48; --edge:#4a4690;
+  --bg:#0c0b1d; --panel:#1a1936; --panel2:#231f48; --edge:#4a4690; --edge2:#6f6bc4;
   --text:#f1f0ff; --dim:#9b98d4;
   --amber:#ffb300; --amber-d:#a8600a; --ok:#39e35f; --ok-d:#16622b;
   --alert:#ff3d2e; --alert-d:#8f1209; --hazard:#ffd000; --cyan:#40d8ff; --ink:#0c0b1d;
@@ -95,7 +95,7 @@ h2{margin:0;font-family:var(--px);font-size:14px;line-height:1.7;font-weight:400
 .turno-n.all{color:var(--ok);text-shadow:3px 3px 0 var(--ok-d)}
 .week{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
 .day{display:flex;flex-direction:column;align-items:center;gap:6px;font-family:var(--px);font-size:8px;color:var(--dim)}
-.day i{display:block;width:100%;max-width:30px;aspect-ratio:1;background:var(--panel2);box-shadow:inset 0 0 0 3px var(--edge)}
+.day i{display:block;width:100%;max-width:30px;aspect-ratio:1;background:var(--panel2);box-shadow:inset 0 0 0 3px var(--edge2)}
 .day.part i{background:linear-gradient(to top,var(--amber-d) 50%,var(--panel2) 50%);box-shadow:inset 0 0 0 3px var(--amber-d)}
 .day.full i{background:var(--amber);box-shadow:inset 0 0 0 3px var(--amber-d),inset -6px -6px 0 0 rgba(0,0,0,.18)}
 .day.today{color:var(--text)}
@@ -110,7 +110,8 @@ h2{margin:0;font-family:var(--px);font-size:14px;line-height:1.7;font-weight:400
 .mission .t strong{font-family:var(--px);font-size:11px;line-height:1.5;font-weight:400}
 .mission .t small{font-size:20px;line-height:1;color:var(--dim)}
 .mission.done{--b:var(--ok-d);--bg-c:#10241a}
-.mission.done .ico,.mission.done .t{opacity:.55}
+.mission.done .ico .spr{opacity:.55}
+.mission.done .ico em,.mission.done .t strong,.mission.done .t small{color:#7f9a88}
 .mission.done .t strong{text-decoration:line-through;text-decoration-thickness:2px}
 .mission.next{--b:var(--amber);--bg-c:var(--panel2)}
 .check.nx{color:var(--amber)}
@@ -133,7 +134,7 @@ h2{margin:0;font-family:var(--px);font-size:14px;line-height:1.7;font-weight:400
 
 /* ---- barras de progresso ---- */
 .segs{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:6px}
-.segs i{display:block;height:14px;background:var(--panel2);box-shadow:inset 0 0 0 2px var(--edge)}
+.segs i{display:block;height:14px;background:var(--panel2);box-shadow:inset 0 0 0 2px var(--edge2)}
 .segs i.on{background:var(--amber);box-shadow:inset 0 0 0 2px var(--amber-d),inset -3px -3px 0 0 rgba(0,0,0,.2)}
 .segs i.cur{box-shadow:inset 0 0 0 2px var(--amber);animation:blink 1s steps(1) infinite}
 .segs.ok i.on{background:var(--ok);box-shadow:inset 0 0 0 2px var(--ok-d)}
@@ -351,7 +352,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 
 <script>
 /* atualização automática: compara com version.json e recarrega quando sai versão nova */
-const APP_V='20261004111652';
+const APP_V='20261004112339';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     if(v&&v!==APP_V&&sessionStorage.getItem('upd')!==v){sessionStorage.setItem('upd',v);location.replace(location.pathname+'?v='+v+H0)}}catch(e){}}
