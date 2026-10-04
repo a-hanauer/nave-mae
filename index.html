@@ -100,7 +100,7 @@ button{cursor:pointer;touch-action:manipulation}
 @keyframes f1{50%{visibility:hidden}}@keyframes f2{0%{visibility:hidden}50%{visibility:visible}}
 
 /* planeta (tela) */
-.back{display:inline-flex;align-items:center;gap:8px;font-family:var(--px);font-size:10px;color:var(--ink);padding:12px 14px;margin:4px 0 8px}
+.back{display:inline-flex;align-items:center;gap:8px;font-family:var(--px);font-size:10px;color:var(--ink);padding:12px 14px;margin:0 0 8px}
 .back:active{transform:translate(3px,3px);filter:none}
 .hero{display:grid;place-items:center;padding:10px 0 8px;animation:land .35s steps(5)}
 @keyframes land{from{transform:scale(.4);opacity:0}}
@@ -172,7 +172,7 @@ button{cursor:pointer;touch-action:manipulation}
 .badge{position:absolute;min-width:22px;height:22px;padding:0 5px;display:grid;place-items:center;font-style:normal;
   font-family:var(--px);font-size:9px;color:#fff;background:var(--red);box-shadow:0 0 0 3px #000;animation:beacon .8s steps(1) infinite}
 /* ---------- cenários ---------- */
-.vtitle{display:flex;align-items:baseline;justify-content:space-between;margin:2px 0 14px}
+.vtitle{display:flex;align-items:baseline;justify-content:space-between;margin:0 0 14px}
 .vtitle h2{font-family:var(--px);font-size:14px;color:var(--ink)}
 .vtitle span{font-family:var(--px);font-size:9px;color:var(--dim)}
 .stage{position:sticky;top:env(safe-area-inset-top);z-index:6;height:250px;overflow:hidden;margin-bottom:0;
@@ -393,7 +393,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 <canvas id="warp" hidden></canvas>
 
 <main id="app">
-  <header class="top">
+  <header class="top" id="topHdr">
       <div class="logo" aria-label="Nave-Mãe">
         <span id="logoShip"></span>
         <span><b>NAVE-MÃE</b><small>BASE ESCOLAR</small></span>
@@ -550,7 +550,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 
 <script>
 /* atualização automática: compara com version.json e recarrega quando sai versão nova */
-const APP_V='20261004104346';
+const APP_V='20261004104837';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     if(v&&v!==APP_V&&sessionStorage.getItem('upd')!==v){sessionStorage.setItem('upd',v);location.replace(location.pathname+'?v='+v+H0)}}catch(e){}}
@@ -983,7 +983,7 @@ function openPlanet(pid){
   }
   $('#missions').innerHTML=h;
   $('#missions').querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>takeoff(APPS.find(a=>a.id===b.dataset.go)));
-  VIEWS.forEach(x=>$('#'+x).hidden=x!=='planet');view='planet';window.scrollTo(0,0);
+  VIEWS.forEach(x=>$('#'+x).hidden=x!=='planet');view='planet';$('#topHdr').hidden=true;window.scrollTo(0,0);
 }
 $('#back').onclick=()=>{blip();go('home')};
 
@@ -1018,6 +1018,7 @@ function renderSnd(){} /* o som fica só nas configurações */
 /* =================== TELAS =================== */
 const VIEWS=['home','planet','tasks','crew','medals'];let view='home',sub='vest';
 function go(v){if(v==='vest'||v==='hang'){sub=v;v='crew'}view=v;draft=null;VIEWS.forEach(x=>$('#'+x).hidden=x!==v);
+  $('#topHdr').hidden=v!=='home'; // cabeçalho NAVE-MÃE só no mapa
   document.querySelectorAll('.tabbar [data-v]').forEach(b=>b.classList.toggle('on',b.dataset.v===(v==='planet'?'home':v)));
   if(v==='home')renderHome();if(v==='tasks')renderTasks();if(v==='medals')renderMedals();
   if(v==='crew'){$('#vest').hidden=sub!=='vest';$('#hang').hidden=sub!=='hang';
