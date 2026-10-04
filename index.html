@@ -309,8 +309,9 @@ button{cursor:pointer;touch-action:manipulation}
 .req{margin:10px 0 0;padding:8px 10px;font-size:19px;color:var(--amber);background:#1c1406;box-shadow:inset 4px 0 0 0 var(--amber)}
 .dot2{display:inline-block;width:16px;height:16px;box-shadow:0 0 0 2px #000}
 /* ---------- conquistas ---------- */
-.mdetail{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center;padding:16px;margin-bottom:22px;
-  position:sticky;top:calc(16px + env(safe-area-inset-top));z-index:6;min-height:200px;align-content:start} /* fica no topo enquanto a parede rola */
+/* cabeçalho + painel da medalha ficam no topo (abaixo da Dynamic Island) enquanto a parede rola */
+.mtop{position:sticky;top:0;z-index:6;background:var(--bg);margin:calc(-32px - env(safe-area-inset-top)) -16px 22px;padding:calc(32px + env(safe-area-inset-top)) 16px 14px}
+.mdetail{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center;padding:16px;min-height:200px;align-content:start}
 .mdetail .md-ic{display:block;animation:mdpop .3s steps(3)}
 @keyframes mdpop{0%{transform:scale(.6)}70%{transform:scale(1.15)}}
 .mdetail b{display:block;font-family:var(--px);font-size:10px;line-height:1.5}
@@ -515,8 +516,8 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 
   <!-- CONQUISTAS -->
   <section id="medals" hidden>
-    <div class="vtitle"><h2>CONQUISTAS</h2><span id="mCount"></span></div>
-    <div class="mdetail px" id="mDetail"></div>
+    <div class="mtop"><div class="vtitle"><h2>CONQUISTAS</h2><span id="mCount"></span></div>
+    <div class="mdetail px" id="mDetail"></div></div>
     <div id="mWall"></div>
   </section>
 
@@ -611,7 +612,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 
 <script>
 /* atualização automática: compara com version.json e recarrega quando sai versão nova */
-const APP_V='20261004171411';
+const APP_V='20261004171705';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     if(v&&v!==APP_V&&sessionStorage.getItem('upd')!==v){sessionStorage.setItem('upd',v);location.replace(location.pathname+'?v='+v+H0)}}catch(e){}}
@@ -1186,7 +1187,7 @@ function go(v){if(v==='vest'||v==='hang'){sub=v;v='crew'}view=v;draft=null;VIEWS
     document.querySelectorAll('#seg [data-s]').forEach(b=>b.classList.toggle('on',b.dataset.s===sub));sub==='vest'?renderVest():renderHang()}
   window.scrollTo(0,0);coverTop()}
 /* respiro do topo: quando o palco do hangar gruda, cobre o que passa por cima dele */
-function coverTop(){const s=view==='crew'?[...document.querySelectorAll('#crew .stage')].find(x=>x.offsetParent):view==='medals'?$('#mDetail'):null;
+function coverTop(){const s=view==='crew'?[...document.querySelectorAll('#crew .stage')].find(x=>x.offsetParent):null;
   $('#topCover').hidden=!(s&&s.getBoundingClientRect().top<=parseFloat(getComputedStyle(s).top)+.5)}
 addEventListener('scroll',coverTop,{passive:true});
 document.querySelectorAll('.tabbar [data-v]').forEach(b=>b.onclick=()=>{SND.tab(['home','tasks','crew','medals'].indexOf(b.dataset.v));go(b.dataset.v)});
