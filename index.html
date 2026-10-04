@@ -39,7 +39,7 @@ button{cursor:pointer;touch-action:manipulation}
 .crt{position:fixed;inset:0;pointer-events:none;z-index:50;
   background:repeating-linear-gradient(0deg,rgba(0,0,0,.22) 0 1px,transparent 1px 3px)}
 #app{position:relative;z-index:1;max-width:440px;margin:0 auto;
-  padding:calc(16px + env(safe-area-inset-top)) calc(16px + env(safe-area-inset-right)) calc(40px + env(safe-area-inset-bottom)) calc(16px + env(safe-area-inset-left))}
+  padding:calc(32px + env(safe-area-inset-top)) calc(16px + env(safe-area-inset-right)) calc(40px + env(safe-area-inset-bottom)) calc(16px + env(safe-area-inset-left))}
 
 /* painel pixelado (cantos em degrau) */
 .px{background:var(--panel);position:relative;
@@ -48,7 +48,7 @@ button{cursor:pointer;touch-action:manipulation}
 .label{font-family:var(--px);font-size:9px;letter-spacing:.08em;color:var(--dim);text-transform:uppercase}
 
 /* topo */
-.top{display:flex;align-items:center;justify-content:space-between;margin:4px 0 22px}
+.top{display:flex;align-items:center;justify-content:space-between;margin:0 0 22px}
 .logo{display:flex;align-items:center;gap:10px;user-select:none;-webkit-user-select:none;touch-action:none}
 .logo b{display:block;font-family:var(--px);font-size:16px;color:var(--amber);text-shadow:3px 3px 0 #7a3a00;letter-spacing:.02em}
 .logo small{display:block;font-family:var(--px);font-size:8px;color:var(--dim);margin-top:7px;letter-spacing:.12em}
@@ -142,7 +142,7 @@ button{cursor:pointer;touch-action:manipulation}
 #warp{position:fixed;inset:0;z-index:60;pointer-events:none;image-rendering:pixelated}
 
 /* modais */
-.overlay{position:fixed;inset:0;z-index:40;display:flex;overflow:auto;-webkit-overflow-scrolling:touch;padding:calc(16px + env(safe-area-inset-top)) 16px calc(16px + env(safe-area-inset-bottom));background:rgba(7,6,20,.92)}
+.overlay{position:fixed;inset:0;z-index:40;display:flex;overflow:auto;-webkit-overflow-scrolling:touch;padding:calc(32px + env(safe-area-inset-top)) 16px calc(16px + env(safe-area-inset-bottom));background:rgba(7,6,20,.92)}
 .modal{width:100%;max-width:400px;padding:22px 18px;text-align:center;margin:auto}
 .modal h2{font-family:var(--px);font-size:13px;color:var(--amber);line-height:1.5;margin:18px 0 10px}
 .modal p{color:var(--dim)}
@@ -175,8 +175,10 @@ button{cursor:pointer;touch-action:manipulation}
 .vtitle{display:flex;align-items:baseline;justify-content:space-between;margin:0 0 14px}
 .vtitle h2{font-family:var(--px);font-size:14px;color:var(--ink)}
 .vtitle span{font-family:var(--px);font-size:9px;color:var(--dim)}
-.stage{position:sticky;top:env(safe-area-inset-top);z-index:6;height:250px;overflow:hidden;margin-bottom:0;
+.stage{position:sticky;top:calc(16px + env(safe-area-inset-top));z-index:6;height:250px;overflow:hidden;margin-bottom:0;
   box-shadow:0 -3px 0 0 var(--line),0 3px 0 0 var(--line),-3px 0 0 0 var(--line),3px 0 0 0 var(--line);filter:drop-shadow(5px 5px 0 #000)}
+/* faixa que cobre o respiro acima do palco quando ele gruda no topo */
+#topCover{position:fixed;left:0;right:0;top:0;height:calc(16px + env(safe-area-inset-top));background:var(--bg);z-index:5;pointer-events:none}
 .stage .floor{position:absolute;left:0;right:0;bottom:0;height:44px}
 .st-vest{background:repeating-linear-gradient(90deg,#1f1c40 0 46px,#1a1838 46px 48px),#1f1c40}
 .st-vest::before{content:"";position:absolute;left:0;right:0;top:0;height:16px;background:#141230;box-shadow:inset 0 -3px 0 0 #0b0a1a}
@@ -295,7 +297,7 @@ button{cursor:pointer;touch-action:manipulation}
   -webkit-font-smoothing:antialiased;image-rendering:auto;text-align:left}
 #pais button{font-family:inherit;line-height:inherit}
 .pa-top{position:sticky;top:0;z-index:2;background:rgba(0,0,0,.8);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);
-  padding:env(safe-area-inset-top) env(safe-area-inset-right) 0 env(safe-area-inset-left);border-bottom:.5px solid var(--sep)}
+  padding:calc(8px + env(safe-area-inset-top)) env(safe-area-inset-right) 0 env(safe-area-inset-left);border-bottom:.5px solid var(--sep)}
 .pa-nav{position:relative;display:flex;align-items:center;justify-content:space-between;gap:12px;height:44px;padding:0 8px;max-width:640px;margin:0 auto}
 .pa-back{display:flex;align-items:center;gap:3px;color:var(--acc);font-size:17px;padding:8px 4px;min-width:0;max-width:100%}
 .pa-back svg{flex:none}
@@ -392,6 +394,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 <div class="crt"></div>
 <canvas id="warp" hidden></canvas>
 
+<div id="topCover" hidden></div>
 <main id="app">
   <header class="top" id="topHdr">
       <div class="logo" aria-label="Nave-Mãe">
@@ -550,7 +553,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 
 <script>
 /* atualização automática: compara com version.json e recarrega quando sai versão nova */
-const APP_V='20261004104837';
+const APP_V='20261004105206';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     if(v&&v!==APP_V&&sessionStorage.getItem('upd')!==v){sessionStorage.setItem('upd',v);location.replace(location.pathname+'?v='+v+H0)}}catch(e){}}
@@ -1023,7 +1026,11 @@ function go(v){if(v==='vest'||v==='hang'){sub=v;v='crew'}view=v;draft=null;VIEWS
   if(v==='home')renderHome();if(v==='tasks')renderTasks();if(v==='medals')renderMedals();
   if(v==='crew'){$('#vest').hidden=sub!=='vest';$('#hang').hidden=sub!=='hang';
     document.querySelectorAll('#seg [data-s]').forEach(b=>b.classList.toggle('on',b.dataset.s===sub));sub==='vest'?renderVest():renderHang()}
-  window.scrollTo(0,0)}
+  window.scrollTo(0,0);coverTop()}
+/* respiro do topo: quando o palco do hangar gruda, cobre o que passa por cima dele */
+function coverTop(){const s=view==='crew'&&[...document.querySelectorAll('#crew .stage')].find(x=>x.offsetParent);
+  $('#topCover').hidden=!(s&&s.getBoundingClientRect().top<=parseFloat(getComputedStyle(s).top)+.5)}
+addEventListener('scroll',coverTop,{passive:true});
 document.querySelectorAll('.tabbar [data-v]').forEach(b=>b.onclick=()=>{blip();go(b.dataset.v)});
 document.querySelectorAll('#seg [data-s]').forEach(b=>b.onclick=()=>{if(b.dataset.s===sub)return;blip();go(b.dataset.s)});
 
