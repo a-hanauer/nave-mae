@@ -29,7 +29,7 @@ Cada app tem um botão "< Nave-Mãe" na tela inicial para voltar ao mapa.
 A barra inferior tem quatro abas:
 
 - **Mapa:** planetas e missões do dia. O painel do piloto leva ao Vestiário.
-- **Piloto (Vestiário):** o piloto de corpo inteiro. Use ◀ ▶ para trocar título, capacete, viseira, traje e tom de pele, e o botão para editar o nome.
+- **Piloto (Vestiário):** o piloto de corpo inteiro. Traje EVA industrial. Use ◀ ▶ para trocar título, capacete, viseira, traje, tom de pele, emblema no ombro e equipamento (lanterna, tanques de O₂, rastreador, maçarico, jetpack).
 - **Hangar:** a nave na plataforma. Use ◀ ▶ para trocar modelo (foguete, caça, cargueiro, disco, interceptor), pintura e propulsor.
 - **Conquistas:** parede de medalhas por categoria (bronze, prata, ouro e níveis acima). Tocar numa medalha mostra o progresso e as recompensas.
 

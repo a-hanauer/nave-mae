@@ -173,7 +173,7 @@ button{cursor:pointer;touch-action:manipulation}
 .vtitle{display:flex;align-items:baseline;justify-content:space-between;margin:2px 0 14px}
 .vtitle h2{font-family:var(--px);font-size:14px;color:var(--ink)}
 .vtitle span{font-family:var(--px);font-size:9px;color:var(--dim)}
-.stage{position:relative;height:250px;overflow:hidden;margin-bottom:0;
+.stage{position:relative;height:270px;overflow:hidden;margin-bottom:0;
   box-shadow:0 -3px 0 0 var(--line),0 3px 0 0 var(--line),-3px 0 0 0 var(--line),3px 0 0 0 var(--line);filter:drop-shadow(5px 5px 0 #000)}
 .stage .floor{position:absolute;left:0;right:0;bottom:0;height:44px}
 .st-vest{background:repeating-linear-gradient(90deg,#1f1c40 0 46px,#1a1838 46px 48px),#1f1c40}
@@ -184,7 +184,7 @@ button{cursor:pointer;touch-action:manipulation}
 .st-vest .floor{background:repeating-linear-gradient(90deg,#2a2752 0 24px,#24214a 24px 48px);box-shadow:inset 0 3px 0 0 #3b3780}
 .lockers{position:absolute;bottom:40px;display:flex;gap:4px}
 .lockers.l{left:10px}.lockers.r{right:10px}
-.vhero{position:absolute;left:50%;bottom:30px;transform:translateX(-50%)}
+.vhero{position:absolute;left:50%;bottom:14px;transform:translateX(-50%)}
 .st-hang{background:#15132e}
 .st-hang .win{position:absolute;left:50%;top:20px;width:72%;height:120px;transform:translateX(-50%);background:#07061a;
   box-shadow:0 0 0 4px #0b0a1a,0 0 0 8px #3b3780;overflow:hidden}
@@ -466,7 +466,7 @@ const save=()=>{try{localStorage.setItem(ST,JSON.stringify(st))}catch(e){}};
 
 /* ---------- sprites ---------- */
 /* ---------- sprites 16-bit (paleta compartilhada; 3º parâmetro troca cores) ---------- */
-const PAL={"0":"#7b78c4","1":"#ffffff","2":"#d8d6ff","3":"#9b98d4","4":"#5f5ca8","5":"#7fe8ff","6":"#1f6fa8","7":"#f1c9a0","8":"#c98f64","9":"#b8b5ea","=":"#4a4790","A":"#ffe066","C":"#c8faff","D":"#5f5ca8","E":"#34316e","F":"#ffffff","G":"#b6ffcf","L":"#d8d6ff","M":"#9b98d4","O":"#ffb300","R":"#ff7a66","S":"#f6dcb6","W":"#ffffff","X":"#3ff2c4","Y":"#fff3a0","b":"#1f6fa8","c":"#40d8ff","g":"#39e35f","h":"#1f9a3a","k":"#0b0a1a","n":"#123a66","o":"#d97a00","q":"#8a1a10","r":"#e03a26","s":"#d9a066","t":"#a8703a","v":"#6b4520","x":"#1f9a7e"};
+const PAL={"0":"#ada38a","1":"#f2eee2","2":"#cfc8b2","3":"#9a927a","4":"#4f4a3c","5":"#24323c","6":"#0e161c","7":"#d9a06a","8":"#a8703a","9":"#e0d8c2","=":"#6e6652","A":"#ffe066","C":"#c8faff","D":"#5f5ca8","E":"#34316e","F":"#a8e8ff","G":"#b6ffcf","L":"#d8d6ff","M":"#9b98d4","O":"#ffb300","R":"#ff7a66","S":"#f6dcb6","W":"#ffffff","X":"#3ff2c4","Y":"#fff3a0","a":"#2b2f38","b":"#ffb300","c":"#40d8ff","g":"#39e35f","h":"#1f9a3a","k":"#0b0a1a","n":"#123a66","o":"#d97a00","q":"#8a1a10","r":"#e03a26","s":"#d9a066","t":"#a8703a","u":"#8a4a00","v":"#6b4520","x":"#1f9a7e"};
 const SPR={"m_rocket":["........kk........",".......kWLk.......",".......kWLk.......","......kWLMLk......","......kLLMMk......","......kLCcMk......",".....kLCcbcMk.....",".....kLccbbMk.....",".....kLbbnnMk.....",".....kLkkkkMk.....","....kLLRRrrMMk....","....kLLrrqqMMk....","...kkLLLLMMMMkk...","..kRkWLLMDMMLkrk..",".kRrkLLLMDMMMkqrk.","kRrqkLLMMDDMMkqqrk","kLMMkLLMDEDMMkDDMk","kLMDkMMDDEEDDkEDMk","kMDEkDEEEEEEEkEEDk",".kkkkEkkkkkkEkkkk.","....kDkMkkDkEk....",".....kkkkkkkk....."],
 "m_fighter":["........kk........",".......kWLk.......",".......kLMk.......",".......kLMk.......","......kLCcMk......","......kLcbMk......","......kMbbDk......",".....kRLLMMrk.....",".....krLLMMqk.....","....kkLLLMMMkk....","...kLkLLMDMMkMk...","..kLLkLLMDMMkMMk..",".kLLMkLMMDDMkDMMk.","kLLMDkLMDEDMkEDMMk","kRrkkkMMDEDDkkkqrk","kkk..kDDEEEEk..kkk",".....kEkkkkEk.....",".....kDkMDkEk.....","......kkkkkk......"],
 "m_cargo":[".....kkkkkkkk.....","....kLWWWLLLMk....","...kLLCCCcccMMk...","...kLCcccbbbcMk...","...kLcbbbbbbbMk...","..kkLLLLLMMMMMkk..",".kRRkLLLLMMMMkrrk.",".krrkLMMMDDDMkqqk.","kLLLkLLLLMMMMkMMMk","kLMMkLMMMDDDMkDDMk","kLMMkLLLLMMMMkDDMk","kLMDkLMMMDDDMkEDMk","kMDDkMDDDEEEDkEEDk","kkkkkDEEEEEEEkkkkk","...kkkkkkkkkkkk...",".....kDkMDkEk.....","......kkkkkk......"],
@@ -474,8 +474,7 @@ const SPR={"m_rocket":["........kk........",".......kWLk.......",".......kWLk...
 "m_inter":["........kk........",".......kWLk.......",".k.....kLMk.....k.","kRk....kLMk....krk","kLk...kLCcMk...kMk","kLk...kLcbMk...kMk","kLLk..kMbbDk..kMMk","kLLLk.kLLMMk.kMMMk",".kLLLkkRRrrkkMMMk.","..kLMLkrrqqkMDMk..","...kLMkLLMMkDMk...","....kkkLMDMkkk....","...kLLkLMDMkMMk...","..kLMDkMDEDkEDMk..",".kRrkkkDEEEkkkqrk.",".kkk.kEkkkkEk.kkk.",".....kDkMDkEk.....","......kkkkkk......"],
 "fl1":[".....kYkYYkYk.....",".....kOkOOkOk.....","......O.OO.O......","......r.rr.r......"],
 "fl2":[".....kYkYYkYk.....",".....kYkYYkYk.....",".....kOkOOkOk.....","......O.OO.O......","......r.rr.r......"],
-"pilot":["......kkkkkkkk......","....kk11112222kk....","...k111111222222k...","..k11111123222222k..",".k1112kkkkkkkk3222k.",".k112k55556666k322k.","k112k55F7788F66k322k","k12k55F777888F66k32k","k12k5777k78k8886k32k","k12k577777888886k32k","k12k577778888886k32k","k12k557788888866k32k","k122kk58888886kk332k",".k223kkkkkkkkkk433k.",".kk33k99990000k44kk.","k99kkk99990000kkk00k","k999kk99990000kk000k","k99k09999900000=k00k","k99k09999Y90000=k00k","k99k0999Yk99000=k00k","kkkkkkkkkkkkkkkkkkkk"],
-"pilotFull":["......kkkkkkkk......","....kk11112222kk....","...k111111222222k...","..k11111123222222k..",".k1112kkkkkkkk3222k.",".k112k55556666k322k.","k112k55F7788F66k322k","k12k55F777888F66k32k","k12k5777k78k8886k32k","k12k577777888886k32k","k12k557788888866k32k","k122kk58888886kk332k",".k223kkkkkkkkkk433k.","..kkk3333344444kkk..","..k99999990000000k..",".k9999999900000000k.","k99k99YY99000000k00k","k99k99OO99000000k00k","k99k999999000000k00k","k99k09999900000=k00k","k99k0===========k00k","k11kkkkkkkkkkkkkk22k","k11k09999900000=k22k",".kkk09999900000=kkk.","...k09999kk0000=k...","...k09990kk=000=k...","...k09990kk=000=k...","...k09990kk=000=k...","..kk3333kkkk4444kk..",".k3333334kk4444444k.",".kkkkkkkkkkkkkkkkkk."],
+"pEVA":["......kkkkkkkkkkkk......","....kk111111222222kk....","...k1111111122222222k...","..k111111112322222222k..","..k11kkkkkkkkkkkkkk22k..",".k11k55555556666666k22k.",".k1k55F5555566666566k2k.",".k1k5F55555666666656k2k.",".k1k5555566666666666k2k.",".k2k6666666666666666k3k.",".k2kk77777778888888kk3k.","..k22kk8888888888kk33k..","..kk3kkkkkkkkkkkkkk4kk..",".k43343434344444444444k.",".kkk4kkkkkkkkkkkkkk4kkk.","k111k99999990000000k222k","kaaak99kkkkkkkkkk00k322k","kaaak99kYkOOOOkOk00k332k","kaaak99kc6kkkk6bk00k000k","k999k99kkkkkkkkkk00k000k","k990k99999990000000k=00k","k220k99999990000000k=33k","k990k99==========00k=00k","k990kkkkkkkkkkkkkkkk=00k","k990k=0k0=0=====k==k=00k","k44kk00kkkkkkkkkk==kk44k","k44kk999999kk000000kk44k",".kk..k99999kk00000k..kk.",".....k9999k..k0000k.....",".....k9990k..k=000k.....",".....k2220k..k=333k.....",".....k2220k..k=333k.....",".....k9990k..k=000k.....",".....k9990k..k=000k.....",".....k9900k..k==00k.....","....kk4444k..k4444kk....","...k444444k..k444444k...","...k4444444kk4444444k...","...kkkkkkkkkkkkkkkkkk..."],
 "locker":["kkkkkkkkkkkk","kLLLLLLLLLMk","kLkkkkkkkkMk","kLkDDDDDDkMk","kLkkkkkkkkMk","kLkDDDDDDkMk","kLkkkkkkkkMk","kLkDDDDDDkMk","kLkkkkkkkkMk","kLMMMMMMMMMk","kLMMMMMMMMDk","kLMMMMMMYoDk","kLMMMMMMoqDk","kLMMMMMMMMDk","kLMMMMMMMMDk","kLMMMMMMMMDk","kLMMMMMMMMDk","kLMMMMMMMMDk","kLMMMMMMMMDk","kLMMMMMMMMDk","kLMMMMMMMMDk","kMDDDDDDDDEk","kkkkkkkkkkkk",".kE......Ek.",".kk......kk."],
 "pad":["...kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk...","..kLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLMk..",".kAAAkkkAAAkkkAAAkkkAAAkkkAAAkkkAAAkkkAAAkkkk.","kMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMk","kDDDDDYDDDDDDDDDDDDDDDDYYDDDDDDDDDDDDDDYDDDDDk","kEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEk","kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk"],
 "md_star":["...kkkkkkkkkk...","...kRRrRRrRRk...","...kRRrRRrRRk...","...kRRrRRrRRk...","....kRrRRrRk....",".....kkkkkk.....",".......kk.......","....kkkkkkkk....","...kk111112kk...","..kk11111122kk..","..k1111411222k..",".k111114122233k.",".k114444444233k.",".k111444442333k.",".k111144423334k.",".k212442443344k.","..k2442234434k..","..kk22233334kk..","...kk333344kk...","....kkkkkkkk....",".......kk......."],
@@ -485,7 +484,7 @@ const SPR={"m_rocket":["........kk........",".......kWLk.......",".......kWLk...
 "md_col":["...kkkkkkkkkk...","...kRRrRRrRRk...","...kRRrRRrRRk...","...kRRrRRrRRk...","....kRrRRrRk....",".....kkkkkk.....",".......kk.......","....kkkkkkkk....","...kk111112kk...","..kk11111122kk..","..k1444444422k..",".k111414142233k.",".k111414242233k.",".k111414242333k.",".k111424243334k.",".k212424243344k.","..k2444444434k..","..kk22233334kk..","...kk333344kk...","....kkkkkkkk....",".......kk......."],
 "md_x":["...kkkkkkkkkk...","...kRRrRRrRRk...","...kRRrRRrRRk...","...kRRrRRrRRk...","....kRrRRrRk....",".....kkkkkk.....",".......kk.......","....kkkkkkkk....","...kk111112kk...","..kk11111122kk..","..k1441114422k..",".k111441442233k.",".k111144422233k.",".k111114222333k.",".k111144423334k.",".k212442443344k.","..k2442234434k..","..kk22233334kk..","...kk333344kk...","....kkkkkkkk....",".......kk......."],
 "t_map":["....kkkk....","..kkOOOokk..",".kYOOOOooqk.","kkkkOOOooqkk","kMLkkkkkkkMk",".kMMLLLMMMk.","kkkOOoooqkkk","kYOOOoooqqk.",".kOOoooqqk..","..kkoooqkk..","....kkkk....","............"],
-"t_pil":["...kkkkkk...","..kWLLLLMk..",".kWLLLLLLMk.",".kLkkkkkkMk.","kLkCccccbkMk","kLkccccbbkMk","kLkcbbbbbkDk",".kLkkkkkkDk.",".kMMMMMMDDk.","..kkMMDDkk..",".kLLkkkkMMk.","kkkkkkkkkkkk"],
+"t_pil":["...kkkkkk...","..k111111k..",".k11111112k.",".k1kkkkkk2k.","k1k5F55556kk","k1k5555666kk","k2k6666666kk",".k2k7777k3k.",".k22kkkk33k.","..kk3333kk..",".k99kkkk00k.","kkkkkkkkkkkk"],
 "t_hng":[".....kk.....","....kWLk....","....kLCk....","...kLccMk...","...kLbbMk...","..kkLRrMkk..",".kRkLLLMkrk.","kRrkLLMMkrqk","kkkkLMMDkkkk","...kkDDkk...","....kOOk....",".....kk....."],
 "t_med":["..kkkkkkkk..","..kRRrRRrk..","...kRrRrk...","....kkkk....","...kkkkkk...","..kYYYYOok..",".kYYYOOOook.",".kYOOOOooqk.",".kYOOOooqqk.","..kOooqqqk..","...kkkkkk...","............"],
 "station":["kkkkk......kkkkk","kcCck......kbcbk","kbcbk......knbnk","kcbck......kbnbk","kbcbkMkkkkDknbnk","kcbckkLWLMkkbnbk","kbcbkLWLMLMknbnk","kkkkkLLCcMMkkkkk","....kLCcbcMk....","....kLcOobMk....","kkkkkLbbnnMkkkkk","kcCckLLLMMMkbcbk","kbcbkkMLMDkknbnk","kcbckMkkkkDkbnbk","kbcbk......knbnk","kkkkk......kkkkk"],
@@ -501,9 +500,20 @@ const SPR={"m_rocket":["........kk........",".......kWLk.......",".......kWLk...
 "nosig":["...k.....k..","..kD.....Dk.",".kD..kkk..Dk",".kD.kMLMk.Dk",".kD..kLk..Dk","..kD.kLk.Dk.",".....kMk....","....kLMDk...","....kMkDk...","...kMk.kDk..","..kkkkkkkkk.",".....rq....."],
 "gear":["....kkk....",".kk.kLk.kk.",".kLkkLkkLk.","..kLLLLLk..","kkkLkkkLkkk","kLLLk.kMMMk","kkkLkkkMkkk","..kLMMMMk..",".kLkkMkkMk.",".kk.kMk.kk.","....kkk...."],
 "lock":["..kkk..",".kLLMk.",".kL.Mk.",".kL.Mk.","kkkkkkk","kYOOOok","kOOkOok","kOOkOok","kooooqk","kkkkkkk"]};
-function sprite(n,s=2,ov){const rows=SPR[n],h=rows.length,w=rows[0].length;let r='';
+function spriteRows(rows,s=2,ov){const h=rows.length,w=rows[0].length;let r='';
   rows.forEach((row,y)=>{let x=0;while(x<w){const c=row[x];if(c==='.'){x++;continue}let k=1;while(row[x+k]===c)k++;r+=`<rect x="${x}" y="${y}" width="${k}" height="1" fill="${(ov&&ov[c])||PAL[c]}"/>`;x+=k}});
   return `<svg class="spr" viewBox="0 0 ${w} ${h}" width="${w*s}" height="${h*s}" shape-rendering="crispEdges" aria-hidden="true">${r}</svg>`}
+const sprite=(n,s=2,ov)=>spriteRows(SPR[n],s,ov);
+/* piloto EVA: emblema no ombro + equipamento em camadas */
+const PATCH_AT=[1, 16];
+const EMB={"none":null,"estrela":[".b.","bbb",".b."],"raio":["..b",".b.","b.."],"planeta":[".b.","bbb",".b."],"alvo":["bbb","b.b","bbb"],"alien":["bbb","b.b",".b."],"coroa":["b.b","bbb","bbb"]};
+const GEAR={"tanques":[[-4,10,[".kk.","kMDk","kYOk","kOok","kOok","kkkk","kOok","kOok","kouk","kouk","kkkk"],true],[24,10,[".kk.","kMDk","kOok","kouk","kouk","kkkk","kouk","kouk","kuuk","kuuk","kkkk"],true]],"jetpack":[[-4,12,["kkkk","kLMk","kLMk","kMDk","kMDk","kMDk","kDEk","kkkk",".kk.","kYOk",".OO.",".r.."],true],[24,12,["kkkk","kMDk","kMDk","kDEk","kDEk","kDEk","kEEk","kkkk",".kk.","kOYk",".OO.","..r."],true]],"rastreador":[[-3,23,["kkkkkk","kLLLLk","kgGggk","kgggGk","kLMMDk","kkkkkk"],false]],"macarico":[[20,20,["......kk",".....kCk","....kcCk","...kkck.","..kMk...",".kDMk...","kDDk....","kkk....."],false]],"lanterna":[[17,12,["kkkkk","kYYOk","kkkkk"],false],[16,9,["..Y..",".Y.Y."],false]]};
+function compose(rows,layers,pad=4){const W=rows[0].length+2*pad,H=rows.length+2*pad,g=Array.from({length:H},()=>Array(W).fill('.'));
+  const put=(x0,y0,rr,behind)=>rr.forEach((row,y)=>[...row].forEach((c,x)=>{if(c==='.')return;const X=x0+x+pad,Y=y0+y+pad;if(behind&&g[Y][X]!=='.')return;g[Y][X]=c}));
+  put(0,0,rows,false);layers.forEach(([x,y,rr,b])=>put(x,y,rr,b));return g.map(r=>r.join(''))}
+function pilotRows(L){const rows=SPR.pEVA.map(r=>[...r]),e=EMB[L.emblem];
+  if(e)e.forEach((rr,y)=>[...rr].forEach((c,x)=>{if(c==='b')rows[PATCH_AT[1]+y][PATCH_AT[0]+x]='b'}));
+  return compose(rows.map(r=>r.join('')),GEAR[L.gear]||[])}
 
 /* =================== CUSTOMIZAÇÃO =================== */
 /* objetivos: cada um libera itens. kind = métrica lida dos apps */
@@ -531,26 +541,41 @@ const ramp4=(a,b,c,d)=>[a,b,c,d];
 const SKIN=[['#f6d5b8','#d9a882'],['#f1c9a0','#c98f64'],['#d9a06a','#a8703a'],['#a8703a','#7a4a20'],['#7a4a28','#4f2e16']];
 const ITEMS={
   helmet:{t:'Capacete',list:[
-    {id:'branco',n:'Branco',c:ramp4('#ffffff','#d8d6ff','#9b98d4','#5f5ca8')},
-    {id:'laranja',n:'Laranja',c:ramp4('#fff1d6','#ffc27a','#e8873a','#a8501c')},
-    {id:'azul',n:'Azul',c:ramp4('#e6f6ff','#8fd0ff','#3f8fe0','#1f4fa0'),req:'m5'},
-    {id:'verde',n:'Verde',c:ramp4('#eaffe6','#9fe8a0','#4fb860','#2a7a3a'),req:'f25'},
-    {id:'vermelho',n:'Vermelho',c:ramp4('#ffe6e0','#ff9a88','#e04a3a','#962018'),req:'s3'},
-    {id:'dourado',n:'Dourado',c:ramp4('#fffbe0','#ffe27a','#e8b030','#a8701a'),req:'m50'},
-    {id:'estelar',n:'Estelar',c:ramp4('#8a88a8','#5a587a','#3a3858','#24223c'),req:'s14'}]},
+    {id:'branco',n:'Branco',c:ramp4('#f2eee2','#cfc8b2','#9a927a','#4f4a3c')},
+    {id:'laranja',n:'Laranja',c:ramp4('#ffd9a8','#f0a050','#b8642a','#5a2e12')},
+    {id:'azul',n:'Aço',c:ramp4('#dfe6ee','#a9b6c4','#6f7d8c','#363f4a'),req:'m5'},
+    {id:'verde',n:'Oliva',c:ramp4('#d6dcb0','#a3ab78','#6b7248','#363a22'),req:'f25'},
+    {id:'vermelho',n:'Vermelho',c:ramp4('#f2c0b0','#d06a50','#902e1e','#4a120a'),req:'s3'},
+    {id:'dourado',n:'Dourado',c:ramp4('#fff1c0','#e8c060','#a87a20','#54380a'),req:'m50'},
+    {id:'estelar',n:'Grafite',c:ramp4('#8a8e98','#5e626c','#3c3f47','#1e2026'),req:'s14'}]},
   visor:{t:'Viseira',list:[
-    {id:'ciano',n:'Ciano',c:['#7fe8ff','#1f6fa8']},
-    {id:'ambar',n:'Âmbar',c:['#ffd27a','#b36a00']},
-    {id:'verde',n:'Verde',c:['#9cffb0','#1f8a4a'],req:'m10'},
-    {id:'rosa',n:'Rosa',c:['#ffb0ec','#a8208a'],req:'a3'},
-    {id:'ouro',n:'Espelhada',c:['#fff3a0','#c48a00'],req:'f250'}]},
+    {id:'ciano',n:'Fumê',c:['#24323c','#0e161c']},
+    {id:'ambar',n:'Âmbar',c:['#5a3a10','#2a1a06']},
+    {id:'verde',n:'Verde',c:['#1f4a2e','#0c2212'],req:'m10'},
+    {id:'rosa',n:'Rubi',c:['#5a1a22','#2a080e'],req:'a3'},
+    {id:'ouro',n:'Espelhada',c:['#c8a040','#6a4a10'],req:'f250'}]},
   suit:{t:'Traje',list:[
-    {id:'lilas',n:'Lilás',c:['#b8b5ea','#7b78c4','#4a4790']},
-    {id:'cinza',n:'Cinza',c:['#d0d0d8','#8e8ea0','#56566a']},
-    {id:'marinho',n:'Marinho',c:['#6a8ad8','#3a56a8','#1f2f6a'],req:'m25'},
-    {id:'laranja',n:'Laranja',c:['#ffb36a','#e0782a','#8a3e10'],req:'d3'},
-    {id:'verde',n:'Verde',c:['#8fd08a','#4f9a4a','#255a22'],req:'n3'},
-    {id:'vermelho',n:'Vermelho',c:['#ff8a7a','#d0402e','#7a1a10'],req:'s7'}]},
+    {id:'lilas',n:'Creme',c:['#e0d8c2','#ada38a','#6e6652']},
+    {id:'cinza',n:'Cinza',c:['#c8ccd2','#8e949c','#555a62']},
+    {id:'marinho',n:'Marinho',c:['#6a7ea8','#41557e','#243250'],req:'m25'},
+    {id:'laranja',n:'Laranja',c:['#f0a050','#b8642a','#6a3410'],req:'d3'},
+    {id:'verde',n:'Oliva',c:['#a3ab78','#6b7248','#3c4028'],req:'n3'},
+    {id:'vermelho',n:'Preto',c:['#5a5e66','#3a3d44','#1e2024'],req:'s7'}]},
+  emblem:{t:'Emblema',list:[
+    {id:'none',n:'Nenhum'},
+    {id:'estrela',n:'Estrela',c:['#2b2f38','#ffb300']},
+    {id:'raio',n:'Raio',c:['#1f2a44','#40d8ff'],req:'m5'},
+    {id:'planeta',n:'Planeta',c:['#2a1a3a','#ff8a1f'],req:'m25'},
+    {id:'alvo',n:'Alvo',c:['#2b2f38','#ff3d2e'],req:'s7'},
+    {id:'alien',n:'Alien',c:['#0e1e14','#39e35f'],req:'a10'},
+    {id:'coroa',n:'Coroa',c:['#3a2a08','#ffd84a'],req:'m100'}]},
+  gear:{t:'Equipamento',list:[
+    {id:'none',n:'Nenhum'},
+    {id:'lanterna',n:'Lanterna',req:'f25'},
+    {id:'tanques',n:'Tanques O₂',req:'m10'},
+    {id:'rastreador',n:'Rastreador',req:'a3'},
+    {id:'macarico',n:'Maçarico',req:'d3'},
+    {id:'jetpack',n:'Jetpack',req:'s14'}]},
   skin:{t:'Pele',list:SKIN.map((c,i)=>({id:'p'+i,n:'Tom '+(i+1),c}))},
   title:{t:'Título',list:[
     {id:'cadete',n:'Cadete'},
@@ -585,7 +610,7 @@ const ITEMS={
     {id:'rosa',n:'Rosa',c:{Y:'#ffe0f6',O:'#ff6ad5',r:'#a8208a'},req:'a10'},
     {id:'cosmica',n:'Cósmica',c:{Y:'#ffffff',O:'#ff6ad5',r:'#40d8ff'},req:'s30'}]},
 };
-const DEF={helmet:'branco',visor:'ciano',suit:'lilas',skin:'p1',title:'cadete',ship:'rocket',paint:'prata',flame:'laranja'};
+const DEF={helmet:'branco',visor:'ciano',suit:'lilas',skin:'p1',emblem:'estrela',gear:'none',title:'cadete',ship:'rocket',paint:'prata',flame:'laranja'};
 const item=(cat,id)=>ITEMS[cat].list.find(x=>x.id===id)||ITEMS[cat].list[0];
 const owned=it=>!it.req||st.got.includes(it.req);
 function look(){const L=Object.assign({},DEF,st.look);for(const k in L){if(!owned(item(k,L[k])))L[k]=DEF[k]}return L}
@@ -612,9 +637,13 @@ function checkGoals(){const m=metrics();let nw=[];
 const rewards=gid=>{const r=[];for(const c in ITEMS)ITEMS[c].list.forEach(it=>{if(it.req===gid)r.push([c,it])});return r};
 
 /* ---- desenho com as escolhas do piloto ---- */
-function pilotOv(L){const h=item('helmet',L.helmet).c,v=item('visor',L.visor).c,u=item('suit',L.suit).c,k=item('skin',L.skin).c;
-  return{1:h[0],2:h[1],3:h[2],4:h[3],5:v[0],6:v[1],7:k[0],8:k[1],9:u[0],0:u[1],'=':u[2]}}
-const pilotSVG=(s,L=look())=>sprite('pilot',s,pilotOv(L));
+function pilotOv(L){const h=item('helmet',L.helmet).c,v=item('visor',L.visor).c,u=item('suit',L.suit).c,k=item('skin',L.skin).c,e=item('emblem',L.emblem).c||['#2b2f38','#2b2f38'];
+  return{1:h[0],2:h[1],3:h[2],4:h[3],5:v[0],6:v[1],7:k[0],8:k[1],9:u[0],0:u[1],'=':u[2],a:e[0],b:e[1]}}
+const pilotFull=(s,L=look())=>spriteRows(pilotRows(L),s,pilotOv(L));
+/* retrato: cabeça e ombros recortados do corpo inteiro */
+const pilotSVG=(s,L=look())=>spriteRows(pilotRows(L).slice(4,21).map(r=>r.slice(2,30)),s,pilotOv(L));
+function patchSVG(it,s){const g=EMB[it.id]||["...","...","..."];
+  return spriteRows(["kkkkk",...g.map(r=>'k'+r.replace(/\./g,'a')+'k'),"kkkkk"],s,{a:(it.c||['#2b2f38'])[0],b:(it.c||['','#2b2f38'])[1]})}
 function shipOnly(s,L=look()){return sprite(item('ship',L.ship).spr,s,item('paint',L.paint).c)}
 function shipSVG(s,L=look()){const fo=item('flame',L.flame).c;
   return `<span style="display:grid;justify-items:center">${shipOnly(s,L)}<span style="position:relative;height:${5*s}px;width:${18*s}px;margin-top:${-s}px">
@@ -624,6 +653,8 @@ function shipSVG(s,L=look()){const fo=item('flame',L.flame).c;
 function thumb(cat,it,s=2){const L=Object.assign(look(),{[cat]:it.id});
   if(cat==='ship'||cat==='paint')return shipOnly(s,L);
   if(cat==='flame')return sprite('fl2',s+1,it.c);
+  if(cat==='emblem')return patchSVG(it,s+4);
+  if(cat==='gear')return pilotFull(s>1?s-1:1,L);
   if(cat==='title')return `<b style="font-family:var(--px);font-size:8px;color:var(--amber)">${it.n.toUpperCase()}</b>`;
   return pilotSVG(s,L)}
 function swatchBg(cat,it){
@@ -822,7 +853,7 @@ let draft=null;
 const goalOf=it=>GOALS.find(g=>g.id===it.req);
 function reqTxt(it){const g=goalOf(it),m=metrics();return `🔒 ${g.txt} · ${Math.min(m[g.kind],g.n)}/${g.n}`}
 function selRow(cat,L){const list=ITEMS[cat].list,it=item(cat,L[cat]),i=list.indexOf(it),own=owned(it);
-  const sw=cat==='title'||cat==='ship'?'':`<i class="dot2" style="background:${swatchBg(cat,it)}"></i>`;
+  const sw=!it.c||cat==='title'||cat==='ship'?'':`<i class="dot2" style="background:${swatchBg(cat,it)}"></i>`;
   return `<div class="sel px"><div class="srow"><span class="label">${ITEMS[cat].t}</span>
     <button class="arr" data-c="${cat}" data-d="-1" aria-label="Anterior">${sprite('back',3)}</button>
     <span class="val${own?'':' lk'}">${sw}<span>${own?'':'🔒 '}${it.n.toUpperCase()}<span class="cnt">${i+1} / ${list.length}</span></span></span>
@@ -834,10 +865,10 @@ function bindSels(host,render){host.querySelectorAll('[data-d]').forEach(b=>b.on
   if(owned(it)){st.look=Object.assign({},look(),{[cat]:it.id});save();blip();$('#logoShip').innerHTML=shipOnly(2)}else tone(330,.05);
   render()})}
 const anyLocked=(cats)=>cats.some(c=>!owned(item(c,draft[c])));
-const VCATS=['title','helmet','visor','suit','skin'],HCATS=['ship','paint','flame'];
+const VCATS=['title','helmet','visor','suit','skin','emblem','gear'],HCATS=['ship','paint','flame'];
 function renderVest(){if(!draft)draft=look();
-  document.querySelectorAll('[data-lk]').forEach(el=>el.innerHTML=sprite('locker',3).repeat(+el.dataset.lk));
-  $('#vHero').innerHTML=sprite('pilotFull',4,pilotOv(draft));
+  document.querySelectorAll('[data-lk]').forEach(el=>el.innerHTML=sprite('locker',3,{L:'#8a93a3',M:'#646c7c',D:'#454b57',E:'#2b2f38'}).repeat(+el.dataset.lk));
+  $('#vHero').innerHTML=pilotFull(4,draft);
   $('#vTag').hidden=!anyLocked(VCATS);
   $('#vTitle').textContent=item('title',draft.title).n;$('#vName').textContent=st.pilot||'—';
   $('#vSels').innerHTML=VCATS.map(c=>selRow(c,draft)).join('');bindSels($('#vSels'),renderVest)}
