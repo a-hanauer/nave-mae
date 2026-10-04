@@ -31,7 +31,7 @@ button,a{font:inherit;color:inherit;background:none;border:0;text-decoration:non
 #bgc{position:fixed;inset:0;width:100%;height:100%;z-index:0;image-rendering:pixelated}
 .crt{position:fixed;inset:0;pointer-events:none;z-index:80;background:repeating-linear-gradient(0deg,rgba(0,0,0,.22) 0 1px,transparent 1px 3px)}
 #app{position:relative;z-index:1;max-width:440px;margin:0 auto;
-  padding:calc(32px + env(safe-area-inset-top)) calc(16px + env(safe-area-inset-right)) calc(40px + env(safe-area-inset-bottom)) calc(16px + env(safe-area-inset-left))}
+  padding:calc(32px + env(safe-area-inset-top)) calc(16px + env(safe-area-inset-right)) calc(16px + env(safe-area-inset-bottom)) calc(16px + env(safe-area-inset-left))}
 
 /* painéis com canto em degrau */
 .px{background:var(--panel);position:relative;
@@ -136,10 +136,14 @@ button,a{font:inherit;color:inherit;background:none;border:0;text-decoration:non
 .glyph.num{color:#fff6e4;text-shadow:-3px -3px 0 var(--st1),3px 3px 0 var(--st2)}
 .glyph.sm{font-size:26px}
 .glyph .ph{color:var(--st4);text-shadow:none}
+/* telas de jogo cabem na tela do celular, sem rolar */
+#play .tablet{min-height:100px;padding:16px 12px}
+#play .tablet .cap{top:6px}
+@media (max-height:700px){.blocks{margin-bottom:10px}.fb{font-size:19px;margin-top:10px}.fb:not(:empty){padding:10px 12px}.play-head{margin-bottom:10px}#play .tablet{min-height:84px}.key{height:44px}.blk{height:50px}.chamber{height:130px}}
 .tablet .cap{position:absolute;top:8px;left:10px;font-family:var(--px);font-size:7px;color:var(--st5);letter-spacing:.1em}
 
 .blocks{display:grid;grid-template-columns:repeat(5,1fr);gap:9px;margin-bottom:14px}
-.blk{height:66px;display:grid;place-items:center;align-content:center;gap:4px;background:var(--st2);
+.blk{height:58px;display:grid;place-items:center;align-content:center;gap:4px;background:var(--st2);
   box-shadow:0 -3px 0 0 var(--st1),0 3px 0 0 var(--st1),-3px 0 0 0 var(--st1),3px 0 0 0 var(--st1),inset 0 -6px 0 0 var(--st1),inset 0 4px 0 0 var(--st3);
   filter:drop-shadow(4px 4px 0 #000)}
 .blk b{font-family:var(--px);font-size:20px;color:var(--glow);text-shadow:2px 2px 0 var(--glow-d)}
@@ -157,7 +161,7 @@ button,a{font:inherit;color:inherit;background:none;border:0;text-decoration:non
 .btn[disabled]{opacity:.45}
 
 .keys{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.key{height:58px;font-family:var(--px);font-size:18px;color:var(--ink)}
+.key{height:50px;font-family:var(--px);font-size:18px;color:var(--ink)}
 .key.ok{background:var(--amber);color:#1a1200;box-shadow:0 -3px 0 0 var(--amber-d),0 3px 0 0 var(--amber-d),-3px 0 0 0 var(--amber-d),3px 0 0 0 var(--amber-d),inset 0 -5px 0 0 var(--amber-d)}
 
 .opts{display:grid;gap:14px}
@@ -168,7 +172,7 @@ button,a{font:inherit;color:inherit;background:none;border:0;text-decoration:non
 .pair{display:flex;align-items:center;justify-content:center;gap:18px}
 .pair .vs{font-family:var(--px);font-size:10px;color:var(--st1)}
 
-.fb{min-height:0;margin-top:16px;padding:0 14px;font-size:21px;line-height:1.2}
+.fb{min-height:0;margin-top:12px;padding:0 14px;font-size:21px;line-height:1.2}
 .fb:not(:empty){padding:12px 14px}
 .fb.ok{color:var(--green);background:#0e2016;box-shadow:inset 3px 0 0 0 var(--green)}
 .fb.no{color:#ffb4aa;background:#2a1011;box-shadow:inset 3px 0 0 0 var(--red)}
@@ -344,7 +348,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 
 <script>
 /* atualização automática: compara com version.json e recarrega quando sai versão nova */
-const APP_V='20261004112339';
+const APP_V='20261004113446';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     if(v&&v!==APP_V&&sessionStorage.getItem('upd')!==v){sessionStorage.setItem('upd',v);location.replace(location.pathname+'?v='+v+H0)}}catch(e){}}
@@ -530,7 +534,7 @@ function renderQ(){
   if(mode==='montar'){
     const syms=L().syms;
     st.innerHTML=`<div class="tablet"><span class="cap">MONTE EM ROMANO</span><span class="glyph num">${q.n}</span></div>
-      <div class="tablet" style="min-height:92px"><span class="cap">SUA SENHA</span><span class="glyph sm" id="built"></span></div>
+      <div class="tablet" style="min-height:72px"><span class="cap">SUA SENHA</span><span class="glyph sm" id="built"></span></div>
       <div class="blocks">${ALL.map(s=>syms.includes(s)?`<button class="blk" data-s="${s}"><b>${s}</b><i>${VAL[s]}</i></button>`:`<span class="blk lock" aria-hidden="true"><b>?</b><i>—</i></span>`).join('')}</div>
       <div class="row2"><button class="ghost px pbtn" id="bDel">⌫ APAGAR</button><button class="ghost px pbtn" id="bClr">LIMPAR</button></div>
       <button class="btn" id="bOk">CONFIRMAR</button>`;
@@ -548,7 +552,7 @@ function renderQ(){
   }
   else if(mode==='ler'){
     st.innerHTML=`<div class="tablet"><span class="cap">QUANTO VALE?</span><span class="glyph">${q.s}</span></div>
-      <div class="tablet" style="min-height:84px"><span class="cap">VALOR</span><span class="glyph num sm" id="typed"></span></div>
+      <div class="tablet" style="min-height:64px"><span class="cap">VALOR</span><span class="glyph num sm" id="typed"></span></div>
       <div class="keys">${[1,2,3,4,5,6,7,8,9].map(d=>`<button class="key px pbtn" data-k="${d}">${d}</button>`).join('')}
         <button class="key px pbtn" data-k="del">⌫</button><button class="key px pbtn" data-k="0">0</button><button class="key ok pbtn" data-k="ok">OK</button></div>`;
     const upd=()=>{$('#typed').innerHTML=R.typed||'<span class="ph">_</span>'};upd();
