@@ -79,7 +79,6 @@ h2{margin:0;font-family:var(--px);font-size:14px;line-height:1.7;font-weight:400
 /* ---- menu ---- */
 .brand{display:flex;align-items:center;gap:16px}
 .logo{--b:var(--amber);position:relative;flex:none;width:60px;height:60px;display:grid;place-items:center;font-family:var(--px);font-size:16px;color:var(--amber);text-shadow:3px 3px 0 var(--amber-d);overflow:hidden;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;touch-action:none}
-.logo::after{content:"";position:absolute;left:0;right:0;bottom:0;height:calc(var(--hold,0)*100%);background:rgba(255,179,0,.25)}
 .brand .t{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px}
 .icon-btn{flex:none;width:52px;height:44px;font-family:var(--px);font-size:8px;color:var(--dim)}
 .icon-btn[aria-pressed="true"]{color:var(--amber)}
@@ -332,28 +331,11 @@ h2{margin:0;font-family:var(--px);font-size:14px;line-height:1.7;font-weight:400
   <button class="ghost pbtn" data-back>Voltar à ponte</button>
 </section>
 
-<!-- PAIS -->
-<section class="screen" id="pais" hidden>
-  <div class="bar"><button class="back pbtn" data-back>&lt; Ponte</button><span class="prog">Área dos pais</span></div>
-  <h2>Como está indo</h2>
-  <p class="note">Só respostas de primeira. Dados salvos neste aparelho.</p>
-  <div id="k-stats"></div>
-  <p class="note" id="k-read"></p>
-  <p class="note" id="k-days"></p>
-  <span class="label">Contas que ele mais errou</span>
-  <div class="chips" id="k-errs"></div>
-  <button class="ghost pbtn" id="k-reset">Apagar histórico</button>
-  <div class="confirm px" id="k-confirm" hidden>
-    <p class="note" style="color:var(--text)">Apagar todo o histórico deste aparelho?</p>
-    <div class="row"><button class="ghost pbtn" id="k-no">Cancelar</button><button class="primary pbtn danger" id="k-yes">Apagar</button></div>
-  </div>
-</section>
-
 </div>
 
 <script>
 /* atualização automática: compara com version.json e recarrega quando sai versão nova */
-const APP_V='20261004102319';
+const APP_V='20261004104151';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     if(v&&v!==APP_V&&sessionStorage.getItem('upd')!==v){sessionStorage.setItem('upd',v);location.replace(location.pathname+'?v='+v+H0)}}catch(e){}}
@@ -399,10 +381,13 @@ const BAT=sprite('bat',2),CRATE=sprite('crate',2),CHECK=sprite('check',2);
 
 /* ---------- memória local ---------- */
 const STORE='nostro9-stats-v1';
-const fresh=()=>({partilha:{a:0,c:0},grupos:{a:0,c:0},hangar:{a:0,c:0},desafio:{a:0,c:0},erros:{},days:{},prog:{}});
+const fresh=()=>({partilha:{a:0,c:0},grupos:{a:0,c:0},hangar:{a:0,c:0},desafio:{a:0,c:0},erros:{},days:{},prog:{},log:{},errM:{}});
 let stats=(()=>{try{return Object.assign(fresh(),JSON.parse(localStorage.getItem(STORE))||{})}catch(e){return fresh()}})();
 function save(){try{localStorage.setItem(STORE,JSON.stringify(stats))}catch(e){}}
-function record(mode,ok,fact){stats[mode].a++;if(ok)stats[mode].c++;else if(fact)stats.erros[fact]=(stats.erros[fact]||0)+1;save()}
+/* histórico para a área dos pais (na Nave-Mãe): log diário por missão e erros por missão */
+function record(mode,ok,fact){stats[mode].a++;if(ok)stats[mode].c++;else if(fact){stats.erros[fact]=(stats.erros[fact]||0)+1;const e=stats.errM[mode]=stats.errM[mode]||{};e[fact]=(e[fact]||0)+1}
+  const k=dkey(),d=stats.log[k]=stats.log[k]||{},r=d[mode]=d[mode]||[0,0];r[0]++;if(ok)r[1]++;
+  const ks=Object.keys(stats.log).sort();while(ks.length>120)delete stats.log[ks.shift()];save()}
 
 /* ---------- turno diário ---------- */
 const MODES=['partilha','grupos','hangar']; /* o desafio é extra e não conta para o turno */
@@ -797,33 +782,6 @@ function dLoop(now){
 }
 function stopDesafio(){D.running=false;cancelAnimationFrame(raf)}
 document.addEventListener('visibilitychange',()=>{D.prev=performance.now()});
-
-/* ================= ÁREA DOS PAIS ================= */
-let holdStart=0,holdRaf=0;
-const logo=$('#logo');
-function holdTick(){const p=Math.min(1,(performance.now()-holdStart)/3000);logo.style.setProperty('--hold',p);if(p>=1){holdEnd();click();openPais();return}holdRaf=requestAnimationFrame(holdTick)}
-function holdEnd(){cancelAnimationFrame(holdRaf);logo.style.setProperty('--hold',0)}
-logo.addEventListener('pointerdown',e=>{e.preventDefault();holdStart=performance.now();holdRaf=requestAnimationFrame(holdTick)});
-['pointerup','pointerleave','pointercancel'].forEach(ev=>logo.addEventListener(ev,holdEnd));
-logo.addEventListener('contextmenu',e=>e.preventDefault());
-
-const LABELS={partilha:'M1 · Dividir em partes iguais',grupos:'M2 · Formar grupos',hangar:'M3 · Resolver a conta escrita',desafio:'Fuja do Alien · Tabuada da divisão'};
-function openPais(){
-  $('#k-stats').innerHTML=Object.keys(LABELS).map(k=>{const s=stats[k],pct=s.a?Math.round(s.c/s.a*100):0;
-    return `<div class="stat"><div class="top"><span>${LABELS[k]}</span><span class="v">${s.a?`${s.c} de ${s.a} · ${pct}%`:'não jogou'}</span></div><div class="meter"><i style="width:${pct}%"></i></div></div>`}).join('');
-  const played=Object.keys(LABELS).filter(k=>stats[k].a>=3);
-  if(played.length){const w=played.sort((a,b)=>stats[a].c/stats[a].a-stats[b].c/stats[b].a)[0];
-    $('#k-read').textContent=`Ponto que mais precisa de atenção agora: ${LABELS[w].split('· ')[1].toLowerCase()}.`}
-  else $('#k-read').textContent='Ainda há poucas respostas para tirar conclusões. Volte depois de algumas partidas.';
-  const fullDays=Object.keys(stats.days).filter(isFull).length,anyDays=Object.keys(stats.days).length;
-  $('#k-days').textContent=anyDays?`Dias jogados: ${anyDays} · Turnos completos: ${fullDays} · Sequência atual: ${streak()}`:'Ainda nenhum dia jogado.';
-  const errs=Object.entries(stats.erros).sort((a,b)=>b[1]-a[1]).slice(0,12);
-  $('#k-errs').innerHTML=errs.length?errs.map(([f,n])=>`<span class="chip px">${f} <span>x${n}</span></span>`).join(''):'<p class="note">Nenhum erro registrado ainda.</p>';
-  $('#k-confirm').hidden=true;$('#k-reset').hidden=false;show('pais');
-}
-$('#k-reset').onclick=()=>{$('#k-confirm').hidden=false;$('#k-reset').hidden=true};
-$('#k-no').onclick=()=>{$('#k-confirm').hidden=true;$('#k-reset').hidden=false};
-$('#k-yes').onclick=()=>{stats=fresh();save();openPais()};
 
 const START={partilha:pStart,grupos:gStart,hangar:hStart,desafio:dStart};
 renderMenu();

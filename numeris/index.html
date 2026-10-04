@@ -46,7 +46,6 @@ button,a{font:inherit;color:inherit;background:none;border:0;text-decoration:non
   font-family:var(--px);font-size:15px;color:var(--glow);text-shadow:2px 2px 0 var(--glow-d);
   background:var(--st2);box-shadow:0 -3px 0 0 var(--st1),0 3px 0 0 var(--st1),-3px 0 0 0 var(--st1),3px 0 0 0 var(--st1),inset 0 -6px 0 0 var(--st1),inset 0 4px 0 0 var(--st3);
   filter:drop-shadow(5px 5px 0 #000);touch-action:none}
-.logo::after{content:"";position:absolute;left:0;right:0;bottom:0;height:calc(var(--hold,0)*100%);background:rgba(63,242,196,.25)}
 .brand .t{flex:1;min-width:0}
 .brand .t p{font-family:var(--px);font-size:8px;color:var(--dim);letter-spacing:.1em}
 .brand h1{font-family:var(--px);font-size:15px;line-height:1.45;margin-top:8px;color:var(--st5);text-shadow:3px 3px 0 var(--st1)}
@@ -326,30 +325,10 @@ button,a{font:inherit;color:inherit;background:none;border:0;text-decoration:non
   </div>
 </div>
 
-<!-- PAIS -->
-<div class="overlay" id="pais" hidden>
-  <div class="modal px">
-    <h2>ÁREA DOS PAIS</h2>
-    <div id="kStats"></div>
-    <div class="sep"></div>
-    <div class="label" style="margin-top:12px">Erros mais comuns</div>
-    <div class="errs" id="kErrs"></div>
-    <div class="sep"></div>
-    <div class="label" style="margin-top:12px">Nível atual</div>
-    <div class="lv" id="kLv"></div>
-    <p id="kDays"></p>
-    <button class="btn" id="kClose">FECHAR</button>
-    <button class="ghost" id="kReset" style="width:100%;margin-top:6px">APAGAR HISTÓRICO</button>
-    <div id="kConfirm" hidden>
-      <p>Apagar todo o progresso deste aparelho?</p>
-      <div class="row2" style="margin-top:12px"><button class="ghost px pbtn" id="kNo">NÃO</button><button class="ghost px pbtn" id="kYes" style="color:var(--red)">APAGAR</button></div>
-    </div>
-  </div>
-</div>
 
 <script>
 /* atualização automática: compara com version.json e recarrega quando sai versão nova */
-const APP_V='20261004102319';
+const APP_V='20261004104151';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     if(v&&v!==APP_V&&sessionStorage.getItem('upd')!==v){sessionStorage.setItem('upd',v);location.replace(location.pathname+'?v='+v+H0)}}catch(e){}}
@@ -412,7 +391,7 @@ function uniqueList(k,gen,keyf=x=>JSON.stringify(x)){const out=[],seen=new Set()
 
 /* =================== memória local =================== */
 const STORE='numeris-stats-v1',ROUNDS=5,LVDAYS=2,MODES=['montar','ler','sub'];
-const fresh=()=>({level:1,lvDays:[],modes:{montar:{a:0,c:0},ler:{a:0,c:0},sub:{a:0,c:0},desafio:{a:0,c:0}},erros:{},days:{},run:{},sound:true});
+const fresh=()=>({level:1,lvDays:[],modes:{montar:{a:0,c:0},ler:{a:0,c:0},sub:{a:0,c:0},desafio:{a:0,c:0}},erros:{},days:{},run:{},log:{},errM:{},sound:true});
 let pendingLevel=false;
 let S=(()=>{try{const o=JSON.parse(localStorage.getItem(STORE));return o?Object.assign(fresh(),o):fresh()}catch(e){return fresh()}})();
 const save=()=>{try{localStorage.setItem(STORE,JSON.stringify(S))}catch(e){}};
@@ -424,8 +403,11 @@ function markDone(m){const k=dkey(),l=S.days[k]||[];if(!l.includes(m)){l.push(m)
   if(m!=='desafio'&&mainDone(k)>=3&&S.level<4&&!S.lvDays.includes(k)){S.lvDays.push(k);if(S.lvDays.length>=LVDAYS){S.level++;S.lvDays=[];pendingLevel=true}}
   const ks=Object.keys(S.days).sort();while(ks.length>120)delete S.days[ks.shift()];save()}
 function streak(){const d=new Date();let n=0;if(mainDone(dkey(d))<3)d.setDate(d.getDate()-1);while(mainDone(dkey(d))>=3){n++;d.setDate(d.getDate()-1)}return n}
+/* histórico para a área dos pais (na Nave-Mãe): log diário por missão e erros por missão */
 function record(mode,ok,errKey){const m=S.modes[mode];m.a++;if(ok){m.c++}
-  else if(errKey)S.erros[errKey]=(S.erros[errKey]||0)+1;save()}
+  else if(errKey){S.erros[errKey]=(S.erros[errKey]||0)+1;S.errM=S.errM||{};const e=S.errM[mode]=S.errM[mode]||{};e[errKey]=(e[errKey]||0)+1}
+  S.log=S.log||{};const k=dkey(),d=S.log[k]=S.log[k]||{},r=d[mode]=d[mode]||[0,0];r[0]++;if(ok)r[1]++;
+  const ks=Object.keys(S.log).sort();while(ks.length>120)delete S.log[ks.shift()];save()}
 const pilot=(()=>{try{return (JSON.parse(localStorage.getItem('navemae-v1'))||{}).pilot||''}catch(e){return ''}})();
 
 /* =================== sprites =================== */
@@ -663,28 +645,6 @@ function openTab(){const l=L();$('#tSyms').innerHTML=ALL.map(s=>{const on=l.syms
 $('#openTab').onclick=()=>{sfx.tap();openTab()};
 document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{sfx.tap();openTab()});
 $('#tabClose').onclick=()=>{$('#tab').hidden=true;if(D){D.tab=false;D.last=performance.now()}};
-
-/* =================== pais: segurar o logo 3 s =================== */
-const LABELS={montar:'M1 Montar',ler:'M2 Ler',sub:'M3 Subtração',desafio:'Desabamento'};
-function openPais(){
-  $('#kStats').innerHTML=Object.keys(LABELS).map(k=>{const m=S.modes[k],p=m.a?Math.round(m.c/m.a*100):0;
-    return `<div class="stat"><div class="top"><span>${LABELS[k]}</span><span class="v">${m.a?`${m.c} de ${m.a} · ${p}%`:'não jogou'}</span></div><div class="meter"><i style="width:${p}%"></i></div></div>`}).join('');
-  const e=Object.entries(S.erros).sort((a,b)=>b[1]-a[1]).slice(0,12);
-  $('#kErrs').innerHTML=e.length?e.map(([f,n])=>`<span>${f} ×${n}</span>`).join(''):'<p>Nenhum erro ainda.</p>';
-  $('#kLv').innerHTML=LEVELS.map((l,i)=>`<button class="px pbtn${S.level===i+1?' on':''}" data-lv="${i+1}">${l.n}</button>`).join('');
-  $('#kLv').querySelectorAll('[data-lv]').forEach(b=>b.onclick=()=>{S.level=+b.dataset.lv;S.lvDays=[];S.run={};save();openPais()});
-  const days=Object.keys(S.days).length,full=Object.keys(S.days).filter(k=>mainDone(k)>=3).length;
-  $('#kDays').textContent=`Nível ${L().n}: ${L().range}. Sobe ao abrir os 3 portões em ${LVDAYS} dias. Dias jogados: ${days} · completos: ${full} · sequência: ${streak()}. Trocar o nível reinicia missões em andamento.`;
-  $('#kConfirm').hidden=true;$('#kReset').hidden=false;$('#pais').hidden=false}
-(function(){let h=0,raf=0;const lg=$('#logo');
-  const tick=()=>{const p=Math.min(1,(performance.now()-h)/3000);lg.style.setProperty('--hold',p);if(p>=1){end();sfx.tap();openPais();return}raf=requestAnimationFrame(tick)};
-  const end=()=>{cancelAnimationFrame(raf);lg.style.setProperty('--hold',0)};
-  lg.addEventListener('pointerdown',e=>{e.preventDefault();h=performance.now();raf=requestAnimationFrame(tick)});
-  ['pointerup','pointerleave','pointercancel'].forEach(ev=>lg.addEventListener(ev,end));lg.addEventListener('contextmenu',e=>e.preventDefault())})();
-$('#kClose').onclick=()=>{$('#pais').hidden=true;renderMenu()};
-$('#kReset').onclick=()=>{$('#kConfirm').hidden=false;$('#kReset').hidden=true};
-$('#kNo').onclick=()=>{$('#kConfirm').hidden=true;$('#kReset').hidden=false};
-$('#kYes').onclick=()=>{const snd=S.sound;S=fresh();S.sound=snd;save();openPais()};
 
 /* =================== som on/off =================== */
 

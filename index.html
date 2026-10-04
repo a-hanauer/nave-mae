@@ -282,6 +282,101 @@ button{cursor:pointer;touch-action:manipulation}
 .btn.alt{background:var(--panel2);color:var(--ink);box-shadow:0 -3px 0 0 var(--line),0 3px 0 0 var(--line),-3px 0 0 0 var(--line),3px 0 0 0 var(--line)}
 .warn{margin-top:14px;padding:12px;color:#ffb4aa;background:#2a1011;box-shadow:inset 3px 0 0 0 var(--red);font-size:20px}
 .okmsg{margin-top:14px;color:var(--green);font-size:20px}
+
+/* ===== área dos pais: interface limpa, fora do estilo 16-bits ===== */
+#cfgTitle{position:relative;-webkit-touch-callout:none;touch-action:none}
+#cfgTitle::after{content:"";position:absolute;left:0;right:0;margin:auto;bottom:-6px;height:2px;width:calc(var(--hold,0)*100%);background:var(--amber)}
+#pais{--pbg:#000;--card:#1c1c1e;--card2:#2c2c2e;--sep:rgba(84,84,88,.55);--t1:#fff;--t2:#8e8e93;--t3:#636366;--acc:#0a84ff;
+  --good:#30d158;--mid:#ff9f0a;--bad:#ff453a;--chal:#bf5af2;
+  position:fixed;inset:0;z-index:70;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;background:var(--pbg);color:var(--t1);
+  font:15px/1.35 -apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,"Segoe UI",Roboto,sans-serif;letter-spacing:0;
+  -webkit-font-smoothing:antialiased;image-rendering:auto;text-align:left}
+#pais button{font-family:inherit;line-height:inherit}
+.pa-top{position:sticky;top:0;z-index:2;background:rgba(0,0,0,.8);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);
+  padding:env(safe-area-inset-top) env(safe-area-inset-right) 0 env(safe-area-inset-left);border-bottom:.5px solid var(--sep)}
+.pa-nav{position:relative;display:flex;align-items:center;justify-content:space-between;gap:12px;height:44px;padding:0 8px;max-width:640px;margin:0 auto}
+.pa-back{display:flex;align-items:center;gap:3px;color:var(--acc);font-size:17px;padding:8px 4px;min-width:0;max-width:100%}
+.pa-back svg{flex:none}
+.pa-back span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pa-ttl{position:absolute;left:50%;transform:translateX(-50%);font-size:17px;font-weight:600;white-space:nowrap;pointer-events:none}
+.pa-close{margin-left:auto;flex:none;color:var(--acc);font-size:17px;font-weight:600;padding:8px}
+.pa-seg{display:flex;padding:2px;border-radius:9px;background:rgba(118,118,128,.24)}
+.pa-seg button{flex:1;height:30px;border-radius:7px;font-size:13px;font-weight:500;color:var(--t1);white-space:nowrap;padding:0 4px}
+.pa-seg button.on{background:#636366;font-weight:600;box-shadow:0 3px 8px rgba(0,0,0,.12),0 3px 1px rgba(0,0,0,.04)}
+.pa-top .pa-seg{max-width:608px;margin:0 auto 10px;margin-inline:max(16px,calc((100% - 608px)/2))}
+.pa-body{max-width:640px;margin:0 auto;padding:4px calc(16px + env(safe-area-inset-right)) calc(40px + env(safe-area-inset-bottom)) calc(16px + env(safe-area-inset-left))}
+.pa-h1{font-size:30px;line-height:1.15;font-weight:700;letter-spacing:-.02em;margin-top:18px}
+.pa-sub{color:var(--t2);font-size:15px;margin-top:4px}
+.pa-h{font-size:13px;color:var(--t2);text-transform:uppercase;letter-spacing:.01em;margin:28px 16px 8px}
+.pa-card{background:var(--card);border-radius:12px;overflow:hidden}
+.pa-kpis{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px}
+.pa-kpi{background:var(--card);border-radius:12px;padding:12px 14px 13px;min-width:0}
+.pa-kv{display:flex;align-items:center;gap:8px;font-size:28px;line-height:1.1;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.pa-kl{font-size:13px;color:var(--t1);margin-top:4px}
+.pa-ks{font-size:12px;color:var(--t2);margin-top:1px}
+.pa-row{display:flex;align-items:center;gap:12px;width:100%;min-height:44px;padding:11px 16px;text-align:left;position:relative;color:var(--t1)}
+.pa-row+.pa-row::before{content:"";position:absolute;top:0;left:16px;right:0;border-top:.5px solid var(--sep)}
+.pa-row.dot+.pa-row::before,.pa-row+.pa-row.dot::before{left:38px}
+button.pa-row:active{background:var(--card2)}
+.pa-row.off{color:var(--t3)}
+.pa-dotc{flex:none;width:10px;height:10px;border-radius:50%}
+.pa-row.off .pa-dotc{opacity:.35}
+.pa-rm{flex:1;min-width:0;display:block}
+.pa-rn{display:block;font-size:16px;line-height:1.3}
+.pa-rs{display:block;font-size:13px;color:var(--t2);margin-top:1px}
+.pa-row.off .pa-rs{color:var(--t3)}
+.pa-tag{display:inline-block;vertical-align:1px;margin-left:6px;font-size:11px;font-weight:600;color:var(--chal);text-transform:uppercase;letter-spacing:.03em}
+.pa-rr{flex:none;width:94px;display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.pa-rv{font-size:16px;font-weight:600;font-variant-numeric:tabular-nums}
+.pa-chev{flex:none;color:var(--t3)}
+.pa-bar{display:block;height:6px;border-radius:3px;background:var(--card2);margin-top:9px;overflow:hidden}
+.pa-bar i{display:block;height:100%;border-radius:3px}
+.pa-pill{font-size:12px;line-height:1;font-weight:600;padding:4px 8px;border-radius:999px;white-space:nowrap}
+.pa-pill.good{color:var(--good);background:rgba(48,209,88,.16)}
+.pa-pill.mid{color:var(--mid);background:rgba(255,159,10,.16)}
+.pa-pill.bad{color:var(--bad);background:rgba(255,69,58,.16)}
+.pa-pill.none{color:var(--t2);background:rgba(142,142,147,.16)}
+.pa-kv .pa-pill{font-size:12px;letter-spacing:0}
+.pa-cal{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;padding:14px 16px 0}
+.pa-cw{font-size:11px;color:var(--t2);text-align:center;padding-bottom:2px}
+.pa-cd{aspect-ratio:1;border-radius:7px;display:grid;place-items:center;font-size:12px;font-variant-numeric:tabular-nums;color:var(--t2)}
+.pa-cd.l0{background:var(--card2)}
+.pa-cd.l1{background:#123d22;color:#9fe3b3}.pa-cd.l2{background:#18693a;color:#d4f7df}.pa-cd.l3{background:#21a052;color:#fff}.pa-cd.l4{background:var(--good);color:#00290f;font-weight:600}
+.pa-cd.fut{box-shadow:inset 0 0 0 1px var(--card2);color:var(--t3)}
+.pa-cd.now{box-shadow:inset 0 0 0 2px var(--t1)}
+.pa-cd.sel,.pa-col.sel i{outline:2px solid var(--acc);outline-offset:2px}
+.pa-leg{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px 0;font-size:12px;color:var(--t2)}
+.pa-leg span{display:flex;align-items:center;gap:4px}
+.pa-leg i{width:11px;height:11px;border-radius:3px;display:inline-block}
+.pa-leg .cd{width:7px;height:7px;border-radius:50%;background:var(--chal)}
+.pa-tip{font-size:13px;color:var(--t2);padding:10px 16px 14px;min-height:42px}
+.pa-tip.on{color:var(--t1)}
+.pa-chart{display:grid;grid-template-columns:repeat(14,1fr);gap:5px;height:110px;padding:18px 16px 0;align-items:stretch}
+.pa-chart.pct{background:linear-gradient(var(--sep),var(--sep)) 0 0/100% 1px no-repeat,linear-gradient(var(--sep),var(--sep)) 0 50%/100% 1px no-repeat;background-origin:content-box;background-clip:content-box}
+.pa-col{display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%;padding:0;min-width:0}
+.pa-col i{display:block;width:100%;min-height:3px;border-radius:3px 3px 2px 2px}
+.pa-col b{width:6px;height:6px;border-radius:50%;background:var(--chal);margin-bottom:4px;flex:none}
+.pa-xl{display:grid;grid-template-columns:repeat(14,1fr);gap:5px;padding:6px 16px 0;font-size:10px;color:var(--t3);text-align:center;font-variant-numeric:tabular-nums}
+.pa-xl .now{color:var(--t1);font-weight:600}
+.pa-chips{display:flex;flex-wrap:wrap;gap:8px;padding:14px 16px}
+.pa-chip{background:var(--card2);border-radius:8px;padding:6px 10px;font-size:14px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.pa-chip b{color:var(--t2);font-weight:500;margin-left:6px}
+.pa-tabs{display:flex;gap:8px;overflow-x:auto;margin:16px -16px 0;padding:0 16px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.pa-tabs::-webkit-scrollbar{display:none}
+.pa-tab{flex:none;padding:7px 13px;border-radius:999px;background:var(--card);font-size:14px;color:var(--t1)}
+.pa-tab.on{background:var(--t1);color:#000;font-weight:600}
+.pa-pad{padding:14px 16px}
+.pa-pad .pa-seg{margin-top:14px}
+.pa-note{font-size:13px;line-height:1.4;color:var(--t2);margin:10px 16px 0}
+.pa-empty{font-size:14px;color:var(--t2);padding:14px 16px}
+.pa-danger{display:block;width:100%;padding:13px 16px;font-size:16px;color:var(--bad);text-align:center}
+.pa-conf{padding:14px 16px;border-top:.5px solid var(--sep)}
+.pa-conf p{font-size:14px;color:var(--t2)}
+.pa-conf p b{color:var(--t1);font-weight:600}
+.pa-two{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.pa-btn{height:44px;border-radius:10px;background:var(--card2);font-size:16px;font-weight:600;color:var(--t1)}
+.pa-btn.pri{background:var(--acc)}
+.pa-btn.del{background:var(--bad)}
 </style>
 </head>
 <body>
@@ -400,7 +495,7 @@ button{cursor:pointer;touch-action:manipulation}
 <!-- configurações -->
 <div class="overlay" id="cfg" hidden>
   <div class="modal px cfg">
-    <h2>CONFIGURAÇÕES</h2>
+    <h2 id="cfgTitle">CONFIGURAÇÕES</h2>
     <div class="row2"><span class="label">Som</span><button class="tog px" id="cfgSnd"></button></div>
     <div class="sec" style="margin-top:26px"><span class="label">Exportar progresso</span></div>
     <p class="note">Gere um código e guarde no WhatsApp ou nas Notas.</p>
@@ -423,6 +518,19 @@ button{cursor:pointer;touch-action:manipulation}
   </div>
 </div>
 
+<!-- área dos pais (segure o título das configurações por 3 s) -->
+<div id="pais" hidden>
+  <header class="pa-top">
+    <div class="pa-nav">
+      <button class="pa-back" id="paBack" hidden><svg width="12" height="20" viewBox="0 0 12 20" aria-hidden="true"><path d="M10 2 2 10l8 8" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span id="paBackT"></span></button>
+      <span class="pa-ttl" id="paTtl">Área dos pais</span>
+      <button class="pa-close" id="paClose">Fechar</button>
+    </div>
+    <div class="pa-seg" id="paPer" role="tablist"><button data-p="7">7 dias</button><button data-p="30">30 dias</button><button data-p="all">Tudo</button></div>
+  </header>
+  <main class="pa-body" id="paBody"></main>
+</div>
+
 <div id="toast" class="px" hidden></div>
 
 <nav class="tabbar"><div class="in">
@@ -434,7 +542,7 @@ button{cursor:pointer;touch-action:manipulation}
 
 <script>
 /* atualização automática: compara com version.json e recarrega quando sai versão nova */
-const APP_V='20261004102319';
+const APP_V='20261004104151';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     if(v&&v!==APP_V&&sessionStorage.getItem('upd')!==v){sessionStorage.setItem('upd',v);location.replace(location.pathname+'?v='+v+H0)}}catch(e){}}
@@ -1027,6 +1135,193 @@ $('#impGo').onclick=async()=>{$('#impErr').hidden=true;$('#impWarn').hidden=true
 $('#impNo').onclick=()=>{pending=null;$('#impWarn').hidden=true};
 $('#impYes').onclick=()=>{if(!pending)return;BACKUP().forEach(k=>localStorage.removeItem(k));
   for(const k in pending.d)localStorage.setItem(k,pending.d[k]);location.reload()};
+
+/* ---------- área dos pais (segure o título das configurações por 3 s) ---------- */
+const PA={per:'all',stack:[{t:'home'}],lv:0,reset:false};
+const PER_L={'7':'Últimos 7 dias','30':'Últimos 30 dias','all':'Desde o início'};
+const COL={good:'#30d158',mid:'#ff9f0a',bad:'#ff453a',none:'#636366'};
+const CHEV='<svg class="pa-chev" width="8" height="14" viewBox="0 0 8 14" aria-hidden="true"><path d="m1.5 1.5 5 5.5-5 5.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const sumO=(a,b)=>({a:a.a+b.a,c:a.c+b.c}),Z={a:0,c:0};
+const pctOf=o=>o.a?Math.round(o.c/o.a*100):null;
+const fmtP=o=>o.a?pctOf(o)+'%':'—';
+const band=p=>p>=85?'good':p>=65?'mid':'bad';
+function lvl(o){if(o.a<5)return['none','Poucos dados'];const b=band(pctOf(o));return[b,{good:'Ótimo',mid:'Bom',bad:'Atenção'}[b]]}
+const pill=o=>{const[c,t]=lvl(o);return `<span class="pa-pill ${c}">${t}</span>`};
+const bar=o=>`<span class="pa-bar"><i style="width:${pctOf(o)||0}%;background:${COL[lvl(o)[0]]}"></i></span>`;
+const plural=(n,s,p)=>`${n} ${n===1?s:(p||s+'s')}`;
+const capName=s=>s.toLowerCase().replace(/(^|\s)\S/g,c=>c.toUpperCase());
+const kDate=k=>new Date(k+'T12:00');
+function fmtDay(k){const t=dkey(),y=new Date();y.setDate(y.getDate()-1);
+  return k===t?'hoje':k===dkey(y)?'ontem':kDate(k).toLocaleDateString('pt-BR',{day:'numeric',month:'short'}).replace('.','')}
+const fmtLong=k=>{const s=kDate(k).toLocaleDateString('pt-BR',{weekday:'short',day:'numeric',month:'short'}).replace(/\./g,'');return s[0].toUpperCase()+s.slice(1)};
+function cutoff(){if(PA.per==='all')return '';const d=new Date();d.setDate(d.getDate()-(+PA.per-1));return dkey(d)}
+function last14(){const o=[],d=new Date();d.setDate(d.getDate()-13);for(let i=0;i<14;i++){o.push(dkey(d));d.setDate(d.getDate()+1)}return o}
+
+/* lê o progresso de um app já filtrado pelo período escolhido */
+function appData(app){
+  const s=readLS(app.store)||{},days=s.days||{},log=s.log||{},cut=cutoff(),inP=k=>k>=cut;
+  const main=app.tasks.filter(t=>!t.opt).map(t=>t.id);
+  const tot=k=>{const o=(s.modes&&s.modes[k])||s[k]||{};return{a:o.a||0,c:o.c||0}};
+  const mode=k=>{if(PA.per==='all')return tot(k);let a=0,c=0;for(const d in log){const r=log[d][k];if(r&&inP(d)){a+=r[0];c+=r[1]}}return{a,c}};
+  const done=k=>(days[k]||[]).filter(m=>main.includes(m)).length;
+  const isFull=k=>done(k)>=main.length;
+  const chalOn=k=>(days[k]||[]).some(m=>!main.includes(m));
+  const dk=Object.keys(days).filter(k=>inP(k)&&(days[k]||[]).length).sort();
+  let streak=0;const d=new Date();if(!isFull(dkey(d)))d.setDate(d.getDate()-1);
+  while(isFull(dkey(d))&&streak<999){streak++;d.setDate(d.getDate()-1)}
+  const all=Object.keys(days).filter(k=>(days[k]||[]).length).sort();
+  return{app,s,days,log,main,mode,done,isFull,chalOn,dk,streak,acc:main.map(mode).reduce(sumO,Z),
+    played:dk.length,full:dk.filter(isFull).length,missions:dk.reduce((t,k)=>t+done(k),0),chal:dk.filter(chalOn).length,
+    last:all[all.length-1]||null,lastOf:id=>all.filter(k=>days[k].includes(id)).pop()||null,
+    daysOf:id=>dk.filter(k=>days[k].includes(id)).length,erros:s.erros||{},errM:s.errM||{},escapes:s.escapes||0}}
+
+/* erros com a resposta certa ao lado */
+const ROM=[[100,'C'],[90,'XC'],[50,'L'],[40,'XL'],[10,'X'],[9,'IX'],[5,'V'],[4,'IV'],[1,'I']];
+const toRom=n=>ROM.reduce((s,[v,r])=>{while(n>=v){s+=r;n-=v}return s},'');
+const fromRom=s=>{const V={I:1,V:5,X:10,L:50,C:100};let t=0;for(let i=0;i<s.length;i++){const a=V[s[i]],b=V[s[i+1]]||0;t+=a<b?-a:a}return t};
+const isRom=r=>/^[IVXLC]+$/.test(r)&&toRom(fromRom(r))===r;
+function fmtErr(k){let m=k.match(/^(\d+)÷(\d+)$/);
+  if(m){const q=m[1]/m[2];return Number.isInteger(q)?`${m[1]} ÷ ${m[2]} = ${q}`:`${m[1]} ÷ ${m[2]}`}
+  if(/^\d+$/.test(k)&&+k>0&&+k<400)return `${k} → ${toRom(+k)}`;
+  if(isRom(k))return `${k} = ${fromRom(k)}`;
+  m=k.split('/');if(m.length===2&&m.every(isRom))return `${m[0]} ou ${m[1]}`;
+  return k}
+const chips=(o,empty)=>{const e=Object.entries(o).sort((a,b)=>b[1]-a[1]).slice(0,12);
+  return e.length?`<div class="pa-chips">${e.map(([k,n])=>`<span class="pa-chip">${esc(fmtErr(k))}<b>${n}×</b></span>`).join('')}</div>`:`<p class="pa-empty">${empty}</p>`};
+
+/* blocos de interface */
+const head=(t,s)=>`<h1 class="pa-h1">${esc(t)}</h1><p class="pa-sub">${esc(s)}</p>`;
+const sec=t=>`<h2 class="pa-h">${t}</h2>`;
+const card=h=>`<div class="pa-card">${h}</div>`;
+const note=t=>`<p class="pa-note">${t}</p>`;
+const kpis=l=>`<div class="pa-kpis">${l.map(([v,lab,s])=>`<div class="pa-kpi"><div class="pa-kv">${v}</div><div class="pa-kl">${lab}</div>${s?`<div class="pa-ks">${s}</div>`:''}</div>`).join('')}</div>`;
+function row(o){const t=o.go?'button':'div';
+  return `<${t} class="pa-row${o.go?'':' off'}${o.dot?' dot':''}"${o.go?` data-go="${o.go}"`:''}>${o.dot?`<i class="pa-dotc" style="background:${o.dot}"></i>`:''}`+
+    `<span class="pa-rm"><span class="pa-rn">${o.name}</span>${o.sub?`<span class="pa-rs">${o.sub}</span>`:''}${o.bar?bar(o.bar):''}</span>`+
+    `${o.val!=null||o.pill?`<span class="pa-rr">${o.val!=null?`<span class="pa-rv">${o.val}</span>`:''}${o.pill||''}</span>`:''}${o.go?CHEV:''}</${t}>`}
+const tip=t=>`<p class="pa-tip">${t}</p>`;
+function chart(cols,pct){
+  return `<div class="pa-chart${pct?' pct':''}">${cols.map(c=>`<button class="pa-col" data-tip="${esc(c.tip)}" aria-label="${esc(c.tip)}">${c.dot?'<b></b>':''}<i style="height:${c.h*100}%;background:${c.c}"></i></button>`).join('')}</div>`+
+    `<div class="pa-xl">${cols.map((c,i)=>`<span${i===cols.length-1?' class="now"':''}>${c.lab}</span>`).join('')}</div>`}
+function missionRow(d,t){const o=d.mode(t.id);
+  const sub=t.opt?(PA.per==='all'?`Vencido ${plural(d.escapes,'vez','vezes')}`:`Vencido em ${plural(d.daysOf(t.id),'dia')}`):`${o.a?`${o.c} de ${o.a} de primeira`:'Sem respostas'}`;
+  return row({go:`mis:${d.app.id}:${t.id}`,name:esc(t.n)+(t.opt?'<span class="pa-tag">Desafio</span>':''),sub,val:fmtP(o),pill:pill(o),bar:o})}
+
+/* páginas */
+function pgHome(){
+  const D=APPS.map(appData),acc=D.map(d=>d.acc).reduce(sumO,Z);
+  const dayset=[...new Set(D.flatMap(d=>d.dk))],fullDays=dayset.filter(k=>D.some(d=>d.isFull(k))).length;
+  const missions=D.reduce((t,d)=>t+d.missions,0),cur=streak(),best=Math.max((st.max||{}).streak||0,cur);
+  let h=head('Visão geral',`${st.pilot?capName(st.pilot):'Piloto'} · ${PER_L[PA.per]}`);
+  h+=kpis([[fmtP(acc),'Acerto de primeira',acc.a?`${acc.c} de ${acc.a} respostas`:'sem respostas'],
+    [missions,'Missões concluídas',`em ${plural(dayset.length,'dia')}`],
+    [fullDays,'Dias com turno completo',`de ${plural(dayset.length,'dia jogado','dias jogados')}`],
+    [cur,'Dias seguidos agora',`recorde: ${best}`]]);
+  // calendário: 5 semanas, de segunda a domingo
+  const req=D.reduce((t,d)=>t+d.main.length,0),now=new Date(),start=new Date();start.setDate(now.getDate()-(now.getDay()+6)%7-28);
+  let cal='<div class="pa-cal">'+['S','T','Q','Q','S','S','D'].map(x=>`<span class="pa-cw">${x}</span>`).join('');
+  for(let i=0;i<35;i++){const d=new Date(start);d.setDate(start.getDate()+i);const k=dkey(d),n=d.getDate();
+    if(k>dkey()){cal+=`<span class="pa-cd fut">${n}</span>`;continue}
+    const m=D.reduce((t,x)=>t+x.done(k),0),ch=D.filter(x=>x.chalOn(k)).length;
+    const l=!m?0:m>=req?4:Math.min(3,1+Math.floor(m/req*3));
+    const t=`${fmtLong(k)} · ${m} de ${req} missões${ch?` · ${plural(ch,'desafio')}`:''}`;
+    cal+=`<button class="pa-cd l${l}${k===dkey()?' now':''}" data-tip="${esc(t)}" aria-label="${esc(t)}">${n}</button>`}
+  cal+='</div><div class="pa-leg" style="justify-content:flex-end"><span>Nenhuma <i style="background:var(--card2)"></i><i style="background:#123d22"></i><i style="background:#18693a"></i><i style="background:#21a052"></i><i style="background:var(--good)"></i> Todas</span></div>';
+  h+=sec('Atividade · 5 semanas')+card(cal+tip(`Toque num dia para ver o detalhe. Verde cheio: as ${req} missões feitas.`));
+  // destaques
+  const ms=D.flatMap(d=>d.app.tasks.filter(t=>!t.opt).map(t=>({d,t,o:d.mode(t.id)}))).filter(x=>x.o.a>=5).sort((a,b)=>a.o.c/a.o.a-b.o.c/b.o.a);
+  h+=sec('Destaques');
+  if(ms.length>=2){const w=ms[0],b=ms[ms.length-1];
+    h+=card(row({go:`mis:${w.d.app.id}:${w.t.id}`,name:'Precisa de atenção',sub:`${esc(w.t.n)} · ${esc(w.d.app.name)}`,val:fmtP(w.o),pill:pill(w.o)})+
+      row({go:`mis:${b.d.app.id}:${b.t.id}`,name:'Ponto forte',sub:`${esc(b.t.n)} · ${esc(b.d.app.name)}`,val:fmtP(b.o),pill:pill(b.o)}))}
+  else h+=card(`<p class="pa-empty">Ainda há poucas respostas neste período. Os destaques aparecem quando duas missões tiverem 5 respostas ou mais.</p>`);
+  // matérias
+  h+=sec('Matérias')+card(PLANETS.map(p=>{const ds=D.filter(d=>d.app.planet===p.id);
+    if(!ds.length)return row({dot:p.pal[2],name:p.name,sub:'Sem jogos ainda'});
+    const o=ds.map(d=>d.acc).reduce(sumO,Z),mi=ds.reduce((t,d)=>t+d.missions,0);
+    return row({go:`sub:${p.id}`,dot:p.pal[2],name:p.name,sub:`${plural(ds.length,'jogo')} · ${plural(mi,'missão','missões')}`,val:fmtP(o),pill:pill(o),bar:o})}).join(''));
+  h+=note('Acerto de primeira: perguntas certas na primeira tentativa, só nas missões diárias. Ótimo é 85% ou mais, Bom de 65% a 84%, Atenção abaixo de 65%. Com menos de 5 respostas aparece Poucos dados.');
+  h+=note('Os dados ficam só neste aparelho. Use Exportar nas configurações para guardar uma cópia.');
+  return h}
+
+function pgSub(id){const p=PLANETS.find(x=>x.id===id),D=APPS.filter(a=>a.planet===id).map(appData);
+  const acc=D.map(d=>d.acc).reduce(sumO,Z),dayset=[...new Set(D.flatMap(d=>d.dk))];
+  let h=head(p.name,p.tag.replace(/\.$/,''));
+  h+=kpis([[fmtP(acc),'Acerto de primeira',acc.a?`${acc.c} de ${acc.a} respostas`:'sem respostas'],
+    [D.reduce((t,d)=>t+d.missions,0),'Missões concluídas',`em ${plural(dayset.length,'dia')}`],
+    [dayset.length,'Dias jogados',''],[D.reduce((t,d)=>t+d.chal,0),'Desafios vencidos','dias com vitória']]);
+  D.forEach(d=>{h+=sec(esc(d.app.name))+card(row({go:`app:${d.app.id}`,name:'Ver jogo',sub:`${esc(d.app.tag)} · ${d.last?`último dia: ${fmtDay(d.last)}`:'ainda não jogou'}`,val:fmtP(d.acc),pill:pill(d.acc)})+
+    d.app.tasks.map(t=>missionRow(d,t)).join(''))});
+  return h}
+
+const NLV=['I a X','I a XX','I a L','I a C'];
+function pgApp(id){const app=APPS.find(a=>a.id===id),d=appData(app),p=PLANETS.find(x=>x.id===app.planet);
+  let h=head(app.name,`${p.name} · ${app.tag}`);
+  h+=kpis([[fmtP(d.acc),'Acerto de primeira',d.acc.a?`${d.acc.c} de ${d.acc.a} respostas`:'sem respostas'],
+    [d.played,'Dias jogados',d.last?`último: ${fmtDay(d.last)}`:'ainda não jogou'],
+    [d.full,'Turnos completos',`as ${d.main.length} missões no dia`],[d.streak,'Dias seguidos agora','com turno completo']]);
+  if(app.id==='numeris'){const lv=d.s.level||1,ld=(d.s.lvDays||[]).length;
+    h+=sec('Nível')+card(`<div class="pa-pad"><span class="pa-rn">Nível ${lv}: ${NLV[lv-1]}</span><span class="pa-rs">${lv<4?`Sobe sozinho depois de 2 dias com os 3 portões abertos. Progresso: ${ld} de 2.`:'Nível máximo.'}</span>`+
+      `<div class="pa-seg">${NLV.map((l,i)=>`<button data-lv="${i+1}" class="${(PA.lv||lv)===i+1?'on':''}">${l}</button>`).join('')}</div></div>`+
+      (PA.lv&&PA.lv!==lv?`<div class="pa-conf"><p>Trocar para <b>${NLV[PA.lv-1]}</b>? As missões em andamento recomeçam.</p><div class="pa-two"><button class="pa-btn" data-lvno>Cancelar</button><button class="pa-btn pri" data-lvyes>Trocar</button></div></div>`:''))}
+  h+=sec('Missões')+card(app.tasks.map(t=>missionRow(d,t)).join(''));
+  const desT=app.tasks.find(t=>t.opt);
+  h+=sec('Últimos 14 dias')+card(chart(last14().map(k=>{const n=d.done(k),c=d.chalOn(k);
+    return{h:n/d.main.length,c:n>=d.main.length?'var(--good)':n?'#21a052':'var(--card2)',dot:c,lab:kDate(k).getDate(),
+      tip:`${fmtLong(k)} · ${n} de ${d.main.length} missões${c?` · ${desT?desT.n:'desafio'} vencido`:''}`}}))+
+    `<div class="pa-leg"><span><i style="background:var(--good)"></i> Missões do dia</span><span><i class="cd"></i> Desafio vencido</span></div>`+tip('Toque numa barra para ver o dia.'));
+  h+=sec('Erros mais comuns · desde o início')+card(chips(d.erros,'Nenhum erro registrado.'));
+  h+=sec('Dados')+card(PA.reset?`<div class="pa-conf" style="border:0"><p>Apagar respostas, dias e erros de <b>${esc(app.name)}</b> neste aparelho?${app.id==='numeris'?' O nível volta para I a X.':''} Medalhas e itens da Nave-Mãe continuam.</p><div class="pa-two"><button class="pa-btn" data-rno>Cancelar</button><button class="pa-btn del" data-ryes>Apagar</button></div></div>`
+    :`<button class="pa-danger" data-reset>Apagar histórico deste jogo</button>`);
+  return h}
+
+function pgMis(appId,id){const app=APPS.find(a=>a.id===appId),t=app.tasks.find(x=>x.id===id),d=appData(app),o=d.mode(id),last=d.lastOf(id);
+  let h=head(t.n,`${app.name} · ${t.sub}`);
+  h+=`<div class="pa-tabs">${app.tasks.map(x=>`<button class="pa-tab${x.id===id?' on':''}" data-sw="mis:${app.id}:${x.id}">${esc(x.n)}</button>`).join('')}</div>`;
+  h+=kpis([[`${fmtP(o)}${o.a?pill(o):''}`,'Acerto de primeira',PER_L[PA.per]],[o.a,'Respostas',`${o.c} certas de primeira`],
+    t.opt?[PA.per==='all'?d.escapes:d.daysOf(id),'Vitórias',PA.per==='all'?'desde o início':'dias com vitória']:[d.daysOf(id),'Dias concluída',PER_L[PA.per].toLowerCase()],
+    [last?fmtDay(last):'—','Última vez',last?fmtLong(last):'ainda não fez']]);
+  const hasLog=Object.values(d.log).some(x=>x[id]);
+  h+=sec('Acerto por dia · 14 dias')+card(chart(last14().map(k=>{const r=(d.log[k]||{})[id];
+    if(!r||!r[0])return{h:0,c:'var(--card2)',lab:kDate(k).getDate(),tip:`${fmtLong(k)} · sem respostas`};
+    const p=Math.round(r[1]/r[0]*100);return{h:p/100,c:COL[band(p)],lab:kDate(k).getDate(),tip:`${fmtLong(k)} · ${r[1]} de ${r[0]} de primeira (${p}%)`}}),true)+
+    tip(hasLog?'Toque numa barra para ver o dia. Linhas: 50% e 100%.':'O acerto diário começa a ser registrado a partir desta versão.'));
+  const em=d.errM[id]||{};
+  h+=sec('O que mais errou')+card(chips(em,Object.keys(d.errM).length?'Nenhum erro nesta missão.':'Os erros por missão começam a ser registrados a partir desta versão. Os anteriores estão na página do jogo.'));
+  return h}
+
+function paRender(top){const cur=PA.stack[PA.stack.length-1],prev=PA.stack[PA.stack.length-2];
+  const name=o=>o.t==='home'?'Geral':o.t==='sub'?PLANETS.find(p=>p.id===o.id).name:o.t==='app'?APPS.find(a=>a.id===o.app).name:'';
+  $('#paBack').hidden=!prev;$('#paTtl').hidden=!!prev;if(prev)$('#paBackT').textContent=name(prev);
+  document.querySelectorAll('#paPer button').forEach(b=>b.classList.toggle('on',b.dataset.p===PA.per));
+  $('#paBody').innerHTML=cur.t==='home'?pgHome():cur.t==='sub'?pgSub(cur.id):cur.t==='app'?pgApp(cur.app):pgMis(cur.app,cur.id);
+  const on=$('#paBody .pa-tab.on');if(on&&top)on.parentNode.scrollLeft=on.offsetLeft-16;
+  if(top)$('#pais').scrollTop=0}
+const paParse=s=>{const[t,a,b]=s.split(':');return t==='sub'?{t,id:a}:t==='app'?{t,app:a}:{t,app:a,id:b}};
+function openPais(){PA.stack=[{t:'home'}];PA.lv=0;PA.reset=false;paRender(true);$('#pais').hidden=false}
+$('#paBack').onclick=()=>{PA.stack.pop();PA.lv=0;PA.reset=false;paRender(true)};
+$('#paClose').onclick=()=>{$('#pais').hidden=true};
+$('#paPer').onclick=e=>{const b=e.target.closest('[data-p]');if(!b||b.dataset.p===PA.per)return;PA.per=b.dataset.p;paRender()};
+$('#paBody').onclick=e=>{const el=e.target.closest('button');if(!el)return;const ds=el.dataset;
+  if(ds.go){PA.stack.push(paParse(ds.go));PA.lv=0;PA.reset=false;paRender(true);return}
+  if(ds.sw){PA.stack[PA.stack.length-1]=paParse(ds.sw);const x=$('#paBody .pa-tabs').scrollLeft;paRender();$('#paBody .pa-tabs').scrollLeft=x;return}
+  if(ds.tip){const c=el.closest('.pa-card');c.querySelectorAll('.sel').forEach(x=>x.classList.remove('sel'));el.classList.add('sel');
+    const t=c.querySelector('.pa-tip');t.textContent=ds.tip;t.classList.add('on');return}
+  const cur=PA.stack[PA.stack.length-1];
+  if(ds.lv){PA.lv=+ds.lv;paRender();return}
+  if('lvno' in ds){PA.lv=0;paRender();return}
+  if('lvyes' in ds){const s=readLS('numeris-stats-v1')||{};s.level=PA.lv;s.lvDays=[];s.run={};
+    try{localStorage.setItem('numeris-stats-v1',JSON.stringify(s))}catch(e){}PA.lv=0;paRender();return}
+  if('reset' in ds){PA.reset=true;paRender();return}
+  if('rno' in ds){PA.reset=false;paRender();return}
+  if('ryes' in ds){localStorage.removeItem(APPS.find(a=>a.id===cur.app).store);PA.reset=false;paRender();return}
+};
+(function(){const t=$('#cfgTitle');let h=0,raf=0;
+  const end=()=>{cancelAnimationFrame(raf);t.style.setProperty('--hold',0)};
+  const tick=()=>{const p=Math.min(1,(performance.now()-h)/3000);t.style.setProperty('--hold',p);if(p>=1){end();blip();openPais();return}raf=requestAnimationFrame(tick)};
+  t.addEventListener('pointerdown',e=>{e.preventDefault();h=performance.now();raf=requestAnimationFrame(tick)});
+  ['pointerup','pointerleave','pointercancel'].forEach(ev=>t.addEventListener(ev,end));t.addEventListener('contextmenu',e=>e.preventDefault())})();
 
 /* ---------- primeiro acesso ---------- */
 $('#onForm').onsubmit=e=>{e.preventDefault();const v=$('#onName').value.trim().toUpperCase();if(!v){$('#onName').focus();return}
