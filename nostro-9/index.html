@@ -109,7 +109,14 @@ h2{margin:0;font-family:var(--px);font-size:14px;line-height:1.7;font-weight:400
 .mission .t{display:flex;flex-direction:column;gap:6px;min-width:0}
 .mission .t strong{font-family:var(--px);font-size:11px;line-height:1.5;font-weight:400}
 .mission .t small{font-size:20px;line-height:1;color:var(--dim)}
-.mission.done{--b:var(--ok-d)}
+.mission.done{--b:var(--ok-d);--bg-c:#10241a}
+.mission.done .ico,.mission.done .t{opacity:.55}
+.mission.done .t strong{text-decoration:line-through;text-decoration-thickness:2px}
+.mission.next{--b:var(--amber);--bg-c:var(--panel2)}
+.check.nx{color:var(--amber)}
+.check.nx::after{content:"";width:0;height:0;border-left:7px solid var(--amber);border-top:6px solid transparent;border-bottom:6px solid transparent;animation:nudge .8s steps(2) infinite}
+@keyframes nudge{50%{transform:translateX(4px)}}
+.alien-btn.done{filter:saturate(.35) brightness(.75)}
 .check{display:flex;align-items:center;gap:6px;font-family:var(--px);font-size:7px;line-height:1;color:var(--dim);white-space:nowrap;text-transform:uppercase}
 .check.ok{color:var(--ok)}
 
@@ -344,7 +351,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 
 <script>
 /* atualização automática: compara com version.json e recarrega quando sai versão nova */
-const APP_V='20261004110332';
+const APP_V='20261004111004';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     if(v&&v!==APP_V&&sessionStorage.getItem('upd')!==v){sessionStorage.setItem('upd',v);location.replace(location.pathname+'?v='+v+H0)}}catch(e){}}
@@ -425,11 +432,13 @@ function turnoLine(){
 const WD=['D','S','T','Q','Q','S','S'];
 function renderMenu(){
   const done=doneToday(),n=countReq(done),all=n>=MODES.length,alienDone=done.includes('desafio');
+  const nx=MODES.find(m=>!done.includes(m)); // próxima missão: destacada
   document.querySelectorAll('[data-check]').forEach(el=>{
     const m=el.dataset.check,ok=done.includes(m);
-    const pr=getProg(m);
-    el.innerHTML=pr?'Continuar':ok?CHECK+(m==='desafio'?'Escapou':'Feita'):(m==='desafio'?'':'A fazer');
-    el.classList.toggle('ok',ok&&!pr);el.classList.toggle('go',!!pr);el.closest('button').classList.toggle('done',ok);
+    const pr=getProg(m),isN=m===nx&&!pr;
+    el.innerHTML=pr?'Continuar':ok?CHECK+(m==='desafio'?'Escapou':'Feita'):isN?'Próxima':(m==='desafio'?'':'A fazer');
+    el.classList.toggle('ok',ok&&!pr);el.classList.toggle('go',!!pr);el.classList.toggle('nx',isN);
+    el.closest('button').classList.toggle('done',ok&&!pr);el.closest('button').classList.toggle('next',m===nx);
   });
   document.querySelectorAll('[data-segs]').forEach(el=>{
     const m=el.dataset.segs,pr=getProg(m),ok=done.includes(m);
