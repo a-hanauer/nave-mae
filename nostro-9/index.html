@@ -394,7 +394,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 
 <script>
 /* atualização automática: compara com version.json e recarrega quando sai versão nova */
-const APP_V='20261004174004';
+const APP_V='20261004174215';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     if(v&&v!==APP_V&&sessionStorage.getItem('upd')!==v){sessionStorage.setItem('upd',v);location.replace(location.pathname+'?v='+v+H0)}}catch(e){}}
@@ -1008,7 +1008,7 @@ renderMenu();
 const RETK='ret:'+location.pathname,RP=(location.hash.match(/r=([\w.]+)/)||[])[1];
 if(RP)try{sessionStorage.setItem(RETK,RP)}catch(e){}
 const RETV=RP||(()=>{try{return sessionStorage.getItem(RETK)}catch(e){return null}})()||'';
-const RET='../'+(RETV==='tasks'?'#v=tasks':RETV.startsWith('p.')?'#p='+RETV.slice(2):'');
+const RET='../'+(RETV.startsWith('p.')?'#p='+RETV.slice(2):'#v=tasks'); // padrão: aba Missões
 var DL=false; // (var: show() usa antes desta linha) entrou direto numa missão pela aba Missões
 function backHome(){location.href=RET}
 /* "< Nave-Mãe" é um botão (link com a camada de vibração não navegava no iPhone) */
