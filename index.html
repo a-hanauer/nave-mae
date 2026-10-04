@@ -562,24 +562,32 @@ function pilotRows(L){const rows=SPR.pEVA.map(r=>[...r]),e=EMB[L.emblem];
 /* =================== CUSTOMIZAÇÃO =================== */
 /* objetivos: cada um libera itens. kind = métrica lida dos apps */
 const GOALS=[
+  /* itens só saem das missões diárias; desafios dão medalhas de honra */
   {id:'m5', kind:'missions',n:5,  txt:'Faça 5 missões'},
   {id:'m10',kind:'missions',n:10, txt:'Faça 10 missões'},
+  {id:'m15',kind:'missions',n:15, txt:'Faça 15 missões'},
   {id:'m25',kind:'missions',n:25, txt:'Faça 25 missões'},
   {id:'m50',kind:'missions',n:50, txt:'Faça 50 missões'},
   {id:'m75',kind:'missions',n:75, txt:'Faça 75 missões'},
   {id:'m100',kind:'missions',n:100,txt:'Faça 100 missões'},
   {id:'s3', kind:'streak',n:3,  txt:'3 dias seguidos'},
+  {id:'s5', kind:'streak',n:5,  txt:'5 dias seguidos'},
   {id:'s7', kind:'streak',n:7,  txt:'7 dias seguidos'},
+  {id:'s10',kind:'streak',n:10, txt:'10 dias seguidos'},
   {id:'s14',kind:'streak',n:14, txt:'14 dias seguidos'},
   {id:'s30',kind:'streak',n:30, txt:'30 dias seguidos'},
   {id:'f25', kind:'firsts',n:25, txt:'25 acertos de primeira'},
+  {id:'f50', kind:'firsts',n:50, txt:'50 acertos de primeira'},
   {id:'f100',kind:'firsts',n:100,txt:'100 acertos de primeira'},
   {id:'f250',kind:'firsts',n:250,txt:'250 acertos de primeira'},
-  {id:'a3', kind:'alien',n:3,  txt:'Fuja do Alien 3 vezes'},
-  {id:'a10',kind:'alien',n:10, txt:'Fuja do Alien 10 vezes'},
-  {id:'d3', kind:'desab',n:3,  txt:'Escape do Desabamento 3 vezes'},
   {id:'n3', kind:'numlv',n:3,  txt:'Nível 3 em Numeris'},
   {id:'n4', kind:'numlv',n:4,  txt:'Nível 4 em Numeris'},
+  {id:'a1', kind:'alien',n:1,  txt:'Fuja do Alien',honor:true},
+  {id:'a3', kind:'alien',n:3,  txt:'Fuja do Alien 3 vezes',honor:true},
+  {id:'a10',kind:'alien',n:10, txt:'Fuja do Alien 10 vezes',honor:true},
+  {id:'d1', kind:'desab',n:1,  txt:'Escape do Desabamento',honor:true},
+  {id:'d3', kind:'desab',n:3,  txt:'Escape do Desabamento 3 vezes',honor:true},
+  {id:'d10',kind:'desab',n:10, txt:'Escape do Desabamento 10 vezes',honor:true},
 ];
 const ramp4=(a,b,c,d)=>[a,b,c,d];
 const SKIN=[['#f6d5b8','#d9a882'],['#f1c9a0','#c98f64'],['#d9a06a','#a8703a'],['#a8703a','#7a4a20'],['#7a4a28','#4f2e16']];
@@ -596,13 +604,13 @@ const ITEMS={
     {id:'ciano',n:'Fumê',c:['#24323c','#0e161c']},
     {id:'ambar',n:'Âmbar',c:['#5a3a10','#2a1a06']},
     {id:'verde',n:'Verde',c:['#1f4a2e','#0c2212'],req:'m10'},
-    {id:'rosa',n:'Rubi',c:['#5a1a22','#2a080e'],req:'a3'},
+    {id:'rosa',n:'Rubi',c:['#5a1a22','#2a080e'],req:'f50'},
     {id:'ouro',n:'Espelhada',c:['#c8a040','#6a4a10'],req:'f250'}]},
   suit:{t:'Traje',list:[
     {id:'lilas',n:'Creme',c:['#e0d8c2','#ada38a','#6e6652']},
     {id:'cinza',n:'Cinza',c:['#c8ccd2','#8e949c','#555a62']},
     {id:'marinho',n:'Marinho',c:['#6a7ea8','#41557e','#243250'],req:'m25'},
-    {id:'laranja',n:'Laranja',c:['#f0a050','#b8642a','#6a3410'],req:'d3'},
+    {id:'laranja',n:'Laranja',c:['#f0a050','#b8642a','#6a3410'],req:'s5'},
     {id:'verde',n:'Oliva',c:['#a3ab78','#6b7248','#3c4028'],req:'n3'},
     {id:'vermelho',n:'Preto',c:['#5a5e66','#3a3d44','#1e2024'],req:'s7'}]},
   emblem:{t:'Emblema',list:[
@@ -611,14 +619,14 @@ const ITEMS={
     {id:'raio',n:'Raio',c:['#1f2a44','#40d8ff'],req:'m5'},
     {id:'planeta',n:'Planeta',c:['#2a1a3a','#ff8a1f'],req:'m25'},
     {id:'alvo',n:'Alvo',c:['#2b2f38','#ff3d2e'],req:'s7'},
-    {id:'alien',n:'Alien',c:['#0e1e14','#39e35f'],req:'a10'},
+    {id:'alien',n:'Alien',c:['#0e1e14','#39e35f'],req:'s10'},
     {id:'coroa',n:'Coroa',c:['#3a2a08','#ffd84a'],req:'m100'}]},
   gear:{t:'Equipamento',list:[
     {id:'none',n:'Nenhum'},
     {id:'lanterna',n:'Lanterna',req:'f25'},
     {id:'tanques',n:'Tanques O₂',req:'m10'},
-    {id:'rastreador',n:'Rastreador',req:'a3'},
-    {id:'macarico',n:'Maçarico',req:'d3'},
+    {id:'rastreador',n:'Rastreador',req:'m15'},
+    {id:'macarico',n:'Maçarico',req:'f50'},
     {id:'jetpack',n:'Jetpack',req:'s14'}]},
   skin:{t:'Pele',list:SKIN.map((c,i)=>({id:'p'+i,n:'Tom '+(i+1),c}))},
   title:{t:'Título',list:[
@@ -628,7 +636,7 @@ const ITEMS={
     {id:'tenente',n:'Tenente',req:'m25'},
     {id:'decifrador',n:'Decifrador',req:'n3'},
     {id:'ascontas',n:'Ás das Contas',req:'f100'},
-    {id:'cacador',n:'Caçador de Aliens',req:'a10'},
+    {id:'cacador',n:'Caçador de Aliens',req:'s10'},
     {id:'capitao',n:'Capitão',req:'m50'},
     {id:'comandante',n:'Comandante',req:'s14'},
     {id:'almirante',n:'Almirante',req:'m100'},
@@ -637,7 +645,7 @@ const ITEMS={
     {id:'rocket',n:'Foguete',spr:'m_rocket'},
     {id:'fighter',n:'Caça',spr:'m_fighter',req:'m10'},
     {id:'cargo',n:'Cargueiro',spr:'m_cargo',req:'s7'},
-    {id:'disc',n:'Disco',spr:'m_disc',req:'a3'},
+    {id:'disc',n:'Disco',spr:'m_disc',req:'m15'},
     {id:'inter',n:'Interceptor',spr:'m_inter',req:'m75'}]},
   paint:{t:'Pintura',list:[
     {id:'prata',n:'Prata',c:{}},
@@ -650,13 +658,16 @@ const ITEMS={
   flame:{t:'Propulsor',list:[
     {id:'laranja',n:'Laranja',c:{Y:'#fff3a0',O:'#ffb300',r:'#e03a26'}},
     {id:'azul',n:'Azul',c:{Y:'#e0fbff',O:'#40d8ff',r:'#1f6fa8'},req:'m25'},
-    {id:'verde',n:'Verde',c:{Y:'#e6ffd0',O:'#39e35f',r:'#1f9a3a'},req:'d3'},
-    {id:'rosa',n:'Rosa',c:{Y:'#ffe0f6',O:'#ff6ad5',r:'#a8208a'},req:'a10'},
+    {id:'verde',n:'Verde',c:{Y:'#e6ffd0',O:'#39e35f',r:'#1f9a3a'},req:'s5'},
+    {id:'rosa',n:'Rosa',c:{Y:'#ffe0f6',O:'#ff6ad5',r:'#a8208a'},req:'f50'},
     {id:'cosmica',n:'Cósmica',c:{Y:'#ffffff',O:'#ff6ad5',r:'#40d8ff'},req:'s30'}]},
 };
 const DEF={helmet:'branco',visor:'ciano',suit:'lilas',skin:'p1',emblem:'estrela',gear:'none',title:'cadete',ship:'rocket',paint:'prata',flame:'laranja'};
 const item=(cat,id)=>ITEMS[cat].list.find(x=>x.id===id)||ITEMS[cat].list[0];
-const owned=it=>!it.req||st.got.includes(it.req);
+for(const c in ITEMS)ITEMS[c].list.forEach(it=>it.k=c+':'+it.id);
+const OLDREQ={'visor:rosa':'a3','ship:disc':'a3','gear:rastreador':'a3','title:cacador':'a10','emblem:alien':'a10','flame:rosa':'a10','suit:laranja':'d3','flame:verde':'d3','gear:macarico':'d3'};
+if(!st.mig2){st.own=Object.keys(OLDREQ).filter(k=>st.got.includes(OLDREQ[k]));st.mig2=1;try{localStorage.setItem(ST,JSON.stringify(st))}catch(e){}}
+const owned=it=>!it.req||st.got.includes(it.req)||(st.own||[]).includes(it.k);
 function look(){const L=Object.assign({},DEF,st.look);for(const k in L){if(!owned(item(k,L[k])))L[k]=DEF[k]}return L}
 
 /* ---- métricas lidas do progresso dos apps ---- */
@@ -664,9 +675,9 @@ function metrics(){
   const n9=readLS('nostro9-stats-v1')||{},nu=readLS('numeris-stats-v1')||{};
   const all=[n9.days||{},nu.days||{}];
   const missions=all.reduce((t,d)=>t+Object.values(d).reduce((u,l)=>u+l.filter(m=>m!=='desafio').length,0),0);
-  const alien=Object.values(n9.days||{}).filter(l=>l.includes('desafio')).length;
-  const desab=Object.values(nu.days||{}).filter(l=>l.includes('desafio')).length;
-  const firsts=['partilha','grupos','hangar','desafio'].reduce((t,k)=>t+((n9[k]||{}).c||0),0)+Object.values(nu.modes||{}).reduce((t,m)=>t+(m.c||0),0);
+  const alien=Math.max(n9.escapes||0,Object.values(n9.days||{}).filter(l=>l.includes('desafio')).length);
+  const desab=Math.max(nu.escapes||0,Object.values(nu.days||{}).filter(l=>l.includes('desafio')).length);
+  const firsts=['partilha','grupos','hangar'].reduce((t,k)=>t+((n9[k]||{}).c||0),0)+['montar','ler','sub'].reduce((t,k)=>t+(((nu.modes||{})[k]||{}).c||0),0);
   // maior sequência de dias com algum turno completo
   const keys=[...new Set(all.flatMap(d=>Object.keys(d)))].filter(k=>APPS.some(a=>a.progress().full(k))).sort();
   let best=0,run=0,prev=null;
@@ -863,7 +874,7 @@ function takeoff(a,hash=''){
       x.moveTo(W/2+Math.cos(p.a)*r0|0,H/2+Math.sin(p.a)*r0|0);x.lineTo(W/2+Math.cos(p.a)*r1|0,H/2+Math.sin(p.a)*r1|0);x.stroke()});
     if(k<1)requestAnimationFrame(f);else{x.fillStyle='#fff';x.fillRect(0,0,W,H);setTimeout(()=>{location.href=a.url+hash},60)}})(t0);
 }
-addEventListener('pageshow',()=>{$('#warp').hidden=true;if(!$('#home').hidden)renderHome()});
+addEventListener('pageshow',()=>{$('#warp').hidden=true;checkGoals();go(view==='planet'?'home':view);setTimeout(showUnlock,400)});
 
 /* ---------- estrelas ---------- */
 (function(){const c=$('#stars'),x=c.getContext('2d');let S=[];
@@ -963,7 +974,7 @@ function renderMedals(){const m=metrics();st.seen=[...st.got];save();$('#mBadge'
   $('#mCount').textContent=`${st.got.length} / ${GOALS.length}`;
   $('#mDetail').className='mdetail px'+(done?' done':'');
   $('#mDetail').innerHTML=`${medalSVG(g,4)}<div><b>${g.txt}</b><div class="bar"><i style="width:${Math.round(v/g.n*100)}%"></i></div><span class="n">${done?'CONQUISTADA':v+' / '+g.n}</span></div>
-    <div class="rw">${rewards(g.id).map(([c,it])=>`<span>${c==='title'?'':`<i class="dot2" style="background:${c==='ship'?'#9b98d4':swatchBg(c,it)}"></i>`}${c==='title'?'Título “'+it.n+'”':(ITEMS[c].t+' '+it.n.toLowerCase())}</span>`).join('')}</div>`;
+    <div class="rw">${g.honor?'<span>Medalha de honra · desafio extra</span>':''}${rewards(g.id).map(([c,it])=>`<span>${c==='title'?'':`<i class="dot2" style="background:${c==='ship'?'#9b98d4':swatchBg(c,it)}"></i>`}${c==='title'?'Título “'+it.n+'”':(ITEMS[c].t+' '+it.n.toLowerCase())}</span>`).join('')}</div>`;
   $('#mWall').innerHTML=Object.keys(CATS).map(k=>{const gs=GOALS.filter(x=>x.kind===k),n=gs.filter(x=>st.got.includes(x.id)).length;
     return `<div class="mrow"><div class="label">${CATS[k].t}<span>${n}/${gs.length}</span></div><div class="medals">${gs.map(x=>`<button class="${x.id===mSel?'on':''}" data-g="${x.id}" aria-label="${x.txt}">${medalSVG(x,2)}</button>`).join('')}</div></div>`}).join('');
   $('#mWall').querySelectorAll('[data-g]').forEach(b=>b.onclick=()=>{mSel=b.dataset.g;blip();renderMedals();window.scrollTo({top:0,behavior:'smooth'})})}
@@ -972,6 +983,7 @@ function renderMedals(){const m=metrics();st.seen=[...st.got];save();$('#mBadge'
 function showUnlock(){const g=GOALS.find(x=>st.got.includes(x.id)&&!st.seen.includes(x.id));if(!g)return;
   $('#unT').innerHTML=`${medalSVG(g,4).replace('class="spr"','class="spr" style="margin:0 auto 12px"')}${g.txt.toUpperCase()}`;
   $('#unItems').innerHTML=rewards(g.id).map(([c,it])=>`<span>${thumb(c,it,c==='title'?1:2)}${c==='title'?'TÍTULO':(ITEMS[c].t+' '+it.n).toUpperCase()}</span>`).join('');
+  $('#unGo').hidden=!rewards(g.id).length;$('#unOk').textContent=rewards(g.id).length?'DEPOIS':'OK';
   $('#unlock').hidden=false;launch()}
 $('#unOk').onclick=()=>{const g=GOALS.find(x=>st.got.includes(x.id)&&!st.seen.includes(x.id));if(g){st.seen.push(g.id);save()}$('#unlock').hidden=true;renderHome();setTimeout(showUnlock,300)};
 $('#unGo').onclick=()=>{const g=GOALS.find(x=>st.got.includes(x.id)&&!st.seen.includes(x.id));if(g){st.seen.push(g.id);save()}$('#unlock').hidden=true;

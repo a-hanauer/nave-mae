@@ -760,7 +760,7 @@ function dCheck(){
   if(ok){
     good();D.hits++;D.dist=Math.min(100,D.dist+22);
     if(D.hits>=D.goal){
-      stopDesafio();clearProg('desafio');const nw=markDone('desafio');
+      stopDesafio();clearProg('desafio');stats.escapes=(stats.escapes||0)+1;save();const nw=markDone('desafio');
       finish('10/10','Você fugiu do Alien!',`O Alien voltou para os dutos.<br><br>${turnoLine()}`,()=>{show('desafio');dPlay(D.level)});
       return;
     }

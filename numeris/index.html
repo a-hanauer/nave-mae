@@ -638,7 +638,7 @@ function answerD(said){if(!D||!D.run||D.tab)return;if(D.pause)return resume(); /
   else{sfx.no();D.danger=Math.min(.99,D.danger+.1);record('desafio',false,q.s);drawDes();$('#chamber').classList.remove('shake');void $('#chamber').offsetWidth;$('#chamber').classList.add('shake');
     D.pause=true;$('#dfb').className='fb no';$('#dfb').innerHTML=`<b>${q.ok?'ERA VERDADEIRA':'ERA FALSA'}</b>${q.why}`;D.to=setTimeout(resume,2600)}}
 $('#dV').onclick=()=>answerD(true);$('#dF').onclick=()=>answerD(false);
-function winD(){D.run=false;delete S.run.desafio;markDone('desafio');save();sfx.win();
+function winD(){D.run=false;delete S.run.desafio;S.escapes=(S.escapes||0)+1;markDone('desafio');save();sfx.win();
   $('#resIco').innerHTML=sprite('man',4);$('#resT').textContent='VOCÊ ESCAPOU!';$('#resS').textContent=`${NEED}/${NEED}`;
   $('#resP').textContent='O teto não te pegou!';$('#resAgain').onclick=()=>{S.run.desafio={c:0};openDes()};show('res');checkLevel()}
 function loseD(){D.run=false;S.run.desafio={c:0};save();sfx.lose();setBtns(false);
