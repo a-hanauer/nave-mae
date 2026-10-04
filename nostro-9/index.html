@@ -818,6 +818,9 @@ $('#k-yes').onclick=()=>{stats=fresh();save();openPais()};
 
 const START={partilha:pStart,grupos:gStart,hangar:hStart,desafio:dStart};
 renderMenu();
+/* atalho vindo da Nave-Mãe: #m=partilha abre a missão direto */
+function deepLink(){const m=(location.hash.match(/m=(\w+)/)||[])[1];if(m&&START[m]){history.replaceState(null,'',location.pathname);START[m]()}}
+deepLink();addEventListener('hashchange',deepLink);
 </script>
 </body>
 </html>
