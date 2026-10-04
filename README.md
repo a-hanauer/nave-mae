@@ -37,6 +37,8 @@ A barra inferior tem quatro abas:
 
 Os jogos em que a criança aparece usam o piloto e a nave como foram customizados (hoje, o Desabamento de Numeris). A Nave-Mãe grava os desenhos prontos em `localStorage['navemae-avatar']` (`pilot`, `ship`, `flame`, em SVG na escala 1) e o jogo amplia na escala que precisar.
 
+Missão feita aparece sempre como **FEITO**. Jogar de novo uma missão feita no dia é jogo livre: começa do zero, não guarda andamento e a missão continua feita, mesmo se a criança sair no meio.
+
 Itens bloqueados aparecem como prévia com cadeado e mostram o objetivo que falta. Os itens só dependem das missões diárias: total de missões, dias seguidos, acertos de primeira nas missões e nível em Numeris. Os desafios extras (Fuja do Alien, Desabamento) dão medalhas de honra, contadas a cada fuga, sem itens. O que foi conquistado fica guardado e não volta a travar.
 
 ## Configurações e backup

@@ -271,7 +271,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
     <div class="ey">DESAFIO OPCIONAL</div>
     <div class="ti">DESABAMENTO!</div>
     <div class="su">Ache as inscrições falsas antes do teto cair.</div>
-    <span class="ok" id="desOk" hidden>ESCAPOU HOJE ✓</span>
+    <span class="ok" id="desOk" hidden>FEITO ✓</span>
   </button>
 
   <button class="tabua-btn px pbtn" id="openTab"><span id="tabIco"></span>TÁBUA DOS SÍMBOLOS</button>
@@ -343,7 +343,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 
 <script>
 /* atualização automática: compara com version.json e recarrega quando sai versão nova */
-const APP_V='20261004111004';
+const APP_V='20261004111652';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     if(v&&v!==APP_V&&sessionStorage.getItem('upd')!==v){sessionStorage.setItem('upd',v);location.replace(location.pathname+'?v='+v+H0)}}catch(e){}}
@@ -482,9 +482,9 @@ function renderMenu(){
   const s=streak();
   $('#streak').innerHTML=s?`Sequência: <b>${s} ${s===1?'dia':'dias'}</b>`:'Abra os 3 para começar a sequência.';
   const nx=MODES.find(m=>!done.includes(m)); // próximo portão: destacado
-  document.querySelectorAll('[data-st]').forEach(el=>{const m=el.dataset.st,ok=done.includes(m),r=S.run[m],isN=m===nx&&!r;
+  document.querySelectorAll('[data-st]').forEach(el=>{const m=el.dataset.st,ok=done.includes(m),r=ok?null:S.run[m],isN=m===nx&&!r;
     el.className='st'+(ok?' ok':r?' mid':isN?' nx':'');
-    el.innerHTML=ok?sprite('check',2)+'ABERTO':r?`${r.i}/${ROUNDS}`:isN?'PRÓXIMO':'FECHADO';
+    el.innerHTML=ok?sprite('check',2)+'FEITO':r?`${r.i}/${ROUNDS}`:isN?'PRÓXIMO':'FECHADO';
     el.closest('button').classList.toggle('done',ok);el.closest('button').classList.toggle('next',m===nx)});
   const dOk=done.includes('desafio');$('#desOk').hidden=!dOk;$('#goDes').classList.toggle('done',dOk);
   const hr=new Date().getHours(),hi=hr<12?'Bom dia':hr<18?'Boa tarde':'Boa noite',who=pilot?`, explorador ${pilot}`:', explorador';
@@ -517,7 +517,8 @@ function swapFirst(s){const m=s.match(/IV|IX|XL|XC/);if(!m)return null;return s.
 
 let R=null,mode=null,locked=false;
 function startMission(m){
-  mode=m;R=S.run[m]||{qs:genQs(m),i:0,firsts:0,miss:false,built:'',typed:''};S.run[m]=R;save();
+  /* portão já feito hoje vira jogo livre: começa do zero e não guarda o andamento */
+  const free=doneToday().includes(m);mode=m;R=(!free&&S.run[m])||{qs:genQs(m),i:0,firsts:0,miss:false,built:'',typed:''};if(free)delete S.run[m];else S.run[m]=R;save();
   $('#playTitle').textContent=TITLES[m];show('play');renderQ();
   if(!S.seenTab){S.seenTab=true;save();openTab()}
 }
@@ -621,7 +622,7 @@ function fakes(){ // inscrições falsas possíveis na câmara atual
 }
 function desQ(){const f=fakes();if(Math.random()<.5&&f.length)return pick(f);const n=pickN();return{s:toRoman(n),ok:true,why:`${explainS(toRoman(n))}`}}
 function openDes(){
-  const saved=(S.run.desafio||{}).c||0;
+  const saved=doneToday().includes('desafio')?0:(S.run.desafio||{}).c||0;
   D={c:saved,danger:saved?.3:.1,run:false,pause:false,tab:false,q:null,last:0,to:0};
   $('#explorer').innerHTML=navAvatar('pilot',2)||sprite('man',2);show('des');drawDes();
   $('#dfb').className='fb';$('#dfb').innerHTML='';$('#dStart').innerHTML='';
@@ -645,14 +646,14 @@ function tickD(t){if(!D||!D.run||current!=='des')return;const dt=(t-D.last)/1000
   requestAnimationFrame(tickD)}
 function answerD(said){if(!D||!D.run||D.tab)return;if(D.pause)return resume(); // tocar durante o aviso pula para a próxima
   const q=D.q,ok=said===q.ok;
-  if(ok){sfx.ok();D.c++;D.danger=Math.max(0,D.danger-.12);record('desafio',true);S.run.desafio={c:D.c};save();drawDes();
+  if(ok){sfx.ok();D.c++;D.danger=Math.max(0,D.danger-.12);record('desafio',true);if(!doneToday().includes('desafio'))S.run.desafio={c:D.c};save();drawDes();
     if(D.c>=NEED)return winD();
     D.pause=true;$('#dfb').className='fb ok';$('#dfb').innerHTML=`<b>ISSO!</b>${q.ok?'':q.why}`;D.to=setTimeout(resume,q.ok?700:1800)}
   else{sfx.no();D.danger=Math.min(.99,D.danger+.1);record('desafio',false,q.s);drawDes();$('#chamber').classList.remove('shake');void $('#chamber').offsetWidth;$('#chamber').classList.add('shake');
     D.pause=true;$('#dfb').className='fb no';$('#dfb').innerHTML=`<b>${q.ok?'ERA VERDADEIRA':'ERA FALSA'}</b>${q.why}`;D.to=setTimeout(resume,2600)}}
 $('#dV').onclick=()=>answerD(true);$('#dF').onclick=()=>answerD(false);
 function winD(){D.run=false;delete S.run.desafio;S.escapes=(S.escapes||0)+1;markDone('desafio');save();sfx.win();
-  $('#resIco').innerHTML=sprite('man',4);$('#resT').textContent='VOCÊ ESCAPOU!';$('#resS').textContent=`${NEED}/${NEED}`;
+  $('#resIco').innerHTML=navAvatar('pilot',2)||sprite('man',4);$('#resT').textContent='VOCÊ ESCAPOU!';$('#resS').textContent=`${NEED}/${NEED}`;
   $('#resP').textContent='O teto não te pegou!';$('#resAgain').onclick=()=>{S.run.desafio={c:0};openDes()};show('res');checkLevel()}
 function loseD(){D.run=false;S.run.desafio={c:0};save();sfx.lose();setBtns(false);
   $('#dfb').className='fb no';$('#dfb').innerHTML=`<b>O TETO DESABOU!</b>Você fez ${D.c} de ${NEED}.`;
