@@ -200,7 +200,7 @@ button{cursor:pointer;touch-action:manipulation}
 .st-hang .lite.l{left:15px}.st-hang .lite.r{right:15px;animation-delay:.6s}
 .st-hang .floor{background:repeating-linear-gradient(135deg,#1f1c40 0 10px,#1a1838 10px 20px);box-shadow:inset 0 3px 0 0 #3b3780}
 .padw{position:absolute;left:50%;bottom:30px;transform:translateX(-50%)}
-.hship{position:absolute;left:50%;bottom:52px;transform:translateX(-50%);animation:hover 1.6s steps(4) infinite}
+.hship{position:absolute;left:50%;bottom:58px;transform:translateX(-50%);animation:hover 1.6s steps(4) infinite}
 @keyframes hover{50%{transform:translate(-50%,-6px)}}
 .ptag{position:absolute;left:10px;top:24px;padding:7px 8px;font-family:var(--px);font-size:7px;color:#1a1200;background:var(--amber)}
 .plate{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;margin:0 0 20px;background:#100e26;
@@ -553,7 +553,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 
 <script>
 /* atualização automática: compara com version.json e recarrega quando sai versão nova */
-const APP_V='20261004105206';
+const APP_V='20261004110332';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     if(v&&v!==APP_V&&sessionStorage.getItem('upd')!==v){sessionStorage.setItem('upd',v);location.replace(location.pathname+'?v='+v+H0)}}catch(e){}}
@@ -822,6 +822,12 @@ const rewards=gid=>{const r=[];for(const c in ITEMS)ITEMS[c].list.forEach(it=>{i
 /* ---- desenho com as escolhas do piloto ---- */
 function pilotOv(L){const h=item('helmet',L.helmet).c,v=item('visor',L.visor).c,u=item('suit',L.suit).c,k=item('skin',L.skin).c,e=item('emblem',L.emblem).c||['#2b2f38','#2b2f38'];
   return{1:h[0],2:h[1],3:h[2],4:h[3],5:v[0],6:v[1],7:k[0],8:k[1],9:u[0],0:u[1],'=':u[2],a:e[0],b:e[1]}}
+/* piloto e nave prontos para os jogos (lidos de 'navemae-avatar') */
+function trimRows(rows){const E=r=>!/[^.]/.test(r);let t=0,b=rows.length-1;while(t<b&&E(rows[t]))t++;while(b>t&&E(rows[b]))b--;rows=rows.slice(t,b+1);
+  const C=x=>rows.every(r=>r[x]==='.');let l=0,r=rows[0].length-1;while(l<r&&C(l))l++;while(r>l&&C(r))r--;return rows.map(row=>row.slice(l,r+1))}
+function cacheAvatar(){try{const L=look(),fo=item('flame',L.flame).c;
+  localStorage.setItem('navemae-avatar',JSON.stringify({v:1,pilot:spriteRows(trimRows(pilotRows(L)),1,pilotOv(L)),
+    ship:sprite(item('ship',L.ship).spr,1,item('paint',L.paint).c),flame:[sprite('fl1',1,fo),sprite('fl2',1,fo)]}))}catch(e){}}
 const pilotFull=(s,L=look())=>spriteRows(pilotRows(L),s,pilotOv(L));
 /* retrato: cabeça e ombros recortados do corpo inteiro */
 const pilotSVG=(s,L=look())=>spriteRows(pilotRows(L).slice(4,21).map(r=>r.slice(2,30)),s,pilotOv(L));
@@ -1072,7 +1078,7 @@ function selRow(cat,L){const list=ITEMS[cat].list,it=item(cat,L[cat]),i=list.ind
 function bindSels(host,render){host.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>{
   const cat=b.dataset.c,list=ITEMS[cat].list,cur=list.indexOf(item(cat,draft[cat]));
   const it=list[(cur+ +b.dataset.d+list.length)%list.length];draft[cat]=it.id;
-  if(owned(it)){st.look=Object.assign({},look(),{[cat]:it.id});save();blip();$('#logoShip').innerHTML=shipOnly(2)}else tone(330,.05);
+  if(owned(it)){st.look=Object.assign({},look(),{[cat]:it.id});save();cacheAvatar();blip();$('#logoShip').innerHTML=shipOnly(2)}else tone(330,.05);
   render()})}
 const anyLocked=(cats)=>cats.some(c=>!owned(item(c,draft[c])));
 const VCATS=['title','helmet','visor','suit','skin','emblem','gear'],HCATS=['ship','paint','flame'];
@@ -1085,7 +1091,7 @@ function renderVest(){if(!draft)draft=look();
 let winStars='';
 function renderHang(){if(!draft)draft=look();
   if(!winStars){for(let i=0;i<26;i++)winStars+=`<i class="${Math.random()<.2?'b':''}" style="left:${Math.random()*100|0}%;top:${Math.random()*100|0}%"></i>`;$('#hWin').innerHTML=winStars}
-  $('#hPad').innerHTML=sprite('pad',3);$('#hShip').innerHTML=shipSVG(3,draft);
+  $('#hPad').innerHTML=sprite('pad',4);$('#hShip').innerHTML=shipSVG(6,draft);
   $('#hTag').hidden=!anyLocked(HCATS);$('#hName').textContent=st.pilot||'—';
   $('#hSels').innerHTML=HCATS.map(c=>selRow(c,draft)).join('');bindSels($('#hSels'),renderHang)}
 
@@ -1349,7 +1355,7 @@ $('#backIco').innerHTML=sprite('back',2);
 document.querySelectorAll('[data-ico]').forEach(el=>el.innerHTML=sprite(el.dataset.ico,2));
 $('#cfgBtn').innerHTML=sprite('gear',3);
 $('#onShip').innerHTML=shipSVG(4);
-renderSnd();
+renderSnd();cacheAvatar();
 if(!st.pilot){$('#onboard').hidden=false}
 renderHome();
 if(st.pilot)setTimeout(showUnlock,500);
