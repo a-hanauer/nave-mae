@@ -35,6 +35,8 @@ A barra inferior tem quatro abas:
   - **Nave:** a nave na plataforma. Use ◀ ▶ para trocar modelo (foguete, caça, cargueiro, disco, interceptor), pintura e propulsor.
 - **Conquistas:** parede de medalhas por categoria (bronze, prata, ouro e níveis acima). Tocar numa medalha mostra o progresso e as recompensas.
 
+Os jogos em que a criança aparece usam o piloto e a nave como foram customizados (hoje, o Desabamento de Numeris). A Nave-Mãe grava os desenhos prontos em `localStorage['navemae-avatar']` (`pilot`, `ship`, `flame`, em SVG na escala 1) e o jogo amplia na escala que precisar.
+
 Itens bloqueados aparecem como prévia com cadeado e mostram o objetivo que falta. Os itens só dependem das missões diárias: total de missões, dias seguidos, acertos de primeira nas missões e nível em Numeris. Os desafios extras (Fuja do Alien, Desabamento) dão medalhas de honra, contadas a cada fuga, sem itens. O que foi conquistado fica guardado e não volta a travar.
 
 ## Configurações e backup

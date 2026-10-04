@@ -336,7 +336,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 
 <script>
 /* atualização automática: compara com version.json e recarrega quando sai versão nova */
-const APP_V='20261004105206';
+const APP_V='20261004110332';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     if(v&&v!==APP_V&&sessionStorage.getItem('upd')!==v){sessionStorage.setItem('upd',v);location.replace(location.pathname+'?v='+v+H0)}}catch(e){}}
@@ -416,6 +416,9 @@ function record(mode,ok,errKey){const m=S.modes[mode];m.a++;if(ok){m.c++}
   else if(errKey){S.erros[errKey]=(S.erros[errKey]||0)+1;S.errM=S.errM||{};const e=S.errM[mode]=S.errM[mode]||{};e[errKey]=(e[errKey]||0)+1}
   S.log=S.log||{};const k=dkey(),d=S.log[k]=S.log[k]||{},r=d[mode]=d[mode]||[0,0];r[0]++;if(ok)r[1]++;
   const ks=Object.keys(S.log).sort();while(ks.length>120)delete S.log[ks.shift()];save()}
+/* piloto como foi customizado na Nave-Mãe (o boneco antigo fica de reserva) */
+function navAvatar(k,s){try{const a=JSON.parse(localStorage.getItem('navemae-avatar')),v=a&&a[k];if(!v)return '';
+  const m=v.match(/viewBox="0 0 (\d+) (\d+)"/);return v.replace(/width="\d+" height="\d+"/,`width="${m[1]*s}" height="${m[2]*s}"`)}catch(e){return ''}}
 const pilot=(()=>{try{return (JSON.parse(localStorage.getItem('navemae-v1'))||{}).pilot||''}catch(e){return ''}})();
 
 /* =================== sprites =================== */
@@ -612,7 +615,7 @@ function desQ(){const f=fakes();if(Math.random()<.5&&f.length)return pick(f);con
 function openDes(){
   const saved=(S.run.desafio||{}).c||0;
   D={c:saved,danger:saved?.3:.1,run:false,pause:false,tab:false,q:null,last:0,to:0};
-  $('#explorer').innerHTML=sprite('man',2);show('des');drawDes();
+  $('#explorer').innerHTML=navAvatar('pilot',2)||sprite('man',2);show('des');drawDes();
   $('#dfb').className='fb';$('#dfb').innerHTML='';$('#dStart').innerHTML='';
   nextD();setBtns(false);
   // contagem 3-2-1 e começa sozinho
@@ -623,7 +626,9 @@ function openDes(){
 function setBtns(on){$('#dV').disabled=$('#dF').disabled=!on}
 function resume(){clearTimeout(D.to);D.pause=false;D.last=performance.now();nextD()}
 function nextD(){let q;do q=desQ();while(D.q&&q.s===D.q.s);D.q=q;$('#dq').textContent=q.s;$('#dfb').className='fb';$('#dfb').innerHTML=''}
-function drawDes(){$('#ceiling').style.height=(10+D.danger*72)+'%';$('#dcount').textContent=`${D.c}/${NEED}`;
+/* o teto desce até encostar no capacete do piloto, seja qual for o tamanho dele */
+function drawDes(){const ch=$('#chamber').clientHeight,eh=$('#explorer').offsetHeight||40,top0=ch*.1,low=ch-14-eh-8;
+  $('#ceiling').style.height=Math.round(top0+D.danger*Math.max(0,low-top0))+'px';$('#dcount').textContent=`${D.c}/${NEED}`;
   const p=$('#pebbles');const k=Math.round(D.danger*6);if(p.childElementCount!==k)p.innerHTML=Array.from({length:k},(_,i)=>`<i class="pebble" style="left:${12+i*15}%;top:${8+D.danger*60}%;animation-delay:${i*.13}s"></i>`).join('')}
 function tickD(t){if(!D||!D.run||current!=='des')return;const dt=(t-D.last)/1000;D.last=t;
   if(!D.pause&&!D.tab){const secs=[50,42,38,34][S.level-1];D.danger+=dt/secs;
