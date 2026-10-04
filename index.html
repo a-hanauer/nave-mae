@@ -172,6 +172,8 @@ button{cursor:pointer;touch-action:manipulation}
 .badge{position:absolute;min-width:22px;height:22px;padding:0 5px;display:grid;place-items:center;font-style:normal;
   font-family:var(--px);font-size:9px;color:#fff;background:#c42a1c;box-shadow:0 0 0 3px #000;animation:badgeb .8s steps(1) infinite}
 @keyframes badgeb{50%{background:#8f1d12}}
+.badge.ok{background:#1a7d42;animation:none;padding:0}
+.badge.ok svg{display:block}
 /* ---------- cenários ---------- */
 .vtitle{display:flex;align-items:baseline;justify-content:space-between;margin:0 0 14px}
 .vtitle h2{font-family:var(--px);font-size:14px;color:var(--ink)}
@@ -599,7 +601,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 
 <script>
 /* atualização automática: compara com version.json e recarrega quando sai versão nova */
-const APP_V='20261004150527';
+const APP_V='20261004150853';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     if(v&&v!==APP_V&&sessionStorage.getItem('upd')!==v){sessionStorage.setItem('upd',v);location.replace(location.pathname+'?v='+v+H0)}}catch(e){}}
@@ -1045,7 +1047,8 @@ function renderHome(){
   $('#pilotName').textContent=st.pilot||'—';$('#pTitle').textContent=item('title',L.title).n;
   $('#pPort').innerHTML=pilotSVG(2,L);$('#logoShip').innerHTML=shipOnly(2,L);
   const fresh=st.got.filter(g=>!st.seen.includes(g)).length;$('#mBadge').hidden=!fresh;$('#mBadge').textContent=fresh;
-  const pend=pendingCount();$('#tBadge').hidden=!pend;$('#tBadge').textContent=pend;
+  // selo da aba Missões: contador quando falta algo, check verde quando o turno está completo
+  const pend=pendingCount(),tb=$('#tBadge');tb.hidden=false;tb.classList.toggle('ok',!pend);tb.innerHTML=pend?pend:BADGE_OK;
   const s=streak();
   $('#streak').className='streak'+(s?'':' zero');
   $('#streak').innerHTML=`${sprite(s?'flame':'flameOff',2)}<div><b>${s}</b><span>${s===1?'DIA':'DIAS'}<br>SEGUIDOS</span></div>`;
@@ -1196,6 +1199,8 @@ function renderTasks(){
         <span><b>${t.n.toUpperCase()}${t.opt?'<span class="xtra">EXTRA</span>':''}</b><small>${t.sub}</small></span>
         <span class="go2">${t.done?'DE NOVO':a.id+':'+t.id===nx?'PRÓXIMA':'IR'}${sprite('fwd',2)}</span></button>`).join('')}</div>`}).join('');
   $('#tList').innerHTML=h;bindTasks()}
+/* check branco do selo (pixel na grade de 2px) */
+const BADGE_OK=(()=>{const R=['......WW','.....WW.','W...WW..','WW.WW...','.WWW....','..W.....'];let r='';R.forEach((row,y)=>[...row].forEach((c,x)=>{if(c==='W')r+=`<rect x="${x}" y="${y}" width="1" height="1" fill="#fff"/>`}));return `<svg viewBox="0 0 8 6" width="16" height="12" shape-rendering="crispEdges" aria-label="Tudo feito">${r}</svg>`})();
 let tDoneOpen=false,AD_ST=null;
 /* céu da cena: três camadas de estrelas em velocidades diferentes (cada camada repete na metade direita) */
 function adStars(){if(!AD_ST){const L=(n,cls)=>{let b='';for(let i=0;i<n;i++){const x=Math.random()*50,y=4+Math.random()*90;b+=`<b style="left:${x}%;top:${y|0}%"></b><b style="left:${x+50}%;top:${y|0}%"></b>`}return `<div class="ly ${cls}">${b}</div>`};
