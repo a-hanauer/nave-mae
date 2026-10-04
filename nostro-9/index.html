@@ -394,7 +394,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 
 <script>
 /* atualização automática: compara com version.json e recarrega quando sai versão nova */
-const APP_V='20261004145439';
+const APP_V='20261004150527';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     if(v&&v!==APP_V&&sessionStorage.getItem('upd')!==v){sessionStorage.setItem('upd',v);location.replace(location.pathname+'?v='+v+H0)}}catch(e){}}
@@ -562,8 +562,42 @@ function tone(f,d=.08,type='square',vol=.04,delay=0){
     o.type=type;o.frequency.value=f;g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(.0001,t+d);
     o.connect(g);g.connect(actx.destination);o.start(t);o.stop(t+d+.02)}catch(e){}
 }
-const good=()=>{tone(523,.08);tone(659,.08,'square',.04,.08);tone(784,.12,'square',.04,.16)};
-const bad=()=>{tone(196,.12,'square',.05);tone(147,.2,'square',.05,.12)};
+/* ---------- sintetizador 16-bit (mesmo código nos três apps) ----------
+   note: onda com envelope, deslize de tom (to) e vibrato (vib); noise: ruído filtrado para
+   sopros, batidas e desmoronamentos; arp: sequência de notas. */
+function mkSYN(ctx,on){let nb=null;
+  const buf=c=>{if(!nb){nb=c.createBuffer(1,c.sampleRate*.6|0,c.sampleRate);const d=nb.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1}return nb};
+  function note(f,d,t=0,o={}){if(!on())return;try{const c=ctx(),n=c.currentTime+t,os=c.createOscillator(),g=c.createGain(),v=o.vol||.05;
+    os.type=o.type||'square';os.frequency.setValueAtTime(f,n);if(o.to)os.frequency.exponentialRampToValueAtTime(o.to,n+d);
+    if(o.vib){const l=c.createOscillator(),lg=c.createGain();l.frequency.value=o.vib;lg.gain.value=f*.04;l.connect(lg).connect(os.frequency);l.start(n);l.stop(n+d+.05)}
+    g.gain.setValueAtTime(0,n);g.gain.linearRampToValueAtTime(v,n+.005);g.gain.setValueAtTime(v,n+d*.55);g.gain.linearRampToValueAtTime(0,n+d);
+    os.connect(g).connect(c.destination);os.start(n);os.stop(n+d+.03)}catch(e){}}
+  function noise(d,t=0,o={}){if(!on())return;try{const c=ctx(),n=c.currentTime+t,s=c.createBufferSource(),fl=c.createBiquadFilter(),g=c.createGain(),v=o.vol||.08;
+    s.buffer=buf(c);s.loop=true;fl.type=o.filter||'lowpass';fl.frequency.setValueAtTime(o.f||1200,n);if(o.to)fl.frequency.exponentialRampToValueAtTime(o.to,n+d);fl.Q.value=o.q||1;
+    g.gain.setValueAtTime(0,n);g.gain.linearRampToValueAtTime(v,n+(o.att||.008));g.gain.linearRampToValueAtTime(0,n+d);
+    s.connect(fl).connect(g).connect(c.destination);s.start(n);s.stop(n+d+.03)}catch(e){}}
+  const arp=(fs,step,o={})=>fs.forEach((f,i)=>note(f,o.d||step*1.15,i*step+(o.t||0),o));
+  return{note,noise,arp}}
+const SY=mkSYN(()=>{actx=actx||new (window.AudioContext||window.webkitAudioContext)();return actx},()=>soundOn);
+/* acerto: sobe de tom a cada acerto seguido (combo); erro zera */
+let combo=0;
+const good=()=>{const k=Math.pow(2,Math.min(combo,7)/12);combo++;tone(523*k,.08);tone(659*k,.08,'square',.04,.08);tone(784*k,.12,'square',.04,.16);
+  if(combo>=3)SY.arp([1568*k,2093*k],.05,{type:'sine',vol:.035,t:.26})};
+const bad=()=>{combo=0;tone(196,.12,'square',.05);tone(147,.2,'square',.05,.12)};
+/* sons por contexto */
+const SND={
+  batAdd:n=>{SY.note(392*Math.pow(2,Math.min(n,12)/12),.06,0,{type:'triangle',vol:.1});SY.noise(.03,0,{filter:'highpass',f:4000,vol:.04})},
+  batSub:()=>SY.note(523,.07,0,{type:'triangle',to:300,vol:.09}),
+  pick:k=>SY.note(660+k*110,.04,0,{vol:.035}),
+  team:id=>SY.arp([523,659,784,1047].map(f=>f*Math.pow(2,id*2/12)),.045,{type:'triangle',vol:.08}),
+  undo:()=>SY.note(784,.1,0,{type:'triangle',to:330,vol:.09}),
+  step:w=>SY.note(400+w*70,.035,0,{vol:.04}),
+  load:rows=>{SY.noise(.25+rows*.08,0,{f:260,to:900,vol:.12});for(let i=0;i<rows;i++)SY.note(98,.06,.12+i*.08,{type:'triangle',vol:.14})},
+  hint:()=>SY.arp([1568,2093,2637],.05,{type:'sine',vol:.05}),
+  key:d=>SY.note(700+d*35,.03,0,{type:'triangle',vol:.08}),
+  zap:()=>SY.noise(.22,0,{filter:'bandpass',f:2400,to:300,q:4,vol:.14}),
+  screech:()=>SY.note(880,.3,0,{type:'sawtooth',to:200,vib:14,vol:.035}),
+};
 const click=()=>tone(440,.035,'square',.025);
 const fanfare=()=>[523,659,784,1047,784,1047].forEach((f,i)=>tone(f,.11,'square',.045,i*.11));
 /* ---- comemoração de missão concluída (mesmo código nos dois jogos) ----
@@ -728,8 +762,8 @@ function pRender(){
 $('#p-rooms').addEventListener('click',e=>{
   if(P.done)return;
   const a=e.target.closest('[data-add]'),s=e.target.closest('[data-sub]');
-  if(a&&P.depot>0){P.rooms[+a.dataset.add]++;P.depot--;click();pRender();pCheck();pSave()}
-  if(s&&P.rooms[+s.dataset.sub]>0){P.rooms[+s.dataset.sub]--;P.depot++;click();setMsg('#p-msg','');pRender();pSave()}
+  if(a&&P.depot>0){P.rooms[+a.dataset.add]++;P.depot--;SND.batAdd(P.rooms[+a.dataset.add]);pRender();pCheck();pSave()}
+  if(s&&P.rooms[+s.dataset.sub]>0){P.rooms[+s.dataset.sub]--;P.depot++;SND.batSub();setMsg('#p-msg','');pRender();pSave()}
 });
 function pCheck(){
   if(P.depot>0)return;
@@ -779,12 +813,12 @@ function gRender(){
 $('#g-scope').addEventListener('click',e=>{
   const d=e.target.closest('[data-i]');if(!d||G.done)return;
   const i=+d.dataset.i;if(G.team[i]>=0)return;
-  G.sel=G.sel.includes(i)?G.sel.filter(x=>x!==i):[...G.sel,i];click();
-  if(G.sel.length===G.g){const id=G.groups.length;G.sel.forEach(x=>G.team[x]=id);G.groups.push(G.sel);G.sel=[];tone(880,.06);tone(1175,.08,'square',.03,.06)}
+  G.sel=G.sel.includes(i)?G.sel.filter(x=>x!==i):[...G.sel,i];SND.pick(G.sel.length);
+  if(G.sel.length===G.g){const id=G.groups.length;G.sel.forEach(x=>G.team[x]=id);G.groups.push(G.sel);G.sel=[];SND.team(id)}
   if(G.team.every(t=>t>=0)){G.done=true;$('#g-tools').hidden=true;good();gRender();gSave();gAsk();return}
   gRender();gSave();
 });
-$('#g-undo').onclick=()=>{const last=G.groups.pop();if(last){last.forEach(x=>G.team[x]=-1);click();gRender();gSave()}};
+$('#g-undo').onclick=()=>{const last=G.groups.pop();if(last){last.forEach(x=>G.team[x]=-1);SND.undo();gRender();gSave()}};
 function gAsk(){
   setMsg('#g-msg','Todos cobertos!','good');
   ask($('#g-ask'),`Quanto é <span class="qn">${G.n} ÷ ${G.g}</span>?`,choices(G.t),G.t,(first,box)=>{
@@ -830,7 +864,7 @@ function hRender(){
   }
   $('#h-grid').innerHTML=html;
 }
-function hStep(d){if(H.done)return;H.w=Math.min(10,Math.max(1,H.w+d));click();hShow();$('#h-w').textContent=H.w;$('#h-minus').disabled=H.w<=1;$('#h-plus').disabled=H.w>=10;hSave()}
+function hStep(d){if(H.done)return;H.w=Math.min(10,Math.max(1,H.w+d));SND.step(H.w);hShow();$('#h-w').textContent=H.w;$('#h-minus').disabled=H.w<=1;$('#h-plus').disabled=H.w>=10;hSave()}
 $('#h-minus').onclick=()=>hStep(-1);
 $('#h-plus').onclick=()=>hStep(1);
 function hExplainMiss(){
@@ -841,7 +875,7 @@ function hExplainMiss(){
 }
 $('#h-load').onclick=()=>{
   if(H.done)return;
-  H.loaded=H.w;hRender();
+  H.loaded=H.w;hRender();SND.load(Math.min(H.k,Math.ceil(H.n/H.w)));
   if(H.w===H.q){H.done=true;$('#h-grid').classList.add('win');$('#h-load').hidden=true;hRender();hShow('win');good();hSave();hAsk();return}
   H.firstTry=false;bad();hShow('bad');hExplainMiss();hSave();
 };
@@ -897,14 +931,14 @@ function dNewQ(){
   $('#d-hint').hidden=false;$('#d-hits').textContent=`${D.hits}/${D.goal}`;segs($('#d-segs'),D.hits,D.goal);
 }
 function showHint(){$('#d-hint').hidden=true;setMsg('#d-msg',`Quantos ${D.b} cabem em ${D.n}?`)}
-$('#d-hint').onclick=()=>{click();showHint()};
+$('#d-hint').onclick=()=>{SND.hint();showHint()};
 const KEYS=['1','2','3','4','5','6','7','8','9','del','0','ok'];
 $('#d-pad').innerHTML=KEYS.map(k=>`<button class="key pbtn${k==='ok'?' ok':''}${k==='del'?' del':''}" data-k="${k}">${k==='del'?'Apagar':k==='ok'?'OK':k}</button>`).join('');
 $('#d-pad').addEventListener('click',e=>{
   const b=e.target.closest('[data-k]');if(!b||!D.running)return;const k=b.dataset.k;
-  if(k==='del'){D.ans=D.ans.slice(0,-1);click()}
+  if(k==='del'){D.ans=D.ans.slice(0,-1);SND.batSub()}
   else if(k==='ok'){dCheck();return}
-  else if(D.ans.length<2){D.ans+=k;click()}
+  else if(D.ans.length<2){D.ans+=k;SND.key(+k)}
   $('#d-ans').textContent=D.ans;
 });
 function dCheck(){
@@ -912,7 +946,7 @@ function dCheck(){
   const ok=+D.ans===D.q;
   if(D.firstTry)record('desafio',ok,`${D.n}÷${D.b}`);
   if(ok){
-    good();D.hits++;D.dist=Math.min(100,D.dist+22);
+    good();SND.zap();D.hits++;D.dist=Math.min(100,D.dist+22);
     if(D.hits>=D.goal){
       stopDesafio();clearProg('desafio');stats.escapes=(stats.escapes||0)+1;save();const nw=markDone('desafio');
       fanfare();celebrate({title:'VOCÊ FUGIU DO ALIEN!',sub:'O Alien voltou para os dutos.',stars:3,score:[10,10],scoreLabel:'acertos',turno:turnoInfo(false),buttons:endButtons(()=>{show('desafio');dPlay(D.level)})});
@@ -920,7 +954,7 @@ function dCheck(){
     }
     saveProg('desafio',{level:D.level,hits:D.hits});dNewQ();
   }else{
-    bad();D.firstTry=false;D.dist-=12;D.ans='';$('#d-ans').textContent='';
+    bad();SND.screech();D.firstTry=false;D.dist-=12;D.ans='';$('#d-ans').textContent='';
     const p=$('#d-problem');p.classList.remove('shake');void p.offsetWidth;p.classList.add('shake');
     showHint();
   }

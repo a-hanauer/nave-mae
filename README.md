@@ -30,6 +30,7 @@ A barra inferior tem quatro abas:
 
 - **Mapa:** planetas e missões do dia. O painel do piloto leva ao Hangar. É a única tela com o cabeçalho NAVE-MÃE e a engrenagem das configurações; nas outras, o topo é o título da seção ou o botão de voltar.
 - **Missões:** lista do que falta fazer hoje em todos os apps, agrupada por jogo. As obrigatórias aparecem primeiro, depois os extras, e as feitas ficam riscadas no fim. Tocar numa missão abre o jogo já dentro dela (link `app/#m=missao`). Um selo na aba mostra quantas faltam.
+  Quando todas as missões do dia estão feitas, a aba mostra a nave em velocidade de cruzeiro, uma frase do dia, a sequência, o total de missões e quanto falta para as novas. Os desafios extras que faltam ficam em "Treino extra" e as missões feitas ficam recolhidas. Na primeira vez do dia toca uma musiquinha.
 - **Hangar:** uma página só, com a chave **PILOTO | NAVE** no topo.
   - **Piloto (Vestiário):** traje EVA industrial. Use ◀ ▶ para trocar título, capacete, viseira, traje, tom de pele, emblema no ombro e equipamento (lanterna, tanques de O₂, rastreador, maçarico, jetpack).
   - **Nave:** a nave na plataforma. Use ◀ ▶ para trocar modelo (foguete, caça, cargueiro, disco, interceptor), pintura e propulsor.
@@ -40,6 +41,10 @@ Os jogos em que a criança aparece usam o piloto e a nave como foram customizado
 Missão feita aparece sempre como **FEITO**. Jogar de novo uma missão feita no dia é jogo livre: começa do zero, não guarda andamento e a missão continua feita, mesmo se a criança sair no meio.
 
 Itens bloqueados aparecem como prévia com cadeado e mostram o objetivo que falta. Os itens só dependem das missões diárias: total de missões, dias seguidos, acertos de primeira nas missões e nível em Numeris. Os desafios extras (Fuja do Alien, Desabamento) dão medalhas de honra, contadas a cada fuga, sem itens. O que foi conquistado fica guardado e não volta a travar.
+
+## Sons
+
+Os três apps usam o mesmo sintetizador (`mkSYN`: notas com envelope, deslize de tom, vibrato e ruído filtrado). Cada contexto tem seu som: abas com notas diferentes, sopro ao abrir planeta, motor na decolagem, peças equipadas e bloqueadas, medalhas, dados exportados, área dos pais; nos jogos, bateria com tom subindo conforme a sala enche, equipes em acordes, esteira do hangar, raio contra o Alien, pedras com tom pelo valor do símbolo, desmoronar ao apagar, papel na tábua e contagem regressiva. Acertos seguidos sobem de tom (combo).
 
 ## Arte 16-bit
 
