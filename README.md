@@ -34,7 +34,7 @@ A barra inferior tem quatro abas:
 - **Hangar:** uma página só, com a chave **PILOTO | NAVE** no topo.
   - **Piloto (Vestiário):** traje EVA industrial. Use ◀ ▶ para trocar título, capacete, viseira, traje, tom de pele, emblema no ombro e equipamento (lanterna, tanques de O₂, rastreador, maçarico, jetpack).
   - **Nave:** a nave na plataforma. Use ◀ ▶ para trocar modelo (foguete, caça, cargueiro, disco, interceptor), pintura e propulsor.
-- **Conquistas:** parede de medalhas por categoria (bronze, prata, ouro e níveis acima). Tocar numa medalha mostra o progresso e as recompensas.
+- **Conquistas:** parede de medalhas por categoria (bronze, prata, ouro e níveis acima). Tocar numa medalha mostra o progresso e as recompensas no painel do topo, que fica fixo enquanto a parede rola.
 
 Os jogos em que a criança aparece usam o piloto e a nave como foram customizados (hoje, o Desabamento de Numeris). A Nave-Mãe grava os desenhos prontos em `localStorage['navemae-avatar']` (`pilot`, `ship`, `flame`, em SVG na escala 1) e o jogo amplia na escala que precisar.
 

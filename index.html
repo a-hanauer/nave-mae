@@ -309,7 +309,10 @@ button{cursor:pointer;touch-action:manipulation}
 .req{margin:10px 0 0;padding:8px 10px;font-size:19px;color:var(--amber);background:#1c1406;box-shadow:inset 4px 0 0 0 var(--amber)}
 .dot2{display:inline-block;width:16px;height:16px;box-shadow:0 0 0 2px #000}
 /* ---------- conquistas ---------- */
-.mdetail{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center;padding:16px;margin-bottom:22px}
+.mdetail{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center;padding:16px;margin-bottom:22px;
+  position:sticky;top:calc(16px + env(safe-area-inset-top));z-index:6;min-height:200px;align-content:start} /* fica no topo enquanto a parede rola */
+.mdetail .md-ic{display:block;animation:mdpop .3s steps(3)}
+@keyframes mdpop{0%{transform:scale(.6)}70%{transform:scale(1.15)}}
 .mdetail b{display:block;font-family:var(--px);font-size:10px;line-height:1.5}
 .mdetail .bar{height:12px;margin:10px 0 6px;background:#0a0920;box-shadow:inset 0 0 0 2px var(--line)}
 .mdetail .bar i{display:block;height:100%;background:var(--amber)}
@@ -608,7 +611,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 
 <script>
 /* atualização automática: compara com version.json e recarrega quando sai versão nova */
-const APP_V='20261004170106';
+const APP_V='20261004171411';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     if(v&&v!==APP_V&&sessionStorage.getItem('upd')!==v){sessionStorage.setItem('upd',v);location.replace(location.pathname+'?v='+v+H0)}}catch(e){}}
@@ -1183,7 +1186,7 @@ function go(v){if(v==='vest'||v==='hang'){sub=v;v='crew'}view=v;draft=null;VIEWS
     document.querySelectorAll('#seg [data-s]').forEach(b=>b.classList.toggle('on',b.dataset.s===sub));sub==='vest'?renderVest():renderHang()}
   window.scrollTo(0,0);coverTop()}
 /* respiro do topo: quando o palco do hangar gruda, cobre o que passa por cima dele */
-function coverTop(){const s=view==='crew'&&[...document.querySelectorAll('#crew .stage')].find(x=>x.offsetParent);
+function coverTop(){const s=view==='crew'?[...document.querySelectorAll('#crew .stage')].find(x=>x.offsetParent):view==='medals'?$('#mDetail'):null;
   $('#topCover').hidden=!(s&&s.getBoundingClientRect().top<=parseFloat(getComputedStyle(s).top)+.5)}
 addEventListener('scroll',coverTop,{passive:true});
 document.querySelectorAll('.tabbar [data-v]').forEach(b=>b.onclick=()=>{SND.tab(['home','tasks','crew','medals'].indexOf(b.dataset.v));go(b.dataset.v)});
@@ -1287,11 +1290,11 @@ function renderMedals(){const m=metrics();st.seen=[...st.got];save();$('#mBadge'
   const g=GOALS.find(x=>x.id===mSel),v=Math.min(m[g.kind],g.n),done=st.got.includes(g.id);
   $('#mCount').textContent=`${st.got.length} / ${GOALS.length}`;
   $('#mDetail').className='mdetail px'+(done?' done':'');
-  $('#mDetail').innerHTML=`${medalSVG(g,4)}<div><b>${g.txt}</b><div class="bar"><i style="width:${Math.round(v/g.n*100)}%"></i></div><span class="n">${done?'CONQUISTADA':v+' / '+g.n}</span></div>
+  $('#mDetail').innerHTML=`<span class="md-ic">${medalSVG(g,4)}</span><div><b>${g.txt}</b><div class="bar"><i style="width:${Math.round(v/g.n*100)}%"></i></div><span class="n">${done?'CONQUISTADA':v+' / '+g.n}</span></div>
     <div class="rw">${g.honor?'<span>Medalha de honra · desafio extra</span>':''}${rewards(g.id).map(([c,it])=>`<span>${c==='title'?'':`<i class="dot2" style="background:${c==='ship'?'#9b98d4':swatchBg(c,it)}"></i>`}${c==='title'?'Título “'+it.n+'”':(ITEMS[c].t+' '+it.n.toLowerCase())}</span>`).join('')}</div>`;
   $('#mWall').innerHTML=Object.keys(CATS).map(k=>{const gs=GOALS.filter(x=>x.kind===k),n=gs.filter(x=>st.got.includes(x.id)).length;
     return `<div class="mrow"><div class="label">${CATS[k].t}<span>${n}/${gs.length}</span></div><div class="medals">${gs.map(x=>`<button class="${x.id===mSel?'on':''}" data-g="${x.id}" aria-label="${x.txt}">${medalSVG(x,2)}</button>`).join('')}</div></div>`}).join('');
-  $('#mWall').querySelectorAll('[data-g]').forEach(b=>b.onclick=()=>{mSel=b.dataset.g;SND.medal();renderMedals();window.scrollTo({top:0,behavior:'smooth'})})}
+  $('#mWall').querySelectorAll('[data-g]').forEach(b=>b.onclick=()=>{mSel=b.dataset.g;SND.medal();renderMedals()})}
 
 /* conquista nova: mostra uma por vez */
 function showUnlock(){const g=GOALS.find(x=>st.got.includes(x.id)&&!st.seen.includes(x.id));if(!g)return;
