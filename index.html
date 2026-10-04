@@ -616,7 +616,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 
 <script>
 /* atualização automática: compara com version.json e recarrega quando sai versão nova */
-const APP_V='20261004172143';
+const APP_V='20261004173438';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     if(v&&v!==APP_V&&sessionStorage.getItem('upd')!==v){sessionStorage.setItem('upd',v);location.replace(location.pathname+'?v='+v+H0)}}catch(e){}}
@@ -640,6 +640,9 @@ try{if(navigator.audioSession)navigator.audioSession.type='ambient'}catch(e){}
     const l=document.createElement('label');l.setAttribute('data-hap','');l.setAttribute('aria-hidden','true');
     const i=document.createElement('input');i.type='checkbox';i.setAttribute('switch','');i.tabIndex=-1;
     i.addEventListener('click',e=>e.stopPropagation());l.append(i);
+    // o label "rouba" a ação nativa do elemento: refaz a navegação do link e o envio do formulário
+    l.addEventListener('click',e=>{if(e.target!==l)return;setTimeout(()=>{if(e.defaultPrevented)return;
+      if(el.tagName==='A'&&el.href)location.href=el.href;else if(el.type==='submit'&&el.form)el.form.requestSubmit(el)},0)});
     if(getComputedStyle(el).position==='static')el.style.position='relative';
     el.append(l)}
   function scan(root){if(root.nodeType!==1)return;if(root.matches(SEL))arm(root);root.querySelectorAll(SEL).forEach(arm)}
@@ -1148,7 +1151,7 @@ function openPlanet(pid){navT=performance.now();
     h+=`<div class="slot"><b>SLOT VAZIO</b>Nova missão em breve</div>`;
   }
   $('#missions').innerHTML=h;
-  $('#missions').querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>takeoff(APPS.find(a=>a.id===b.dataset.go)));
+  $('#missions').querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>takeoff(APPS.find(a=>a.id===b.dataset.go),'#r=p.'+pid));
   VIEWS.forEach(x=>$('#'+x).hidden=x!=='planet');view='planet';$('#topHdr').hidden=true;window.scrollTo(0,0);
 }
 $('#back').onclick=()=>{SND.back();go('home')};
@@ -1165,7 +1168,10 @@ function takeoff(a,hash=''){
       x.moveTo(W/2+Math.cos(p.a)*r0|0,H/2+Math.sin(p.a)*r0|0);x.lineTo(W/2+Math.cos(p.a)*r1|0,H/2+Math.sin(p.a)*r1|0);x.stroke()});
     if(k<1)requestAnimationFrame(f);else{x.fillStyle='#fff';x.fillRect(0,0,W,H);setTimeout(()=>{location.href=a.url+hash},60)}})(t0);
 }
-addEventListener('pageshow',()=>{$('#warp').hidden=true;checkGoals();go(view==='planet'?'home':view);setTimeout(showUnlock,400)});
+addEventListener('pageshow',()=>{$('#warp').hidden=true;checkGoals();go(view==='planet'?'home':view);routeHash();setTimeout(showUnlock,400)});
+/* volta de um jogo: ../#v=tasks abre a aba Missões, ../#p=mat abre o planeta */
+function routeHash(){const h=location.hash,v=(h.match(/v=(\w+)/)||[])[1],p=(h.match(/p=(\w+)/)||[])[1];if(!v&&!p)return;
+  history.replaceState(null,'',location.pathname+location.search);if(v&&VIEWS.includes(v))go(v);else if(p&&PLANETS.find(x=>x.id===p))openPlanet(p)}
 
 /* ---------- estrelas ---------- */
 (function(){const c=$('#stars'),x=c.getContext('2d');let S=[];
@@ -1243,7 +1249,7 @@ let tDoneOpen=false,AD_ST=null;
 function adStars(){if(!AD_ST){const L=(n,cls)=>{let b='';for(let i=0;i<n;i++){const x=Math.random()*50,y=4+Math.random()*90;b+=`<b style="left:${x}%;top:${y|0}%"></b><b style="left:${x+50}%;top:${y|0}%"></b>`}return `<div class="ly ${cls}">${b}</div>`};
   AD_ST=L(18,'l1')+L(9,'l2')+L(4,'l3')}return AD_ST}
 const ADMSG=['Base em segurança, {n}.','Todas as estações operando. Bom trabalho!','O comando está orgulhoso de você, {n}.','Missões do dia cumpridas. Descanse os motores.','Turno encerrado. A galáxia agradece!','Relatório enviado: nota máxima, {n}!','Combustível cheio para amanhã.'];
-function bindTasks(){$('#tList').querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>takeoff(APPS.find(a=>a.id===b.dataset.a),'#m='+b.dataset.m));
+function bindTasks(){$('#tList').querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>takeoff(APPS.find(a=>a.id===b.dataset.a),'#m='+b.dataset.m+'&r=tasks'));
   const tg=$('#tDoneTg');if(tg)tg.onclick=()=>{tDoneOpen=!tDoneOpen;SND.open();renderTasks()};
   $('#tList').querySelectorAll('[data-fold]').forEach(b=>b.onclick=()=>{const id=b.dataset.fold;tFold[id]=b.getAttribute('aria-expanded')!=='true';SND.tab(tFold[id]?1:0);renderTasks()})}
 let toastT=0;function toast(t){const el=$('#toast');el.textContent=t;el.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>el.hidden=true,2600)}

@@ -377,7 +377,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 
 <script>
 /* atualização automática: compara com version.json e recarrega quando sai versão nova */
-const APP_V='20261004172143';
+const APP_V='20261004173438';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     if(v&&v!==APP_V&&sessionStorage.getItem('upd')!==v){sessionStorage.setItem('upd',v);location.replace(location.pathname+'?v='+v+H0)}}catch(e){}}
@@ -401,6 +401,9 @@ try{if(navigator.audioSession)navigator.audioSession.type='ambient'}catch(e){}
     const l=document.createElement('label');l.setAttribute('data-hap','');l.setAttribute('aria-hidden','true');
     const i=document.createElement('input');i.type='checkbox';i.setAttribute('switch','');i.tabIndex=-1;
     i.addEventListener('click',e=>e.stopPropagation());l.append(i);
+    // o label "rouba" a ação nativa do elemento: refaz a navegação do link e o envio do formulário
+    l.addEventListener('click',e=>{if(e.target!==l)return;setTimeout(()=>{if(e.defaultPrevented)return;
+      if(el.tagName==='A'&&el.href)location.href=el.href;else if(el.type==='submit'&&el.form)el.form.requestSubmit(el)},0)});
     if(getComputedStyle(el).position==='static')el.style.position='relative';
     el.append(l)}
   function scan(root){if(root.nodeType!==1)return;if(root.matches(SEL))arm(root);root.querySelectorAll(SEL).forEach(arm)}
@@ -636,7 +639,7 @@ CEL.cfg={beep:(f,d,t=0)=>tone(f,d,t),jingle:()=>[784,988,1175,1568,1175,1568].fo
 /* =================== navegação =================== */
 const $=s=>document.querySelector(s);
 let current='menu';
-function show(id){if(id!=='res')CEL.stop();current=id;document.querySelectorAll('#app>.screen').forEach(s=>s.hidden=s.id!==id);window.scrollTo(0,0);if(id==='menu')renderMenu()}
+function show(id){if(id==='menu'&&DL){DL=false;$('#playBack').textContent=$('#desBack').textContent='< Templo'}if(id!=='res')CEL.stop();current=id;document.querySelectorAll('#app>.screen').forEach(s=>s.hidden=s.id!==id);window.scrollTo(0,0);if(id==='menu')renderMenu()}
 
 /* =================== menu =================== */
 const WD=['D','S','T','Q','Q','S','S'];let typing=null;
@@ -768,7 +771,7 @@ function finishMission(){
   celebrate({title:f===ROUNDS?'MISSÃO PERFEITA!':'MISSÃO CUMPRIDA!',sub:'O portão se abriu.',stars:f===ROUNDS?3:f/ROUNDS>=.6?2:1,
     score:[f,ROUNDS],turno:turnoInfo(fresh),buttons:endButtons(()=>startMission(m)),onDone:checkLevel});
 }
-$('#playBack').onclick=()=>{sfx.tap();show('menu')};
+$('#playBack').onclick=()=>{sfx.tap();if(DL){backHome();return}show('menu')};
 
 /* =================== nova câmara =================== */
 function checkLevel(){if(!pendingLevel)return;pendingLevel=false;const l=L(),nw=l.syms.filter(s=>!LEVELS[S.level-2].syms.includes(s));
@@ -836,7 +839,7 @@ function loseD(){D.run=false;S.run.desafio={c:0};save();sfx.lose();setBtns(false
   $('#dfb').className='fb no';$('#dfb').innerHTML=`<b>O TETO DESABOU!</b>Você fez ${D.c} de ${NEED}.`;
   $('#dStart').innerHTML=`<button class="btn" id="dGo2">TENTAR DE NOVO</button>`;$('#dGo2').onclick=()=>openDes()}
 $('#goDes').onclick=()=>{sfx.tap();openDes()};
-$('#desBack').onclick=()=>{if(D){D.run=false;clearTimeout(D.to)}sfx.tap();show('menu')};
+$('#desBack').onclick=()=>{if(D){D.run=false;clearTimeout(D.to)}sfx.tap();if(DL){backHome();return}show('menu')};
 
 /* =================== tábua =================== */
 function openTab(){const l=L();$('#tSyms').innerHTML=ALL.map(s=>{const on=l.syms.includes(s);return `<span class="s${on?'':' lock'}"><b>${on?s:'?'}</b><i>${on?VAL[s]:'—'}</i></span>`}).join('');
@@ -864,7 +867,17 @@ document.querySelectorAll('[data-ico]').forEach(el=>el.innerHTML=sprite(el.datas
 addEventListener('pageshow',()=>{if(current==='menu')renderMenu()});
 show('menu');
 /* atalho vindo da Nave-Mãe: #m=montar abre a missão direto */
+/* de onde veio (aba Missões ou planeta): o "< Nave-Mãe" volta para lá; entrando direto numa missão pela aba Missões,
+   o voltar da missão também volta para a aba Missões */
+const RETK='ret:'+location.pathname,RP=(location.hash.match(/r=([\w.]+)/)||[])[1];
+if(RP)try{sessionStorage.setItem(RETK,RP)}catch(e){}
+const RETV=RP||(()=>{try{return sessionStorage.getItem(RETK)}catch(e){return null}})()||'';
+const RET='../'+(RETV==='tasks'?'#v=tasks':RETV.startsWith('p.')?'#p='+RETV.slice(2):'');
+var DL=false; // (var: show() usa antes desta linha) entrou direto numa missão pela aba Missões
+function backHome(){location.href=RET}
+document.querySelectorAll('a.back[href="../"]').forEach(a=>a.href=RET);
 function deepLink(){const m=(location.hash.match(/m=(\w+)/)||[])[1];if(!m)return;history.replaceState(null,'',location.pathname);
+  DL=RETV==='tasks';$('#playBack').textContent=$('#desBack').textContent=DL?'< Missões':'< Templo';
   if(m==='desafio')openDes();else if(MODES.includes(m))startMission(m)}
 deepLink();addEventListener('hashchange',deepLink);
 </script>

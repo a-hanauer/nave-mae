@@ -22,7 +22,7 @@ Publicado em `https://a-hanauer.github.io/nave-mae/`.
 - **Mapa estelar:** mostra quantas tarefas faltam hoje em cada planeta e a sequência de dias seguidos com o turno completo.
 - **Tela do planeta:** lista os apps, com o progresso do dia e o botão DECOLAR.
 
-Cada app tem um botão "< Nave-Mãe" na tela inicial para voltar ao mapa.
+Cada app tem um botão "< Nave-Mãe" na tela inicial que volta para onde a criança estava: a aba Missões ou o planeta de onde decolou (o jogo recebe `r=tasks` ou `r=p.<planeta>` no endereço e a Nave-Mãe abre `#v=tasks` ou `#p=<planeta>`). Ao entrar direto numa missão pela aba Missões, o voltar da missão vira "< Missões" e leva de volta para a lista.
 
 ## Abas
 
