@@ -377,7 +377,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 
 <script>
 /* atualização automática: compara com version.json e recarrega quando sai versão nova */
-const APP_V='20261004151235';
+const APP_V='20261004170106';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     if(v&&v!==APP_V&&sessionStorage.getItem('upd')!==v){sessionStorage.setItem('upd',v);location.replace(location.pathname+'?v='+v+H0)}}catch(e){}}
@@ -388,15 +388,31 @@ const APP_V='20261004151235';
 /* som: modo "ambiente" mistura com a música ou o podcast que estiver tocando no celular (não interrompe outras mídias).
    Regra do iOS: nesse modo a chave de silencioso do iPhone também silencia o app. */
 try{if(navigator.audioSession)navigator.audioSession.type='ambient'}catch(e){}
-/* vibração leve a cada toque. iPhone (iOS 18+): um interruptor nativo escondido gera o toque háptico;
+/* vibração leve a cada toque.
+   iPhone: o Safari não tem API de vibração; o único jeito é o toque do próprio dedo cair num interruptor nativo
+   (<input type=checkbox switch>, iOS 18+). Por isso cada botão recebe por dentro um <label> invisível que cobre
+   o botão inteiro e aciona um interruptor escondido; o clique continua chegando ao botão normalmente.
    Android: navigator.vibrate. */
-(function(){let sw=null;
-  function mk(){const l=document.createElement('label');l.setAttribute('aria-hidden','true');
-    l.style.cssText='position:fixed;left:-100px;top:0;width:1px;height:1px;opacity:0;pointer-events:none;overflow:hidden';
-    const i=document.createElement('input');i.type='checkbox';i.setAttribute('switch','');i.tabIndex=-1;l.appendChild(i);document.body.appendChild(l);return l}
-  window.haptic=function(){try{if(navigator.vibrate){navigator.vibrate(8);return}sw=sw||mk();sw.click()}catch(e){}};
-  document.addEventListener('click',e=>{if(sw&&sw.contains(e.target))return;
-    if(e.target.closest('button,a,[role=button],select,summary,label,[data-go],[data-m],[data-p]'))haptic()},true);
+(function(){
+  const IOS=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+  const SEL='button,a[href],[role=button]';
+  if(!IOS){document.addEventListener('click',e=>{if(navigator.vibrate&&e.target.closest(SEL))try{navigator.vibrate(8)}catch(_){}} ,true);return}
+  function arm(el){if(el.disabled||el.querySelector(':scope>label[data-hap]'))return;
+    const l=document.createElement('label');l.setAttribute('data-hap','');l.setAttribute('aria-hidden','true');
+    const i=document.createElement('input');i.type='checkbox';i.setAttribute('switch','');i.tabIndex=-1;
+    i.addEventListener('click',e=>e.stopPropagation());l.append(i);
+    if(getComputedStyle(el).position==='static')el.style.position='relative';
+    el.append(l)}
+  function scan(root){if(root.nodeType!==1)return;if(root.matches(SEL))arm(root);root.querySelectorAll(SEL).forEach(arm)}
+  const st=document.createElement('style');
+  st.textContent='label[data-hap]{position:absolute;inset:0;z-index:5;display:block;margin:0;padding:0;background:none;touch-action:manipulation;-webkit-tap-highlight-color:transparent}'+
+    'label[data-hap]>input{position:absolute;width:1px;height:1px;margin:0;opacity:0;pointer-events:none}'+
+    ':disabled>label[data-hap]{pointer-events:none}';
+  document.head.append(st);
+  function start(){scan(document.body);new MutationObserver(ms=>{for(const m of ms){m.addedNodes.forEach(scan);
+    if(m.type==='childList'&&m.target.closest){const t=m.target.closest(SEL);if(t)arm(t)} // texto do botão trocado: arma de novo
+    if(m.type==='attributes'&&m.target.matches&&m.target.matches(SEL))arm(m.target)}}).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['disabled']})}
+  if(document.body)start();else document.addEventListener('DOMContentLoaded',start);
 })();
 </script>
 <script>
