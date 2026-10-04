@@ -223,6 +223,45 @@ h2{margin:0;font-family:var(--px);font-size:14px;line-height:1.7;font-weight:400
 .key.ok{--b:var(--amber-d);--bg-c:var(--amber);color:var(--ink);font-size:14px}
 .key.del{font-size:8px;color:var(--dim)}
 .hintbtn{align-self:center;padding:10px 16px;font-family:var(--px);font-size:9px;color:var(--dim)}
+/* ---- comemoração de missão concluída (mesmo código nos dois jogos) ---- */
+.cel{display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;width:100%}
+.cel-hero{position:relative;width:100%;height:190px;display:grid;place-items:center}
+.cel-rays{position:absolute;left:50%;top:50%;width:300px;height:300px;margin:-150px 0 0 -150px;border-radius:50%;
+  background:repeating-conic-gradient(var(--cel-ray) 0 12deg,transparent 12deg 24deg);
+  -webkit-mask:radial-gradient(circle,#000 22%,transparent 68%);mask:radial-gradient(circle,#000 22%,transparent 68%);animation:celspin 9s steps(36) infinite}
+@keyframes celspin{to{transform:rotate(360deg)}}
+.cel-av{position:relative;animation:celjump .8s steps(2) infinite}
+.cel-av .spr,.cel-av svg{display:block}
+@keyframes celjump{50%{transform:translateY(-12px)}}
+.cel.lose .cel-av{animation:celshake .3s steps(2) 4}
+@keyframes celshake{50%{transform:translateX(-6px)}}
+.cel-t{margin:0;font-family:var(--px);font-size:19px;line-height:1.4;color:var(--cel-acc);text-shadow:3px 3px 0 var(--cel-acc-d)}
+.cel.lose .cel-t{color:var(--cel-bad);text-shadow:3px 3px 0 #000}
+.cel-sub{margin:-4px 0 0;font-size:20px;line-height:1.15;color:var(--cel-dim)}
+.cel-pop{animation:celpop .36s steps(3) both}
+@keyframes celpop{0%{transform:scale(0)}65%{transform:scale(1.3)}100%{transform:scale(1)}}
+.cel-stars{display:flex;gap:16px;align-items:flex-end;height:70px}
+.cel-stars span:nth-child(2){margin-bottom:12px}
+.cel-score{display:flex;align-items:baseline;gap:4px;font-family:var(--px);color:var(--cel-ink)}
+.cel-score b{font-weight:400;font-size:28px;color:var(--cel-acc);text-shadow:3px 3px 0 var(--cel-acc-d);min-width:1.1em;text-align:right}
+.cel-score span{font-size:16px}
+.cel-score small{font-family:var(--vt);font-size:20px;color:var(--cel-dim);margin-left:10px}
+.cel-turno{width:100%;padding:12px 14px;text-align:left}
+.cel-tl{display:flex;justify-content:space-between;font-family:var(--px);font-size:8px;line-height:1;color:var(--cel-dim)}
+.cel-tl b{font-weight:400;color:var(--cel-ink)}
+.cel-segs{display:flex;gap:6px;margin-top:10px}
+.cel-segs i{flex:1;height:12px;background:rgba(0,0,0,.4);box-shadow:inset 0 0 0 2px var(--cel-edge)}
+.cel-segs i.on{background:var(--cel-ok);box-shadow:inset 0 -3px 0 0 rgba(0,0,0,.3)}
+.cel-segs i.flash{animation:celflash .5s steps(2) 3}
+@keyframes celflash{50%{background:#fff}}
+.cel-banner{margin-top:12px;padding:10px 8px;font-family:var(--px);font-size:9px;line-height:1.5;text-align:center;color:#1a1200;background:var(--cel-acc2)}
+.cel-btns{width:100%;display:flex;flex-direction:column;gap:12px;visibility:hidden}
+.cel-btns.on{visibility:visible;animation:celup .3s steps(3)}
+@keyframes celup{from{transform:translateY(16px);opacity:0}}
+.cel-cf{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:45;image-rendering:pixelated}
+@media (prefers-reduced-motion:reduce){.cel-rays,.cel-av{animation:none}}
+.cel-btns>*{margin:0!important;width:100%}
+#fim{--cel-acc:var(--amber);--cel-acc-d:var(--amber-d);--cel-acc2:var(--amber);--cel-dim:var(--dim);--cel-ink:var(--text);--cel-ok:var(--ok);--cel-edge:var(--edge2);--cel-bad:var(--alert);--cel-ray:rgba(255,179,0,.26)}
 /* ---- telas de jogo cabem na tela do celular, sem rolar ---- */
 #partilha,#grupos,#hangar,#desafio,#d-play{gap:14px}
 #radar{width:auto;max-width:100%;height:min(190px,20dvh);margin:0 auto}
@@ -348,21 +387,14 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
   </div>
 </section>
 
-<!-- FIM -->
-<section class="screen" id="fim" hidden>
-  <p class="eyebrow">Relatório da missão</p>
-  <div class="big" id="f-big"></div>
-  <h2 id="f-title"></h2>
-  <p class="brief" id="f-text"></p>
-  <button class="primary pbtn" id="f-again">Jogar de novo</button>
-  <button class="ghost pbtn" data-back>Voltar à ponte</button>
-</section>
+<!-- FIM: comemoração (montada pelo CEL) -->
+<section class="screen" id="fim" hidden></section>
 
 </div>
 
 <script>
 /* atualização automática: compara com version.json e recarrega quando sai versão nova */
-const APP_V='20261004113446';
+const APP_V='20261004121554';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     if(v&&v!==APP_V&&sessionStorage.getItem('upd')!==v){sessionStorage.setItem('upd',v);location.replace(location.pathname+'?v='+v+H0)}}catch(e){}}
@@ -492,9 +524,67 @@ const good=()=>{tone(523,.08);tone(659,.08,'square',.04,.08);tone(784,.12,'squar
 const bad=()=>{tone(196,.12,'square',.05);tone(147,.2,'square',.05,.12)};
 const click=()=>tone(440,.035,'square',.025);
 const fanfare=()=>[523,659,784,1047,784,1047].forEach((f,i)=>tone(f,.11,'square',.045,i*.11));
+/* ---- comemoração de missão concluída (mesmo código nos dois jogos) ----
+   CEL.play({host,avatar,title,sub,stars,score:[n,total],scoreLabel,turno:{n,total,streak,fresh},lose,buttons:[{label,cls,fn}],onDone}) */
+const CEL=(()=>{
+  const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const STAR=[".....k.....","....kYk....","....kYk....","kkkkkYOkkkk","kYYYYYOOOok",".kYYYYOOok.","..kYYYOok..","..kYOkkOk..",".kYOk..kOk.",".kOk....kok","kkk.....kkk"];
+  const ON={k:'#000',Y:'#fff3a0',O:'#ffb300',o:'#d97a00'};
+  const px=(rows,s,m)=>{let r='';rows.forEach((row,y)=>{for(let x=0;x<row.length;x++){const c=row[x];if(c==='.')continue;let k=1;while(row[x+k]===c)k++;r+=`<rect x="${x}" y="${y}" width="${k}" height="1" fill="${m[c]}"/>`;x+=k-1}});
+    return `<svg viewBox="0 0 ${rows[0].length} ${rows.length}" width="${rows[0].length*s}" height="${rows.length*s}" shape-rendering="crispEdges" style="display:block">${r}</svg>`};
+  let T=[],fin=null;
+  const at=(ms,fn)=>T.push(setTimeout(fn,RM?0:ms));
+  function confetti(n,colors,from=.3){if(RM)return;let c=document.querySelector('.cel-cf');
+    if(!c){c=document.createElement('canvas');c.className='cel-cf';document.body.appendChild(c);c._P=[]}
+    const S=3,W=c.width=Math.ceil(innerWidth/S),H=c.height=Math.ceil(innerHeight/S),x=c.getContext('2d');
+    for(let i=0;i<n;i++)c._P.push({x:W/2+(Math.random()-.5)*W*.35,y:H*from,vx:(Math.random()-.5)*3.4,vy:-Math.random()*3.4-1.4,s:1+(Math.random()<.45),c:colors[Math.random()*colors.length|0],t:Math.random()*6});
+    if(c._run)return;c._run=1;let last=performance.now();
+    (function step(now){const dt=Math.min(3,(now-last)/16.7);last=now;x.clearRect(0,0,W,H);
+      c._P=c._P.filter(p=>p.y<H+4);
+      for(const p of c._P){p.vy+=.055*dt;p.vx*=.985;p.x+=p.vx*dt;p.y+=p.vy*dt;p.t+=.22*dt;x.fillStyle=p.c;
+        x.fillRect(Math.round(p.x),Math.round(p.y),Math.max(1,Math.round(p.s*Math.abs(Math.cos(p.t))+.4)),p.s)}
+      if(c._P.length)requestAnimationFrame(step);else{c._run=0;x.clearRect(0,0,W,H)}})(last)}
+  function stop(){T.forEach(clearTimeout);T=[];fin=null;const c=document.querySelector('.cel-cf');if(c){c._P=[]}}
+  function play(o){stop();const C=CEL.cfg,lose=!!o.lose,st=o.stars||0,tu=o.turno;
+    const off={k:'#000',Y:C.starOff[0],O:C.starOff[1],o:C.starOff[2]};
+    const segs=tu?Array.from({length:tu.total},(_,i)=>`<i class="${i<tu.n-(tu.fresh?1:0)?'on':''}"></i>`).join(''):'';
+    const done=tu&&tu.n>=tu.total,dias=tu?`${tu.streak} ${tu.streak===1?'DIA':'DIAS'}`:'';
+    o.host.innerHTML=`<div class="cel${lose?' lose':''}">
+      <div class="cel-hero">${lose?'':'<div class="cel-rays"></div>'}<div class="cel-av">${o.avatar||''}</div></div>
+      <h2 class="cel-t cel-pop">${o.title}</h2>${o.sub?`<p class="cel-sub">${o.sub}</p>`:''}
+      ${lose?'':`<div class="cel-stars">${[0,1,2].map(i=>`<span>${px(STAR,5,off)}</span>`).join('')}</div>`}
+      ${o.score?`<div class="cel-score"><b>0</b><span>/${o.score[1]}</span><small>${o.scoreLabel||'de primeira'}</small></div>`:''}
+      ${tu?`<div class="cel-turno ${C.panel}"><div class="cel-tl"><span>TURNO DE HOJE</span><b>${tu.n-(tu.fresh?1:0)}/${tu.total}</b></div><div class="cel-segs">${segs}</div>
+        ${done?`<div class="cel-banner"${tu.fresh&&tu.n>=tu.total?' hidden':''}>TURNO COMPLETO! · SEQUÊNCIA: ${dias}</div>`:''}</div>`:''}
+      <div class="cel-btns">${o.buttons.map((b,i)=>`<button class="${b.cls}" data-cb="${i}">${b.label}</button>`).join('')}</div></div>`;
+    const h=o.host,q=s=>h.querySelector(s);
+    h.querySelectorAll('[data-cb]').forEach(b=>b.onclick=e=>{e.stopPropagation();stop();o.buttons[+b.dataset.cb].fn()});
+    const stars=[...h.querySelectorAll('.cel-stars span')],sc=q('.cel-score b');
+    const starOn=i=>{stars[i].innerHTML=px(STAR,5,ON);stars[i].classList.add('cel-pop')};
+    const turnoOn=()=>{if(!tu||!tu.fresh)return;const s=h.querySelectorAll('.cel-segs i')[tu.n-1];if(s&&!s.classList.contains('on')){s.classList.add('on','flash');q('.cel-tl b').textContent=`${tu.n}/${tu.total}`}};
+    const banner=()=>{const b=q('.cel-banner');if(b&&b.hidden){b.hidden=false;b.classList.add('cel-pop');return true}};
+    const btns=()=>{q('.cel-btns').classList.add('on');if(o.onDone){const f=o.onDone;o.onDone=null;f()}};
+    fin=()=>{stop();if(sc)sc.textContent=o.score[0];for(let i=0;i<st;i++)if(!stars[i].classList.contains('cel-pop'))starOn(i);turnoOn();banner();btns()};
+    // linha do tempo
+    if(!lose)confetti(90,C.confetti);
+    let t=450;
+    if(o.score){const n=o.score[0];for(let i=1;i<=n;i++)at(t+=110,()=>{sc.textContent=i;C.beep(420+i*40,.03)});t+=150}
+    for(let i=0;i<st;i++)at(t+=300,()=>{starOn(i);C.beep(784+i*262,.12);if(i===2)confetti(30,C.confetti,.45)});
+    if(tu&&tu.fresh){at(t+=420,()=>{turnoOn();C.beep(660,.08);C.beep(990,.1,.08)});
+      if(done)at(t+=520,()=>{banner();confetti(120,C.confetti,.2);C.jingle()})}
+    at(t+=380,btns);
+    // tocar na tela pula a animação
+    h.firstElementChild.addEventListener('click',()=>{if(fin)fin()})}
+  return{play,stop,cfg:null}})();
+CEL.cfg={beep:(f,d,t=0)=>tone(f,d,'square',.04,t),jingle:()=>[784,988,1175,1568,1175,1568].forEach((f,i)=>tone(f,.1,'square',.045,i*.1)),
+  confetti:['#ffb300','#40d8ff','#39e35f','#ff6ad5','#f1f0ff'],starOff:['#4a4690','#36336e','#2a2758'],panel:'px'};
+/* piloto como foi customizado na Nave-Mãe */
+function navAvatar(k,s){try{const a=JSON.parse(localStorage.getItem('navemae-avatar')),v=a&&a[k];if(!v)return '';
+  const m=v.match(/viewBox="0 0 (\d+) (\d+)"/);return v.replace(/width="\d+" height="\d+"/,`width="${m[1]*s}" height="${m[2]*s}"`)}catch(e){return ''}}
+
 
 /* ---------- navegação ---------- */
-function show(id){if(id==='menu')renderMenu();document.querySelectorAll('#app>.screen').forEach(s=>s.hidden=s.id!==id);window.scrollTo(0,0)}
+function show(id){if(id!=='fim')CEL.stop();if(id==='menu')renderMenu();document.querySelectorAll('#app>.screen').forEach(s=>s.hidden=s.id!==id);window.scrollTo(0,0)}
 document.addEventListener('click',e=>{
   if(e.target.closest('[data-back]')){click();stopDesafio();show('menu')}
   const go=e.target.closest('[data-go]');
@@ -554,19 +644,15 @@ function advance(mode,S){
   saveProg(mode,{i:S.i,firsts:S.firsts,next:true});return false;
 }
 
-/* ---------- fim de missão ---------- */
-let againFn=null;
-function finish(big,title,text,again,lose){
-  $('#f-big').textContent=big;$('#f-big').classList.toggle('lose',!!lose);
-  $('#f-title').textContent=title;$('#f-text').innerHTML=text;againFn=again;show('fim');
-  if(!lose)fanfare();
-}
-$('#f-again').onclick=()=>{click();againFn&&againFn()};
-function missionEnd(mode,S,again,what){
-  const {firsts,total,nw}=S,all=firsts===total;
-  finish(`${firsts}/${total}`,all?'Missão cumprida sem erros!':'Missão cumprida!',
-    `${firsts} de ${total} de primeira.<br><br>${turnoLine()}`,again);
-}
+/* ---------- fim de missão: comemoração ---------- */
+function celebrate(o){show('fim');CEL.play(Object.assign({host:$('#fim'),avatar:navAvatar('pilot',4)||sprite('bat',5)},o))}
+const turnoInfo=fresh=>({n:countReq(doneToday()),total:MODES.length,streak:streak(),fresh});
+function endButtons(again){const nx=MODES.find(m=>!doneToday().includes(m)),back=()=>{click();show('menu')},rep=()=>{click();again()};
+  return nx?[{label:'Próxima missão',cls:'primary pbtn',fn:()=>{click();START[nx]()}},{label:'Jogar de novo',cls:'ghost pbtn',fn:rep},{label:'Voltar à ponte',cls:'ghost pbtn',fn:back}]
+    :[{label:'Voltar à ponte',cls:'primary pbtn',fn:back},{label:'Jogar de novo',cls:'ghost pbtn',fn:rep}]}
+function missionEnd(mode,S,again,what){const {firsts,total,nw}=S;fanfare();
+  celebrate({title:firsts===total?'MISSÃO PERFEITA!':'MISSÃO CUMPRIDA!',sub:what,stars:firsts===total?3:firsts/total>=.6?2:1,
+    score:[firsts,total],turno:turnoInfo(!!nw),buttons:endButtons(again)})}
 /* abre a missão: continua de onde parou ou começa do zero */
 function resume(mode,S,newFn,restoreFn,fresh){
   const pr=getProg(mode);
@@ -787,7 +873,7 @@ function dCheck(){
     good();D.hits++;D.dist=Math.min(100,D.dist+22);
     if(D.hits>=D.goal){
       stopDesafio();clearProg('desafio');stats.escapes=(stats.escapes||0)+1;save();const nw=markDone('desafio');
-      finish('10/10','Você fugiu do Alien!',`O Alien voltou para os dutos.<br><br>${turnoLine()}`,()=>{show('desafio');dPlay(D.level)});
+      fanfare();celebrate({title:'VOCÊ FUGIU DO ALIEN!',sub:'O Alien voltou para os dutos.',stars:3,score:[10,10],scoreLabel:'acertos',turno:turnoInfo(false),buttons:endButtons(()=>{show('desafio');dPlay(D.level)})});
       return;
     }
     saveProg('desafio',{level:D.level,hits:D.hits});dNewQ();
@@ -803,7 +889,8 @@ function dLoop(now){
   D.dist-=D.speed*dt;D.wob+=dt;
   if(D.dist<=0){
     stopDesafio();clearProg('desafio');[220,185,147,110].forEach((f,i)=>tone(f,.18,'square',.06,i*.16));
-    finish(`${D.hits}/10`,'O Alien te alcançou!','Tente de novo. Use a Dica se travar.',()=>{show('desafio');dPlay(D.level)},true);
+    celebrate({lose:true,title:'O ALIEN TE ALCANÇOU!',sub:'Tente de novo. Use a Dica se travar.',score:[D.hits,10],scoreLabel:'acertos',
+      buttons:[{label:'Tentar de novo',cls:'primary pbtn',fn:()=>{click();show('desafio');dPlay(D.level)}},{label:'Voltar à ponte',cls:'ghost pbtn',fn:()=>{click();show('menu')}}]});
     return;
   }
   const m=Math.max(0,Math.round(D.dist*.6));
