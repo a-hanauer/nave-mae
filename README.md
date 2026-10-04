@@ -24,15 +24,16 @@ Publicado em `https://a-hanauer.github.io/nave-mae/`.
 
 Cada app tem um botão "< Nave-Mãe" na tela inicial para voltar ao mapa.
 
-## Perfil do piloto
+## Abas
 
-Toque no painel do piloto para abrir o perfil, que tem três abas:
+A barra inferior tem quatro abas:
 
-- **Piloto:** nome, título, capacete, viseira, traje e tom de pele.
-- **Nave:** modelo (foguete, caça, cargueiro, disco, interceptor), pintura e cor do propulsor.
-- **Conquistas:** 18 objetivos com barra de progresso. Cada um libera itens.
+- **Mapa:** planetas e missões do dia. O painel do piloto leva ao Vestiário.
+- **Piloto (Vestiário):** o piloto de corpo inteiro. Use ◀ ▶ para trocar título, capacete, viseira, traje e tom de pele, e o botão para editar o nome.
+- **Hangar:** a nave na plataforma. Use ◀ ▶ para trocar modelo (foguete, caça, cargueiro, disco, interceptor), pintura e propulsor.
+- **Conquistas:** parede de medalhas por categoria (bronze, prata, ouro e níveis acima). Tocar numa medalha mostra o progresso e as recompensas.
 
-As conquistas medem o total de missões, os dias seguidos, os acertos de primeira, as fugas do Alien, os escapes do Desabamento e o nível em Numeris. O que foi conquistado fica guardado e não volta a travar.
+Itens bloqueados aparecem como prévia com cadeado e mostram o objetivo que falta. Os objetivos medem o total de missões, os dias seguidos, os acertos de primeira, as fugas do Alien, os escapes do Desabamento e o nível em Numeris. O que foi conquistado fica guardado e não volta a travar.
 
 ## Configurações e backup
 
