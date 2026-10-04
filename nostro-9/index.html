@@ -351,7 +351,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 
 <script>
 /* atualização automática: compara com version.json e recarrega quando sai versão nova */
-const APP_V='20261004111004';
+const APP_V='20261004111652';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     if(v&&v!==APP_V&&sessionStorage.getItem('upd')!==v){sessionStorage.setItem('upd',v);location.replace(location.pathname+'?v='+v+H0)}}catch(e){}}
@@ -433,12 +433,13 @@ const WD=['D','S','T','Q','Q','S','S'];
 function renderMenu(){
   const done=doneToday(),n=countReq(done),all=n>=MODES.length,alienDone=done.includes('desafio');
   const nx=MODES.find(m=>!done.includes(m)); // próxima missão: destacada
+  if(stats.prog)done.forEach(m=>{if(stats.prog[m]){delete stats.prog[m];save()}}); // feita não guarda andamento
   document.querySelectorAll('[data-check]').forEach(el=>{
     const m=el.dataset.check,ok=done.includes(m);
     const pr=getProg(m),isN=m===nx&&!pr;
-    el.innerHTML=pr?'Continuar':ok?CHECK+(m==='desafio'?'Escapou':'Feita'):isN?'Próxima':(m==='desafio'?'':'A fazer');
+    el.innerHTML=pr?'Continuar':ok?CHECK+'Feito':isN?'Próxima':(m==='desafio'?'':'A fazer');
     el.classList.toggle('ok',ok&&!pr);el.classList.toggle('go',!!pr);el.classList.toggle('nx',isN);
-    el.closest('button').classList.toggle('done',ok&&!pr);el.closest('button').classList.toggle('next',m===nx);
+    el.closest('button').classList.toggle('done',ok);el.closest('button').classList.toggle('next',m===nx);
   });
   document.querySelectorAll('[data-segs]').forEach(el=>{
     const m=el.dataset.segs,pr=getProg(m),ok=done.includes(m);
@@ -526,8 +527,9 @@ function setMsg(sel,t,cls=''){const m=$(sel);m.textContent=t;m.className='msg '+
 
 /* ---------- progresso salvo de cada missão ---------- */
 const TOTALS={partilha:5,grupos:5,hangar:4,desafio:10};
-const getProg=m=>(stats.prog||{})[m];
-function saveProg(m,o){stats.prog=stats.prog||{};stats.prog[m]=o;save()}
+/* missão já feita hoje vira jogo livre: não guarda nem retoma progresso */
+const getProg=m=>doneToday().includes(m)?undefined:(stats.prog||{})[m];
+function saveProg(m,o){if(doneToday().includes(m))return;stats.prog=stats.prog||{};stats.prog[m]=o;save()}
 function clearProg(m){if(stats.prog&&stats.prog[m]){delete stats.prog[m];save()}}
 function segs(el,i,total,cls=''){
   el.className='segs'+(el.classList.contains('mini')?' mini':'')+(cls?' '+cls:'');

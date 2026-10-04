@@ -246,7 +246,16 @@ button{cursor:pointer;touch-action:manipulation}
 .task.next .go2 .spr{animation:nudge .8s steps(2) infinite}
 @keyframes nudge{50%{transform:translateX(4px)}}
 .card.done{background:#10241a}
-.card.done .card-h .icon,.card.done .card-h .tag,.card.done .desc,.card.done .extra{opacity:.55}
+.card.done .card-h .icon,.card.done .card-h .tag,.card.done .extra{opacity:.55}
+/* cartão compacto do jogo no planeta */
+.pc-p{display:flex;align-items:center;gap:12px;margin-top:16px}
+.pc-p .segs{flex:1}
+.pc-p em{font-style:normal;font-family:var(--px);font-size:10px;color:var(--amber)}
+.pc-p em.all{color:var(--green)}
+.pc-f{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:16px}
+.pc-f .extra{margin:0;font-size:19px;line-height:1.1;min-width:0}
+.pc-f .extra small{display:block;font-family:var(--px);font-size:7px;margin-bottom:5px;opacity:.8}
+.btn.sm{flex:none;width:auto;margin:0;padding:12px 14px;font-size:10px;gap:8px}
 .card.done .card-h h2{color:var(--dim)}
 .card.done .ok-tag{display:inline-block;margin-left:8px;padding:4px 5px;font-size:7px;color:#062b12;background:var(--green);vertical-align:2px;text-decoration:none}
 .task:active{background:var(--panel2)}
@@ -567,7 +576,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 
 <script>
 /* atualização automática: compara com version.json e recarrega quando sai versão nova */
-const APP_V='20261004111004';
+const APP_V='20261004111652';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     if(v&&v!==APP_V&&sessionStorage.getItem('upd')!==v){sessionStorage.setItem('upd',v);location.replace(location.pathname+'?v='+v+H0)}}catch(e){}}
@@ -995,11 +1004,9 @@ function openPlanet(pid){
       h+=`<article class="card px${all?' done':''}">
         <div class="card-h"><div class="icon">${sprite(a.icon,3)}</div>
           <div><h2>${a.name.toUpperCase()}${pr.played?'':'<span class="new">NOVA</span>'}${all?'<span class="ok-tag">FEITO HOJE</span>':''}</h2><div class="tag">${a.tag}</div></div></div>
-        <p class="desc">${a.desc}</p>
-        <div class="prog"><div class="prog-top"><span class="label">Missões de hoje</span><em class="${all?'all':''}">${pr.done} / ${pr.total}</em></div>
-          <div class="segs">${segs}</div>
-          ${pr.extra?`<div class="extra${pr.extra.ok?' ok':''}"><span class="dot"></span>${pr.extra.label}${pr.extra.ok?' — feito':' — opcional'}</div>`:''}</div>
-        <button class="btn${all?' alt':''}" data-go="${a.id}">${all?'JOGAR DE NOVO':'DECOLAR'}${sprite('go',3)}</button>
+        <div class="pc-p"><div class="segs">${segs}</div><em class="${all?'all':''}">${pr.done}/${pr.total}</em></div>
+        <div class="pc-f">${pr.extra?`<span class="extra${pr.extra.ok?' ok':''}"><span class="dot"></span><span><small>EXTRA${pr.extra.ok?' · FEITO':''}</small>${pr.extra.label}</span></span>`:'<span></span>'}
+          <button class="btn sm${all?' alt':''}" data-go="${a.id}">${all?'DE NOVO':'DECOLAR'}${sprite('go',2)}</button></div>
       </article>`;
     });
     h+=`<div class="slot"><b>SLOT VAZIO</b>Nova missão em breve</div>`;
