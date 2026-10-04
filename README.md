@@ -46,6 +46,10 @@ Itens bloqueados aparecem como prévia com cadeado e mostram o objetivo que falt
 
 Os três apps usam o mesmo sintetizador (`mkSYN`: notas com envelope, deslize de tom, vibrato e ruído filtrado). Cada contexto tem seu som: abas com notas diferentes, sopro ao abrir planeta, motor na decolagem, peças equipadas e bloqueadas, medalhas, dados exportados, área dos pais; nos jogos, bateria com tom subindo conforme a sala enche, equipes em acordes, esteira do hangar, raio contra o Alien, pedras com tom pelo valor do símbolo, desmoronar ao apagar, papel na tábua e contagem regressiva. Acertos seguidos sobem de tom (combo).
 
+Os sons usam o modo "ambiente" do iOS: misturam com a música ou o podcast que estiver tocando, sem interromper. Por regra do iOS, nesse modo a chave de silencioso do iPhone também silencia o app.
+
+Cada toque em botão gera uma vibração leve (iPhone com iOS 18 ou mais recente, por um interruptor nativo escondido; Android pelo `navigator.vibrate`).
+
 ## Arte 16-bit
 
 Todo desenho usa a mesma grade: cada pixel de arte ocupa 2px na tela. Os sprites continuam escritos em linhas de texto (`SPR`), e o `spriteRows(rows, s, cores)` amplia a arte com Scale2x/Scale3x até a grade de 2px (`s` 4 → 2x, `s` 6 → 3x), aplica luz de cima-esquerda, sombra embaixo-direita, faixas de volume com pontilhado e contorno colorido. Use sempre `s` par (2, 4, 6, 8). Os planetas são gerados direto na resolução final, com rampa de 7 tons.
