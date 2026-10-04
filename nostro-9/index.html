@@ -394,7 +394,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 
 <script>
 /* atualização automática: compara com version.json e recarrega quando sai versão nova */
-const APP_V='20261004172143';
+const APP_V='20261004173438';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     if(v&&v!==APP_V&&sessionStorage.getItem('upd')!==v){sessionStorage.setItem('upd',v);location.replace(location.pathname+'?v='+v+H0)}}catch(e){}}
@@ -418,6 +418,9 @@ try{if(navigator.audioSession)navigator.audioSession.type='ambient'}catch(e){}
     const l=document.createElement('label');l.setAttribute('data-hap','');l.setAttribute('aria-hidden','true');
     const i=document.createElement('input');i.type='checkbox';i.setAttribute('switch','');i.tabIndex=-1;
     i.addEventListener('click',e=>e.stopPropagation());l.append(i);
+    // o label "rouba" a ação nativa do elemento: refaz a navegação do link e o envio do formulário
+    l.addEventListener('click',e=>{if(e.target!==l)return;setTimeout(()=>{if(e.defaultPrevented)return;
+      if(el.tagName==='A'&&el.href)location.href=el.href;else if(el.type==='submit'&&el.form)el.form.requestSubmit(el)},0)});
     if(getComputedStyle(el).position==='static')el.style.position='relative';
     el.append(l)}
   function scan(root){if(root.nodeType!==1)return;if(root.matches(SEL))arm(root);root.querySelectorAll(SEL).forEach(arm)}
@@ -675,9 +678,9 @@ function navAvatar(k,s){try{const a=JSON.parse(localStorage.getItem('navemae-ava
 
 
 /* ---------- navegação ---------- */
-function show(id){if(id!=='fim')CEL.stop();if(id==='menu')renderMenu();document.querySelectorAll('#app>.screen').forEach(s=>s.hidden=s.id!==id);window.scrollTo(0,0)}
+function show(id){if(id==='menu'&&DL){DL=false;document.querySelectorAll('[data-back].back').forEach(b=>b.textContent='< Ponte')}if(id!=='fim')CEL.stop();if(id==='menu')renderMenu();document.querySelectorAll('#app>.screen').forEach(s=>s.hidden=s.id!==id);window.scrollTo(0,0)}
 document.addEventListener('click',e=>{
-  if(e.target.closest('[data-back]')){click();stopDesafio();show('menu')}
+  if(e.target.closest('[data-back]')){click();stopDesafio();if(DL){backHome();return}show('menu')}
   const go=e.target.closest('[data-go]');
   if(go){click();START[go.dataset.go]()}
 });
@@ -996,7 +999,17 @@ document.addEventListener('visibilitychange',()=>{D.prev=performance.now()});
 const START={partilha:pStart,grupos:gStart,hangar:hStart,desafio:dStart};
 renderMenu();
 /* atalho vindo da Nave-Mãe: #m=partilha abre a missão direto */
-function deepLink(){const m=(location.hash.match(/m=(\w+)/)||[])[1];if(m&&START[m]){history.replaceState(null,'',location.pathname);START[m]()}}
+/* de onde veio (aba Missões ou planeta): o "< Nave-Mãe" volta para lá; entrando direto numa missão pela aba Missões,
+   o voltar da missão também volta para a aba Missões */
+const RETK='ret:'+location.pathname,RP=(location.hash.match(/r=([\w.]+)/)||[])[1];
+if(RP)try{sessionStorage.setItem(RETK,RP)}catch(e){}
+const RETV=RP||(()=>{try{return sessionStorage.getItem(RETK)}catch(e){return null}})()||'';
+const RET='../'+(RETV==='tasks'?'#v=tasks':RETV.startsWith('p.')?'#p='+RETV.slice(2):'');
+var DL=false; // (var: show() usa antes desta linha) entrou direto numa missão pela aba Missões
+function backHome(){location.href=RET}
+document.querySelectorAll('a.back[href="../"]').forEach(a=>a.href=RET);
+function deepLink(){const m=(location.hash.match(/m=(\w+)/)||[])[1];if(m&&START[m]){history.replaceState(null,'',location.pathname);
+  DL=RETV==='tasks';document.querySelectorAll('[data-back]').forEach(b=>{if(b.classList.contains('back'))b.textContent=DL?'< Missões':'< Ponte'});START[m]()}}
 deepLink();addEventListener('hashchange',deepLink);
 </script>
 </body>
