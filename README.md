@@ -48,7 +48,7 @@ Os três apps usam o mesmo sintetizador (`mkSYN`: notas com envelope, deslize de
 
 Os sons usam o modo "ambiente" do iOS: misturam com a música ou o podcast que estiver tocando, sem interromper. Por regra do iOS, nesse modo a chave de silencioso do iPhone também silencia o app.
 
-Cada toque em botão gera uma vibração leve (iPhone com iOS 18 ou mais recente, por um interruptor nativo escondido; Android pelo `navigator.vibrate`).
+Cada toque em botão gera uma vibração leve. No iPhone (iOS 18 ou mais recente) o Safari não tem API de vibração: cada botão recebe por dentro um `<label>` invisível que cobre o botão e aciona um `<input type=checkbox switch>` escondido, então o próprio toque do dedo cai no interruptor nativo, que vibra; o clique continua chegando ao botão. Um `MutationObserver` arma os botões criados depois. Precisa de Ajustes › Sons e Tato › Tato do Sistema ligado. No Android usa `navigator.vibrate`.
 
 ## Arte 16-bit
 
