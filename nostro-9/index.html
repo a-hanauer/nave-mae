@@ -302,7 +302,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 
 <!-- MENU -->
 <section class="screen" id="menu">
-  <div class="bar"><a class="back pbtn" href="../" style="text-decoration:none;display:inline-block">&lt; Nave-Mãe</a></div>
+  <div class="bar"><button class="back pbtn" data-home>&lt; Nave-Mãe</button></div>
   <header class="brand">
     <div class="logo px" id="logo" aria-label="Estação Nostro-9">N9</div>
     <div class="t">
@@ -394,7 +394,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 
 <script>
 /* atualização automática: compara com version.json e recarrega quando sai versão nova */
-const APP_V='20261004173652';
+const APP_V='20261004174004';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     if(v&&v!==APP_V&&sessionStorage.getItem('upd')!==v){sessionStorage.setItem('upd',v);location.replace(location.pathname+'?v='+v+H0)}}catch(e){}}
@@ -1011,7 +1011,8 @@ const RETV=RP||(()=>{try{return sessionStorage.getItem(RETK)}catch(e){return nul
 const RET='../'+(RETV==='tasks'?'#v=tasks':RETV.startsWith('p.')?'#p='+RETV.slice(2):'');
 var DL=false; // (var: show() usa antes desta linha) entrou direto numa missão pela aba Missões
 function backHome(){location.href=RET}
-document.querySelectorAll('a.back[href="../"]').forEach(a=>a.href=RET);
+/* "< Nave-Mãe" é um botão (link com a camada de vibração não navegava no iPhone) */
+document.querySelectorAll('[data-home]').forEach(b=>b.addEventListener('click',()=>backHome()));
 function deepLink(){const m=(location.hash.match(/m=(\w+)/)||[])[1];if(m&&START[m]){history.replaceState(null,'',location.pathname);
   DL=RETV==='tasks';document.querySelectorAll('[data-back]').forEach(b=>{if(b.classList.contains('back'))b.textContent=DL?'< Missões':'< Ponte'});START[m]()}}
 deepLink();addEventListener('hashchange',deepLink);
