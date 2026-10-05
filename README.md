@@ -28,7 +28,12 @@ Cada app tem um botão "< Nave-Mãe" na tela inicial que volta para a aba Missõ
 
 A barra inferior tem quatro abas:
 
-- **Mapa:** planetas e missões do dia. O painel do piloto leva ao Hangar. É a única tela com o cabeçalho NAVE-MÃE e a engrenagem das configurações; nas outras, o topo é o título da seção ou o botão de voltar.
+- **Cockpit:** a interface é o cockpit de uma nave industrial (estilo Nostromo, casco bege) e o conteúdo é a vista pelo para-brisa.
+  - **Painel de cima** (fixo, abaixo da Dynamic Island): luzes piscando, uma tela CRT verde com o nome da tela atual e o número dela (missões feitas, energia, medalhas), a tecla de configurações no mapa e a tecla ◂ MAPA no planeta.
+  - **Para-brisa:** colunas laterais e cantos em degrau emoldurando o conteúdo.
+  - **Console de baixo:** cada aba é uma tecla embutida com telinha; a tela atual acende a telinha e o LED âmbar. Grade de ventilação na faixa da barra de início.
+  - Configurações, avisos, a barra de LIBERAR e o terminal do mapa são monitores com moldura bege e parafusos.
+- **Mapa:** planetas e missões do dia. O painel do piloto leva ao Hangar.
 - **Missões:** lista do que falta fazer hoje em todos os apps, agrupada por jogo. As obrigatórias aparecem primeiro, depois os extras, e as feitas ficam riscadas no fim. Tocar numa missão abre o jogo já dentro dela (link `app/#m=missao`). Um selo na aba mostra quantas faltam; com tudo feito ele vira um check verde. Cada jogo abre e fecha tocando no cabeçalho: começa aberto quando falta missão e fechado quando está completo (fechado, mostra só o progresso).
   Quando todas as missões do dia estão feitas, a aba mostra a nave em velocidade de cruzeiro, uma frase do dia, a sequência, o total de missões e quanto falta para as novas. Os desafios extras que faltam ficam em "Treino extra" e as missões feitas ficam recolhidas. Na primeira vez do dia toca uma musiquinha.
 - **Hangar:** uma página só, com a chave **PILOTO | NAVE** no topo. O título, a chave, o palco e as abas de categoria ficam fixos (abaixo da Dynamic Island) enquanto a vitrine rola.
@@ -36,11 +41,11 @@ A barra inferior tem quatro abas:
   - **Nave:** a nave na plataforma. Use ◀ ▶ para trocar modelo (foguete, caça, cargueiro, disco, interceptor), pintura e propulsor.
 - **Conquistas:** parede de medalhas por categoria (bronze, prata, ouro e níveis acima). Tocar numa medalha mostra o progresso e as recompensas no painel do topo; o cabeçalho (CONQUISTAS e a contagem) e o painel ficam fixos, abaixo da Dynamic Island, enquanto a parede rola.
 
-Os jogos em que a criança aparece usam o piloto e a nave como foram customizados (hoje, o Desabamento de Numeris). A Nave-Mãe grava os desenhos prontos em `localStorage['navemae-avatar']` (`pilot` em SVG na escala 2, `ship` e `flame` na escala 1; versão `v:3`) e o jogo amplia na escala que precisar. O piloto aparece a 2 px por pixel de arte; no Desabamento a câmara cresce para caber o piloto e o teto ainda ter espaço para descer.
+Os jogos em que a criança aparece usam o piloto e a nave como foram customizados (hoje, o Desabamento de Numeris). A Nave-Mãe grava os desenhos prontos em `localStorage['navemae-avatar']` (`pilot` em SVG na escala 2, `ship` e `flame` na escala 1; versão `v:3`) e o jogo amplia na escala que precisar. O piloto aparece a 2 px por pixel de arte; na tela de missão cumprida ele comemora com o punho erguido (`cheer`, só cores, sem equipamento; na derrota fica a pose normal); no Desabamento a câmara cresce para caber o piloto e o teto ainda ter espaço para descer.
 
 Missão feita aparece sempre como **FEITO**. Jogar de novo uma missão feita no dia é jogo livre: começa do zero, não guarda andamento e a missão continua feita, mesmo se a criança sair no meio.
 
-**Peças com energia (no próprio Hangar):** PILOTO e NAVE mostram abas de categoria fixas junto do palco (capacete, viseira, traje, pele, emblema, equipamento, título; modelo, pintura, propulsor, adesivo, rastro) com ícone, a contagem de peças e um ponto âmbar quando dá para liberar algo ali. No palco, uma linha estilo painel de nave liga o nome da categoria (e da peça atual) à parte do piloto ou da nave que muda. Cada categoria é uma vitrine: EM USO, COMPRADO (toque para usar) ou o preço em energia (toque para ver a prévia no palco e LIBERAR na barra de baixo; ao liberar, a peça já entra em uso). No fim da vitrine, "PRÓXIMO" leva à categoria seguinte.
+**Peças com energia (no próprio Hangar):** PILOTO e NAVE mostram abas de categoria fixas junto do palco (capacete, viseira, traje, pele, emblema, equipamento, título; modelo, pintura, propulsor, adesivo, rastro) com ícone, a contagem de peças e um ponto âmbar quando dá para liberar algo ali. No palco, uma linha estilo painel de nave liga o nome da categoria (e da peça atual) à parte do piloto ou da nave que muda. Cada categoria é uma vitrine: EM USO, DISPONÍVEL (toque para usar; card com cor cheia) ou, se ainda não foi liberada, card rebaixado com miniatura apagada, cadeado e o preço em energia (toque para ver a prévia no palco e LIBERAR na barra de baixo; ao liberar, a peça já entra em uso). No fim da vitrine, "PRÓXIMO" leva à categoria seguinte.
 
 - Energia por dia, por jogo: missão do dia +10, acerto de primeira +1 (até 10 por missão), turno completo +10, desafio +8; a partir do 3º dia seguido, +5 por dia. Repetir missão já feita não rende (só os acertos, com o limite).
 - O cálculo sai do histórico dos jogos e fica guardado dia a dia em `st.eLed` (nunca diminui, mesmo quando o histórico antigo é apagado). Gasto em `st.spent`. Bônus de inauguração: 60.
