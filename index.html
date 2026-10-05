@@ -193,12 +193,13 @@ button{cursor:pointer;touch-action:manipulation}
 /* para-brisa: colunas de metal dos lados e cantos chanfrados em degrau, como a moldura de uma cabine */
 #wind{position:fixed;left:0;right:0;top:var(--hud);bottom:var(--con);z-index:29;pointer-events:none;
   box-shadow:inset 7px 0 0 0 var(--h2),inset 10px 0 0 0 var(--h5),inset -7px 0 0 0 var(--h2),inset -10px 0 0 0 var(--h5)}
-#wind i{position:absolute;width:66px;height:36px;--m:linear-gradient(var(--h2),var(--h2));--d:linear-gradient(var(--h5),var(--h5));
+.cn{position:absolute;z-index:3;pointer-events:none;width:66px;height:36px;--m:linear-gradient(var(--h2),var(--h2));--d:linear-gradient(var(--h5),var(--h5));
   background:var(--m) 0 0/58px 6px no-repeat,var(--m) 0 6px/46px 6px no-repeat,var(--m) 0 12px/34px 6px no-repeat,var(--m) 0 18px/22px 6px no-repeat,var(--m) 0 24px/7px 6px no-repeat,
     var(--d) 0 0/61px 9px no-repeat,var(--d) 0 6px/49px 9px no-repeat,var(--d) 0 12px/37px 9px no-repeat,var(--d) 0 18px/25px 9px no-repeat,var(--d) 0 24px/10px 9px no-repeat}
-#wind .tl{left:0;top:4px}#wind .tr{right:0;top:4px;transform:scaleX(-1)}
-#wind .bl{left:0;bottom:0;transform:scaleY(-1)}#wind .br{right:0;bottom:0;transform:scale(-1,-1)}
-#wind .tl::after,#wind .tr::after{content:"";position:absolute;left:12px;top:5px;width:4px;height:4px;background:var(--h1)} /* rebite */
+.cn.tl{left:0;top:0}.cn.tr{right:0;top:0;transform:scaleX(-1)}
+.cn.bl{left:0;bottom:0;transform:scaleY(-1)}.cn.br{right:0;bottom:0;transform:scale(-1,-1)}
+#wind .tl{top:4px}#wind .tr{top:4px}
+.cn.tl::after,.cn.tr::after{content:"";position:absolute;left:12px;top:5px;width:4px;height:4px;background:var(--h1)} /* rebite */
 /* console: teclas embutidas com telinha, LED âmbar na tela atual, faixas de alerta nas pontas e grade de ventilação embaixo */
 .tabbar{position:fixed;left:0;right:0;bottom:0;z-index:30;display:flex;justify-content:center;height:var(--con);padding:0 8px;touch-action:none;-webkit-user-select:none;user-select:none;
   background:repeating-linear-gradient(90deg,transparent 0 118px,var(--h4) 118px 120px),var(--h2);
@@ -571,6 +572,67 @@ button.pa-row:active{background:var(--card2)}
 .pa-btn{height:44px;border-radius:10px;background:var(--card2);font-size:16px;font-weight:600;color:var(--t1)}
 .pa-btn.pri{background:var(--acc)}
 .pa-btn.del{background:var(--bad)}
+/* ---------- interior do cockpit ----------
+   janela (estrelas, para-brisa): mapa, planeta e o palco do Hangar.
+   interior (metal + monitores): painel do piloto no mapa, Missões, Conquistas, Configurações e os controles do Hangar. */
+:root{--dash:0px;--plate:repeating-linear-gradient(90deg,transparent 0 118px,var(--h4) 118px 120px),var(--h3);
+  --mon:0 0 0 2px #000,0 0 0 8px var(--h2),0 0 0 10px var(--h5);--scr2:#0b0c1f}
+#hull{position:fixed;inset:0;z-index:0;background:var(--plate);display:none}
+body[data-v="tasks"] #hull,body[data-v="medals"] #hull,body[data-v="crew"] #hull{display:block}
+body:not([data-v="home"]):not([data-v="planet"]) #wind{display:none}
+body[data-v="home"] #wind{bottom:calc(var(--con) + var(--dash))}
+body[data-v="home"] #app{padding-bottom:calc(var(--con) + var(--dash) + 24px)!important}
+/* monitor: moldura de metal com parafusos e tela escura */
+.mon,body[data-v="tasks"] .tapp,.mdetail,.mrow,.shop-it,.dash .pilot{background:repeating-linear-gradient(0deg,rgba(255,255,255,.025) 0 2px,transparent 2px 4px),var(--scr2);box-shadow:var(--mon);filter:none}
+.tapp::after,.mdetail::after,.mrow::after,.shop-it::after{content:"";position:absolute;inset:-6px;pointer-events:none;--s:linear-gradient(var(--h1),var(--h1));
+  background:var(--s) 0 0/3px 3px no-repeat,var(--s) 100% 0/3px 3px no-repeat,var(--s) 0 100%/3px 3px no-repeat,var(--s) 100% 100%/3px 3px no-repeat}
+.tapp{margin-bottom:28px}
+.mrow{position:relative;padding:12px 12px 14px;margin:0 2px 26px}
+.mrow .label{color:#5dff83;text-shadow:0 0 6px rgba(57,227,95,.4)}
+.mtop{background:var(--plate);margin-bottom:26px}
+.mdetail{margin:0 2px}
+/* painel do piloto no mapa: fixo logo acima do console, como os instrumentos à frente do assento */
+.dash{position:fixed;left:0;right:0;bottom:var(--con);z-index:30;display:grid;gap:14px;padding:16px max(18px,calc(50% - 202px)) 14px;
+  background:var(--plate);box-shadow:0 -4px 0 0 var(--h5),inset 0 2px 0 0 var(--h1)}
+.dash .pilot{margin:0;padding:8px 12px}
+.dash .pilot:active{transform:translate(2px,2px)}
+.dash .terminal{margin:0 2px;min-height:0;padding:9px 12px;font-size:19px;line-height:1.1;min-height:52px}
+.dash .terminal,.terminal{box-shadow:var(--mon)}
+/* configurações: o menu fica num monitor sobre o metal do cockpit */
+#cfg.overlay{background:var(--plate)}
+/* Hangar: o palco é a janela (para-brisa com cantos chanfrados); o resto são controles do cockpit */
+.ctop{background:var(--plate)}
+.stage{box-shadow:0 0 0 4px var(--h5),0 0 0 9px var(--h2),0 0 0 12px var(--h5);filter:none;margin:0 6px}
+.stage .cn{transform-origin:center}
+.stage .cn.tl{transform:scale(.7);transform-origin:0 0}.stage .cn.tr{transform:scale(-.7,.7);transform-origin:100% 0}
+.stage .cn.bl{transform:scale(.7,-.7);transform-origin:0 100%}.stage .cn.br{transform:scale(-.7,-.7);transform-origin:100% 100%}
+.stage .ptag{left:22px}
+/* teclas grandes PILOTO | NAVE: metal em relevo, LED aceso na escolhida */
+.seg{gap:14px}
+.seg button.px{background:var(--h2);color:#a9b1c4;filter:none;box-shadow:inset 3px 3px 0 0 var(--h1),inset -3px -3px 0 0 var(--h4),0 0 0 3px var(--h5),3px 3px 0 3px #000}
+.seg button.px::before{content:"";width:8px;height:8px;background:#262a33;box-shadow:0 0 0 2px var(--h5)}
+.seg button.px.on{color:var(--amber);text-shadow:0 0 6px rgba(255,179,0,.5);background:var(--h3);box-shadow:inset 3px 3px 0 0 var(--h5),inset -3px -3px 0 0 var(--h2),0 0 0 3px var(--h5)}
+.seg button.px.on::before{background:var(--amber);box-shadow:0 0 0 2px var(--h5),0 0 8px 1px rgba(255,179,0,.8)}
+/* abas de categoria: teclas com telinha, como as do console */
+.cat{background:var(--scr);color:#8e97ab;box-shadow:inset 0 2px 0 0 #000,0 0 0 2px var(--h5),0 0 0 4px var(--h3),0 0 0 6px var(--h5)}
+.cats{gap:16px;padding:10px 22px 14px}
+.cat .ci{opacity:.45}
+.cat.on{background:#0d2414;color:var(--amber);text-shadow:0 0 6px rgba(255,179,0,.5);box-shadow:inset 0 2px 0 0 #000,inset 0 0 14px 0 rgba(57,227,95,.4),0 0 0 2px var(--h5),0 0 0 4px var(--amber),0 0 0 6px var(--h5)}
+.cat.on .ci{opacity:1}.cat.on small{color:#c9a24a}
+.cat.on .cdot{background:var(--amber);box-shadow:0 0 0 2px #0d2414}
+/* inventário: cada peça é um monitor; em uso = moldura âmbar, prévia = ciano */
+.shop-g{gap:24px 22px;padding:0 4px}
+.shop-it.eq,.shop-it.sel,.shop-it.lk.sel{box-shadow:var(--mon)}
+.shop-it.eq{outline:3px solid var(--amber);outline-offset:-3px}
+.shop-it.sel{outline:3px solid var(--cyan);outline-offset:-3px}
+.shop-it.lk{background:#07081a;box-shadow:var(--mon)}
+.shop-it .th{background:#05060f;box-shadow:inset 0 0 0 2px #1c1f3a}
+/* placa com o nome do piloto: chapa de metal parafusada */
+.plate{background:var(--h2);box-shadow:inset 2px 2px 0 0 var(--h1),inset -2px -2px 0 0 var(--h4),0 0 0 3px var(--h5);margin:16px 6px 26px}
+.plate b{color:#e6ebf5}
+.small.px,.nextcat.px{background:var(--h3);color:var(--amber);filter:none;box-shadow:inset 2px 2px 0 0 var(--h1),inset -2px -2px 0 0 var(--h5),0 0 0 3px var(--h5)}
+.small.px:active,.nextcat.px:active{box-shadow:inset 2px 2px 0 0 var(--h5),inset -2px -2px 0 0 var(--h1),0 0 0 3px var(--h5)}
+#home .sec{margin-top:6px;padding:0 26px}
 </style>
 <script>
 /* sem zoom: bloqueia pinça e dois toques no app inteiro */
@@ -579,8 +641,9 @@ document.addEventListener('touchmove',e=>{if(e.touches.length>1)e.preventDefault
 document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 </script>
 </head>
-<body>
+<body data-v="home">
 <canvas id="stars"></canvas>
+<div id="hull"></div>
 <canvas id="warp" hidden></canvas>
 
 <div id="topCover" hidden></div>
@@ -589,7 +652,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
   <div class="hud-scr"><b id="hudT">NAVE-MÃE</b><span id="hudS"></span></div>
   <div class="hud-r"><span class="leds r" id="ledR"><i></i><i></i><i></i><i></i></span><button class="key" id="cfgBtn" aria-label="Configurações"></button></div>
 </div></div>
-<div id="wind"><i class="tl"></i><i class="tr"></i><i class="bl"></i><i class="br"></i></div>
+<div id="wind"><i class="cn tl"></i><i class="cn tr"></i><i class="cn bl"></i><i class="cn br"></i></div>
 <main id="app">
   <header class="top" id="topHdr">
       <div class="logo" aria-label="Nave-Mãe">
@@ -601,6 +664,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
   <!-- MAPA -->
   <section id="home">
 
+    <div class="dash" id="dash">
     <button class="pilot px" id="pilotBtn" aria-label="Abrir perfil">
       <span class="pport" id="pPort"></span>
       <span class="pinfo"><span class="ptitle" id="pTitle"></span><span class="name" id="pilotName"></span><span class="pedit" style="display:block;font-family:var(--px);font-size:7px;color:var(--dim);margin-top:8px">HANGAR ▸</span></span>
@@ -608,6 +672,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
     </button>
 
     <div class="terminal"><span id="term"></span><span class="cursor"></span></div>
+    </div>
 
     <div class="sec"><span class="label">Mapa estelar</span></div>
     <div class="map" id="map"></div>
@@ -625,7 +690,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
   <section id="crew" hidden>
     <div class="ctop">    <div class="vtitle"><h2>HANGAR</h2><span class="hen" id="hEn"></span></div>
     <div class="seg" id="seg"><button class="px" data-s="vest"><span data-ico="t_pil"></span>PILOTO</button><button class="px" data-s="hang"><span data-ico="t_hng"></span>NAVE</button></div>
-    <div class="stage st-vest" id="vStage">
+    <div class="stage st-vest" id="vStage"><i class="cn tl"></i><i class="cn tr"></i><i class="cn bl"></i><i class="cn br"></i>
       <div class="glow"></div><div class="lamp"></div>
       <div class="lockers l" data-lk="2"></div><div class="lockers r" data-lk="2"></div>
       <div class="floor"></div>
@@ -633,7 +698,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
       <span class="ptag" id="vTag" hidden><i class="lk"></i>PRÉVIA</span>
       <div class="callout" id="vCall"></div>
     </div>
-    <div class="stage st-hang" id="hStage" hidden>
+    <div class="stage st-hang" id="hStage" hidden><i class="cn tl"></i><i class="cn tr"></i><i class="cn bl"></i><i class="cn br"></i>
       <div class="win" id="hWin"></div>
       <div class="beam l"></div><div class="beam r"></div><i class="lite l"></i><i class="lite r"></i>
       <div class="floor"></div>
@@ -754,7 +819,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 
 <script>
 /* atualização automática: compara com version.json e recarrega quando sai versão nova */
-const APP_V='20261005101100';
+const APP_V='20261005102412';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     if(v&&v!==APP_V&&sessionStorage.getItem('upd')!==v){sessionStorage.setItem('upd',v);location.replace(location.pathname+'?v='+v+H0)}}catch(e){}}
@@ -1402,7 +1467,7 @@ function openPlanet(pid){navT=performance.now();
   }
   $('#missions').innerHTML=h;
   $('#missions').querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>takeoff(APPS.find(a=>a.id===b.dataset.go),'#r=p.'+pid));
-  VIEWS.forEach(x=>$('#'+x).hidden=x!=='planet');view='planet';$('#topHdr').hidden=true;window.scrollTo(0,0);hud();
+  VIEWS.forEach(x=>$('#'+x).hidden=x!=='planet');view='planet';$('#topHdr').hidden=true;window.scrollTo(0,0);hud();document.body.dataset.v='planet';
 }
 $('#back').onclick=()=>{SND.back();go('home')};
 
@@ -1457,12 +1522,13 @@ function go(v){navT=performance.now();if(v==='shop')v='vest';if(v==='vest'||v===
   $('#shopBar').hidden=true;
   if(v==='crew'){$('#vest').hidden=$('#vStage').hidden=sub!=='vest';$('#hang').hidden=$('#hStage').hidden=sub!=='hang';
     document.querySelectorAll('#seg [data-s]').forEach(b=>b.classList.toggle('on',b.dataset.s===sub));renderCloset()}
-  window.scrollTo(0,0);coverTop();hud()}
+  window.scrollTo(0,0);coverTop();hud();document.body.dataset.v=v}
 /* painel de cima: título e número da tela atual; voltar no planeta e configurações no mapa */
 function hud(){const vt=$('#'+view)&&$('#'+view).querySelector('.vtitle');
   $('#hudT').textContent=vt?vt.querySelector('h2').textContent:view==='planet'?'EM ÓRBITA':'NAVE-MÃE';
   $('#hudS').innerHTML=vt?vt.querySelector('span').innerHTML:view==='home'?'':'';
   $('#back').hidden=view!=='planet';$('#ledL').hidden=view==='planet';$('#cfgBtn').hidden=view!=='home';$('#ledR').hidden=view==='home'}
+if(window.ResizeObserver)new ResizeObserver(()=>document.documentElement.style.setProperty('--dash',($('#dash').offsetHeight||0)+'px')).observe($('#dash'));
 document.querySelectorAll('.vtitle span').forEach(el=>new MutationObserver(()=>hud()).observe(el,{childList:true,subtree:true,characterData:true}));
 /* respiro do topo: quando o palco do hangar gruda, cobre o que passa por cima dele */
 function coverTop(){const s=null; // os blocos fixos agora têm fundo próprio
