@@ -63,7 +63,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;touch-
 .stage{position:relative;flex:1;min-height:0;display:grid;place-items:center;overflow:hidden}
 #rc{display:block;image-rendering:pixelated;image-rendering:crisp-edges;touch-action:none}
 /* caixa de diálogo estilo RPG */
-.dlg{position:absolute;left:12px;right:12px;bottom:calc(14px + var(--sab,var(--sab,env(safe-area-inset-bottom))));z-index:3;max-width:440px;margin:0 auto;padding:12px 14px 12px;background:#0b0720;
+.dlg{position:absolute;left:12px;right:12px;bottom:calc(182px + var(--sab,var(--sab,env(safe-area-inset-bottom))));z-index:3;max-width:440px;margin:0 auto;padding:12px 14px 12px;background:#0b0720;
   box-shadow:0 0 0 2px #000,0 0 0 5px var(--ink),0 0 0 7px #000;animation:dlgIn .18s steps(3)}
 @keyframes dlgIn{from{transform:translateY(12px);opacity:0}}
 .dlg h4{font-family:var(--px);font-size:10px;font-weight:400;line-height:1.5;color:var(--yel);margin-bottom:6px}
@@ -87,6 +87,18 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;touch-
 .abtn small{position:absolute;bottom:-26px;left:50%;transform:translateX(-50%);font-size:7px;color:var(--dim);white-space:nowrap;text-shadow:none}
 .abtn.hint{animation:pulse .9s steps(2) infinite}
 @keyframes pulse{50%{box-shadow:0 0 0 4px #000,0 6px 0 4px #000,0 0 26px 8px rgba(255,210,63,.75)}}
+/* controles fantasma: translúcidos por cima da sala; acendem quando tocados */
+.ghost{position:absolute;left:0;right:0;bottom:0;z-index:4;display:flex;align-items:flex-end;justify-content:space-between;pointer-events:none;
+  padding:0 calc(22px + env(safe-area-inset-right)) calc(18px + var(--sab,var(--sab,env(safe-area-inset-bottom)))) calc(16px + env(safe-area-inset-left))}
+.ghost>*{pointer-events:auto}
+.ghost .dp{grid-template-columns:repeat(3,52px);grid-template-rows:repeat(3,48px);gap:3px;opacity:.38;transition:opacity .12s steps(2)}
+.ghost .dp.on{opacity:.75}
+.ghost .dp button{background:rgba(42,29,85,.85);box-shadow:inset 3px 3px 0 0 rgba(122,106,200,.7),inset -3px -3px 0 0 rgba(18,10,42,.9),0 0 0 2px #000}
+.ghost .dp button.dn{background:#ff3df2;box-shadow:inset 3px 3px 0 0 #120a2a,0 0 0 2px #000;transform:translate(2px,2px)}
+.ghost .dp .c{background:rgba(22,14,51,.7);box-shadow:none}
+.ghost .abtn{width:78px;height:78px;font-size:20px;opacity:.42;margin-bottom:22px;transition:opacity .12s steps(2)}
+.ghost .abtn.dn{opacity:.85}
+.ghost .abtn.hint{opacity:.8}
 /* ---------- jogo: o piloto está na frente da máquina ----------
    em cima o letreiro iluminado, no meio o monitor CRT na moldura preta, embaixo o painel com manche e botões,
    e no pé a porta das fichas com o tempo restante. Tudo na cor do gabinete (--cab) e da luz dele (--mq). */
@@ -178,7 +190,11 @@ body.play[data-deco="hoquei"] .scr::after{box-shadow:inset 0 0 14px 2px rgba(0,0
 </div></div>
 
 <section id="room">
-  <div class="stage" id="stage"><canvas id="rc"></canvas><div class="dlg" id="dlg" hidden></div></div>
+  <div class="stage" id="stage"><canvas id="rc"></canvas><div class="dlg" id="dlg" hidden></div>
+    <div class="ghost">
+      <div class="dp" id="dp"><button class="u" data-d="up" aria-label="Cima"></button><button class="l" data-d="left" aria-label="Esquerda"></button><span class="c"></span><button class="r" data-d="right" aria-label="Direita"></button><button class="d" data-d="down" aria-label="Baixo"></button></div>
+      <button class="abtn" id="aBtn" aria-label="A">A</button>
+    </div></div>
 </section>
 
 <section id="play" hidden>
@@ -197,7 +213,7 @@ body.play[data-deco="hoquei"] .scr::after{box-shadow:inset 0 0 14px 2px rgba(0,0
 <script>
 /* atualização automática: compara com version.json e recarrega com ?v=<versão> no endereço (o iPhone não reaproveita a
    página guardada). Se mesmo com ?v=<versão> a página veio velha, não insiste (evita recarregar sem parar). */
-const APP_V='20261005113722';
+const APP_V='20261005114318';
 (function(){const H0=location.hash;
   async function check(){try{const r=await fetch('../version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     const q=new URLSearchParams(location.search).get('v');
@@ -620,7 +636,7 @@ function converse(id,who){const C=CONVERSAS[id];if(!C)return;A.npc=A.npc||{};con
   saveA();sayPages(C.nome,fill(txt).split('|'),who)}
 function talk(kind){
   if(kind==='exit'){dlg('<h4>SAÍDA</h4><p>Voltar para a nave?</p>',[{t:'VOLTAR',f:()=>{SND.door();$('#fade').classList.add('on');setTimeout(home,260)}},{t:'FICAR',alt:true}]);return}
-  if(kind==='intro'){dlg(`<h4>RECOMPENSA DO DIA!</h4><p>Missões completas: você ganhou ${MIN} min de fliperama. As máquinas acesas estão funcionando. Toque numa delas para ir até lá.</p>`);return}
+  if(kind==='intro'){dlg(`<h4>RECOMPENSA DO DIA!</h4><p>Missões completas: você ganhou ${MIN} min de fliperama. As máquinas acesas estão funcionando: ande até uma e aperte A.</p>`);return}
   if(kind==='locked'){dlg(MIN===0?'<h4>FLIPERAMA FECHADO</h4><p>Desligado na Área dos pais.</p>':'<h4>FLIPERAMA FECHADO</h4><p>As máquinas ligam quando as missões de hoje estiverem completas.</p>');return}
   if(kind==='out'){dlg(`<h4>FICHAS DE HOJE ACABARAM</h4><p>Amanhã tem mais ${MIN} min. Complete as missões para liberar.</p>`);return}}
 function interact(){if(dlgOpen){const b=dlgOpen;if(b.length){const f=b[0];closeDlg();f.f&&f.f()}else adv();return}
@@ -656,7 +672,7 @@ function drawRoom(t){const c=$('#rc'),x=c.getContext('2d');x.imageSmoothingEnabl
     else if(P.path.length&&canStep(P.path[0],P))tryMove(P.path.shift(),t);
     else if(P.path.length&&t-P.wait>700){const g=P.goal,last=P.path.reduce((p,d)=>[p[0]+DV[d][0],p[1]+DV[d][1]],[P.x,P.y]);P.path=bfs(P,last[0],last[1],true)||[];if(!P.path.length&&g){P.goal=null}}}
   NPC.forEach(n=>npcTick(n,t,dt));
-  cam.x=Math.max(0,Math.min(MW*T-VW,Math.round(P.px+T/2-VW/2)));cam.y=Math.max(0,Math.min(MH*T-VH,Math.round(P.py-VH/2+T)));
+  cam.x=Math.max(0,Math.min(MW*T-VW,Math.round(P.px+T/2-VW/2)));cam.y=Math.max(0,Math.min(MH*T-VH,Math.round(P.py-VH*.42+T)));
   x.drawImage(BG,-cam.x,-cam.y);
   {const k=Math.floor(t/400);for(let j=0;j<2;j++)for(let i=0;i<4;i++){const c=['#3a1a5a','#ff3df2','#2ad4ff','#5dff83','#ffd23f'][(i+j+k)%5];x.fillStyle=c;x.globalAlpha=.35;x.fillRect((7+i)*T+1-cam.x,(22+j)*T+1-cam.y,T-2,T-2)}x.globalAlpha=1} // pista de dança
   if(Math.floor(t/1700)%5===0){x.fillStyle='rgba(255,61,242,.12)';x.fillRect(-cam.x,6-cam.y,MW*T,3)}
@@ -686,35 +702,28 @@ function drawRoom(t){const c=$('#rc'),x=c.getContext('2d');x.imageSmoothingEnabl
     else{const img=SP[o.k];x.drawImage(img,X+(o.w*T-img.width)/2,Y-img.height)}
     if(near===o&&!dlgOpen)bubble(x,X+o.w*T/2-5,Y-({cab:44,claw:44,soda:44,snack:44,jukebox:44,pillar:54,luz:54,counter:52,hockey:44,dance:54,foto:56,plant:38,agua:40,placar:40}[o.k]||28)+(blink?0:-1))}
   if(near&&near.id&&!dlgOpen)bubble(x,Math.round(near.px+T/2-5-cam.x),Math.round(near.py-20-cam.y)+(blink?0:-1));
-}
+  $('#aBtn').classList.toggle('hint',(!!near||isMat(P.x,P.y)&&!P.mv)&&!dlgOpen)}
 function bubble(x,bx,by){x.fillStyle='#07060f';x.fillRect(bx-1,by-1,12,11);x.fillStyle='#f3eeff';x.fillRect(bx,by,10,9);x.fillRect(bx+4,by+9,2,2);
-  x.fillStyle='#ff3d2e';x.fillRect(bx+4,by+1,2,5);x.fillRect(bx+4,by+7,2,1)}
+  x.fillStyle='#ff3d2e';[[4,1,2,1],[3,2,1,2],[6,2,1,2],[3,4,4,1],[3,5,1,3],[6,5,1,3]].forEach(([a,b,w,h])=>x.fillRect(bx+a,by+b,w,h))}
 const NPCCLERK=[personFrame('down',0,Object.assign({},PC,{1:'#fff3a0',2:'#ffd23f',3:'#b38a10',5:'#24323c',6:'#0e161c',9:'#ff3df2',0:'#b020a8','=':'#5a0a58',7:'#f1c9a0',8:'#c98f64'}))];
 function loop(t){raf=requestAnimationFrame(loop);if(roomOn)drawRoom(t)}
 
-/* ---------- controles da sala: só toque ----------
-   tocar no chão anda até lá; segurar e arrastar faz o piloto seguir o dedo; tocar numa pessoa ou objeto vai até ela e conversa.
-   No computador continuam valendo as setas e Enter. */
-const keyHeld=new Set();
-function syncHeld(){held.clear();for(const d of keyHeld)held.add(d)}
-function clearDp(){keyHeld.clear();syncHeld()}
-let drag=null;
-function tileAt(e){const r=$('#rc').getBoundingClientRect(),ax=(e.clientX-r.left)/2+cam.x,ay=(e.clientY-r.top)/2+cam.y;return{ax,ay,tx:Math.floor(ax/T),ty:Math.floor(ay/T)}}
-$('#rc').addEventListener('pointermove',e=>{if(!drag||e.pointerId!==drag.id||dlgOpen)return;const{tx,ty}=tileAt(e);
-  if(Math.hypot(e.clientX-drag.x,e.clientY-drag.y)<14)return;drag.moved=true;
-  if((tx!==drag.tx||ty!==drag.ty)&&!solid(tx,ty)){drag.tx=tx;drag.ty=ty;walkTo(tx,ty)}});
-['pointerup','pointercancel'].forEach(k=>$('#rc').addEventListener(k,e=>{if(drag&&e.pointerId===drag.id)drag=null}));
-$('#rc').addEventListener('pointerdown',e=>{if(dlgOpen){if(!dlgOpen.length)adv();return}
-  const{ax,ay,tx,ty}=tileAt(e);drag={id:e.pointerId,x:e.clientX,y:e.clientY,tx,ty};try{$('#rc').setPointerCapture(e.pointerId)}catch(_){}
-  if(tx===P.x&&ty===P.y&&isMat(P.x,P.y)){talk('exit');return}
-  // tocou num jogador: vai até ele e conversa
-  const n=NPC.find(n=>Math.abs(n.px+T/2-ax)<9&&ay>n.py-6&&ay<n.py+T+1);
-  if(n){for(const[d,dx,dy]of[['up',0,1],['down',0,-1],['left',1,0],['right',-1,0]]){const fx=n.x+dx,fy=n.y+dy;if(!solid(fx,fy)&&!busy(fx,fy,P)||(fx===P.x&&fy===P.y)){walkTo(fx,fy,{face:d});return}}}
-  // tocou num objeto (inclusive na parte de cima do desenho): vai até a frente dele
-  let o=null;for(let k=0;k<3&&!o;k++)o=objAt(tx,ty+k);
-  if(o){const fx=Math.min(o.x+o.w-1,Math.max(o.x,tx)),fy=o.y+1;if(!solid(fx,fy)){walkTo(fx,fy,{face:'up'});return}}
-  if(!solid(tx,ty))walkTo(tx,ty)});
-$('#stage').addEventListener('pointerdown',e=>{if(e.target.closest('button')||e.target.id==='rc')return;if(dlgOpen&&!dlgOpen.length)adv()});
+/* ---------- controles da sala: direcional e A "fantasmas" por cima da sala ----------
+   o dedo pode deslizar entre as setas e apertar duas ao mesmo tempo (diagonal em escada). Tocar na sala não move nada;
+   na conversa, A ou toque na caixa de texto avançam. No computador: setas e Enter. */
+const keyHeld=new Set(),dpPtr=new Map();
+function dpDirs(el,cx,cy){const r=el.getBoundingClientRect(),dx=cx-(r.left+r.width/2),dy=cy-(r.top+r.height/2),m=Math.max(Math.abs(dx),Math.abs(dy));
+  if(m<12)return[];const ds=[],a=Math.abs(dx),b=Math.abs(dy);if(a>b*.45)ds.push(dx>0?'right':'left');if(b>a*.45)ds.push(dy>0?'down':'up');return ds}
+function syncHeld(){held.clear();for(const ds of dpPtr.values())ds.forEach(d=>held.add(d));for(const d of keyHeld)held.add(d);
+  document.querySelectorAll('#dp [data-d]').forEach(b=>b.classList.toggle('dn',held.has(b.dataset.d)));$('#dp').classList.toggle('on',dpPtr.size>0)}
+function clearDp(){dpPtr.clear();keyHeld.clear();syncHeld()}
+(function(){const el=$('#dp');
+  el.addEventListener('pointerdown',e=>{e.preventDefault();if(dlgOpen){if(!dlgOpen.length)adv();return}try{el.setPointerCapture(e.pointerId)}catch(_){}dpPtr.set(e.pointerId,dpDirs(el,e.clientX,e.clientY));syncHeld()});
+  el.addEventListener('pointermove',e=>{if(!dpPtr.has(e.pointerId))return;dpPtr.set(e.pointerId,dpDirs(el,e.clientX,e.clientY));syncHeld()});
+  const up=e=>{dpPtr.delete(e.pointerId);syncHeld()};['pointerup','pointercancel','lostpointercapture'].forEach(k=>el.addEventListener(k,up));
+  el.addEventListener('contextmenu',e=>e.preventDefault())})();
+$('#aBtn').addEventListener('pointerdown',e=>{e.preventDefault();$('#aBtn').classList.add('dn');setTimeout(()=>$('#aBtn').classList.remove('dn'),140);interact()});
+$('#dlg').addEventListener('pointerdown',e=>{if(e.target.closest('button'))return;if(dlgOpen&&!dlgOpen.length)adv()});
 const KD={ArrowUp:'up',ArrowDown:'down',ArrowLeft:'left',ArrowRight:'right',w:'up',s:'down',a:'left',d:'right'};
 addEventListener('keydown',e=>{if($('#room').hidden)return;const d=KD[e.key];
   if(d){e.preventDefault();if(dlgOpen){if(!dlgOpen.length&&!e.repeat)adv()}else{keyHeld.add(d);syncHeld()}}
@@ -730,15 +739,15 @@ function cabColors(o,g){g=g||gameOf(o);const col=g&&g.tema?[g.tema.cab,g.tema.lu
   b.setProperty('--cab',col[0]);b.setProperty('--cab-l',shade(col[0],.28));b.setProperty('--cab-d',shade(col[0],-.45));
   b.setProperty('--mq',col[1]);b.setProperty('--mq-d',shade(col[1],-.45))}
 function enter(g,o){cur=g;curObj=o;SND.coin();$('#fade').classList.add('on');
-  setTimeout(()=>{roomOn=false;clearDp();cabColors(o,g);$('#stick').style.visibility=g.controls==='touch'?'hidden':'';document.body.classList.add('play');$('#room').hidden=true;$('#play').hidden=false;$('#title').textContent=g.name;$('#backT').textContent='SALA';
+  setTimeout(()=>{roomOn=false;clearDp();cabColors(o,g);$('.deck').hidden=g.controls==='touch';document.body.classList.add('play');$('#room').hidden=true;$('#play').hidden=false;$('#title').textContent=g.name;$('#backT').textContent='SALA';
     $('#gU').innerHTML=`${g.unit} <b id="gScore">0</b>`;$('#gBest').textContent=A.best[g.id]||0;
     requestAnimationFrame(()=>{const{cols,rows,c}=size(),cv=$('#cv');cv.width=cols*c;cv.height=rows*c;cv.style.width=cols*c*2+'px';cv.style.height=rows*c*2+'px';
       const ctx=cv.getContext('2d');ctx.imageSmoothingEnabled=false;
       G=g.make({cv,ctx,cols,rows,cell:c,sfx:SY,score:n=>{score=n;$('#gScore').textContent=n},over:()=>gameOver()});
       G.ready();ready();$('#fade').classList.remove('on')})},240)}
-const KEYS='<p><span class="k">START</span> joga<br><span class="k x">◂ SALA</span> volta à sala</p>';
+const KEYS='<p><span class="k">START</span> joga<br><span class="k x">◂ SALA</span> volta à sala</p>',KEYT='<p><span class="k">TOQUE NA MESA</span> joga<br><span class="k x">◂ SALA</span> volta à sala</p>';
 function ready(){state='ready';run=false;score=0;$('#gScore').textContent=0;clock();glow(true);
-  msg(`<p>${cur.desc}</p><p class="att">${cur.controls==='touch'?'TOQUE NA MESA<br>OU APERTE START':'MEXA O MANCHE<br>OU APERTE START'}</p>`)}
+  msg(`<p>${cur.desc}</p><p class="att">${cur.controls==='touch'?'TOQUE NA MESA<br>PARA COMEÇAR':'MEXA O MANCHE<br>OU APERTE START'}</p>`)}
 function msg(h){const m=$('#gMsg');if(h==null){m.hidden=true;return}m.innerHTML=h;m.hidden=false}
 function glow(on){$('#bStart').classList.toggle('glow',on)}
 function begin(){if(run||left()<=0)return;state='run';run=true;paused=false;last=false;msg(null);glow(false);SND.start();A.plays[cur.id]=(A.plays[cur.id]||0)+1;saveA();G.start();
@@ -749,11 +758,11 @@ function gameOver(){state='over';run=false;clearInterval(timer);const b=A.best[c
   if(rec){A.best[cur.id]=score;$('#gBest').textContent=score;saveA();setTimeout(SND.rec,300)}else SND.over();
   const more=left()>0;$('#gLast').hidden=true;last=false;glow(more);
   msg(`<h3>${more?'FIM DE JOGO':'FICHAS ACABARAM'}</h3><span class="big">${score}</span><p>${cur.unit}</p>${rec&&score?'<span class="rec">NOVO RECORDE!</span>':''}
-    ${more?KEYS.replace('joga','de novo'):'<p>Amanhã tem mais.<br><span class="k x">◂ SALA</span> volta à sala</p>'}`)}
+    ${more?(cur.controls==='touch'?KEYT:KEYS).replace('joga','de novo'):'<p>Amanhã tem mais.<br><span class="k x">◂ SALA</span> volta à sala</p>'}`)}
 function exitPlay(){if(G)G.stop();G=null;state='off';run=false;clearInterval(timer);SND.back();$('#fade').classList.add('on');
   setTimeout(()=>{document.body.classList.remove('play');document.body.dataset.deco='';$('#play').hidden=true;$('#room').hidden=false;$('#title').textContent='FLIPERAMA';$('#backT').textContent='NAVE';roomOn=true;clock();fit();$('#fade').classList.remove('on')},220)}
 function input(d){if(!G)return;if(state==='ready')begin();if(state==='run'&&!paused)G.input(d)}
-function pause(){if(state!=='run')return;state='pause';paused=true;G.pause&&G.pause();glow(true);msg(`<h3>PAUSADO</h3><p><span class="k">START</span> continua<br><span class="k x">◂ SALA</span> volta à sala</p>`)}
+function pause(){if(state!=='run')return;state='pause';paused=true;G.pause&&G.pause();glow(true);msg(`<h3>PAUSADO</h3><p><span class="k">${cur.controls==='touch'?'TOQUE NA MESA':'START'}</span> continua<br><span class="k x">◂ SALA</span> volta à sala</p>`)}
 function resume(){state='run';paused=false;msg(null);glow(false);G.resume&&G.resume()}
 function pressStart(){if(state==='ready')begin();else if(state==='pause')resume();else if(state==='over'&&left()>0){G.ready();ready()}}
 function pressExit(){if(state==='run')pause();else exitPlay()}
@@ -777,7 +786,7 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden){pause();cl
 /* jogos de toque: o dedo na tela vira coordenada da arte (1 px de arte = 2 px na tela) */
 (function(){const cv=$('#cv');let id=null;const at=e=>{const r=cv.getBoundingClientRect();return[(e.clientX-r.left)/2,(e.clientY-r.top)/2]};
   $('#scr').addEventListener('pointerdown',e=>{if(!G||!cur||cur.controls!=='touch')return;e.preventDefault();id=e.pointerId;try{$('#scr').setPointerCapture(id)}catch(_){}
-    if(state==='ready')begin();if(state==='run'){const[x,y]=at(e);G.touch(x,y)}});
+    if(state==='ready')begin();else if(state==='pause'){resume();return}else if(state==='over'){pressStart();return}if(state==='run'){const[x,y]=at(e);G.touch(x,y)}});
   $('#scr').addEventListener('pointermove',e=>{if(e.pointerId!==id||!G||state!=='run')return;const[x,y]=at(e);G.touch(x,y)});
   ['pointerup','pointercancel'].forEach(k=>$('#scr').addEventListener(k,e=>{if(e.pointerId===id)id=null}))})();
 /* deslizar o dedo na tela também vale; teclado: setas, Enter = START, Esc = voltar */

@@ -9,9 +9,9 @@ const RIVAIS=[{nome:'KAI',cor:['#5fa0d8','#2a5a8a','#a8d8ff']},{nome:'ZORP',cor:
 function disc(x,cx,cy,r,c){for(let dy=-r;dy<=r;dy++){const w=Math.floor(Math.sqrt(r*r-dy*dy+r*.8));x.fillStyle=c;x.fillRect(Math.round(cx-w),Math.round(cy+dy),w*2+1,1)}}
 ARC.add({id:'hoquei',name:'HÓQUEI DE MESA',unit:'VITÓRIAS',cell:8,lugar:'hockey',controls:'touch',
   tema:{cab:'#1f4a8a',luz:'#2ad4ff',deco:'hoquei'},
-  desc:'Arraste o rebatedor e faça 5 gols antes do adversário. Cada vitória chama um rival mais rápido.',
+  desc:'Arraste o dedo na mesa: o rebatedor segue logo acima dele. Faça 5 gols antes do adversário!',
   make(api){
-    const{ctx,cols,rows,sfx}=api,W=cols*8,H=rows*8,GW=Math.round(W*.42),PR=4,MR=8;
+    const{ctx,cols,rows,sfx}=api,W=cols*8,H=rows*8,GW=Math.round(W*.48),PR=7,MR=13;
     const meCol=(()=>{try{const o=(JSON.parse(localStorage.getItem('navemae-avatar'))||{}).ov||{};return[o[2]||'#5dff83',o[3]||'#1f9a3a',o[1]||'#c4ff9e']}catch(e){return['#5dff83','#1f9a3a','#c4ff9e']}})();
     let pk,me,ai,sc,round,wins,running=false,paused=false,raf=0,last=0,hold=0,msg='',msgT=0,target={x:W/2,y:H*.8},trail=[];
     function resetPuck(toMe){pk={x:W/2,y:toMe?H*.62:H*.38,vx:0,vy:0};hold=.7}
@@ -21,7 +21,7 @@ ARC.add({id:'hoquei',name:'HÓQUEI DE MESA',unit:'VITÓRIAS',cell:8,lugar:'hocke
     function collide(m){const dx=pk.x-m.x,dy=pk.y-m.y,d=Math.hypot(dx,dy),R=PR+MR;if(d>=R||d===0)return;
       const nx=dx/d,ny=dy/d;pk.x=m.x+nx*R;pk.y=m.y+ny*R;
       const rv=(pk.vx-m.vx)*nx+(pk.vy-m.vy)*ny;if(rv<0){pk.vx-=1.9*rv*nx;pk.vy-=1.9*rv*ny}
-      pk.vx+=m.vx*.35;pk.vy+=m.vy*.35;const s=Math.hypot(pk.vx,pk.vy),MAX=7.5;if(s>MAX){pk.vx*=MAX/s;pk.vy*=MAX/s}
+      pk.vx+=m.vx*.35;pk.vy+=m.vy*.35;const s=Math.hypot(pk.vx,pk.vy),MAX=9;if(s>MAX){pk.vx*=MAX/s;pk.vy*=MAX/s}
       sfx.noise(.04,0,{f:2200,filter:'bandpass',vol:.05})}
     function moveMallet(m,tx,ty,maxS,minY,maxY){let dx=tx-m.x,dy=ty-m.y;const d=Math.hypot(dx,dy);if(d>maxS){dx*=maxS/d;dy*=maxS/d}
       const ox=m.x,oy=m.y;m.x=Math.max(MR+2,Math.min(W-MR-2,m.x+dx));m.y=Math.max(minY,Math.min(maxY,m.y+dy));m.vx=m.x-ox;m.vy=m.y-oy}
@@ -31,7 +31,7 @@ ARC.add({id:'hoquei',name:'HÓQUEI DE MESA',unit:'VITÓRIAS',cell:8,lugar:'hocke
       else if(sc[1]>=GOALS){running=false;msg='FIM DA PARTIDA';msgT=9;setTimeout(()=>api.over(),1300)}
       else resetPuck(!mine)}
     function step(dt){const f=dt*60;
-      moveMallet(me,target.x,target.y,9*f,H/2+MR,H-MR-2);
+      moveMallet(me,target.x,target.y,10*f,H/2+MR,H-MR-2);
       // adversário: defende o gol e ataca quando o disco está do lado dele
       let tx,ty;const s=aiSpeed()*f;
       if(pk.y<H/2&&!(hold>0)){tx=pk.x+(pk.x-W/2)*.15;ty=pk.y-MR*.6;if(pk.vy<-1.5){ty=Math.min(ty,H*.2)}}
@@ -57,11 +57,11 @@ ARC.add({id:'hoquei',name:'HÓQUEI DE MESA',unit:'VITÓRIAS',cell:8,lugar:'hocke
       // placar da rodada no meio da mesa
       x.fillStyle='rgba(42,106,216,.18)';x.font='bold 16px monospace';x.textAlign='center';x.textBaseline='middle';
       x.fillText(sc[1],W/2,H/2-12);x.fillText(sc[0],W/2,H/2+13);
-      trail.forEach(([a,b],i)=>{x.fillStyle=`rgba(7,6,15,${.08*(i+1)})`;x.fillRect(Math.round(a)-1,Math.round(b)-1,2,2)});
+      trail.forEach(([a,b],i)=>{x.fillStyle=`rgba(7,6,15,${.06*(i+1)})`;x.fillRect(Math.round(a)-3,Math.round(b)-3,6,6)});
       const rv=RIVAIS[(round-1)%2].cor;
-      disc(x,ai.x,ai.y+1,MR,'rgba(0,0,0,.25)');disc(x,ai.x,ai.y,MR,'#07060f');disc(x,ai.x,ai.y,MR-1,rv[1]);disc(x,ai.x-1,ai.y-1,MR-3,rv[0]);disc(x,ai.x-2,ai.y-2,2,rv[2]);
-      disc(x,me.x,me.y+1,MR,'rgba(0,0,0,.25)');disc(x,me.x,me.y,MR,'#07060f');disc(x,me.x,me.y,MR-1,meCol[1]);disc(x,me.x-1,me.y-1,MR-3,meCol[0]);disc(x,me.x-2,me.y-2,2,meCol[2]);
-      disc(x,pk.x,pk.y,PR,'#07060f');x.fillStyle='#4a4a5a';x.fillRect(Math.round(pk.x)-1,Math.round(pk.y)-2,2,1);
+      disc(x,ai.x,ai.y+1,MR,'rgba(0,0,0,.25)');disc(x,ai.x,ai.y,MR,'#07060f');disc(x,ai.x,ai.y,MR-1,rv[1]);disc(x,ai.x-1,ai.y-1,MR-3,rv[0]);disc(x,ai.x-3,ai.y-3,3,rv[2]);
+      disc(x,me.x,me.y+1,MR,'rgba(0,0,0,.25)');disc(x,me.x,me.y,MR,'#07060f');disc(x,me.x,me.y,MR-1,meCol[1]);disc(x,me.x-1,me.y-1,MR-3,meCol[0]);disc(x,me.x-3,me.y-3,3,meCol[2]);x.fillStyle='#07060f';x.fillRect(Math.round(me.x)-1,Math.round(me.y)-1,3,3);
+      disc(x,pk.x,pk.y+1,PR,'rgba(0,0,0,.25)');disc(x,pk.x,pk.y,PR,'#07060f');disc(x,pk.x,pk.y,PR-2,'#2a2a3a');x.fillStyle='#ffd23f';x.fillRect(Math.round(pk.x)-2,Math.round(pk.y)-PR+2,4,1);
       if(msgT>0){x.font='bold 13px monospace';x.fillStyle='#07060f';x.fillText(msg,W/2+1,H/2+1);x.fillStyle=msg.startsWith('GOL DO')||msg==='FIM DA PARTIDA'?'#e03a3a':'#1f9a3a';x.fillText(msg,W/2,H/2)}
       x.font='bold 9px monospace';x.fillStyle='#2a6ad8';x.textAlign='left';x.fillText(RIVAIS[(round-1)%2].nome,4,10)}
     function loop(t){raf=requestAnimationFrame(loop);const dt=Math.min(.05,(t-(last||t))/1000);last=t;
@@ -70,7 +70,7 @@ ARC.add({id:'hoquei',name:'HÓQUEI DE MESA',unit:'VITÓRIAS',cell:8,lugar:'hocke
       ready(){cancelAnimationFrame(raf);reset(true);running=false;paused=false;msg='';msgT=0;last=0;raf=requestAnimationFrame(loop)},
       start(){running=true;msg='RODADA 1: '+RIVAIS[0].nome;msgT=1.4;hold=.9},
       input(){},
-      touch(px,py){target={x:px,y:py}},
+      touch(px,py){target={x:px,y:py-18}}, // o rebatedor fica um pouco acima do dedo, para não sumir embaixo dele
       pause(){paused=true},resume(){paused=false;last=0},
       stop(){cancelAnimationFrame(raf);running=false}}}});
 })();
