@@ -246,6 +246,7 @@ h2{margin:0;font-family:var(--px);font-size:14px;line-height:1.7;font-weight:400
 .cel-score b{font-weight:400;font-size:28px;color:var(--cel-acc);text-shadow:3px 3px 0 var(--cel-acc-d);min-width:1.1em;text-align:right}
 .cel-score span{font-size:16px}
 .cel-score small{font-family:var(--vt);font-size:20px;color:var(--cel-dim);margin-left:10px}
+.cel-en{display:flex;align-items:center;gap:8px;margin-top:-4px;font-family:var(--px);font-size:10px;color:#ffb300;text-shadow:2px 2px 0 #000;animation-delay:.3s}
 .cel-turno{width:100%;padding:12px 14px;text-align:left}
 .cel-tl{display:flex;justify-content:space-between;font-family:var(--px);font-size:8px;line-height:1;color:var(--cel-dim)}
 .cel-tl b{font-weight:400;color:var(--cel-ink)}
@@ -394,7 +395,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 
 <script>
 /* atualização automática: compara com version.json e recarrega quando sai versão nova */
-const APP_V='20261004174215';
+const APP_V='20261004212425';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     if(v&&v!==APP_V&&sessionStorage.getItem('upd')!==v){sessionStorage.setItem('upd',v);location.replace(location.pathname+'?v='+v+H0)}}catch(e){}}
@@ -652,6 +653,7 @@ const CEL=(()=>{
       <h2 class="cel-t cel-pop">${o.title}</h2>${o.sub?`<p class="cel-sub">${o.sub}</p>`:''}
       ${lose?'':`<div class="cel-stars">${[0,1,2].map(i=>`<span>${spriteRows(STAR,4,off)}</span>`).join('')}</div>`}
       ${o.score?`<div class="cel-score"><b>0</b><span>/${o.score[1]}</span><small>${o.scoreLabel||'de primeira'}</small></div>`:''}
+      ${o.energy?`<div class="cel-en cel-pop">${spriteRows(['....kkk','...kYOk','..kYOk.','.kYOkkk','kYYYYOk','kkkYOk.','..kYk..','.kYk...','.kk....'],2,{k:'#000',Y:'#fff3a0',O:'#ffb300'})}+${o.energy} DE ENERGIA</div>`:''}
       ${tu?`<div class="cel-turno ${C.panel}"><div class="cel-tl"><span>TURNO DE HOJE</span><b>${tu.n-(tu.fresh?1:0)}/${tu.total}</b></div><div class="cel-segs">${segs}</div>
         ${done?`<div class="cel-banner"${tu.fresh&&tu.n>=tu.total?' hidden':''}>TURNO COMPLETO! · SEQUÊNCIA: ${dias}</div>`:''}</div>`:''}
       <div class="cel-btns">${o.buttons.map((b,i)=>`<button class="${b.cls}" data-cb="${i}">${b.label}</button>`).join('')}</div></div>`;
@@ -749,8 +751,10 @@ function endButtons(again){const nx=MODES.find(m=>!doneToday().includes(m)),back
   return nx?[{label:'Próxima missão',cls:'primary pbtn',fn:()=>{click();START[nx]()}},{label:'Jogar de novo',cls:'ghost pbtn',fn:rep},{label:'Voltar à ponte',cls:'ghost pbtn',fn:back}]
     :[{label:'Voltar à ponte',cls:'primary pbtn',fn:back},{label:'Jogar de novo',cls:'ghost pbtn',fn:rep}]}
 function missionEnd(mode,S,again,what){const {firsts,total,nw}=S;fanfare();
+  // energia para a Oficina (mesma regra da Nave-Mãe): missão +10, acertos de primeira +1 (até 10), turno completo +10
+  const en=nw?10+Math.min(10,firsts)+(countReq(doneToday())>=MODES.length?10:0):0;
   celebrate({title:firsts===total?'MISSÃO PERFEITA!':'MISSÃO CUMPRIDA!',sub:what,stars:firsts===total?3:firsts/total>=.6?2:1,
-    score:[firsts,total],turno:turnoInfo(!!nw),buttons:endButtons(again)})}
+    score:[firsts,total],energy:en,turno:turnoInfo(!!nw),buttons:endButtons(again)})}
 /* abre a missão: continua de onde parou ou começa do zero */
 function resume(mode,S,newFn,restoreFn,fresh){
   const pr=getProg(mode);
@@ -971,7 +975,7 @@ function dCheck(){
     good();SND.zap();D.hits++;D.dist=Math.min(100,D.dist+22);
     if(D.hits>=D.goal){
       stopDesafio();clearProg('desafio');stats.escapes=(stats.escapes||0)+1;save();const nw=markDone('desafio');
-      fanfare();celebrate({title:'VOCÊ FUGIU DO ALIEN!',sub:'O Alien voltou para os dutos.',stars:3,score:[10,10],scoreLabel:'acertos',turno:turnoInfo(false),buttons:endButtons(()=>{show('desafio');dPlay(D.level)})});
+      fanfare();celebrate({title:'VOCÊ FUGIU DO ALIEN!',sub:'O Alien voltou para os dutos.',stars:3,score:[10,10],scoreLabel:'acertos',energy:nw?8:0,turno:turnoInfo(false),buttons:endButtons(()=>{show('desafio');dPlay(D.level)})});
       return;
     }
     saveProg('desafio',{level:D.level,hits:D.hits});dNewQ();
