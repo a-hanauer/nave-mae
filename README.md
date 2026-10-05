@@ -100,6 +100,24 @@ Ao criar um app novo, informe em `APPS` o campo `store` com a chave do `localSto
 
 Abra o link no Safari, toque em Compartilhar e escolha **Adicionar à Tela de Início**. A Nave-Mãe abre em tela cheia, com ícone próprio, e os apps abrem dentro dela.
 
+## Naves
+
+As naves são desenhadas por formas (como o piloto), com luz vindo de cima à esquerda e as rampas da pintura, em duas resoluções do mesmo desenho: **grande** (48 de largura, a 2 px por pixel, o mesmo grão do piloto) no Hangar e nas telas grandes, e **pequena** (18 de largura) no mapa, no logo e nas miniaturas. Cada modelo tem o fogo saindo dos próprios propulsores. Adesivos e pinturas valem para todos.
+
+| Modelo | Como liberar |
+|---|---|
+| Foguete | inicial |
+| Caça | 10 missões |
+| Cargueiro | 7 dias seguidos |
+| Disco | 15 missões |
+| Interceptor | 75 missões |
+| Lançadeira (asas curtas e porta de carga) | 50 de energia |
+| Sonda (núcleo redondo e painéis solares) | 50 |
+| Explorador (casco largo e motores em cápsulas, estilo No Man's Sky) | 80 |
+| Besouro (casco redondo com élitros, antenas e patinhas) | 80 |
+| Cruzador (asas em delta e cauda dupla) | 120 |
+| Raia (asa curva em forma de raia) | 180 |
+
 ## Peças verdes
 
 Para quem gosta de verde, cada categoria tem uma linha verde à venda no Hangar: capacetes Esmeralda, Floresta, Limão, Jade e Ácido; viseiras Esmeralda, Radar e Limão; trajes Esmeralda, Floresta, Limão, Jade e Ácido; emblemas Folha e Gosma; títulos Botânico Espacial, Lagarto Estelar e Guardião da Floresta; pinturas Esmeralda, Limão, Floresta, Jade e Ácido; propulsores Ácido e Esmeralda; adesivos Faixa verde, Raios verdes e Chamas verdes; rastros Gosma e Estrelas verdes (30 a 120 de energia).
