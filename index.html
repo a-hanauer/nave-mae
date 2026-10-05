@@ -228,7 +228,7 @@ button{cursor:pointer;touch-action:manipulation}
 .shop-it.sel{box-shadow:0 -4px 0 0 var(--cyan),0 4px 0 0 var(--cyan),-4px 0 0 0 var(--cyan),4px 0 0 0 var(--cyan)}
 #vGrid,#hGrid{margin-top:4px}
 .hen{display:flex;align-items:center;gap:6px;font-family:var(--px);font-size:10px;color:var(--amber)}
-/* Oficina */
+/* vitrine de peças do Hangar */
 .shop-top{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center;padding:14px 16px;margin:18px 0 16px}
 .shop-bal{display:grid;justify-items:center;gap:6px;min-width:84px}
 .shop-bal span{display:flex;align-items:center;gap:6px;font-family:var(--px);font-size:16px;color:var(--amber);text-shadow:2px 2px 0 #7a3a00}
@@ -661,7 +661,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 
 <script>
 /* atualização automática: compara com version.json e recarrega quando sai versão nova */
-const APP_V='20261004221631';
+const APP_V='20261004221643';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     if(v&&v!==APP_V&&sessionStorage.getItem('upd')!==v){sessionStorage.setItem('upd',v);location.replace(location.pathname+'?v='+v+H0)}}catch(e){}}
@@ -1040,7 +1040,7 @@ const item=(cat,id)=>ITEMS[cat].list.find(x=>x.id===id)||ITEMS[cat].list[0];
 for(const c in ITEMS)ITEMS[c].list.forEach(it=>it.k=c+':'+it.id);
 const OLDREQ={'visor:rosa':'a3','ship:disc':'a3','gear:rastreador':'a3','title:cacador':'a10','emblem:alien':'a10','flame:rosa':'a10','suit:laranja':'d3','flame:verde':'d3','gear:macarico':'d3'};
 if(!st.mig2){st.own=Object.keys(OLDREQ).filter(k=>st.got.includes(OLDREQ[k]));st.mig2=1;try{localStorage.setItem(ST,JSON.stringify(st))}catch(e){}}
-/* Oficina: itens agora são liberados com energia. Quem já tinha liberado algo por medalha continua com ele. */
+/* Peças: itens agora são liberados com energia. Quem já tinha liberado algo por medalha continua com ele. */
 const REQP={m5:30,f25:30,s3:30,m10:50,m15:50,s5:50,f50:50,n3:50,m25:80,s7:80,s10:80,f100:80,m50:120,m75:120,s14:120,n4:120,f250:120,m100:180,s30:180};
 if(!st.mig3){st.own=st.own||[];for(const c in ITEMS)ITEMS[c].list.forEach(it=>{if(it.req&&st.got.includes(it.req)&&!st.own.includes(it.k))st.own.push(it.k)});
   st.eBonus=60;st.spent=0;st.mig3=1;try{localStorage.setItem(ST,JSON.stringify(st))}catch(e){}}
@@ -1321,7 +1321,7 @@ function takeoff(a,hash=''){
 }
 addEventListener('pageshow',()=>{$('#warp').hidden=true;checkGoals();go(view==='planet'?'home':view);routeHash();setTimeout(showUnlock,400);
   // energia ganha nos jogos desde a última visita
-  const e=energy();if(st.eSeen==null){st.eSeen=e.earned;save();if(st.pilot)setTimeout(()=>toast(`Oficina aberta! ⚡${e.bal}`),900)}
+  const e=energy();if(st.eSeen==null){st.eSeen=e.earned;save();if(st.pilot)setTimeout(()=>toast(`Novas peças no Hangar! ⚡${e.bal}`),900)}
   else if(e.earned>st.eSeen){const d=e.earned-st.eSeen;st.eSeen=e.earned;save();setTimeout(()=>toast(`+${d} de energia!`),900)}});
 /* volta de um jogo: ../#v=tasks abre a aba Missões, ../#p=mat abre o planeta */
 let routed=false;
@@ -1510,7 +1510,7 @@ function renderMedals(){const m=metrics();st.seen=[...st.got];save();$('#mBadge'
   $('#mCount').textContent=`${st.got.length} / ${GOALS.length}`;
   $('#mDetail').className='mdetail px'+(done?' done':'');
   $('#mDetail').innerHTML=`<span class="md-ic">${medalSVG(g,4)}</span><div><b>${g.txt}</b><div class="bar"><i style="width:${Math.round(v/g.n*100)}%"></i></div><span class="n">${done?'CONQUISTADA':v+' / '+g.n}</span></div>
-    <div class="rw">${g.honor?'<span>Medalha de honra · desafio extra</span>':'<span>Cada missão também dá energia para a Oficina.</span>'}${rewards(g.id).map(([c,it])=>`<span>${c==='title'?'':`<i class="dot2" style="background:${c==='ship'?'#9b98d4':swatchBg(c,it)}"></i>`}${c==='title'?'Título “'+it.n+'”':(ITEMS[c].t+' '+it.n.toLowerCase())}</span>`).join('')}</div>`;
+    <div class="rw">${g.honor?'<span>Medalha de honra · desafio extra</span>':'<span>Cada missão também dá energia para novas peças no Hangar.</span>'}${rewards(g.id).map(([c,it])=>`<span>${c==='title'?'':`<i class="dot2" style="background:${c==='ship'?'#9b98d4':swatchBg(c,it)}"></i>`}${c==='title'?'Título “'+it.n+'”':(ITEMS[c].t+' '+it.n.toLowerCase())}</span>`).join('')}</div>`;
   $('#mWall').innerHTML=Object.keys(CATS).map(k=>{const gs=GOALS.filter(x=>x.kind===k),n=gs.filter(x=>st.got.includes(x.id)).length;
     return `<div class="mrow"><div class="label">${CATS[k].t}<span>${n}/${gs.length}</span></div><div class="medals">${gs.map(x=>`<button class="${x.id===mSel?'on':''}" data-g="${x.id}" aria-label="${x.txt}">${medalSVG(x,2)}</button>`).join('')}</div></div>`}).join('');
   $('#mWall').querySelectorAll('[data-g]').forEach(b=>b.onclick=()=>{mSel=b.dataset.g;SND.medal();renderMedals()})}
