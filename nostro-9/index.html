@@ -412,11 +412,13 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 </div>
 
 <script>
-/* atualização automática: compara com version.json e recarrega quando sai versão nova (uma vez por página e versão) */
-const APP_V='20261005113552';
+/* atualização automática: compara com version.json e recarrega com ?v=<versão> no endereço (o iPhone não reaproveita a
+   página guardada). Se mesmo com ?v=<versão> a página veio velha, não insiste (evita recarregar sem parar). */
+const APP_V='20261005113722';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
-    if(v&&v!==APP_V&&sessionStorage.getItem('upd:'+location.pathname)!==v){sessionStorage.setItem('upd:'+location.pathname,v);location.replace(location.pathname+'?v='+v+H0)}}catch(e){}}
+    const q=new URLSearchParams(location.search).get('v');
+    if(v&&v!==APP_V&&q!==v)location.replace(location.pathname+'?v='+v+H0)}catch(e){}}
   check();document.addEventListener('visibilitychange',()=>{if(!document.hidden)check()});addEventListener('pageshow',e=>{if(e.persisted)check()});
 })();
 </script>
@@ -1041,7 +1043,7 @@ renderMenu();
 const RETK='ret:'+location.pathname,RP=(location.hash.match(/r=([\w.]+)/)||[])[1];
 if(RP)try{sessionStorage.setItem(RETK,RP)}catch(e){}
 const RETV=RP||(()=>{try{return sessionStorage.getItem(RETK)}catch(e){return null}})()||'';
-const RET='../'+(RETV.startsWith('p.')?'#p='+RETV.slice(2):'#v=tasks'); // padrão: aba Missões
+const RET='../?v='+APP_V+(RETV.startsWith('p.')?'#p='+RETV.slice(2):'#v=tasks'); // padrão: aba Missões; ?v= evita voltar para uma Nave-Mãe guardada (velha)
 var DL=false; // (var: show() usa antes desta linha) entrou direto numa missão pela aba Missões
 function backHome(){location.href=RET}
 /* "< Nave-Mãe" é um botão (link com a camada de vibração não navegava no iPhone) */

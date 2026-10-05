@@ -176,7 +176,7 @@ Os ids dos planetas são `mat`, `por`, `cie`, `ing`, `his` e `geo`.
 
 Antes de cada commit, rode `python3 bump.py`. Ele grava uma versão nova em `version.json` e nos apps. Quem estiver com o app aberto (inclusive pelo atalho da Tela de Início) recarrega sozinho quando a versão publicada muda.
 
-A trava que evita recarregar em looping é por página (`upd:<caminho>` no sessionStorage): cada app recarrega uma vez para cada versão nova, mesmo que outro já tenha recarregado. A Nave-Mãe abre os jogos e o fliperama com `?v=<versão>` no endereço, para o iPhone não usar a página guardada.
+Toda navegação entre páginas leva `?v=<versão>` no endereço: a Nave-Mãe abre os jogos e o fliperama assim, e eles voltam para a Nave-Mãe assim (`../?v=<versão>#v=tasks`). Sem isso, o iPhone reabria a Nave-Mãe guardada (velha) ao voltar. Se uma página percebe que está velha, recarrega com `?v=<versão nova>`; se mesmo assim vier velha, não insiste.
 
 ## Dados
 
