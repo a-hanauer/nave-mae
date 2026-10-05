@@ -378,7 +378,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 
 <script>
 /* atualização automática: compara com version.json e recarrega quando sai versão nova */
-const APP_V='20261005095644';
+const APP_V='20261005100613';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     if(v&&v!==APP_V&&sessionStorage.getItem('upd')!==v){sessionStorage.setItem('upd',v);location.replace(location.pathname+'?v='+v+H0)}}catch(e){}}
@@ -767,7 +767,7 @@ function hintN(n){const p=[];let r=n;if(r>=100){p.push(100);r-=100}const t=r-r%1
   if(nx)return `Dica: ${n} = ${nx} − ${nx-n}`;
   return `Dica: comece pelo bloco maior.`}
 /* fim de missão: comemoração */
-function celebrate(o){show('res');CEL.play(Object.assign({host:$('#res'),avatar:navAvatar('pilot',2)||sprite('gateOpen',4)},o))}
+function celebrate(o){show('res');CEL.play(Object.assign({host:$('#res'),avatar:(!o.lose&&navAvatar('cheer',2))||navAvatar('pilot',2)||sprite('gateOpen',4)},o))}
 const turnoInfo=fresh=>({n:Math.min(3,mainDone(dkey())),total:3,streak:streak(),fresh});
 function endButtons(again){const nx=MODES.find(m=>!doneToday().includes(m)),back=()=>{sfx.tap();show('menu')},rep=()=>{sfx.tap();again()};
   return nx?[{label:'PRÓXIMA MISSÃO',cls:'btn',fn:()=>{sfx.tap();startMission(nx)}},{label:'JOGAR DE NOVO',cls:'ghost px pbtn',fn:rep},{label:'VOLTAR AO TEMPLO',cls:'ghost px pbtn',fn:back}]
