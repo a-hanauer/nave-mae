@@ -195,11 +195,13 @@ body.play[data-deco="hoquei"] .scr::after{box-shadow:inset 0 0 14px 2px rgba(0,0
 <div id="fade"></div>
 
 <script>
-/* atualização automática: compara com version.json e recarrega quando sai versão nova (uma vez por página e versão) */
-const APP_V='20261005113552';
+/* atualização automática: compara com version.json e recarrega com ?v=<versão> no endereço (o iPhone não reaproveita a
+   página guardada). Se mesmo com ?v=<versão> a página veio velha, não insiste (evita recarregar sem parar). */
+const APP_V='20261005113722';
 (function(){const H0=location.hash;
   async function check(){try{const r=await fetch('../version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
-    if(v&&v!==APP_V&&sessionStorage.getItem('upd:'+location.pathname)!==v){sessionStorage.setItem('upd:'+location.pathname,v);location.replace(location.pathname+'?v='+v+H0)}}catch(e){}}
+    const q=new URLSearchParams(location.search).get('v');
+    if(v&&v!==APP_V&&q!==v)location.replace(location.pathname+'?v='+v+H0)}catch(e){}}
   check();document.addEventListener('visibilitychange',()=>{if(!document.hidden)check()});addEventListener('pageshow',e=>{if(e.persisted)check()});
 })();
 </script>
@@ -337,7 +339,7 @@ const MIN=NM.arcMin==null?10:NM.arcMin;
 const unlocked=()=>NM.arcDay===dk()&&MIN>0;
 const left=()=>Math.max(0,MIN*60-(A.used||0));
 const fmt=s=>`${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;
-const home=()=>{location.href='../#v=tasks'};
+const home=()=>{location.href='../?v='+APP_V+'#v=tasks'}; // ?v= evita voltar para uma Nave-Mãe guardada (velha)
 
 const SND={
   open:()=>SY.arp([523,659,784],.05,{vol:.04}),
