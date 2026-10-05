@@ -96,7 +96,7 @@ button{cursor:pointer;touch-action:manipulation}
 @keyframes bob{50%{transform:translateY(-6px)}}
 .flame .f2{display:none}
 .flame{animation:none}
-.ship .f1{animation:f1 .24s steps(1) infinite}.ship .f2{animation:f2 .24s steps(1) infinite}
+.ship .f1,.fx .f1{animation:f1 .24s steps(1) infinite}.ship .f2,.fx .f2{animation:f2 .24s steps(1) infinite}
 @keyframes f1{50%{visibility:hidden}}@keyframes f2{0%{visibility:hidden}50%{visibility:visible}}
 
 /* planeta (tela) */
@@ -214,7 +214,36 @@ button{cursor:pointer;touch-action:manipulation}
 .plate b{display:block;font-family:var(--px);font-size:13px;margin-top:6px;word-break:break-all}
 .small{padding:10px 12px;font-family:var(--px);font-size:8px;color:var(--amber)}
 /* ---------- chave piloto | nave ---------- */
-.seg{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px}
+.seg{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:18px}
+.hen{display:flex;align-items:center;gap:6px;font-family:var(--px);font-size:10px;color:var(--amber)}
+/* Oficina */
+.shop-top{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center;padding:14px 16px;margin:18px 0 16px}
+.shop-bal{display:grid;justify-items:center;gap:6px;min-width:84px}
+.shop-bal span{display:flex;align-items:center;gap:6px;font-family:var(--px);font-size:16px;color:var(--amber);text-shadow:2px 2px 0 #7a3a00}
+.shop-bal small{font-family:var(--px);font-size:7px;color:var(--dim)}
+.shop-top p{margin:0;font-size:19px;line-height:1.15;color:var(--dim)}
+.seg2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:6px}
+.seg2 button{padding:11px 0;font-family:var(--px);font-size:9px;color:var(--dim)}
+.seg2 button.on{color:var(--amber);box-shadow:0 -4px 0 0 var(--amber),0 4px 0 0 var(--amber),-4px 0 0 0 var(--amber),4px 0 0 0 var(--amber)}
+.shop-h{display:flex;justify-content:space-between;margin:22px 0 10px}
+.shop-g{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.shop-it{display:grid;justify-items:center;gap:8px;padding:10px 8px 12px;text-align:center}
+.shop-it .th{display:grid;place-items:center;width:100%;height:64px;overflow:hidden;background:#0a0920;box-shadow:inset 0 0 0 2px var(--line)}
+.shop-it .nm{font-family:var(--px);font-size:8px;line-height:1.5;color:var(--ink);min-height:24px;display:grid;place-items:center}
+.shop-it .pr{display:flex;align-items:center;gap:6px;font-family:var(--px);font-size:9px;color:var(--amber)}
+.shop-it .pr.no{color:var(--dim)}
+.shop-it.own{background:#10241a}
+.shop-it.own .pr{color:var(--green)}
+.shop-it.sel{box-shadow:0 -4px 0 0 var(--amber),0 4px 0 0 var(--amber),-4px 0 0 0 var(--amber),4px 0 0 0 var(--amber)}
+.shop-bar{position:fixed;left:50%;transform:translateX(-50%);width:calc(100% - 32px);max-width:408px;z-index:29;display:flex;align-items:center;gap:12px;padding:12px 14px;bottom:calc(84px + env(safe-area-inset-bottom))}
+.shop-bar .sb-t{flex:1;min-width:0}
+.shop-bar b{display:block;font-family:var(--px);font-size:9px;line-height:1.5;color:var(--ink)}
+.shop-bar small{display:block;font-size:18px;color:var(--dim)}
+.shop-bar .btn{width:auto;margin:0;padding:12px 14px;font-size:10px;flex:none}
+.shop-bar .btn:disabled{filter:grayscale(1) brightness(.6)}
+.hship.trail{bottom:82px}
+.badge.en{background:var(--amber);color:#1a1200;animation:none;padding:0}
+.badge.en svg{display:block}
 .seg button{display:flex;align-items:center;justify-content:center;gap:10px;padding:12px 0;font-family:var(--px);font-size:10px;color:var(--dim)}
 .seg button .spr{opacity:.5}
 .seg button.on{color:var(--amber);box-shadow:0 -4px 0 0 var(--amber),0 4px 0 0 var(--amber),-4px 0 0 0 var(--amber),4px 0 0 0 var(--amber)}
@@ -490,8 +519,8 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 
   <!-- HANGAR: piloto + nave -->
   <section id="crew" hidden>
-    <div class="ctop">    <div class="vtitle"><h2>HANGAR</h2></div>
-    <div class="seg" id="seg"><button class="px" data-s="vest"><span data-ico="t_pil"></span>PILOTO</button><button class="px" data-s="hang"><span data-ico="t_hng"></span>NAVE</button></div>
+    <div class="ctop">    <div class="vtitle"><h2>HANGAR</h2><span class="hen" id="hEn"></span></div>
+    <div class="seg" id="seg"><button class="px" data-s="vest"><span data-ico="t_pil"></span>PILOTO</button><button class="px" data-s="hang"><span data-ico="t_hng"></span>NAVE</button><button class="px" data-s="shop"><span data-ico="en"></span>OFICINA</button></div>
     <div class="stage st-vest" id="vStage">
       <div class="glow"></div><div class="lamp"></div>
       <div class="lockers l" data-lk="2"></div><div class="lockers r" data-lk="2"></div>
@@ -515,6 +544,14 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
     <div id="hang" hidden>
     <div class="plate"><div><span class="ptitle">Nave de</span><b id="hName"></b></div></div>
     <div class="sels" id="hSels"></div>
+    </div>
+    <!-- OFICINA: liberar itens com energia -->
+    <div id="shop" hidden>
+      <div class="shop-top px"><div class="shop-bal"><span id="shopBal"></span><small>ENERGIA</small></div>
+        <p>Faça as missões do dia para ganhar energia e liberar peças novas.</p></div>
+      <div class="seg2" id="shopSide"><button class="px" data-side="pilot">PILOTO</button><button class="px" data-side="ship">NAVE</button></div>
+      <div id="shopList"></div>
+      <div style="height:96px"></div>
     </div>
   </section>
 
@@ -607,18 +644,19 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
   <main class="pa-body" id="paBody"></main>
 </div>
 
+<div class="shop-bar px" id="shopBar" hidden></div>
 <div id="toast" class="px" hidden></div>
 
 <nav class="tabbar"><div class="in">
   <button data-v="home" class="on"><span data-ico="t_map"></span>MAPA</button>
   <button data-v="tasks"><span data-ico="t_mis"></span>MISSÕES<i class="badge" id="tBadge" hidden></i></button>
-  <button data-v="crew"><span data-ico="t_hng"></span>HANGAR</button>
+  <button data-v="crew"><span data-ico="t_hng"></span>HANGAR<i class="badge en" id="hBadge" hidden></i></button>
   <button data-v="medals"><span data-ico="t_med"></span>CONQUISTAS<i class="badge" id="mBadge" hidden></i></button>
 </div></nav>
 
 <script>
 /* atualização automática: compara com version.json e recarrega quando sai versão nova */
-const APP_V='20261004174215';
+const APP_V='20261004212425';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     if(v&&v!==APP_V&&sessionStorage.getItem('upd')!==v){sessionStorage.setItem('upd',v);location.replace(location.pathname+'?v='+v+H0)}}catch(e){}}
@@ -802,12 +840,13 @@ function hdRows(rows,s,ov){const key=s+'|'+rows.join('/')+'|'+(ov?JSON.stringify
 function spriteRows(rows,s=2,ov){const g=hdRows(rows,s,ov),h=g.length,w=g[0].length,px=s/Math.max(1,Math.round(s/GRID));let r='';
   g.forEach((row,y)=>{let x=0;while(x<w){const c=row[x];if(!c){x++;continue}let k=1;while(row[x+k]===c)k++;r+=`<rect x="${x}" y="${y}" width="${k}" height="1" fill="${c}"/>`;x+=k}});
   return `<svg class="spr" viewBox="0 0 ${w} ${h}" width="${w*px}" height="${h*px}" shape-rendering="crispEdges" aria-hidden="true">${r}</svg>`}
+SPR.en=['....kkk','...kYOk','..kYOk.','.kYOkkk','kYYYYOk','kkkYOk.','..kYk..','.kYk...','.kk....'];
 SPR.t_mis=["....kkkk....","..kkkMMkkk..",".kSSkkkkSSk.",".kSSSSSSSSk.",".kSgkSkkkSk.",".kSSSSSSSSk.",".kSgkSkkkSk.",".kSSSSSSSSk.",".kSOkSkkkSk.",".kSSSSSSSSk.",".kkkkkkkkkk.","............"];
 const sprite=(n,s=2,ov)=>spriteRows(SPR[n],s,ov);
 /* piloto EVA: emblema no ombro + equipamento em camadas */
 const PATCH_AT=[1, 16];
-const EMB={"none":null,"estrela":[".b.","bbb",".b."],"raio":["..b",".b.","b.."],"planeta":[".b.","bbb",".b."],"alvo":["bbb","b.b","bbb"],"alien":["bbb","b.b",".b."],"coroa":["b.b","bbb","bbb"]};
-const GEAR={"tanques":[[-4,10,[".kk.","kMDk","kYOk","kOok","kOok","kkkk","kOok","kOok","kouk","kouk","kkkk"],true],[24,10,[".kk.","kMDk","kOok","kouk","kouk","kkkk","kouk","kouk","kuuk","kuuk","kkkk"],true]],"jetpack":[[-4,12,["kkkk","kLMk","kLMk","kMDk","kMDk","kMDk","kDEk","kkkk",".kk.","kYOk",".OO.",".r.."],true],[24,12,["kkkk","kMDk","kMDk","kDEk","kDEk","kDEk","kEEk","kkkk",".kk.","kOYk",".OO.","..r."],true]],"rastreador":[[-3,23,["kkkkkk","kLLLLk","kgGggk","kgggGk","kLMMDk","kkkkkk"],false]],"macarico":[[20,20,["......kk",".....kCk","....kcCk","...kkck.","..kMk...",".kDMk...","kDDk....","kkk....."],false]],"lanterna":[[17,12,["kkkkk","kYYOk","kkkkk"],false],[16,9,["..Y..",".Y.Y."],false]]};
+const EMB={"none":null,"estrela":[".b.","bbb",".b."],"raio":["..b",".b.","b.."],"planeta":[".b.","bbb",".b."],"alvo":["bbb","b.b","bbb"],"alien":["bbb","b.b",".b."],"coroa":["b.b","bbb","bbb"],"coracao":["b.b","bbb",".b."],"lua":[".bb","b..",".bb"],"diamante":[".b.","b.b",".b."],"xis":["b.b",".b.","b.b"],"seta":[".b.","bbb",".b."],"cometa":["..b",".bb","bb."],"pi":["bbb",".b.",".b."],"olho":[".b.","bbb",".b."]};
+const GEAR={"antena":[[17,-4,["..kk","..kY",".k.k","..k.","..k.",".kk."],false]],"drone":[[-6,2,["..kk..",".kMLk.","kkMLkk","kDcbDk",".kkkk.",".k..k."],false]],"bandeira":[[21,8,["kkkkkk.","kRrRrk.","kRrRrk.","kkkkkk.","k......","k......","k......","k......","k......","k......","k......","k......","kk....."],false]],"tanques":[[-4,10,[".kk.","kMDk","kYOk","kOok","kOok","kkkk","kOok","kOok","kouk","kouk","kkkk"],true],[24,10,[".kk.","kMDk","kOok","kouk","kouk","kkkk","kouk","kouk","kuuk","kuuk","kkkk"],true]],"jetpack":[[-4,12,["kkkk","kLMk","kLMk","kMDk","kMDk","kMDk","kDEk","kkkk",".kk.","kYOk",".OO.",".r.."],true],[24,12,["kkkk","kMDk","kMDk","kDEk","kDEk","kDEk","kEEk","kkkk",".kk.","kOYk",".OO.","..r."],true]],"rastreador":[[-3,23,["kkkkkk","kLLLLk","kgGggk","kgggGk","kLMMDk","kkkkkk"],false]],"macarico":[[20,20,["......kk",".....kCk","....kcCk","...kkck.","..kMk...",".kDMk...","kDDk....","kkk....."],false]],"lanterna":[[17,12,["kkkkk","kYYOk","kkkkk"],false],[16,9,["..Y..",".Y.Y."],false]]};
 function compose(rows,layers,pad=4){const W=rows[0].length+2*pad,H=rows.length+2*pad,g=Array.from({length:H},()=>Array(W).fill('.'));
   const put=(x0,y0,rr,behind)=>rr.forEach((row,y)=>[...row].forEach((c,x)=>{if(c==='.')return;const X=x0+x+pad,Y=y0+y+pad;if(behind&&g[Y][X]!=='.')return;g[Y][X]=c}));
   put(0,0,rows,false);layers.forEach(([x,y,rr,b])=>put(x,y,rr,b));return g.map(r=>r.join(''))}
@@ -855,20 +894,42 @@ const ITEMS={
     {id:'verde',n:'Oliva',c:ramp4('#d6dcb0','#a3ab78','#6b7248','#363a22'),req:'f25'},
     {id:'vermelho',n:'Vermelho',c:ramp4('#f2c0b0','#d06a50','#902e1e','#4a120a'),req:'s3'},
     {id:'dourado',n:'Dourado',c:ramp4('#fff1c0','#e8c060','#a87a20','#54380a'),req:'m50'},
-    {id:'estelar',n:'Grafite',c:ramp4('#8a8e98','#5e626c','#3c3f47','#1e2026'),req:'s14'}]},
+    {id:'estelar',n:'Grafite',c:ramp4('#8a8e98','#5e626c','#3c3f47','#1e2026'),req:'s14'},
+    {id:'menta',n:'Menta',c:ramp4('#d8fff0','#9ae8c8','#58b090','#24584a'),price:30},
+    {id:'rosa',n:'Rosa',c:ramp4('#ffd6e8','#f08cb8','#b04880','#5a1a40'),price:30},
+    {id:'ceu',n:'Céu',c:ramp4('#dff4ff','#8fd0ff','#3f8fd0','#1a3a6a'),price:50},
+    {id:'coral',n:'Coral',c:ramp4('#ffe0d0','#ff9a78','#c85a3a','#5a2010'),price:50},
+    {id:'roxo',n:'Roxo',c:ramp4('#eadcff','#b48cff','#7448c8','#34186a'),price:80},
+    {id:'neon',n:'Neon',c:ramp4('#f4ffd0','#c8f050','#7aa820','#344a08'),price:80},
+    {id:'cromado',n:'Cromado',c:ramp4('#ffffff','#d8dce4','#9aa0ac','#4a4f5a'),price:120},
+    {id:'cosmico',n:'Cósmico',c:ramp4('#c8b8ff','#6a58d0','#3a2a8a','#140a40'),price:180}]},
   visor:{t:'Viseira',list:[
     {id:'ciano',n:'Fumê',c:['#24323c','#0e161c']},
     {id:'ambar',n:'Âmbar',c:['#5a3a10','#2a1a06']},
     {id:'verde',n:'Verde',c:['#1f4a2e','#0c2212'],req:'m10'},
     {id:'rosa',n:'Rubi',c:['#5a1a22','#2a080e'],req:'f50'},
-    {id:'ouro',n:'Espelhada',c:['#c8a040','#6a4a10'],req:'f250'}]},
+    {id:'ouro',n:'Espelhada',c:['#c8a040','#6a4a10'],req:'f250'},
+    {id:'azul',n:'Azul',c:['#1a3a6a','#0a1a3a'],price:30},
+    {id:'roxa',n:'Roxa',c:['#3a1a6a','#18082e'],price:50},
+    {id:'laranja',n:'Laranja',c:['#a84a10','#4a1a04'],price:50},
+    {id:'gelo',n:'Gelo',c:['#5a9aaa','#1c3a44'],price:80},
+    {id:'prata',n:'Prata',c:['#aab4c4','#3a4250'],price:120},
+    {id:'neon',n:'Neon',c:['#c8306a','#4a0a2a'],price:120}]},
   suit:{t:'Traje',list:[
     {id:'lilas',n:'Creme',c:['#e0d8c2','#ada38a','#6e6652']},
     {id:'cinza',n:'Cinza',c:['#c8ccd2','#8e949c','#555a62']},
     {id:'marinho',n:'Marinho',c:['#6a7ea8','#41557e','#243250'],req:'m25'},
     {id:'laranja',n:'Laranja',c:['#f0a050','#b8642a','#6a3410'],req:'s5'},
     {id:'verde',n:'Oliva',c:['#a3ab78','#6b7248','#3c4028'],req:'n3'},
-    {id:'vermelho',n:'Preto',c:['#5a5e66','#3a3d44','#1e2024'],req:'s7'}]},
+    {id:'vermelho',n:'Preto',c:['#5a5e66','#3a3d44','#1e2024'],req:'s7'},
+    {id:'branco',n:'Branco',c:['#f4f4f6','#c4c8d0','#7a808a'],price:30},
+    {id:'amarelo',n:'Amarelo',c:['#ffe27a','#d8a830','#7a5a10'],price:30},
+    {id:'ceu',n:'Céu',c:['#a8dcff','#5fa0d8','#2a5a8a'],price:50},
+    {id:'rosa',n:'Rosa',c:['#ffb8d8','#d8689a','#7a2a50'],price:50},
+    {id:'menta',n:'Menta',c:['#b8f0d8','#68b898','#2a6a50'],price:50},
+    {id:'roxo',n:'Roxo',c:['#c8a8ff','#8a5ad8','#44207a'],price:80},
+    {id:'rubi',n:'Rubi',c:['#f08080','#b83a3a','#5a1414'],price:80},
+    {id:'dourado',n:'Dourado',c:['#ffe9a0','#d4a830','#7a5a10'],price:180}]},
   emblem:{t:'Emblema',list:[
     {id:'none',n:'Nenhum'},
     {id:'estrela',n:'Estrela',c:['#2b2f38','#ffb300']},
@@ -876,14 +937,25 @@ const ITEMS={
     {id:'planeta',n:'Planeta',c:['#2a1a3a','#ff8a1f'],req:'m25'},
     {id:'alvo',n:'Alvo',c:['#2b2f38','#ff3d2e'],req:'s7'},
     {id:'alien',n:'Alien',c:['#0e1e14','#39e35f'],req:'s10'},
-    {id:'coroa',n:'Coroa',c:['#3a2a08','#ffd84a'],req:'m100'}]},
+    {id:'coroa',n:'Coroa',c:['#3a2a08','#ffd84a'],req:'m100'},
+    {id:'coracao',n:'Coração',c:['#3a0e1e','#ff5a8a'],price:30},
+    {id:'lua',n:'Lua',c:['#1a1e3a','#f0e8b0'],price:30},
+    {id:'diamante',n:'Diamante',c:['#0e2a3a','#7af0ff'],price:50},
+    {id:'xis',n:'Xis',c:['#2b2f38','#ff8a1f'],price:50},
+    {id:'seta',n:'Seta',c:['#0e2a1a','#7aff9a'],price:50},
+    {id:'cometa',n:'Cometa',c:['#2a1a3a','#c8a8ff'],price:80},
+    {id:'pi',n:'Pi',c:['#1a2a3a','#ffd84a'],price:80},
+    {id:'olho',n:'Olho',c:['#1a1a1a','#ff3d2e'],price:120}]},
   gear:{t:'Equipamento',list:[
     {id:'none',n:'Nenhum'},
     {id:'lanterna',n:'Lanterna',req:'f25'},
     {id:'tanques',n:'Tanques O₂',req:'m10'},
     {id:'rastreador',n:'Rastreador',req:'m15'},
     {id:'macarico',n:'Maçarico',req:'f50'},
-    {id:'jetpack',n:'Jetpack',req:'s14'}]},
+    {id:'jetpack',n:'Jetpack',req:'s14'},
+    {id:'antena',n:'Antena',price:50},
+    {id:'drone',n:'Drone',price:120},
+    {id:'bandeira',n:'Bandeira',price:80}]},
   skin:{t:'Pele',list:SKIN.map((c,i)=>({id:'p'+i,n:'Tom '+(i+1),c}))},
   title:{t:'Título',list:[
     {id:'cadete',n:'Cadete'},
@@ -896,7 +968,17 @@ const ITEMS={
     {id:'capitao',n:'Capitão',req:'m50'},
     {id:'comandante',n:'Comandante',req:'s14'},
     {id:'almirante',n:'Almirante',req:'m100'},
-    {id:'lenda',n:'Lenda Estelar',req:'s30'}]},
+    {id:'lenda',n:'Lenda Estelar',req:'s30'},
+    {id:'testes',n:'Piloto de Testes',price:30},
+    {id:'astronauta',n:'Astronauta',price:30},
+    {id:'mecanico',n:'Mecânico',price:50},
+    {id:'ruinas',n:'Explorador de Ruínas',price:50},
+    {id:'engenheiro',n:'Engenheiro',price:80},
+    {id:'numeros',n:'Mestre dos Números',price:80},
+    {id:'heroi',n:'Herói da Estação',price:120},
+    {id:'guardiao',n:'Guardião da Galáxia',price:120},
+    {id:'supremo',n:'Comandante Supremo',price:180},
+    {id:'cosmos',n:'Lenda do Cosmos',price:180}]},
   ship:{t:'Modelo',list:[
     {id:'rocket',n:'Foguete',spr:'m_rocket'},
     {id:'fighter',n:'Caça',spr:'m_fighter',req:'m10'},
@@ -910,20 +992,55 @@ const ITEMS={
     {id:'verde',n:'Verde',c:{W:'#eaffe6',L:'#9fe8a0',M:'#4fb860',D:'#2a7a3a',E:'#123d1d',R:'#ffb35a',r:'#d9701a',q:'#6b3508'},req:'f25'},
     {id:'vermelho',n:'Vermelho',c:{W:'#ffe6e0',L:'#ff9a88',M:'#e04a3a',D:'#962018',E:'#4a0c08',R:'#ffffff',r:'#c8c8dc',q:'#6b6b80'},req:'s3'},
     {id:'preto',n:'Noturna',c:{W:'#8a88a8',L:'#5a587a',M:'#3a3858',D:'#24223c',E:'#141228',R:'#3ff2c4',r:'#1f9a7e',q:'#0f5a4a'},req:'s14'},
-    {id:'dourado',n:'Dourada',c:{W:'#fffbe0',L:'#ffe27a',M:'#e8b030',D:'#a8701a',E:'#5a3a08',R:'#ff6b5a',r:'#c42a1c',q:'#6b0f08'},req:'n4'}]},
+    {id:'dourado',n:'Dourada',c:{W:'#fffbe0',L:'#ffe27a',M:'#e8b030',D:'#a8701a',E:'#5a3a08',R:'#ff6b5a',r:'#c42a1c',q:'#6b0f08'},req:'n4'},
+    {id:'branca',n:'Branca',c:{W:'#ffffff',L:'#f0f2f6',M:'#c8ccd6',D:'#8a90a0',E:'#4a5060',R:'#40d8ff',r:'#1f6fa8',q:'#0f3a5a'},price:30},
+    {id:'rosa',n:'Rosa',c:{W:'#fff0f6',L:'#ffb8d8',M:'#e870a8',D:'#a83a70',E:'#5a1a3a',R:'#ffe27a',r:'#d8a830',q:'#7a5a10'},price:50},
+    {id:'ciano',n:'Ciano',c:{W:'#e8ffff',L:'#9af0f0',M:'#40c0c8',D:'#1f7a88',E:'#0f3a44',R:'#ff8a5a',r:'#c84a1a',q:'#5a1a08'},price:50},
+    {id:'roxa',n:'Roxa',c:{W:'#f4e8ff',L:'#c8a8ff',M:'#9060e0',D:'#5a30a0',E:'#2a1050',R:'#7aff9a',r:'#2aa850',q:'#0f4a20'},price:80},
+    {id:'camuflada',n:'Camuflada',c:{W:'#d8e0b8',L:'#a8b078',M:'#6e7848',D:'#454c2c',E:'#22261a',R:'#ffb300',r:'#a86f00',q:'#4a3000'},price:80},
+    {id:'cometa',n:'Cometa',c:{W:'#ffffff',L:'#2a2a4a',M:'#1a1a34',D:'#10102a',E:'#08081a',R:'#ff6ad5',r:'#a8208a',q:'#4a0a3a'},price:120}]},
   flame:{t:'Propulsor',list:[
     {id:'laranja',n:'Laranja',c:{Y:'#fff3a0',O:'#ffb300',r:'#e03a26'}},
     {id:'azul',n:'Azul',c:{Y:'#e0fbff',O:'#40d8ff',r:'#1f6fa8'},req:'m25'},
     {id:'verde',n:'Verde',c:{Y:'#e6ffd0',O:'#39e35f',r:'#1f9a3a'},req:'s5'},
     {id:'rosa',n:'Rosa',c:{Y:'#ffe0f6',O:'#ff6ad5',r:'#a8208a'},req:'f50'},
-    {id:'cosmica',n:'Cósmica',c:{Y:'#ffffff',O:'#ff6ad5',r:'#40d8ff'},req:'s30'}]},
+    {id:'cosmica',n:'Cósmica',c:{Y:'#ffffff',O:'#ff6ad5',r:'#40d8ff'},req:'s30'},
+    {id:'branca',n:'Plasma',c:{Y:'#ffffff',O:'#d8f4ff',r:'#7ab8ff'},price:30},
+    {id:'roxa',n:'Roxa',c:{Y:'#f4e0ff',O:'#b46aff',r:'#5a20a8'},price:50},
+    {id:'vermelha',n:'Vermelha',c:{Y:'#ffe0c0',O:'#ff4a2a',r:'#8a1004'},price:50},
+    {id:'dourada',n:'Dourada',c:{Y:'#fffbe0',O:'#ffd84a',r:'#c88a00'},price:80},
+    {id:'gelo',n:'Gelo',c:{Y:'#ffffff',O:'#a8f4ff',r:'#3ab8d8'},price:80}]},
+  decal:{t:'Adesivo',list:[
+    {id:'none',n:'Nenhum'},
+    {id:'faixa',n:'Faixa vermelha',p:'faixa',c:['#ff5a4a','#a8201a'],price:30},
+    {id:'faixaz',n:'Faixa azul',p:'faixa',c:['#5ab8ff','#1f5aa8'],price:30},
+    {id:'duas',n:'Duas faixas',p:'duas',c:['#ffd84a','#a87a10'],price:50},
+    {id:'pontas',n:'Pontas pretas',p:'pontas',c:['#3a3a4a','#1a1a24'],price:50},
+    {id:'estrela',n:'Estrela',p:'estrela',c:['#ffd84a','#a87a10'],price:50},
+    {id:'xadrez',n:'Xadrez',p:'xadrez',c:['#f4f4f4','#2a2a34'],price:80},
+    {id:'raio',n:'Raios',p:'raio',c:['#7af0ff','#1f8aa8'],price:80},
+    {id:'chamas',n:'Chamas',p:'chamas',c:['#ff8a1f','#c83a10'],price:120},
+    {id:'galaxia',n:'Galáxia',p:'xadrez',c:['#b46aff','#3a1a6a'],price:120}]},
+  trail:{t:'Rastro',list:[
+    {id:'none',n:'Nenhum'},
+    {id:'fumaca',n:'Fumaça',p:'fumaca',c:{a:'#e8e8f0',b:'#9a9ab0'},price:30},
+    {id:'estrelas',n:'Estrelas',p:'estrelas',c:{a:'#fff3a0',b:'#ffb300'},price:50},
+    {id:'bolhas',n:'Bolhas',p:'bolhas',c:{a:'#a8f4ff',b:'#3ab8d8'},price:50},
+    {id:'cometa',n:'Cometa',p:'cometa',c:{a:'#ffffff',b:'#7ad8ff',c:'#3a6ad8'},price:80},
+    {id:'coracoes',n:'Corações',p:'coracoes',c:{a:'#ff8ab8',b:'#c83a70'},price:80},
+    {id:'arco',n:'Arco-íris',p:'arco',c:{a:'#ff4a4a',b:'#ff9a2a',c:'#ffe24a',d:'#4ae06a',e:'#4aa8ff',f:'#a86aff'},price:180}]},
 };
-const DEF={helmet:'branco',visor:'ciano',suit:'lilas',skin:'p1',emblem:'estrela',gear:'none',title:'cadete',ship:'rocket',paint:'prata',flame:'laranja'};
+const DEF={helmet:'branco',visor:'ciano',suit:'lilas',skin:'p1',emblem:'estrela',gear:'none',title:'cadete',ship:'rocket',paint:'prata',flame:'laranja',decal:'none',trail:'none'};
 const item=(cat,id)=>ITEMS[cat].list.find(x=>x.id===id)||ITEMS[cat].list[0];
 for(const c in ITEMS)ITEMS[c].list.forEach(it=>it.k=c+':'+it.id);
 const OLDREQ={'visor:rosa':'a3','ship:disc':'a3','gear:rastreador':'a3','title:cacador':'a10','emblem:alien':'a10','flame:rosa':'a10','suit:laranja':'d3','flame:verde':'d3','gear:macarico':'d3'};
 if(!st.mig2){st.own=Object.keys(OLDREQ).filter(k=>st.got.includes(OLDREQ[k]));st.mig2=1;try{localStorage.setItem(ST,JSON.stringify(st))}catch(e){}}
-const owned=it=>!it.req||st.got.includes(it.req)||(st.own||[]).includes(it.k);
+/* Oficina: itens agora são liberados com energia. Quem já tinha liberado algo por medalha continua com ele. */
+const REQP={m5:30,f25:30,s3:30,m10:50,m15:50,s5:50,f50:50,n3:50,m25:80,s7:80,s10:80,f100:80,m50:120,m75:120,s14:120,n4:120,f250:120,m100:180,s30:180};
+if(!st.mig3){st.own=st.own||[];for(const c in ITEMS)ITEMS[c].list.forEach(it=>{if(it.req&&st.got.includes(it.req)&&!st.own.includes(it.k))st.own.push(it.k)});
+  st.eBonus=60;st.spent=0;st.mig3=1;try{localStorage.setItem(ST,JSON.stringify(st))}catch(e){}}
+for(const c in ITEMS)ITEMS[c].list.forEach(it=>{if(it.req){it.price=REQP[it.req]||80;delete it.req}});
+const owned=it=>!it.price||(st.own||[]).includes(it.k);
 function look(){const L=Object.assign({},DEF,st.look);for(const k in L){if(!owned(item(k,L[k])))L[k]=DEF[k]}return L}
 
 /* ---- métricas lidas do progresso dos apps ---- */
@@ -956,27 +1073,50 @@ function trimRows(rows){const E=r=>!/[^.]/.test(r);let t=0,b=rows.length-1;while
 function cacheAvatar(){try{const L=look(),fo=item('flame',L.flame).c;
   const pr=trimRows(pilotRows(L));
   localStorage.setItem('navemae-avatar',JSON.stringify({v:2,pilot:spriteRows(pr,1,pilotOv(L)),pilotHD:spriteRows(pr,4,pilotOv(L)),
-    ship:sprite(item('ship',L.ship).spr,1,item('paint',L.paint).c),flame:[sprite('fl1',1,fo),sprite('fl2',1,fo)]}))}catch(e){}}
+    ship:spriteRows(shipRows(L),1,shipOv(L)),flame:[sprite('fl1',1,fo),sprite('fl2',1,fo)]}))}catch(e){}}
 const pilotFull=(s,L=look())=>spriteRows(pilotRows(L),s,pilotOv(L));
 /* retrato: cabeça e ombros recortados do corpo inteiro */
 const pilotSVG=(s,L=look())=>spriteRows(pilotRows(L).slice(4,21).map(r=>r.slice(2,30)),s,pilotOv(L));
 function patchSVG(it,s){const g=EMB[it.id]||["...","...","..."];
   return spriteRows(["kkkkk",...g.map(r=>'k'+r.replace(/\./g,'a')+'k'),"kkkkk"],s,{a:(it.c||['#2b2f38'])[0],b:(it.c||['','#2b2f38'])[1]})}
-function shipOnly(s,L=look()){return sprite(item('ship',L.ship).spr,s,item('paint',L.paint).c)}
-function shipSVG(s,L=look()){const fo=item('flame',L.flame).c;
-  return `<span style="display:grid;justify-items:center">${shipOnly(s,L)}<span style="position:relative;height:${5*s}px;width:${18*s}px;margin-top:${-s}px">
-  <span class="f1" style="position:absolute;inset:0">${sprite('fl1',s,fo)}</span><span class="f2" style="position:absolute;inset:0">${sprite('fl2',s,fo)}</span></span></span>`;
+/* adesivos: pintam parte da fuselagem (pixels W/L/M viram '+', D/E viram '*') conforme o desenho escolhido */
+const DECAL={faixa:(x,y,w,h)=>y===Math.round(h*.58)||y===Math.round(h*.58)+1,
+  duas:(x,y,w,h)=>y===Math.round(h*.42)||y===Math.round(h*.66),
+  pontas:(x,y,w,h)=>y<h*.24,
+  estrela:(x,y,w,h)=>{const dx=Math.abs(x-(w-1)/2),dy=Math.abs(y-Math.round(h*.55));return(dx<1&&dy<=2)||(dy===0&&dx<=2)||(dx<=1.5&&dy<=1)},
+  xadrez:(x,y,w,h)=>y>=h*.4&&y<=h*.7&&(x+y)%2===0,
+  raio:(x,y,w,h)=>y>=h*.3&&y<=h*.75&&(x+y)%5===0,
+  chamas:(x,y,w,h)=>y>h*.6+((x*7)%3)-1};
+function shipRows(L){const rows=SPR[item('ship',L.ship).spr],d=item('decal',L.decal);if(!d.p)return rows;
+  const h=rows.length,w=rows[0].length,f=DECAL[d.p];
+  return rows.map((r,y)=>[...r].map((c,x)=>'WLM'.includes(c)&&f(x,y,w,h)?'+':'DE'.includes(c)&&f(x,y,w,h)?'*':c).join(''))}
+function shipOv(L){const d=item('decal',L.decal);return Object.assign({},item('paint',L.paint).c,d.c?{'+':d.c[0],'*':d.c[1]}:{})}
+function shipOnly(s,L=look()){return spriteRows(shipRows(L),s,shipOv(L))}
+/* rastro: duas imagens que se alternam embaixo do propulsor */
+function trailRows(p,f){const W=18,H=6,g=Array.from({length:H},()=>Array(W).fill('.')),put=(x,y,c)=>{if(x>=0&&x<W&&y>=0&&y<H)g[y][x]=c};
+  if(p==='fumaca')[[8,1],[10,3],[8,5]].forEach(([x,y],i)=>{x+=(i+f)%2;for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++)if(dx*dx+dy*dy<2)put(x+dx,y+dy,dx+dy<0?'a':'b')});
+  if(p==='estrelas')(f?[[6,0],[11,2],[8,4]]:[[11,0],[7,2],[10,4]]).forEach(([x,y],i)=>{put(x,y+1,'a');if(i!==1){put(x-1,y+1,'b');put(x+1,y+1,'b');put(x,y,'b');put(x,y+2,'b')}});
+  if(p==='bolhas')(f?[[7,1],[11,3],[8,5]]:[[10,1],[7,3],[11,5]]).forEach(([x,y])=>{put(x-1,y,'a');put(x+1,y,'a');put(x,y-1,'a');put(x,y+1,'a');put(x,y,'b')});
+  if(p==='cometa')for(let y=0;y<H;y++){const r=3-Math.floor(y/2);for(let x=9-r;x<9+r;x++)if(!(y>2&&(x+y+f)%3===0))put(x,y,y<2?'a':y<4?'b':'c')}
+  if(p==='coracoes')(f?[[6,0],[10,3]]:[[10,0],[6,3]]).forEach(([x,y])=>{['b.b','bbb','.b.'].forEach((r,dy)=>[...r].forEach((c,dx)=>{if(c==='b')put(x+dx,y+dy,dy===0?'a':'b')}))});
+  if(p==='arco')for(let y=0;y<H;y++)for(let i=0;i<6;i++){const x=6+i;if(y<3||(x+y+f)%2===0)put(x,y,'abcdef'[i])}
+  return g.map(r=>r.join(''))}
+function trailSVG(it,s){if(!it.p)return '';return `<span class="f1" style="position:absolute;inset:0;display:grid;justify-items:center">${spriteRows(trailRows(it.p,0),s,it.c)}</span><span class="f2" style="position:absolute;inset:0;display:grid;justify-items:center">${spriteRows(trailRows(it.p,1),s,it.c)}</span>`}
+function shipSVG(s,L=look()){const fo=item('flame',L.flame).c,tr=item('trail',L.trail),ts=Math.max(2,Math.round(s/3)*2);
+  return `<span class="fx" style="display:grid;justify-items:center">${shipOnly(s,L)}<span style="position:relative;height:${5*s}px;width:${18*s}px;margin-top:${-s}px">
+  <span class="f1" style="position:absolute;inset:0">${sprite('fl1',s,fo)}</span><span class="f2" style="position:absolute;inset:0">${sprite('fl2',s,fo)}</span></span>${tr.p?`<span style="position:relative;height:${6*ts}px;width:${18*ts}px">${trailSVG(tr,ts)}</span>`:''}</span>`;
 }
 /* miniatura de um item para listas */
 function thumb(cat,it,s=2){const L=Object.assign(look(),{[cat]:it.id});
-  if(cat==='ship'||cat==='paint')return shipOnly(s,L);
+  if(cat==='ship'||cat==='paint'||cat==='decal')return shipOnly(s,L);
+  if(cat==='trail')return it.p?`<span class="fx" style="position:relative;display:block;width:${36*s}px;height:${12*s}px">${trailSVG(it,s*2)}</span>`:'<b style="font-family:var(--px);font-size:8px;color:var(--dim)">—</b>';
   if(cat==='flame')return sprite('fl2',s*2,it.c);
   if(cat==='emblem')return patchSVG(it,s*3);
   if(cat==='gear')return pilotFull(2,L);
   if(cat==='title')return `<b style="font-family:var(--px);font-size:8px;color:var(--amber)">${it.n.toUpperCase()}</b>`;
   return pilotSVG(s,L)}
 function swatchBg(cat,it){
-  const c=!it.c?null:cat==='paint'?[it.c.L||'#d8d6ff',it.c.M||'#9b98d4',it.c.D||'#5f5ca8',it.c.r||'#e03a26']:cat==='flame'?[it.c.Y,it.c.O,it.c.r]:it.c;
+  const c=!it.c?null:!Array.isArray(it.c)&&cat!=='paint'&&cat!=='flame'?Object.values(it.c):cat==='paint'?[it.c.L||'#d8d6ff',it.c.M||'#9b98d4',it.c.D||'#5f5ca8',it.c.r||'#e03a26']:cat==='flame'?[it.c.Y,it.c.O,it.c.r]:it.c;
   if(!c||!c.length)return '#9b98d4'; // itens sem cor (equipamento, emblema): cor neutra
   const n=c.length;return `linear-gradient(180deg,${c.map((x,i)=>`${x} ${i*100/n}% ${(i+1)*100/n}%`).join(',')})`}
 
@@ -1087,7 +1227,7 @@ function renderHome(){
   $('#pPort').innerHTML=pilotSVG(2,L);$('#logoShip').innerHTML=shipOnly(2,L);
   const fresh=st.got.filter(g=>!st.seen.includes(g)).length;$('#mBadge').hidden=!fresh;$('#mBadge').textContent=fresh;
   // selo da aba Missões: contador quando falta algo, check verde quando o turno está completo
-  const pend=pendingCount(),tb=$('#tBadge');tb.hidden=false;tb.classList.toggle('ok',!pend);tb.innerHTML=pend?pend:BADGE_OK;
+  const pend=pendingCount(),tb=$('#tBadge');tb.hidden=false;tb.classList.toggle('ok',!pend);tb.innerHTML=pend?pend:BADGE_OK;updBadges();
   const s=streak();
   $('#streak').className='streak'+(s?'':' zero');
   $('#streak').innerHTML=`${sprite(s?'flame':'flameOff',2)}<div><b>${s}</b><span>${s===1?'DIA':'DIAS'}<br>SEGUIDOS</span></div>`;
@@ -1174,7 +1314,10 @@ function takeoff(a,hash=''){
       x.moveTo(W/2+Math.cos(p.a)*r0|0,H/2+Math.sin(p.a)*r0|0);x.lineTo(W/2+Math.cos(p.a)*r1|0,H/2+Math.sin(p.a)*r1|0);x.stroke()});
     if(k<1)requestAnimationFrame(f);else{x.fillStyle='#fff';x.fillRect(0,0,W,H);setTimeout(()=>{location.href=a.url+hash},60)}})(t0);
 }
-addEventListener('pageshow',()=>{$('#warp').hidden=true;checkGoals();go(view==='planet'?'home':view);routeHash();setTimeout(showUnlock,400)});
+addEventListener('pageshow',()=>{$('#warp').hidden=true;checkGoals();go(view==='planet'?'home':view);routeHash();setTimeout(showUnlock,400);
+  // energia ganha nos jogos desde a última visita
+  const e=energy();if(st.eSeen==null){st.eSeen=e.earned;save();if(st.pilot)setTimeout(()=>toast(`Oficina aberta! ⚡${e.bal}`),900)}
+  else if(e.earned>st.eSeen){const d=e.earned-st.eSeen;st.eSeen=e.earned;save();setTimeout(()=>toast(`+${d} de energia!`),900)}});
 /* volta de um jogo: ../#v=tasks abre a aba Missões, ../#p=mat abre o planeta */
 let routed=false;
 function routeHash(){const h=location.hash;let v=(h.match(/v=(\w+)/)||[])[1];const p=(h.match(/p=(\w+)/)||[])[1];
@@ -1203,12 +1346,16 @@ let navT=0;
 document.addEventListener('click',e=>{if(e.target.matches&&e.target.matches('label[data-hap]>input'))return; // clique interno da vibração
   if(performance.now()-navT<350&&e.target.closest('#app')){e.stopPropagation();e.preventDefault()}},true);
 const VIEWS=['home','planet','tasks','crew','medals'];let view='home',sub='vest';
-function go(v){navT=performance.now();if(v==='vest'||v==='hang'){sub=v;v='crew'}view=v;draft=null;VIEWS.forEach(x=>$('#'+x).hidden=x!==v);
+function go(v){navT=performance.now();if(v==='vest'||v==='hang'||v==='shop'){sub=v;v='crew'}view=v;draft=null;VIEWS.forEach(x=>$('#'+x).hidden=x!==v);
   $('#topHdr').hidden=v!=='home'; // cabeçalho NAVE-MÃE só no mapa
   document.querySelectorAll('.tabbar [data-v]').forEach(b=>b.classList.toggle('on',b.dataset.v===(v==='planet'?'home':v)));
   if(v==='home')renderHome();if(v==='tasks')renderTasks();if(v==='medals')renderMedals();
-  if(v==='crew'){$('#vest').hidden=$('#vStage').hidden=sub!=='vest';$('#hang').hidden=$('#hStage').hidden=sub!=='hang';
-    document.querySelectorAll('#seg [data-s]').forEach(b=>b.classList.toggle('on',b.dataset.s===sub));sub==='vest'?renderVest():renderHang()}
+  $('#shopBar').hidden=true;
+  if(v==='crew'){const sh=sub==='shop';$('#vest').hidden=sub!=='vest';$('#hang').hidden=sub!=='hang';$('#shop').hidden=!sh;
+    $('#vStage').hidden=!(sub==='vest'||sh&&shopSide==='pilot');$('#hStage').hidden=!(sub==='hang'||sh&&shopSide==='ship');
+    document.querySelectorAll('#seg [data-s]').forEach(b=>b.classList.toggle('on',b.dataset.s===sub));
+    $('#hEn').innerHTML=sprite('en',2)+energy().bal;
+    sh?renderShop():sub==='vest'?renderVest():renderHang()}
   window.scrollTo(0,0);coverTop()}
 /* respiro do topo: quando o palco do hangar gruda, cobre o que passa por cima dele */
 function coverTop(){const s=null; // os blocos fixos agora têm fundo próprio
@@ -1262,7 +1409,7 @@ const ADMSG=['Base em segurança, {n}.','Todas as estações operando. Bom traba
 function bindTasks(){$('#tList').querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>takeoff(APPS.find(a=>a.id===b.dataset.a),'#m='+b.dataset.m+'&r=tasks'));
   const tg=$('#tDoneTg');if(tg)tg.onclick=()=>{tDoneOpen=!tDoneOpen;SND.open();renderTasks()};
   $('#tList').querySelectorAll('[data-fold]').forEach(b=>b.onclick=()=>{const id=b.dataset.fold;tFold[id]=b.getAttribute('aria-expanded')!=='true';SND.tab(tFold[id]?1:0);renderTasks()})}
-let toastT=0;function toast(t){const el=$('#toast');el.textContent=t;el.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>el.hidden=true,2600)}
+let toastT=0;function toast(t){const el=$('#toast');el.textContent=t;el.hidden=false;el.style.bottom=$('#shopBar').hidden?'':'calc(170px + env(safe-area-inset-bottom))';clearTimeout(toastT);toastT=setTimeout(()=>el.hidden=true,2600)}
 $('#pilotBtn').onclick=()=>{SND.open();go('vest')};
 document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>{b.closest('.overlay').hidden=true});
 $('#nmEdit').onclick=()=>{SND.open();$('#nameIn').value=st.pilot;$('#nameDlg').hidden=false};
@@ -1272,7 +1419,7 @@ $('#nameForm').onsubmit=e=>{e.preventDefault();const v=$('#nameIn').value.trim()
 let draft=null;
 const goalOf=it=>GOALS.find(g=>g.id===it.req);
 function reqTxt(it){const g=goalOf(it),m=metrics();return `🔒 ${g.txt} · ${Math.min(m[g.kind],g.n)}/${g.n}`}
-function selRow(cat,L){const list=ITEMS[cat].list,it=item(cat,L[cat]),i=list.indexOf(it),own=owned(it);
+function selRow(cat,L){const list=ITEMS[cat].list.filter(owned),it=item(cat,L[cat]),i=list.indexOf(it),own=owned(it);
   const sw=!it.c||cat==='title'||cat==='ship'?'':`<i class="dot2" style="background:${swatchBg(cat,it)}"></i>`;
   return `<div class="sel px"><div class="srow"><span class="label">${ITEMS[cat].t}</span>
     <button class="arr" data-c="${cat}" data-d="-1" aria-label="Anterior">${sprite('back',2)}</button>
@@ -1280,12 +1427,53 @@ function selRow(cat,L){const list=ITEMS[cat].list,it=item(cat,L[cat]),i=list.ind
     <button class="arr" data-c="${cat}" data-d="1" aria-label="Próximo">${sprite('fwd',2)}</button></div>
     ${own?'':`<p class="req">${reqTxt(it)}</p>`}</div>`}
 function bindSels(host,render){host.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>{
-  const cat=b.dataset.c,list=ITEMS[cat].list,cur=list.indexOf(item(cat,draft[cat]));
+  const cat=b.dataset.c,list=ITEMS[cat].list.filter(owned),cur=list.indexOf(item(cat,draft[cat]));
   const it=list[(cur+ +b.dataset.d+list.length)%list.length];draft[cat]=it.id;
   if(owned(it)){st.look=Object.assign({},look(),{[cat]:it.id});save();cacheAvatar();SND.equip(+b.dataset.d);$('#logoShip').innerHTML=shipOnly(2)}else SND.locked();
   render()})}
 const anyLocked=(cats)=>cats.some(c=>!owned(item(c,draft[c])));
-const VCATS=['title','helmet','visor','suit','skin','emblem','gear'],HCATS=['ship','paint','flame'];
+const VCATS=['title','helmet','visor','suit','skin','emblem','gear'],HCATS=['ship','paint','flame','decal','trail'];
+/* ---------- energia: calculada do histórico dos jogos (cada dia guardado no livro st.eLed, que nunca diminui) ----------
+   missão do dia +10 · acerto de primeira +1 (até 10 por missão) · turno completo +10 · desafio +8 · a partir do 3º dia seguido +5 */
+function energy(){const Ld=st.eLed=st.eLed||{},per={},full={};
+  APPS.forEach(a=>{const s=readLS(a.store)||{},days=s.days||{},log=s.log||{},main=a.tasks.filter(t=>!t.opt).map(t=>t.id),opt=a.tasks.filter(t=>t.opt).map(t=>t.id);
+    for(const k in days){const l=days[k]||[],dm=main.filter(m=>l.includes(m)).length;let v=dm*10;if(dm>=main.length){v+=10;full[k]=1}
+      if(opt.some(m=>l.includes(m)))v+=8;main.forEach(m=>{const r=(log[k]||{})[m];if(r)v+=Math.min(10,r[1])});per[k]=(per[k]||0)+v}});
+  let run=0,prev=null;Object.keys(full).sort().forEach(k=>{const d=new Date(k+'T12:00');run=prev&&Math.round((d-prev)/864e5)===1?run+1:1;prev=d;if(run>=3)per[k]=(per[k]||0)+5});
+  let ch=false;for(const k in per)if(per[k]>(Ld[k]||0)){Ld[k]=per[k];ch=true}if(ch)save();
+  const earned=(st.eBonus||0)+Object.values(Ld).reduce((a,b)=>a+b,0);return{earned,bal:earned-(st.spent||0)}}
+const minPrice=()=>{let m=1e9;for(const c in ITEMS)ITEMS[c].list.forEach(it=>{if(it.price&&!owned(it)&&c!=='skin')m=Math.min(m,it.price)});return m};
+/* ---------- Oficina ---------- */
+let shopSide='pilot',shopSel=null;
+/* selo de energia na aba Hangar: aparece quando já dá para liberar algum item */
+function updBadges(){const b=$('#hBadge');if(!b)return;b.hidden=energy().bal<minPrice();b.innerHTML=sprite('en',2)}
+const SHOPC={pilot:['helmet','visor','suit','emblem','gear','title'],ship:['ship','paint','flame','decal','trail']};
+function renderShop(){const bal=energy().bal;$('#shopBal').innerHTML=sprite('en',2)+bal;$('#hEn').innerHTML=sprite('en',2)+bal;
+  document.querySelectorAll('#shopSide [data-side]').forEach(b=>b.classList.toggle('on',b.dataset.side===shopSide));
+  let h='';SHOPC[shopSide].forEach(c=>{const list=ITEMS[c].list.filter(it=>it.price);if(!list.length)return;const own=list.filter(owned).length;
+    h+=`<div class="shop-h"><span class="label">${ITEMS[c].t}</span><span class="label">${own} / ${list.length}</span></div><div class="shop-g">`+
+      list.map(it=>{const o=owned(it);return `<button class="shop-it px${o?' own':''}${shopSel===it.k?' sel':''}" data-k="${it.k}"><span class="th">${thumb(c,it,2)}</span>
+        <span class="nm">${it.n.toUpperCase()}</span><span class="pr${!o&&bal<it.price?' no':''}">${o?sprite('check',2)+'SEU':sprite('en',2)+it.price}</span></button>`}).join('')+'</div>'});
+  $('#shopList').innerHTML=h;
+  $('#shopList').querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{shopSel=shopSel===b.dataset.k?null:b.dataset.k;SND.medal();shopPreview();renderShop()});
+  shopPreview();shopBarRender(bal)}
+function shopItem(){if(!shopSel)return null;const[c,id]=shopSel.split(':');return{c,it:item(c,id)}}
+function shopPreview(){const x=shopItem();draft=Object.assign(look(),x?{[x.c]:x.it.id}:{});
+  if(shopSide==='pilot'){$('#vHero').innerHTML=pilotFull(4,draft);$('#vTag').hidden=!x||owned(x.it);
+    document.querySelectorAll('[data-lk]').forEach(el=>{if(!el.innerHTML)el.innerHTML=sprite('locker',4,{L:'#8a93a3',M:'#646c7c',D:'#454b57',E:'#2b2f38'}).repeat(+el.dataset.lk)})}
+  else{hangScene();$('#hTag').hidden=!x||owned(x.it)}}
+function shopBarRender(bal){const x=shopItem(),bar=$('#shopBar');if(!x||view!=='crew'||sub!=='shop'){bar.hidden=true;return}
+  const o=owned(x.it),can=bal>=x.it.price,eq=look()[x.c]===x.it.id;
+  bar.innerHTML=`<span class="sb-t"><b>${x.it.n.toUpperCase()}</b><small>${ITEMS[x.c].t}${o?' · já é seu':can?'':' · faltam '+(x.it.price-bal)}</small></span>`+
+    (o?`<button class="btn" id="sbGo"${eq?' disabled':''}>${eq?'EM USO':'USAR'}</button>`:`<button class="btn" id="sbGo"${can?'':' disabled'}>LIBERAR ${sprite('en',2)}${x.it.price}</button>`);
+  bar.hidden=false;bar.style.bottom=($('.tabbar').offsetHeight+12)+'px';
+  $('#sbGo').onclick=()=>{const e=energy();if(!o){if(e.bal<x.it.price){SND.locked();return}st.spent=(st.spent||0)+x.it.price;st.own=st.own||[];st.own.push(x.it.k);SND.unlock();toast('Liberado!')}
+    else SND.equip(1);
+    st.look=Object.assign({},look(),{[x.c]:x.it.id});save();cacheAvatar();$('#logoShip').innerHTML=shipOnly(2);renderShop();updBadges()}}
+document.querySelectorAll('#shopSide [data-side]').forEach(b=>b.onclick=()=>{if(b.dataset.side===shopSide)return;shopSide=b.dataset.side;shopSel=null;SND.tab(shopSide==='pilot'?2:3);
+  $('#vStage').hidden=shopSide!=='pilot';$('#hStage').hidden=shopSide!=='ship';renderShop()});
+function hangScene(){if(!winStars){for(let i=0;i<26;i++)winStars+=`<i class="${Math.random()<.2?'b':''}" style="left:${Math.random()*100|0}%;top:${Math.random()*100|0}%"></i>`;$('#hWin').innerHTML=winStars}
+  $('#hPad').innerHTML=sprite('pad',4);$('#hShip').innerHTML=shipSVG(6,draft);$('#hShip').classList.toggle('trail',!!item('trail',draft.trail).p)}
 function renderVest(){if(!draft)draft=look();
   document.querySelectorAll('[data-lk]').forEach(el=>el.innerHTML=sprite('locker',4,{L:'#8a93a3',M:'#646c7c',D:'#454b57',E:'#2b2f38'}).repeat(+el.dataset.lk));
   $('#vHero').innerHTML=pilotFull(4,draft);
@@ -1294,8 +1482,7 @@ function renderVest(){if(!draft)draft=look();
   $('#vSels').innerHTML=VCATS.map(c=>selRow(c,draft)).join('');bindSels($('#vSels'),renderVest)}
 let winStars='';
 function renderHang(){if(!draft)draft=look();
-  if(!winStars){for(let i=0;i<26;i++)winStars+=`<i class="${Math.random()<.2?'b':''}" style="left:${Math.random()*100|0}%;top:${Math.random()*100|0}%"></i>`;$('#hWin').innerHTML=winStars}
-  $('#hPad').innerHTML=sprite('pad',4);$('#hShip').innerHTML=shipSVG(6,draft);
+  hangScene();
   $('#hTag').hidden=!anyLocked(HCATS);$('#hName').textContent=st.pilot||'—';
   $('#hSels').innerHTML=HCATS.map(c=>selRow(c,draft)).join('');bindSels($('#hSels'),renderHang)}
 
@@ -1316,7 +1503,7 @@ function renderMedals(){const m=metrics();st.seen=[...st.got];save();$('#mBadge'
   $('#mCount').textContent=`${st.got.length} / ${GOALS.length}`;
   $('#mDetail').className='mdetail px'+(done?' done':'');
   $('#mDetail').innerHTML=`<span class="md-ic">${medalSVG(g,4)}</span><div><b>${g.txt}</b><div class="bar"><i style="width:${Math.round(v/g.n*100)}%"></i></div><span class="n">${done?'CONQUISTADA':v+' / '+g.n}</span></div>
-    <div class="rw">${g.honor?'<span>Medalha de honra · desafio extra</span>':''}${rewards(g.id).map(([c,it])=>`<span>${c==='title'?'':`<i class="dot2" style="background:${c==='ship'?'#9b98d4':swatchBg(c,it)}"></i>`}${c==='title'?'Título “'+it.n+'”':(ITEMS[c].t+' '+it.n.toLowerCase())}</span>`).join('')}</div>`;
+    <div class="rw">${g.honor?'<span>Medalha de honra · desafio extra</span>':'<span>Cada missão também dá energia para a Oficina.</span>'}${rewards(g.id).map(([c,it])=>`<span>${c==='title'?'':`<i class="dot2" style="background:${c==='ship'?'#9b98d4':swatchBg(c,it)}"></i>`}${c==='title'?'Título “'+it.n+'”':(ITEMS[c].t+' '+it.n.toLowerCase())}</span>`).join('')}</div>`;
   $('#mWall').innerHTML=Object.keys(CATS).map(k=>{const gs=GOALS.filter(x=>x.kind===k),n=gs.filter(x=>st.got.includes(x.id)).length;
     return `<div class="mrow"><div class="label">${CATS[k].t}<span>${n}/${gs.length}</span></div><div class="medals">${gs.map(x=>`<button class="${x.id===mSel?'on':''}" data-g="${x.id}" aria-label="${x.txt}">${medalSVG(x,2)}</button>`).join('')}</div></div>`}).join('');
   $('#mWall').querySelectorAll('[data-g]').forEach(b=>b.onclick=()=>{mSel=b.dataset.g;SND.medal();renderMedals()})}

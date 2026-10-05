@@ -40,7 +40,13 @@ Os jogos em que a criança aparece usam o piloto e a nave como foram customizado
 
 Missão feita aparece sempre como **FEITO**. Jogar de novo uma missão feita no dia é jogo livre: começa do zero, não guarda andamento e a missão continua feita, mesmo se a criança sair no meio.
 
-Itens bloqueados aparecem como prévia com cadeado e mostram o objetivo que falta. Os itens só dependem das missões diárias: total de missões, dias seguidos, acertos de primeira nas missões e nível em Numeris. Os desafios extras (Fuja do Alien, Desabamento) dão medalhas de honra, contadas a cada fuga, sem itens. O que foi conquistado fica guardado e não volta a travar.
+**Oficina (dentro do Hangar: PILOTO | NAVE | OFICINA):** cada peça nova é liberada com **energia**, ganha nos jogos. A criança escolhe o que liberar; tocar num item mostra a prévia no palco, e a barra de baixo tem LIBERAR (ou USAR, se já for dele). Piloto e Nave mostram só o que já é dele.
+
+- Energia por dia, por jogo: missão do dia +10, acerto de primeira +1 (até 10 por missão), turno completo +10, desafio +8; a partir do 3º dia seguido, +5 por dia. Repetir missão já feita não rende (só os acertos, com o limite).
+- O cálculo sai do histórico dos jogos e fica guardado dia a dia em `st.eLed` (nunca diminui, mesmo quando o histórico antigo é apagado). Gasto em `st.spent`. Bônus de inauguração: 60.
+- Quem já tinha peças liberadas por medalha continua com elas. As medalhas seguem como coleção.
+- Catálogo: 114 peças (capacetes, viseiras, trajes, emblemas, equipamentos, títulos, modelos, pinturas, propulsores, adesivos e rastros), de 30 a 180 de energia.
+- A aba Hangar ganha um selo com raio quando já dá para liberar alguma peça. Ao voltar dos jogos aparece "+N de energia", e a comemoração dos jogos mostra a energia ganha.
 
 ## Sons
 

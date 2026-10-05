@@ -159,6 +159,7 @@ button,a{font:inherit;color:inherit;background:none;border:0;text-decoration:non
 .cel-score b{font-weight:400;font-size:28px;color:var(--cel-acc);text-shadow:2px 2px 0 var(--cel-acc-d);min-width:1.1em;text-align:right}
 .cel-score span{font-size:16px}
 .cel-score small{font-family:var(--vt);font-size:20px;color:var(--cel-dim);margin-left:10px}
+.cel-en{display:flex;align-items:center;gap:8px;margin-top:-4px;font-family:var(--px);font-size:10px;color:#ffb300;text-shadow:2px 2px 0 #000;animation-delay:.3s}
 .cel-turno{width:100%;padding:12px 14px;text-align:left}
 .cel-tl{display:flex;justify-content:space-between;font-family:var(--px);font-size:8px;line-height:1;color:var(--cel-dim)}
 .cel-tl b{font-weight:400;color:var(--cel-ink)}
@@ -377,7 +378,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 
 <script>
 /* atualização automática: compara com version.json e recarrega quando sai versão nova */
-const APP_V='20261004174215';
+const APP_V='20261004212425';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     if(v&&v!==APP_V&&sessionStorage.getItem('upd')!==v){sessionStorage.setItem('upd',v);location.replace(location.pathname+'?v='+v+H0)}}catch(e){}}
@@ -615,6 +616,7 @@ const CEL=(()=>{
       <h2 class="cel-t cel-pop">${o.title}</h2>${o.sub?`<p class="cel-sub">${o.sub}</p>`:''}
       ${lose?'':`<div class="cel-stars">${[0,1,2].map(i=>`<span>${spriteRows(STAR,4,off)}</span>`).join('')}</div>`}
       ${o.score?`<div class="cel-score"><b>0</b><span>/${o.score[1]}</span><small>${o.scoreLabel||'de primeira'}</small></div>`:''}
+      ${o.energy?`<div class="cel-en cel-pop">${spriteRows(['....kkk','...kYOk','..kYOk.','.kYOkkk','kYYYYOk','kkkYOk.','..kYk..','.kYk...','.kk....'],2,{k:'#000',Y:'#fff3a0',O:'#ffb300'})}+${o.energy} DE ENERGIA</div>`:''}
       ${tu?`<div class="cel-turno ${C.panel}"><div class="cel-tl"><span>TURNO DE HOJE</span><b>${tu.n-(tu.fresh?1:0)}/${tu.total}</b></div><div class="cel-segs">${segs}</div>
         ${done?`<div class="cel-banner"${tu.fresh&&tu.n>=tu.total?' hidden':''}>TURNO COMPLETO! · SEQUÊNCIA: ${dias}</div>`:''}</div>`:''}
       <div class="cel-btns">${o.buttons.map((b,i)=>`<button class="${b.cls}" data-cb="${i}">${b.label}</button>`).join('')}</div></div>`;
@@ -772,8 +774,9 @@ function endButtons(again){const nx=MODES.find(m=>!doneToday().includes(m)),back
     :[{label:'VOLTAR AO TEMPLO',cls:'btn',fn:back},{label:'JOGAR DE NOVO',cls:'ghost px pbtn',fn:rep}]}
 function finishMission(){
   const f=R.firsts,m=mode,fresh=!doneToday().includes(m);delete S.run[m];markDone(m);save();SND.grind();sfx.win();
+  const en=fresh?10+Math.min(10,f)+(mainDone(dkey())>=3?10:0):0; // energia para a Oficina
   celebrate({title:f===ROUNDS?'MISSÃO PERFEITA!':'MISSÃO CUMPRIDA!',sub:'O portão se abriu.',stars:f===ROUNDS?3:f/ROUNDS>=.6?2:1,
-    score:[f,ROUNDS],turno:turnoInfo(fresh),buttons:endButtons(()=>startMission(m)),onDone:checkLevel});
+    score:[f,ROUNDS],energy:en,turno:turnoInfo(fresh),buttons:endButtons(()=>startMission(m)),onDone:checkLevel});
 }
 $('#playBack').onclick=()=>{sfx.tap();if(DL){backHome();return}show('menu')};
 
@@ -836,8 +839,8 @@ function answerD(said){if(!D||!D.run||D.tab)return;if(D.pause)return resume(); /
   else{sfx.no();D.danger=Math.min(.99,D.danger+.1);record('desafio',false,q.s);drawDes();$('#chamber').classList.remove('shake');void $('#chamber').offsetWidth;$('#chamber').classList.add('shake');
     D.pause=true;$('#dfb').className='fb no';$('#dfb').innerHTML=`<b>${q.ok?'ERA VERDADEIRA':'ERA FALSA'}</b>${q.why}`;D.to=setTimeout(resume,2600)}}
 $('#dV').onclick=()=>answerD(true);$('#dF').onclick=()=>answerD(false);
-function winD(){D.run=false;delete S.run.desafio;S.escapes=(S.escapes||0)+1;markDone('desafio');save();sfx.win();
-  celebrate({title:'VOCÊ ESCAPOU!',sub:'O teto não te pegou!',stars:3,score:[NEED,NEED],scoreLabel:'acertos',turno:turnoInfo(false),
+function winD(){D.run=false;delete S.run.desafio;S.escapes=(S.escapes||0)+1;const dfresh=!doneToday().includes('desafio');markDone('desafio');save();sfx.win();
+  celebrate({title:'VOCÊ ESCAPOU!',sub:'O teto não te pegou!',stars:3,score:[NEED,NEED],scoreLabel:'acertos',energy:dfresh?8:0,turno:turnoInfo(false),
     buttons:endButtons(()=>{S.run.desafio={c:0};openDes()}),onDone:checkLevel})}
 function loseD(){D.run=false;S.run.desafio={c:0};save();sfx.lose();setBtns(false);
   $('#dfb').className='fb no';$('#dfb').innerHTML=`<b>O TETO DESABOU!</b>Você fez ${D.c} de ${NEED}.`;
