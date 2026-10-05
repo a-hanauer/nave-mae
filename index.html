@@ -6,6 +6,8 @@
 /* iPhone (atalho da Tela de Início): ao voltar de outra página, o WebKit às vezes informa as margens seguras (Dynamic Island,
    barra de início) como 0 até a próxima rolagem — o topo sobe e as molduras ficam no tamanho errado. Guardamos as maiores
    margens já medidas neste modo (app ou navegador) e o CSS usa --sat/--sab, com env() só como reserva. */
+/* o navegador não deve devolver a rolagem antiga ao voltar para a página: cada tela começa do topo */
+try{if('scrollRestoration' in history)history.scrollRestoration='manual'}catch(e){}
 (function(){const r=document.documentElement,K='navemae-safe-'+((window.matchMedia&&matchMedia('(display-mode: standalone)').matches)||navigator.standalone?'app':'web');
   let s={};try{s=JSON.parse(localStorage.getItem(K))||{}}catch(e){}
   const ap=()=>{if(s.t)r.style.setProperty('--sat',s.t+'px');if(s.b)r.style.setProperty('--sab',s.b+'px')};ap();
@@ -657,6 +659,32 @@ body[data-v="home"] #app{padding-bottom:calc(var(--con) + var(--dash) + 24px)!im
 .arc.off{opacity:.55}.arc.off small{color:var(--dim)}
 .pa-arc{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin:12px 16px}
 .pa-arc~.pa-row{color:var(--t1)}.pa-arc~.pa-row .pa-rv{white-space:nowrap;color:var(--t1)}
+/* fliperama: cartão de destaque (Missões) e atalho na janela do mapa — visual de neon do próprio fliperama */
+.arch{position:relative;display:grid;justify-items:center;gap:12px;width:100%;margin:6px 0 34px;padding:0 0 18px;text-align:center;overflow:hidden;
+  background:#160f30;box-shadow:0 0 0 3px #000,0 0 0 6px #ff3df2,0 0 0 9px #000;animation:archGlow 1.6s steps(2) infinite}
+@keyframes archGlow{50%{box-shadow:0 0 0 3px #000,0 0 0 6px #2ad4ff,0 0 0 9px #000,0 0 26px 6px rgba(42,212,255,.45)}}
+.arch-sky{position:relative;display:block;width:100%;height:150px;background:radial-gradient(ellipse at 50% 70%,#3a1a6a 0,#160f30 70%);overflow:hidden}
+.arch-st{position:absolute;left:50%;top:22px;transform:translateX(-50%);animation:bob 1.4s steps(4) infinite}
+.arch-sign{position:absolute;left:0;right:0;bottom:12px;font-family:var(--px);font-size:18px;color:#ffd9fb;letter-spacing:.06em;
+  text-shadow:0 0 4px #ff3df2,0 0 12px #ff3df2,0 0 22px rgba(255,61,242,.7);animation:flick 5s steps(1) infinite}
+@keyframes flick{0%,90%,96%{opacity:1}93%{opacity:.5}}
+.arch-b small{display:block;font-family:var(--px);font-size:8px;color:#2ad4ff;text-shadow:0 0 6px rgba(42,212,255,.6)}
+.arch-b b{display:block;margin-top:8px;font-family:var(--px);font-size:14px;font-weight:400;color:#ffd23f;text-shadow:2px 2px 0 #7a3a00}
+.arch-go{display:flex;align-items:center;gap:10px;padding:13px 16px;font-family:var(--px);font-size:10px;color:#1a0d00;background:#ffd23f;box-shadow:inset 0 -4px 0 0 #b38a10,0 0 0 3px #000}
+.arch-go .spr{animation:nudge .8s steps(2) infinite}
+.arch:active .arch-go{transform:translate(2px,2px)}
+.arch.off{animation:none;box-shadow:0 0 0 3px #000,0 0 0 6px #4a2a6a,0 0 0 9px #000}.arch.off .arch-sign{text-shadow:none;color:#6a4a8a;animation:none}
+.arcp{display:flex;align-items:center;gap:12px;width:calc(100% - 28px);margin:16px 14px 18px;padding:10px 12px;text-align:left;background:rgba(22,15,48,.92);
+  box-shadow:0 0 0 2px #000,0 0 0 4px #ff3df2,0 0 0 6px #000,0 0 18px 2px rgba(255,61,242,.45);animation:arcpGlow 1.6s steps(2) infinite}
+@keyframes arcpGlow{50%{box-shadow:0 0 0 2px #000,0 0 0 4px #2ad4ff,0 0 0 6px #000,0 0 18px 2px rgba(42,212,255,.45)}}
+.arcp-st{flex:none;animation:bob 1.4s steps(4) infinite}
+.arcp-t{flex:1;min-width:0}
+.arcp-t b{display:block;font-family:var(--px);font-size:11px;font-weight:400;color:#ffd9fb;text-shadow:0 0 4px #ff3df2,0 0 10px #ff3df2}
+.arcp-t small{display:block;margin-top:6px;font-family:var(--px);font-size:7px;color:#2ad4ff}
+.arcp-go{display:flex;align-items:center;gap:6px;font-family:var(--px);font-size:8px;color:#ffd23f}
+.arcp-go .spr{animation:nudge .8s steps(2) infinite}
+.arcp:active{transform:translate(2px,2px)}
+.arcp.off{animation:none;box-shadow:0 0 0 2px #000,0 0 0 4px #4a2a6a,0 0 0 6px #000;opacity:.7}
 </style>
 <script>
 /* sem zoom: bloqueia pinça e dois toques no app inteiro */
@@ -698,6 +726,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
     <div class="terminal"><span id="term"></span><span class="cursor"></span></div>
     </div>
 
+    <div id="arcHome"></div>
     <div class="sec"><span class="label">Mapa estelar</span></div>
     <div class="map" id="map"></div>
     <p class="foot">Toque num planeta para ver as missões</p>
@@ -843,7 +872,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 
 <script>
 /* atualização automática: compara com version.json e recarrega quando sai versão nova */
-const APP_V='20261005111250';
+const APP_V='20261005111716';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     if(v&&v!==APP_V&&sessionStorage.getItem('upd')!==v){sessionStorage.setItem('upd',v);location.replace(location.pathname+'?v='+v+H0)}}catch(e){}}
@@ -1028,6 +1057,10 @@ function spriteRows(rows,s=2,ov){const g=hdRows(rows,s,ov),h=g.length,w=g[0].len
   g.forEach((row,y)=>{let x=0;while(x<w){const c=row[x];if(!c){x++;continue}let k=1;while(row[x+k]===c)k++;r+=`<rect x="${x}" y="${y}" width="${k}" height="1" fill="${c}"/>`;x+=k}});
   return `<svg class="spr" viewBox="0 0 ${w} ${h}" width="${w*px}" height="${h*px}" shape-rendering="crispEdges" aria-hidden="true">${r}</svg>`}
 Object.assign(SPR,{"ic_helmet": ["....kkkk....", "..kkLLLLkk..", ".kLLLLLLLMk.", ".kLLkkkkkMk.", "kLkccccccckk", "kLkcWcccccMk", "kLkccccccckk", "kMMkkkkkkkMk", ".kMMMMMMMMk.", "..kkkkkkkk..", "............", "............"], "ic_visor": ["............", "..kkkkkkkk..", ".kccccccccck", "kcWWcccccccD", "kcWccccccccD", "kccccccccccD", ".kcccccccckk", "..kkkkkkkk..", "............", "............", "............", "............"], "ic_suit": ["...kk..kk...", "..kLLkkLLk..", ".kLLLLLLLLk.", "kLLkOOOOkLMk", "kLLkOYYOkLMk", "kLLkkkkkkLMk", "kLLLLLLLLLMk", "kkLLLMMLLLkk", ".kLLLkkLLMk.", ".kLLMk.kLMk.", ".kkkkk.kkkk.", "............"], "ic_skin": ["...kkkkkk...", "..kSSSSSSk..", ".kSSSSSSSSk.", ".kSkkSSkkSk.", ".kSSSSSSSSk.", ".kSSSSSSSSk.", ".kSSkSSkSSk.", "..kSSkkSSk..", "...kkSSkk...", ".....kk.....", "............", "............"], "ic_emblem": ["kkkkkkkkkk..", "kDDDDDDDDk..", "kDDDODDDDk..", "kDDOOODDDk..", "kDOOOOODDk..", "kDDOOODDDk..", "kDDODODDDk..", "kDDDDDDDDk..", "kkkkkkkkkk..", "............", "............", "............"], "ic_gear": ["........kk..", ".......kWWk.", "......kWLk..", ".....kWLk...", "....kWLk....", "...kWLk.....", "..kMMk......", ".kMMMMk.....", "kMMkMMk.....", "kMk.kk......", ".k..........", "............"], "ic_title": ["..kkkkkkkk..", ".kYYYYYYYYk.", "kYOOOOOOOOYk", "kYOkkkkkkOYk", "kYOOOOOOOOYk", ".kYYYYYYYYk.", "..kkrkkrkk..", "...krk.krk..", "...krk.krk..", "...kk...kk..", "............", "............"], "ic_ship": [".....kk.....", "....kLLk....", "...kLccLk...", "...kLccMk...", "...kLLLMk...", "..kkLLLMkk..", ".krkLLLMkrk.", "krrkLMMMkrrk", "kkkkkkkkkkkk", "...kOkkOk...", "...kYk.kYk..", "............"], "ic_paint": ["......kk....", ".....kWLk...", ".....kLMk...", "....kLMk....", "...kkkkk....", "..kOOOOk....", "..kOOOk.....", ".kOOOk......", ".kOOk.......", "kOOk........", "kkk.........", "............"], "ic_flame": ["....k.......", "...kOk..k...", "...kOk.kOk..", "..kOYOkkOk..", "..kOYYOkOk..", ".kOYYYYOOk..", ".kOYWWYYOk..", ".kOYWWWYOk..", "..kOYYYOk...", "...kkkkk....", "............", "............"], "ic_decal": ["..kkkkkkkk..", ".kWWWWWWWWk.", "kWWWWOWWWWWk", "kWWWOOOWWWWk", "kWWOOOOOWWWk", "kWWWOOOWWWkk", "kWWWOWOWWkLk", "kWWWWWWWkLk.", ".kkkkkkkkk..", "............", "............", "............"], "ic_trail": ["...k........", "..kYk...k...", "...k...kYk..", ".......kYk..", ".k......k...", "kYk..k......", ".k..kYk.....", "....kYk..k..", ".....k..kYk.", "..k......k..", ".kYk........", "..k........."]}); // ícones das abas de categoria do Hangar
+SPR.arcSt=["...........kk...........","..........kYOk..........","..........kOOk..........","...........kk...........","...........kk...........",
+  "......kkkkkkkkkkkk......","....kkLLLLLLLLLLLLkk....","...kLLWLLLLLLLLLLLLMk...","..kLLccLLRRLLccLLRRLMk..","..kLLccLLRRLLccLLRRLMk..",
+  ".kkkkkkkkkkkkkkkkkkkkkk.","kDDDDDDDDDDDDDDDDDDDDDDk","kEEEEEEEEEEEEEEEEEEEEEEk",".kkYkkkXkkkYkkkXkkkYkkk.","...kkEEEEEEEEEEEEEEkk...",".....kkkkkkkkkkkkkk....."];
+const ARC_OV={L:'#ffb8f0',M:'#d860c8',D:'#7a2a8a',E:'#4a1a5a',W:'#ffffff'};
 SPR.t_arc=['....kkkk....','...kRRrrk...','...kRrrrk...','....kkkk....','.....kk.....','.....kk.....','..kkkkkkkk..','.kLLLLLLMMk.','.kLLYLLLMMk.','.kMMMMMMMDk.','..kkkkkkkk..','............'];
 SPR.en=['....kkk','...kYOk','..kYOk.','.kYOkkk','kYYYYOk','kkkYOk.','..kYk..','.kYk...','.kk....'];
 SPR.t_mis=["....kkkk....","..kkkMMkkk..",".kSSkkkkSSk.",".kSSSSSSSSk.",".kSgkSkkkSk.",".kSSSSSSSSk.",".kSgkSkkkSk.",".kSSSSSSSSk.",".kSOkSkkkSk.",".kSSSSSSSSk.",".kkkkkkkkkk.","............"];
@@ -1437,6 +1470,9 @@ function renderHome(){
   $('#streak').className='streak'+(s?'':' zero');
   $('#streak').innerHTML=`${sprite(s?'flame':'flameOff',2)}<div><b>${s}</b><span>${s===1?'DIA':'DIAS'}<br>SEGUIDOS</span></div>`;
 
+  const as=arcState(),ah=$('#arcHome');
+  ah.innerHTML=as?`<button class="arcp${as.left?'':' off'}" id="arcHomeGo"><span class="arcp-st">${spriteRows(SPR.arcSt,2,ARC_OV)}</span><span class="arcp-t"><b>FLIPERAMA</b><small>${as.left?`RECOMPENSA DO DIA · ${Math.ceil(as.left/60)} MIN`:'FICHAS DE HOJE ACABARAM'}</small></span>${as.left?`<span class="arcp-go">ENTRAR${sprite('fwd',2)}</span>`:''}</button>`:'';
+  if(as)$('#arcHomeGo').onclick=()=>goArc($('#arcHomeGo'));
   const map=$('#map');
   let h='';
   PLANETS.forEach((p,i)=>{
@@ -1473,7 +1509,7 @@ function typeTerm(){
   let l2;
   if(pending.length===1)l2=`> Planeta ${pending[0].p.name.toUpperCase()}: ${pending[0].s.left} ${pending[0].s.left===1?'tarefa pendente':'tarefas pendentes'}.`;
   else if(pending.length>1)l2=`> ${pending.length} planetas com tarefas hoje.`;
-  else l2=any?'> Todas as missões de hoje cumpridas. Nave segura.':'> Nenhuma missão ativa ainda.';
+  else{const as=arcState();l2=!any?'> Nenhuma missão ativa ainda.':as&&as.left?'> Missões cumpridas! Fliperama liberado.':'> Todas as missões de hoje cumpridas. Nave segura.'}
   const txt=`> ${hi}, piloto ${st.pilot||''}.\n${l2}`;
   const el=$('#term');clearInterval(typing);let i=0;el.textContent='';
   typing=setInterval(()=>{i++;el.innerHTML=txt.slice(0,i).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/\n/g,'<br>');if(i>=txt.length)clearInterval(typing)},22);
@@ -1580,6 +1616,12 @@ document.querySelectorAll('#seg [data-s]').forEach(b=>b.onclick=()=>{if(b.datase
 
 /* ---- missões de hoje ---- */
 function appTasks(a){const d=((readLS(a.store)||{}).days||{})[dkey()]||[];return (a.tasks||[]).map(t=>Object.assign({},t,{done:d.includes(t.id),app:a}))}
+/* fliperama: liberado no dia em que o turno fica completo; devolve {min, left} ou null */
+function arcState(){if(!APPS.length||pendingCount()>0)return null;if(st.arcDay!==dkey()){st.arcDay=dkey();save()}
+  const min=st.arcMin==null?10:st.arcMin;if(min<=0)return null;
+  const ar=(()=>{try{return JSON.parse(localStorage.getItem('navemae-arcade'))||{}}catch(e){return{}}})(),used=ar.day===dkey()?ar.used||0:0;
+  return{min,left:Math.max(0,min*60-used)}}
+const goArc=el=>{if(el.classList.contains('off')){SND.locked();return}takeoff({url:'fliperama/'},'#r=tasks')};
 function pendingCount(){return APPS.flatMap(appTasks).filter(t=>!t.opt&&!t.done).length}
 function renderTasks(){
   const all=APPS.flatMap(appTasks),req=all.filter(t=>!t.opt),ok=req.filter(t=>t.done).length;
@@ -1594,10 +1636,11 @@ function renderTasks(){
       <div class="ad-chips"><span>${sprite('flame',2)}<b>${s}</b> ${s===1?'DIA':'DIAS'}</span><span>${sprite('check',2)}<b>${ok}/${req.length}</b> MISSÕES</span>
         <span>NOVAS EM <b>${left>=60?Math.floor(left/60)+'H':left+'MIN'}</b></span></div></div>`;
     if(st.adDay!==dkey()){st.adDay=dkey();save();setTimeout(SND.alldone,250)}
-    if(st.arcDay!==dkey()){st.arcDay=dkey();save()} // libera o Fliperama de hoje
-    const am=st.arcMin==null?10:st.arcMin;
-    if(am>0){const ar=(()=>{try{return JSON.parse(localStorage.getItem('navemae-arcade'))||{}}catch(e){return{}}})(),lf=Math.max(0,am*60-(ar.day===dkey()?ar.used||0:0));
-      h+=`<button class="arc px${lf?'':' off'}" id="arcGo"><span class="arc-ic">${sprite('t_arc',2)}</span><span class="arc-t"><b>FLIPERAMA</b><small>${lf?`RECOMPENSA DO DIA · ${Math.ceil(lf/60)} MIN`:'FICHAS DE HOJE ACABARAM'}</small></span>${lf?`<span class="go2">JOGAR${sprite('fwd',2)}</span>`:''}</button>`}
+    const as=arcState();
+    if(as){const lf=as.left,full=lf>=as.min*60;
+      h=`<button class="arch${lf?'':' off'}" id="arcGo"><span class="arch-sky">${adStars()}<span class="arch-st">${spriteRows(SPR.arcSt,4,ARC_OV)}</span><span class="arch-sign">FLIPERAMA</span></span>
+        <span class="arch-b"><small>${lf?'RECOMPENSA DO DIA':'FICHAS DE HOJE ACABARAM'}</small><b>${lf?(full?`VOCÊ GANHOU ${as.min} MIN!`:`RESTAM ${Math.ceil(lf/60)} MIN`):'VOLTE AMANHÃ'}</b></span>
+        ${lf?`<span class="arch-go">ENTRAR NO FLIPERAMA ${sprite('fwd',2)}</span>`:''}</button>`+h}
   }
   const nxA=APPS.find(a=>appTasks(a).some(t=>!t.opt&&!t.done)),nx=nxA&&nxA.id+':'+appTasks(nxA).find(t=>!t.opt&&!t.done).id; // próxima obrigatória (só uma na lista)
   if(allDone){const ex=APPS.flatMap(a=>appTasks(a).filter(t=>t.opt&&!t.done).map(t=>({a,t})));
@@ -1625,7 +1668,7 @@ function adStars(){if(!AD_ST){const L=(n,cls)=>{let b='';for(let i=0;i<n;i++){co
   AD_ST=L(18,'l1')+L(9,'l2')+L(4,'l3')}return AD_ST}
 const ADMSG=['Base em segurança, {n}.','Todas as estações operando. Bom trabalho!','O comando está orgulhoso de você, {n}.','Missões do dia cumpridas. Descanse os motores.','Turno encerrado. A galáxia agradece!','Relatório enviado: nota máxima, {n}!','Combustível cheio para amanhã.'];
 function bindTasks(){$('#tList').querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>takeoff(APPS.find(a=>a.id===b.dataset.a),'#m='+b.dataset.m+'&r=tasks'));
-  const ag=$('#arcGo');if(ag)ag.onclick=()=>{if(ag.classList.contains('off')){SND.locked();return}takeoff({url:'fliperama/'},'#r=tasks')};
+  const ag=$('#arcGo');if(ag)ag.onclick=()=>goArc(ag);
   const tg=$('#tDoneTg');if(tg)tg.onclick=()=>{tDoneOpen=!tDoneOpen;SND.open();renderTasks()};
   $('#tList').querySelectorAll('[data-fold]').forEach(b=>b.onclick=()=>{const id=b.dataset.fold;tFold[id]=b.getAttribute('aria-expanded')!=='true';SND.tab(tFold[id]?1:0);renderTasks()})}
 let toastT=0;function toast(t){const el=$('#toast');el.textContent=t;el.hidden=false;el.style.bottom=$('#shopBar').hidden?'':'calc(170px + env(safe-area-inset-bottom))';clearTimeout(toastT);toastT=setTimeout(()=>el.hidden=true,2600)}
@@ -1876,7 +1919,7 @@ function missionRow(d,t){const o=d.mode(t.id);
 function arcCard(){const m=st.arcMin==null?10:st.arcMin,ar=(()=>{try{return JSON.parse(localStorage.getItem('navemae-arcade'))||{}}catch(e){return{}}})();
   const used=ar.day===dkey()?Math.round((ar.used||0)/60):0,best=ar.best||{};
   return sec('Fliperama')+card(`<div class="pa-seg pa-arc">${[0,5,10,15,20,30].map(v=>`<button data-arc="${v}" class="${v===m?'on':''}">${v?v+' min':'Desligado'}</button>`).join('')}</div>`+
-    row({name:'Usado hoje',val:`${used} de ${m} min`})+row({name:'Recorde no Verme nos dutos',val:`${best.verme||0} ovos`}))+
+    row({name:'Usado hoje',val:`${used} de ${m} min`})+row({name:'Recorde no Verme dos dutos',val:`${best.verme||0} ovos`}))+
     note('Liberado depois que o turno de missões do dia fica completo. O tempo só corre durante a partida; se acabar no meio, a partida vai até o fim.')}
 function pgHome(){
   const D=APPS.map(appData),acc=D.map(d=>d.acc).reduce(sumO,Z);

@@ -1,4 +1,4 @@
-/* VERME NOS DUTOS — o Snake da Nave-Mãe.
+/* VERME DOS DUTOS — o Snake da Nave-Mãe.
    Um verme alien rasteja pelos dutos da estação comendo ovos. Cada ovo aumenta o corpo e a velocidade.
    Bater na parede do duto ou no próprio corpo encerra. A cada 5 ovos aparece um ovo dourado por pouco tempo (+3).
    Arte desenhada em células de 8×8 pixels, exibida a 2 px por pixel (mesmo grid do app). */
@@ -19,7 +19,7 @@ const imgs=(g,sub)=>{const t=turns(g),o={};for(const k in t)o[k]=mk(t[k],sub);re
 const OPP={up:'down',down:'up',left:'right',right:'left'},DV={up:[0,-1],down:[0,1],left:[-1,0],right:[1,0]};
 const dirOf=(a,b)=>a.x>b.x?'right':a.x<b.x?'left':a.y>b.y?'down':'up';
 
-ARC.add({id:'verme',name:'VERME NOS DUTOS',unit:'OVOS',cell:8,
+ARC.add({id:'verme',name:'VERME DOS DUTOS',tema:{cab:'#24352b',luz:'#8dff3a',deco:'acido'},unit:'OVOS',cell:8,
   desc:'Coma os ovos sem bater nas paredes nem no próprio corpo.',
   icon:['................','..kkkk..........','.kHHhdk.........','kHhhddWk...kkk..','khdkkdWg..kAAak.','khdk.kkk.kAgAak.',
         'khdk.....kAaabk.','khddkkkk..kbbk..','.kdhhhhdk..kk...','..kddddDk.......','...kkkkk........','................'],
