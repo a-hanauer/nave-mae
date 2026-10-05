@@ -213,7 +213,7 @@ body.play[data-deco="hoquei"] .scr::after{box-shadow:inset 0 0 14px 2px rgba(0,0
 <script>
 /* atualização automática: compara com version.json e recarrega com ?v=<versão> no endereço (o iPhone não reaproveita a
    página guardada). Se mesmo com ?v=<versão> a página veio velha, não insiste (evita recarregar sem parar). */
-const APP_V='20261005114318';
+const APP_V='20261005115030';
 (function(){const H0=location.hash;
   async function check(){try{const r=await fetch('../version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     const q=new URLSearchParams(location.search).get('v');
@@ -672,7 +672,11 @@ function drawRoom(t){const c=$('#rc'),x=c.getContext('2d');x.imageSmoothingEnabl
     else if(P.path.length&&canStep(P.path[0],P))tryMove(P.path.shift(),t);
     else if(P.path.length&&t-P.wait>700){const g=P.goal,last=P.path.reduce((p,d)=>[p[0]+DV[d][0],p[1]+DV[d][1]],[P.x,P.y]);P.path=bfs(P,last[0],last[1],true)||[];if(!P.path.length&&g){P.goal=null}}}
   NPC.forEach(n=>npcTick(n,t,dt));
-  cam.x=Math.max(0,Math.min(MW*T-VW,Math.round(P.px+T/2-VW/2)));cam.y=Math.max(0,Math.min(MH*T-VH,Math.round(P.py-VH*.42+T)));
+  cam.x=Math.max(0,Math.min(MW*T-VW,Math.round(P.px+T/2-VW/2)));/* faixa dos controles fantasmas (em pixels da arte): o piloto nunca entra nela; perto do fim da sala, a câmera desce
+     além do chão e a parte de baixo da tela fica vazia */
+  const GH=Math.ceil((($('.ghost')||{}).offsetHeight||170)/2)+10,maxY=MH*T-VH+GH;
+  cam.y=Math.round(Math.min(maxY,Math.max(0,P.py-VH*.42+T,P.py+T-(VH-GH))));
+  x.fillStyle='#0d0820';x.fillRect(0,0,VW,VH);
   x.drawImage(BG,-cam.x,-cam.y);
   {const k=Math.floor(t/400);for(let j=0;j<2;j++)for(let i=0;i<4;i++){const c=['#3a1a5a','#ff3df2','#2ad4ff','#5dff83','#ffd23f'][(i+j+k)%5];x.fillStyle=c;x.globalAlpha=.35;x.fillRect((7+i)*T+1-cam.x,(22+j)*T+1-cam.y,T-2,T-2)}x.globalAlpha=1} // pista de dança
   if(Math.floor(t/1700)%5===0){x.fillStyle='rgba(255,61,242,.12)';x.fillRect(-cam.x,6-cam.y,MW*T,3)}
