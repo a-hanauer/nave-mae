@@ -213,7 +213,7 @@ body.play[data-deco="hoquei"] .scr::after{box-shadow:inset 0 0 14px 2px rgba(0,0
 <script>
 /* atualização automática: compara com version.json e recarrega com ?v=<versão> no endereço (o iPhone não reaproveita a
    página guardada). Se mesmo com ?v=<versão> a página veio velha, não insiste (evita recarregar sem parar). */
-const APP_V='20261005115030';
+const APP_V='20261005140246';
 (function(){const H0=location.hash;
   async function check(){try{const r=await fetch('../version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     const q=new URLSearchParams(location.search).get('v');
@@ -316,20 +316,35 @@ function hdRows(rows,s,ov){const key=s+'|'+rows.join('/')+'|'+(ov?JSON.stringify
 function spriteRows(rows,s=2,ov){const g=hdRows(rows,s,ov),h=g.length,w=g[0].length,px=s/Math.max(1,Math.round(s/GRID));let r='';
   g.forEach((row,y)=>{let x=0;while(x<w){const c=row[x];if(!c){x++;continue}let k=1;while(row[x+k]===c)k++;r+=`<rect x="${x}" y="${y}" width="${k}" height="1" fill="${c}"/>`;x+=k}});
   return `<svg class="spr" viewBox="0 0 ${w} ${h}" width="${w*px}" height="${h*px}" shape-rendering="crispEdges" aria-hidden="true">${r}</svg>`}
-/* ---------- sintetizador 16-bit (mesmo código nos três apps) ----------
+/* ---------- sintetizador 16-bit (mesmo código na Nave-Mãe, nos jogos e no fliperama) ----------
    note: onda com envelope, deslize de tom (to) e vibrato (vib); noise: ruído filtrado para
    sopros, batidas e desmoronamentos; arp: sequência de notas. */
 function mkSYN(ctx,on){let nb=null;
+  /* som estilo SNES (não Atari): ondas com harmônicos suaves no lugar do quadrado puro, duas vozes levemente
+     desafinadas (corpo de amostra), envelope com queda natural, filtro que tira o chiado agudo, compressor
+     que segura o volume e um eco curto, como o eco do chip de som do Super Nintendo. Tudo passa pelo mesmo barramento. */
   const buf=c=>{if(!nb){nb=c.createBuffer(1,c.sampleRate*.6|0,c.sampleRate);const d=nb.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1}return nb};
-  function note(f,d,t=0,o={}){if(!on())return;try{const c=ctx(),n=c.currentTime+t,os=c.createOscillator(),g=c.createGain(),v=o.vol||.05;
-    os.type=o.type||'square';os.frequency.setValueAtTime(f,n);if(o.to)os.frequency.exponentialRampToValueAtTime(o.to,n+d);
-    if(o.vib){const l=c.createOscillator(),lg=c.createGain();l.frequency.value=o.vib;lg.gain.value=f*.04;l.connect(lg).connect(os.frequency);l.start(n);l.stop(n+d+.05)}
-    g.gain.setValueAtTime(0,n);g.gain.linearRampToValueAtTime(v,n+.005);g.gain.setValueAtTime(v,n+d*.55);g.gain.linearRampToValueAtTime(0,n+d);
-    os.connect(g).connect(c.destination);os.start(n);os.stop(n+d+.03)}catch(e){}}
-  function noise(d,t=0,o={}){if(!on())return;try{const c=ctx(),n=c.currentTime+t,s=c.createBufferSource(),fl=c.createBiquadFilter(),g=c.createGain(),v=o.vol||.08;
-    s.buffer=buf(c);s.loop=true;fl.type=o.filter||'lowpass';fl.frequency.setValueAtTime(o.f||1200,n);if(o.to)fl.frequency.exponentialRampToValueAtTime(o.to,n+d);fl.Q.value=o.q||1;
-    g.gain.setValueAtTime(0,n);g.gain.linearRampToValueAtTime(v,n+(o.att||.008));g.gain.linearRampToValueAtTime(0,n+d);
-    s.connect(fl).connect(g).connect(c.destination);s.start(n);s.stop(n+d+.03)}catch(e){}}
+  function bus(c){if(c._nm)return c._nm;
+    const inp=c.createGain(),lp=c.createBiquadFilter(),cmp=c.createDynamicsCompressor(),dl=c.createDelay(.5),fb=c.createGain(),dlp=c.createBiquadFilter(),wet=c.createGain();
+    inp.gain.value=.62;lp.type='lowpass';lp.frequency.value=4600;lp.Q.value=.4;
+    cmp.threshold.value=-20;cmp.knee.value=12;cmp.ratio.value=4;cmp.attack.value=.003;cmp.release.value=.18;
+    dl.delayTime.value=.14;fb.gain.value=.28;dlp.type='lowpass';dlp.frequency.value=1900;wet.gain.value=.2;
+    inp.connect(lp);lp.connect(cmp);lp.connect(dl);dl.connect(dlp);dlp.connect(fb);fb.connect(dl);dlp.connect(wet);wet.connect(cmp);cmp.connect(c.destination);
+    const pw=(fn)=>{const N=24,re=new Float32Array(N),im=new Float32Array(N);for(let k=1;k<N;k++)im[k]=fn(k);return c.createPeriodicWave(re,im)};
+    c._nm={inp,w:{pulse:pw(k=>k%2?Math.exp(-k/5)/k*1.6:0),pulse25:pw(k=>Math.sin(Math.PI*k*.25)*Math.exp(-k/6)/k*1.6),saw:pw(k=>Math.exp(-k/6)/k*(k%2?1:-1))}};
+    return c._nm}
+  const WAVE={square:'pulse',sawtooth:'saw',pulse25:'pulse25'};
+  function osc(c,b,type,f,n){const o=c.createOscillator(),w=WAVE[type];if(w)o.setPeriodicWave(b.w[w]);else o.type=type||'triangle';o.frequency.setValueAtTime(f,n);return o}
+  function note(f,d,t=0,o={}){if(!on()||!f)return;try{const c=ctx(),b=bus(c),n=c.currentTime+t,type=o.type||'square',v=(o.vol||.05)*.8,g=c.createGain();
+    const a=osc(c,b,type,f,n),z=osc(c,b,type==='square'||type==='pulse25'?'triangle':type,f*1.0035,n),gz=c.createGain();gz.gain.value=type==='square'?.55:.35;
+    [a,z].forEach(x=>{if(o.to)x.frequency.exponentialRampToValueAtTime(o.to*(x===z?1.0035:1),n+d)});
+    if(o.vib){const l=c.createOscillator(),lg=c.createGain();l.frequency.value=o.vib;lg.gain.value=f*.03;l.connect(lg);lg.connect(a.frequency);lg.connect(z.frequency);l.start(n);l.stop(n+d+.2)}
+    g.gain.setValueAtTime(0,n);g.gain.linearRampToValueAtTime(v,n+.006);g.gain.setTargetAtTime(v*.7,n+.006,d*.25);g.gain.setTargetAtTime(0,n+d*.7,Math.max(.02,d*.22));
+    a.connect(g);z.connect(gz).connect(g);g.connect(b.inp);a.start(n);z.start(n);a.stop(n+d+.25);z.stop(n+d+.25)}catch(e){}}
+  function noise(d,t=0,o={}){if(!on())return;try{const c=ctx(),b=bus(c),n=c.currentTime+t,s=c.createBufferSource(),fl=c.createBiquadFilter(),g=c.createGain(),v=(o.vol||.08)*.75;
+    s.buffer=buf(c);s.loop=true;fl.type=o.filter||'lowpass';fl.frequency.setValueAtTime(Math.min(o.f||1200,3600),n);if(o.to)fl.frequency.exponentialRampToValueAtTime(Math.min(o.to,3600),n+d);fl.Q.value=o.q||1;
+    g.gain.setValueAtTime(0,n);g.gain.linearRampToValueAtTime(v,n+(o.att||.01));g.gain.setTargetAtTime(0,n+d*.5,Math.max(.015,d*.2));
+    s.connect(fl).connect(g).connect(b.inp);s.start(n);s.stop(n+d+.2)}catch(e){}}
   const arp=(fs,step,o={})=>fs.forEach((f,i)=>note(f,o.d||step*1.15,i*step+(o.t||0),o));
   return{note,noise,arp}}
 

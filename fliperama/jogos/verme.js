@@ -1,6 +1,6 @@
 /* VERME DOS DUTOS — o Snake da Nave-Mãe.
    Um verme alien rasteja pelos dutos da estação comendo ovos. Cada ovo aumenta o corpo e a velocidade.
-   Bater na parede do duto ou no próprio corpo encerra. A cada 5 ovos aparece um ovo dourado por pouco tempo (+3).
+   Os dutos não têm fim: saindo por um lado, o verme entra pelo outro. Só encostar no próprio corpo encerra. A cada 5 ovos aparece um ovo dourado por pouco tempo (+3).
    Arte desenhada em células de 8×8 pixels, exibida a 2 px por pixel (mesmo grid do app). */
 (function(){
 const P={k:'#050608',H:'#93a2bb',h:'#55617a',d:'#2f3747',D:'#1b2029',W:'#f0f5fb',g:'#39e35f',G:'#c4ff9e',r:'#ff5a3d',
@@ -17,10 +17,11 @@ function mk(rows,sub){const c=document.createElement('canvas');c.width=rows[0].l
   rows.forEach((r,y)=>[...r].forEach((ch,i)=>{if(ch==='.')return;x.fillStyle=(sub&&sub[ch])||P[ch];x.fillRect(i,y,1,1)}));return c}
 const imgs=(g,sub)=>{const t=turns(g),o={};for(const k in t)o[k]=mk(t[k],sub);return o};
 const OPP={up:'down',down:'up',left:'right',right:'left'},DV={up:[0,-1],down:[0,1],left:[-1,0],right:[1,0]};
-const dirOf=(a,b)=>a.x>b.x?'right':a.x<b.x?'left':a.y>b.y?'down':'up';
+/* direção de b para a; um salto maior que 1 casa é a volta pela borda (dutos sem fim), então inverte */
+const dirOf=(a,b)=>{const dx=a.x-b.x,dy=a.y-b.y;if(dx)return(Math.abs(dx)>1?-dx:dx)>0?'right':'left';return(Math.abs(dy)>1?-dy:dy)>0?'down':'up'};
 
 ARC.add({id:'verme',name:'VERME DOS DUTOS',tema:{cab:'#24352b',luz:'#8dff3a',deco:'acido'},unit:'OVOS',cell:8,
-  desc:'Coma os ovos sem bater nas paredes nem no próprio corpo.',
+  desc:'Coma os ovos sem encostar no próprio corpo. Saindo por um lado do duto, você entra pelo outro!',
   icon:['................','..kkkk..........','.kHHhdk.........','kHhhddWk...kkk..','khdkkdWg..kAAak.','khdk.kkk.kAgAak.',
         'khdk.....kAaabk.','khddkkkk..kbbk..','.kdhhhhdk..kk...','..kddddDk.......','...kkkkk........','................'],
   iconPal:P,
@@ -50,10 +51,10 @@ ARC.add({id:'verme',name:'VERME DOS DUTOS',tema:{cab:'#24352b',luz:'#8dff3a',dec
     function reset(){const cy=rows>>1,cx=(cols>>1)-1;sn=[{x:cx+1,y:cy},{x:cx,y:cy},{x:cx-1,y:cy}];dir='right';q=[];score=0;eaten=0;gold=null;egg=null;dead=0;parts=[];tick=170;
       egg=free();api.score(0)}
     function splash(p,col){for(let i=0;i<8;i++)parts.push({x:p.x*C+4,y:p.y*C+4,vx:(Math.random()-.5)*1.6,vy:(Math.random()-.5)*1.6,t:14,c:col})}
-    function step(){if(q.length)dir=q.shift();const h=sn[0],[dx,dy]=DV[dir],n={x:h.x+dx,y:h.y+dy};
+    function step(){if(q.length)dir=q.shift();const h=sn[0],[dx,dy]=DV[dir],n={x:(h.x+dx+cols)%cols,y:(h.y+dy+rows)%rows};
       const grow=(egg&&n.x===egg.x&&n.y===egg.y)||(gold&&n.x===gold.x&&n.y===gold.y);
       const body=grow?sn:sn.slice(0,-1);
-      if(n.x<0||n.y<0||n.x>=cols||n.y>=rows||body.some(p=>p.x===n.x&&p.y===n.y)){die();return}
+      if(body.some(p=>p.x===n.x&&p.y===n.y)){die();return}
       sn.unshift(n);
       if(egg&&n.x===egg.x&&n.y===egg.y){score++;eaten++;api.score(score);splash(n,P.g);
         sfx.note(520+Math.min(eaten,24)*25,.07,0,{vol:.05});sfx.noise(.06,0,{f:2600,filter:'bandpass',vol:.03});
