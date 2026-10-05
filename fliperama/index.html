@@ -213,7 +213,7 @@ body.play[data-deco="hoquei"] .scr::after{box-shadow:inset 0 0 14px 2px rgba(0,0
 <script>
 /* atualização automática: compara com version.json e recarrega com ?v=<versão> no endereço (o iPhone não reaproveita a
    página guardada). Se mesmo com ?v=<versão> a página veio velha, não insiste (evita recarregar sem parar). */
-const APP_V='20261005140246';
+const APP_V='20261005173909';
 (function(){const H0=location.hash;
   async function check(){try{const r=await fetch('../version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     const q=new URLSearchParams(location.search).get('v');
@@ -229,6 +229,8 @@ const APP_V='20261005140246';
 function navAudioMode(){let on=false;try{on=!!(JSON.parse(localStorage.getItem('navemae-v1'))||{}).silentPlay}catch(e){}
   try{if(navigator.audioSession)navigator.audioSession.type=on?'playback':'ambient'}catch(e){}}
 navAudioMode();addEventListener('pageshow',navAudioMode);
+/* todo contexto de áudio nasce depois de reafirmar o modo (no iOS, o modo vale para o contexto criado em seguida) */
+function newAC(){navAudioMode();return new (window.AudioContext||window.webkitAudioContext)()}
 /* vibração leve a cada toque.
    iPhone: o Safari não tem API de vibração; o único jeito é o toque do próprio dedo cair num interruptor nativo
    (<input type=checkbox switch>, iOS 18+). Por isso cada botão recebe por dentro um <label> invisível que cobre
@@ -265,7 +267,7 @@ let AC=null;
 function audioWake(e){const c=AC;if(!c||c.state==='running')return;
   try{navAudioMode()}catch(e){}
   if(e&&(e.type==='touchstart'||e.type==='pointerdown')){if(performance.now()-(audioWake.t||0)<600)return;audioWake.t=performance.now(); // dentro do toque o iOS libera um contexto novo: troca na hora, o som deste toque já sai
-    try{c.close()}catch(_){}try{AC=new (window.AudioContext||window.webkitAudioContext)();AC.resume&&AC.resume()}catch(_){AC=null}return}
+    try{c.close()}catch(_){}try{AC=newAC();AC.resume&&AC.resume()}catch(_){AC=null}return}
   try{const p=c.resume&&c.resume();if(p&&p.catch)p.catch(()=>{})}catch(e){}
   setTimeout(()=>{if(AC===c&&c.state!=='running'){try{c.close()}catch(e){}AC=null}},400)}
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)audioWake()});
@@ -348,7 +350,7 @@ function mkSYN(ctx,on){let nb=null;
   const arp=(fs,step,o={})=>fs.forEach((f,i)=>note(f,o.d||step*1.15,i*step+(o.t||0),o));
   return{note,noise,arp}}
 
-const SY=mkSYN(()=>{AC=AC||new (window.AudioContext||window.webkitAudioContext)();return AC},()=>soundOn);
+const SY=mkSYN(()=>{AC=AC||newAC();return AC},()=>soundOn);
 
 /* =================== FLIPERAMA ===================
    A recompensa do dia: com o turno de missões completo (a Nave-Mãe grava navemae-v1.arcDay), o piloto entra numa

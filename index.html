@@ -873,7 +873,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 <script>
 /* atualização automática: compara com version.json e recarrega com ?v=<versão> no endereço (o iPhone não reaproveita a
    página guardada). Se mesmo com ?v=<versão> a página veio velha, não insiste (evita recarregar sem parar). */
-const APP_V='20261005140246';
+const APP_V='20261005173909';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     const q=new URLSearchParams(location.search).get('v');
@@ -889,6 +889,8 @@ const APP_V='20261005140246';
 function navAudioMode(){let on=false;try{on=!!(JSON.parse(localStorage.getItem('navemae-v1'))||{}).silentPlay}catch(e){}
   try{if(navigator.audioSession)navigator.audioSession.type=on?'playback':'ambient'}catch(e){}}
 navAudioMode();addEventListener('pageshow',navAudioMode);
+/* todo contexto de áudio nasce depois de reafirmar o modo (no iOS, o modo vale para o contexto criado em seguida) */
+function newAC(){navAudioMode();return new (window.AudioContext||window.webkitAudioContext)()}
 /* vibração leve a cada toque.
    iPhone: o Safari não tem API de vibração; o único jeito é o toque do próprio dedo cair num interruptor nativo
    (<input type=checkbox switch>, iOS 18+). Por isso cada botão recebe por dentro um <label> invisível que cobre
@@ -1280,6 +1282,8 @@ const OLDREQ={'visor:rosa':'a3','ship:disc':'a3','gear:rastreador':'a3','title:c
 if(!st.mig2){st.own=Object.keys(OLDREQ).filter(k=>st.got.includes(OLDREQ[k]));st.mig2=1;try{localStorage.setItem(ST,JSON.stringify(st))}catch(e){}}
 /* Peças: itens agora são liberados com energia. Quem já tinha liberado algo por medalha continua com ele. */
 const REQP={m5:30,f25:30,s3:30,m10:50,m15:50,s5:50,f50:50,n3:50,m25:80,s7:80,s10:80,f100:80,m50:120,m75:120,s14:120,n4:120,f250:120,m100:180,s30:180};
+/* mig4: "Tocar no silencioso" volta a desligado — ligado, o iOS pausa a música; o padrão é tocar por cima das mídias */
+if(!st.mig4){st.silentPlay=false;st.mig4=1;try{localStorage.setItem(ST,JSON.stringify(st))}catch(e){}navAudioMode()}
 if(!st.mig3){st.own=st.own||[];for(const c in ITEMS)ITEMS[c].list.forEach(it=>{if(it.req&&st.got.includes(it.req)&&!st.own.includes(it.k))st.own.push(it.k)});
   st.eBonus=60;st.spent=0;st.mig3=1;try{localStorage.setItem(ST,JSON.stringify(st))}catch(e){}}
 for(const c in ITEMS)ITEMS[c].list.forEach(it=>{if(it.req){it.price=REQP[it.req]||80;delete it.req}});
@@ -1413,14 +1417,14 @@ let AC=null;
 function audioWake(e){const c=AC;if(!c||c.state==='running')return;
   try{navAudioMode()}catch(e){}
   if(e&&(e.type==='touchstart'||e.type==='pointerdown')){if(performance.now()-(audioWake.t||0)<600)return;audioWake.t=performance.now(); // dentro do toque o iOS libera um contexto novo: troca na hora, o som deste toque já sai
-    try{c.close()}catch(_){}try{AC=new (window.AudioContext||window.webkitAudioContext)();AC.resume&&AC.resume()}catch(_){AC=null}return}
+    try{c.close()}catch(_){}try{AC=newAC();AC.resume&&AC.resume()}catch(_){AC=null}return}
   try{const p=c.resume&&c.resume();if(p&&p.catch)p.catch(()=>{})}catch(e){}
   setTimeout(()=>{if(AC===c&&c.state!=='running'){try{c.close()}catch(e){}AC=null}},400)}
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)audioWake()});
 addEventListener('pageshow',audioWake);addEventListener('focus',audioWake);
 ['touchstart','pointerdown'].forEach(t=>document.addEventListener(t,audioWake,{passive:true,capture:true}));
 function tone(f,d=.08,t=0,v=.06){SY.note(f,d,t,{vol:v*.75})} // passa pelo sintetizador (som SNES)
-document.addEventListener('touchstart',function u(){try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();AC.resume&&AC.resume()}catch(e){}document.removeEventListener('touchstart',u)},{passive:true});
+document.addEventListener('touchstart',function u(){try{AC=AC||newAC();AC.resume&&AC.resume()}catch(e){}document.removeEventListener('touchstart',u)},{passive:true});
 const blip=()=>{tone(660,.05);tone(990,.05,.05)};
 const launch=()=>[262,330,392,523,659,784,1047].forEach((f,i)=>tone(f,.07,i*.07));
 /* ---------- sintetizador 16-bit (mesmo código na Nave-Mãe, nos jogos e no fliperama) ----------
@@ -1454,7 +1458,7 @@ function mkSYN(ctx,on){let nb=null;
     s.connect(fl).connect(g).connect(b.inp);s.start(n);s.stop(n+d+.2)}catch(e){}}
   const arp=(fs,step,o={})=>fs.forEach((f,i)=>note(f,o.d||step*1.15,i*step+(o.t||0),o));
   return{note,noise,arp}}
-const SY=mkSYN(()=>{AC=AC||new (window.AudioContext||window.webkitAudioContext)();return AC},()=>st.sound);
+const SY=mkSYN(()=>{AC=AC||newAC();return AC},()=>st.sound);
 /* sons por contexto */
 const SND={
   tab:i=>{const f=[523,587,659,784][i]||523;SY.note(f,.05,0,{type:'triangle',vol:.1});SY.note(f*1.5,.07,.05,{type:'triangle',vol:.08})},
