@@ -640,6 +640,7 @@ body[data-v="home"] #app{padding-bottom:calc(var(--con) + var(--dash) + 24px)!im
 .arc .go2 .spr{animation:nudge .8s steps(2) infinite}
 .arc.off{opacity:.55}.arc.off small{color:var(--dim)}
 .pa-arc{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin:12px 16px}
+.pa-arc~.pa-row{color:var(--t1)}.pa-arc~.pa-row .pa-rv{white-space:nowrap;color:var(--t1)}
 </style>
 <script>
 /* sem zoom: bloqueia pinça e dois toques no app inteiro */
@@ -826,7 +827,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 
 <script>
 /* atualização automática: compara com version.json e recarrega quando sai versão nova */
-const APP_V='20261005104120';
+const APP_V='20261005104141';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     if(v&&v!==APP_V&&sessionStorage.getItem('upd')!==v){sessionStorage.setItem('upd',v);location.replace(location.pathname+'?v='+v+H0)}}catch(e){}}
