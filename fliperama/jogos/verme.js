@@ -24,6 +24,11 @@ ARC.add({id:'verme',name:'VERME NOS DUTOS',unit:'OVOS',cell:8,
   icon:['................','..kkkk..........','.kHHhdk.........','kHhhddWk...kkk..','khdkkdWg..kAAak.','khdk.kkk.kAgAak.',
         'khdk.....kAaabk.','khddkkkk..kbbk..','.kdhhhhdk..kk...','..kddddDk.......','...kkkkk........','................'],
   iconPal:P,
+  /* tela da máquina na sala (8×7 pixels): o verme dando voltas atrás de um ovo */
+  attract(x,X,Y,w,h,t){x.fillStyle='#06140b';x.fillRect(X,Y,w,h);
+    const ring=[];for(let i=1;i<w-1;i++)ring.push([i,1]);for(let j=2;j<h-1;j++)ring.push([w-2,j]);for(let i=w-3;i>0;i--)ring.push([i,h-2]);for(let j=h-3;j>1;j--)ring.push([1,j]);
+    const k=Math.floor(t/160);x.fillStyle='#d8bf8a';x.fillRect(X+3,Y+3,2,1);
+    for(let s=0;s<4;s++){const[a,b]=ring[(k-s+ring.length*9)%ring.length];x.fillStyle=s?'#1f9a3a':'#c4ff9e';x.fillRect(X+a,Y+b,1,1)}},
   make(api){
     const{ctx,cols,rows,sfx}=api,C=8;
     const E={k:'#1f5a33'}; // contorno verde-ácido escuro: o verme se destaca do piso
