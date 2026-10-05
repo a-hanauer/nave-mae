@@ -901,7 +901,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 <script>
 /* atualização automática: compara com version.json e recarrega com ?v=<versão> no endereço (o iPhone não reaproveita a
    página guardada). Se mesmo com ?v=<versão> a página veio velha, não insiste (evita recarregar sem parar). */
-const APP_V='20261005184750';
+const APP_V='20261005185959';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     const q=new URLSearchParams(location.search).get('v');
@@ -1354,7 +1354,9 @@ function trimRows(rows){const E=r=>!/[^.]/.test(r);let t=0,b=rows.length-1;while
 function cacheAvatar(){try{const L=look(),fo=item('flame',L.flame).c;
   const pr=trimRows(pilotRows(L));
   localStorage.setItem('navemae-avatar',JSON.stringify({v:3,ov:pilotOv(L),pilot:spriteRows(pr,2,pilotOv(L)),cheer:spriteRows(cheerRows(L),2,pilotOv(L)),
-    ship:spriteRows(shipRows(L),1,shipOv(L)),flame:[spriteRows(SPR['fs1_'+L.ship]||SPR.fl1,1,fo),spriteRows(SPR['fs2_'+L.ship]||SPR.fl2,1,fo)]}))}catch(e){}}
+    ship:spriteRows(shipRows(L),1,shipOv(L)),shipPx:(()=>{const o=shipOv(L),fo=item('flame',L.flame).c,col=c=>o[c]||fo[c]||PAL[c]||'#ff00ff',map=r=>r.map(l=>[...l].map(c=>c==='.'?'.':c));
+      const rows=shipRows(L),pal={};[rows,SPR['fs1_'+L.ship],SPR['fs2_'+L.ship]].forEach(g=>g&&g.forEach(l=>[...l].forEach(c=>{if(c!=='.')pal[c]=col(c)})));return{rows,f1:SPR['fs1_'+L.ship],f2:SPR['fs2_'+L.ship],pal}})(), /* nave em pixels para os jogos (Patrulha Estelar) */
+    flame:[spriteRows(SPR['fs1_'+L.ship]||SPR.fl1,1,fo),spriteRows(SPR['fs2_'+L.ship]||SPR.fl2,1,fo)]}))}catch(e){}}
 const pilotFull=(s,L=look())=>spriteRows(pilotRows(L),s,pilotOv(L));
 /* retrato: cabeça e ombros recortados do corpo inteiro */
 const pilotSVG=(s,L=look())=>spriteRows(pilotRows(L).slice(PPAD,PPAD+24).map(r=>r.slice(PPAD+3,PPAD+27)),s,pilotOv(L));
