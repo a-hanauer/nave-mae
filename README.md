@@ -28,11 +28,11 @@ Cada app tem um botão "< Nave-Mãe" na tela inicial que volta para a aba Missõ
 
 A barra inferior tem quatro abas:
 
-- **Cockpit:** a interface é o cockpit de uma nave industrial (estilo Nostromo, casco bege) e o conteúdo é a vista pelo para-brisa.
-  - **Painel de cima** (fixo, abaixo da Dynamic Island): luzes piscando, uma tela CRT verde com o nome da tela atual e o número dela (missões feitas, energia, medalhas), a tecla de configurações no mapa e a tecla ◂ MAPA no planeta.
-  - **Para-brisa:** colunas laterais e cantos em degrau emoldurando o conteúdo.
-  - **Console de baixo:** cada aba é uma tecla embutida com telinha; a tela atual acende a telinha e o LED âmbar. Grade de ventilação na faixa da barra de início.
-  - Configurações, avisos, a barra de LIBERAR e o terminal do mapa são monitores com moldura bege e parafusos.
+- **Cockpit:** a interface é o cockpit de uma nave industrial (casco de metal escuro, luzes e telas CRT) e o conteúdo é a vista pelo para-brisa.
+  - **Painel de cima** (fixo, abaixo da Dynamic Island): luzes piscando em quatro cores, uma tela CRT verde com o nome da tela atual e o número dela (missões feitas, energia, medalhas), a tecla de configurações no mapa e a tecla ◂ MAPA no planeta.
+  - **Para-brisa:** colunas de metal dos lados e cantos chanfrados em degrau, com rebites, como a moldura de uma cabine.
+  - **Console de baixo:** cada aba é uma tecla embutida com telinha; a tela atual acende a telinha e o LED âmbar. Faixas de alerta âmbar nas pontas e grade de ventilação na faixa da barra de início.
+  - Configurações, avisos, a barra de LIBERAR e o terminal do mapa são monitores com moldura de metal e parafusos.
 - **Mapa:** planetas e missões do dia. O painel do piloto leva ao Hangar.
 - **Missões:** lista do que falta fazer hoje em todos os apps, agrupada por jogo. As obrigatórias aparecem primeiro, depois os extras, e as feitas ficam riscadas no fim. Tocar numa missão abre o jogo já dentro dela (link `app/#m=missao`). Um selo na aba mostra quantas faltam; com tudo feito ele vira um check verde. Cada jogo abre e fecha tocando no cabeçalho: começa aberto quando falta missão e fechado quando está completo (fechado, mostra só o progresso).
   Quando todas as missões do dia estão feitas, a aba mostra a nave em velocidade de cruzeiro, uma frase do dia, a sequência, o total de missões e quanto falta para as novas. Os desafios extras que faltam ficam em "Treino extra" e as missões feitas ficam recolhidas. Na primeira vez do dia toca uma musiquinha.
