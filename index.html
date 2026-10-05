@@ -843,7 +843,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 
 <script>
 /* atualização automática: compara com version.json e recarrega quando sai versão nova */
-const APP_V='20261005104545';
+const APP_V='20261005105158';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     if(v&&v!==APP_V&&sessionStorage.getItem('upd')!==v){sessionStorage.setItem('upd',v);location.replace(location.pathname+'?v='+v+H0)}}catch(e){}}
@@ -1264,7 +1264,7 @@ function trimRows(rows){const E=r=>!/[^.]/.test(r);let t=0,b=rows.length-1;while
   const C=x=>rows.every(r=>r[x]==='.');let l=0,r=rows[0].length-1;while(l<r&&C(l))l++;while(r>l&&C(r))r--;return rows.map(row=>row.slice(l,r+1))}
 function cacheAvatar(){try{const L=look(),fo=item('flame',L.flame).c;
   const pr=trimRows(pilotRows(L));
-  localStorage.setItem('navemae-avatar',JSON.stringify({v:3,pilot:spriteRows(pr,2,pilotOv(L)),cheer:spriteRows(cheerRows(L),2,pilotOv(L)),
+  localStorage.setItem('navemae-avatar',JSON.stringify({v:3,ov:pilotOv(L),pilot:spriteRows(pr,2,pilotOv(L)),cheer:spriteRows(cheerRows(L),2,pilotOv(L)),
     ship:spriteRows(shipRows(L),1,shipOv(L)),flame:[sprite('fl1',1,fo),sprite('fl2',1,fo)]}))}catch(e){}}
 const pilotFull=(s,L=look())=>spriteRows(pilotRows(L),s,pilotOv(L));
 /* retrato: cabeça e ombros recortados do corpo inteiro */
@@ -1597,7 +1597,7 @@ function renderTasks(){
     if(st.arcDay!==dkey()){st.arcDay=dkey();save()} // libera o Fliperama de hoje
     const am=st.arcMin==null?10:st.arcMin;
     if(am>0){const ar=(()=>{try{return JSON.parse(localStorage.getItem('navemae-arcade'))||{}}catch(e){return{}}})(),lf=Math.max(0,am*60-(ar.day===dkey()?ar.used||0:0));
-      h+=`<button class="arc px${lf?'':' off'}" id="arcGo"><span class="arc-ic">${sprite('t_arc',2)}</span><span class="arc-t"><b>FLIPERAMA</b><small>${lf?`${Math.ceil(lf/60)} MIN LIBERADOS HOJE`:'TEMPO DE HOJE ACABOU'}</small></span>${lf?`<span class="go2">JOGAR${sprite('fwd',2)}</span>`:''}</button>`}
+      h+=`<button class="arc px${lf?'':' off'}" id="arcGo"><span class="arc-ic">${sprite('t_arc',2)}</span><span class="arc-t"><b>FLIPERAMA</b><small>${lf?`RECOMPENSA DO DIA · ${Math.ceil(lf/60)} MIN`:'FICHAS DE HOJE ACABARAM'}</small></span>${lf?`<span class="go2">JOGAR${sprite('fwd',2)}</span>`:''}</button>`}
   }
   const nxA=APPS.find(a=>appTasks(a).some(t=>!t.opt&&!t.done)),nx=nxA&&nxA.id+':'+appTasks(nxA).find(t=>!t.opt&&!t.done).id; // próxima obrigatória (só uma na lista)
   if(allDone){const ex=APPS.flatMap(a=>appTasks(a).filter(t=>t.opt&&!t.done).map(t=>({a,t})));

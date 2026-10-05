@@ -98,15 +98,20 @@ Ao criar um app novo, informe em `APPS` o campo `store` com a chave do `localSto
 
 Abra o link no Safari, toque em Compartilhar e escolha **Adicionar à Tela de Início**. A Nave-Mãe abre em tela cheia, com ícone próprio, e os apps abrem dentro dela.
 
-## Fliperama (minigames)
+## Fliperama (recompensa do dia)
 
-Depois que o turno de missões do dia fica completo, a aba Missões mostra o monitor **FLIPERAMA** com os minutos liberados. Ele abre a sala de recreação em `fliperama/`, no mesmo visual de cockpit.
+Depois que o turno de missões do dia fica completo, a aba Missões mostra o monitor **FLIPERAMA · RECOMPENSA DO DIA**. Ele leva a um fliperama virtual em `fliperama/`, um jogo dentro do jogo com visual próprio (neon, carpete de fliperama):
 
-- **Tempo por dia:** definido na Área dos pais (Desligado, 5, 10, 15, 20 ou 30 min; padrão 10). Só corre com uma partida rodando. Se acabar no meio, a partida vai até o fim (aviso ÚLTIMA PARTIDA) e não começa outra. Com 1 min restante, o relógio fica vermelho e toca um aviso.
-- **Travas:** sem o turno completo de hoje, a sala mostra FLIPERAMA TRAVADO. Desligado pelos pais, mostra FLIPERAMA DESLIGADO.
-- **Recompensa:** só recorde pessoal por jogo, sem energia (as peças do Hangar continuam vindo das missões).
-- **Controles:** deslizar o dedo na tela do jogo ou o direcional de metal embaixo (no computador, as setas do teclado). Minimizar o app pausa a partida.
-- **Dados:** `localStorage['navemae-arcade']` = `{day, used (segundos usados hoje), best:{jogo:recorde}, plays:{jogo:partidas}}`. A liberação do dia é `navemae-v1.arcDay` e o tempo é `navemae-v1.arcMin`.
+- **A sala:** vista de cima, 12×15 casas de 16 px. Parede com letreiro de neon FLIPERAMA, seis máquinas, uma máquina de garra, uma de refrigerante, banco, planta e o tapete da saída. O piloto aparece pequeno, com as cores do Hangar (capacete, viseira, traje e pele), andando nas quatro direções.
+- **Controles:** direcional (segurar anda direto) e o botão vermelho **A** para interagir. Tocar num ponto da sala faz o piloto andar até lá; tocar numa máquina faz ele ir até a frente dela e abrir a conversa. No computador, setas e A/Enter.
+- **Máquinas:** a que tem jogo fica com o letreiro aceso e a tela em modo de demonstração; quando o piloto está de frente, aparece um balão com A. A conversa mostra o nome, como jogar e o recorde, com JOGAR. As outras mostram EM BREVE. Garra, refrigerante, banco e planta têm falas próprias.
+- **Partida:** a tela vira a máquina por dentro (moldura na cor do gabinete, letreiro com o nome), com o placar, o recorde e o direcional. VOLTAR À SALA devolve o piloto na frente da máquina.
+- **Primeira entrada do dia:** aviso RECOMPENSA DO DIA com os minutos ganhos.
+- **Tempo por dia:** definido na Área dos pais (Desligado, 5, 10, 15, 20 ou 30 min; padrão 10). Andar pela sala não gasta tempo; só a partida. Se acabar no meio, a partida vai até o fim (ÚLTIMA PARTIDA) e as máquinas não aceitam outra (FICHAS DE HOJE ACABARAM). Com 1 min restante, o relógio fica vermelho e toca um aviso.
+- **Travas:** sem o turno completo de hoje, ou desligado pelos pais, a sala abre com FLIPERAMA FECHADO e as máquinas não ligam.
+- **Recompensa:** só recorde pessoal por jogo, sem energia.
+- **Saída:** pisar no tapete verde ou tocar em NAVE pergunta se quer voltar; volta para a aba Missões.
+- **Dados:** `localStorage['navemae-arcade']` = `{day, used (segundos usados hoje), intro, pos (onde o piloto parou), best:{jogo:recorde}, plays:{jogo:partidas}}`. A liberação do dia é `navemae-v1.arcDay`, o tempo é `navemae-v1.arcMin` e as cores do piloto vêm de `navemae-avatar.ov`.
 
 ### Jogos
 
@@ -126,9 +131,12 @@ ARC.add({id:'meujogo', name:'NOME NA TELA', unit:'PONTOS', cell:8,
     return{ready(){}, start(){}, input(dir){}, pause(){}, resume(){}, stop(){}}}})
 ```
 
-2. Acrescente o id na lista `JOGOS` em `fliperama/index.html`.
+2. Acrescente o id na lista `JOGOS` em `fliperama/index.html`. O jogo ocupa a próxima máquina livre da sala (ordem em `SLOTS`: as duas da ilha do meio, depois as do fundo).
+3. Opcional: `attract(ctx,x,y,w,h,t)` desenha a tela da máquina na sala (8×7 pixels) em modo de demonstração.
 
-A sala cuida do resto: gabinete com recorde, tela do jogo do tamanho da tela do iPhone (em células de `cell` pixels, a 2 px por pixel), início ao primeiro movimento, relógio, pausa, fim de jogo e recorde. `api.score(n)` atualiza o placar e `api.over()` encerra a partida.
+`fliperama/index.html` traz cópias do motor de sprites, do sintetizador, da vibração e da correção de áudio da Nave-Mãe (o mesmo código dos jogos); ao mudar esses trechos na Nave-Mãe, copie para lá também.
+
+A sala cuida do resto: conversa com recorde, tela do jogo do tamanho da tela do iPhone (em células de `cell` pixels, a 2 px por pixel), início ao primeiro movimento, relógio, pausa, fim de jogo e recorde. `api.score(n)` atualiza o placar e `api.over()` encerra a partida.
 
 ## Adicionar um app novo
 
