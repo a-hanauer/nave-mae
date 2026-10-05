@@ -13,14 +13,17 @@ ARC.add({id:'hoquei',name:'HÓQUEI DE MESA',unit:'VITÓRIAS',cell:8,lugar:'hocke
   make(api){
     const{ctx,cols,rows,sfx}=api,W=cols*8,H=rows*8,GW=Math.round(W*.48),PR=7,MR=13;
     const meCol=(()=>{try{const o=(JSON.parse(localStorage.getItem('navemae-avatar'))||{}).ov||{};return[o[2]||'#5dff83',o[3]||'#1f9a3a',o[1]||'#c4ff9e']}catch(e){return['#5dff83','#1f9a3a','#c4ff9e']}})();
-    let pk,me,ai,sc,round,wins,running=false,paused=false,raf=0,last=0,hold=0,msg='',msgT=0,target={x:W/2,y:H*.8},trail=[];
-    function resetPuck(toMe){pk={x:W/2,y:toMe?H*.62:H*.38,vx:0,vy:0};hold=.7}
+    let slow=0,retreat=0,still=0,pk,me,ai,sc,round,wins,running=false,paused=false,raf=0,last=0,hold=0,msg='',msgT=0,target={x:W/2,y:H*.8},trail=[];
+    function resetPuck(toMe){pk={x:W/2,y:toMe?H*.62:H*.38,vx:0,vy:0};hold=.7;slow=0;retreat=0;still=0}
     function reset(full){me={x:W/2,y:H*.85,vx:0,vy:0};ai={x:W/2,y:H*.15,vx:0,vy:0};target={x:me.x,y:me.y};sc=[0,0];
       if(full){round=1;wins=0;api.score(0)}resetPuck(true);trail=[]}
     const aiSpeed=()=>1.6+round*.45;
     function collide(m){const dx=pk.x-m.x,dy=pk.y-m.y,d=Math.hypot(dx,dy),R=PR+MR;if(d>=R||d===0)return;
       const nx=dx/d,ny=dy/d;pk.x=m.x+nx*R;pk.y=m.y+ny*R;
       const rv=(pk.vx-m.vx)*nx+(pk.vy-m.vy)*ny;if(rv<0){pk.vx-=1.9*rv*nx;pk.vy-=1.9*rv*ny}
+      // o rebatedor nunca empurra o disco para dentro da parede: se o disco bate na borda, quem recua é o rebatedor
+      const inG=Math.abs(pk.x-W/2)<GW/2;let bx=Math.max(PR+2,Math.min(W-PR-2,pk.x)),by=inG?pk.y:Math.max(PR+2,Math.min(H-PR-2,pk.y));
+      if(bx!==pk.x||by!==pk.y){pk.x=bx;pk.y=by;const ex=m.x-pk.x,ey=m.y-pk.y,el=Math.hypot(ex,ey)||1;m.x=pk.x+ex/el*R;m.y=pk.y+ey/el*R}
       pk.vx+=m.vx*.35;pk.vy+=m.vy*.35;const s=Math.hypot(pk.vx,pk.vy),MAX=9;if(s>MAX){pk.vx*=MAX/s;pk.vy*=MAX/s}
       sfx.noise(.04,0,{f:2200,filter:'bandpass',vol:.05})}
     function moveMallet(m,tx,ty,maxS,minY,maxY){let dx=tx-m.x,dy=ty-m.y;const d=Math.hypot(dx,dy);if(d>maxS){dx*=maxS/d;dy*=maxS/d}
@@ -33,8 +36,17 @@ ARC.add({id:'hoquei',name:'HÓQUEI DE MESA',unit:'VITÓRIAS',cell:8,lugar:'hocke
     function step(dt){const f=dt*60;
       moveMallet(me,target.x,target.y,10*f,H/2+MR,H-MR-2);
       // adversário: defende o gol e ataca quando o disco está do lado dele
-      let tx,ty;const s=aiSpeed()*f;
-      if(pk.y<H/2&&!(hold>0)){tx=pk.x+(pk.x-W/2)*.15;ty=pk.y-MR*.6;if(pk.vy<-1.5){ty=Math.min(ty,H*.2)}}
+      let tx,ty;const s=aiSpeed()*f,spd=Math.hypot(pk.vx,pk.vy);
+      // disco parado: conta o tempo; do lado do adversário ele recua um pouco antes de tentar de novo (não prende o disco no canto)
+      slow=spd<.6?slow+dt:0;if(slow>.45&&pk.y<H/2&&retreat<=0){retreat=.7;slow=0}
+      if(retreat>0){retreat-=dt;tx=W/2+(pk.x<W/2?1:-1)*W*.12;ty=Math.max(MR+2,Math.min(H*.13,pk.y-MR*3))}
+      else if(pk.y<H/2&&!(hold>0)){
+        // ataca por trás do disco, na linha do gol do piloto; se esse ponto cai fora da mesa, vem pelo lado de dentro
+        let gx=W/2-pk.x,gy=H-pk.y;const gl=Math.hypot(gx,gy)||1;gx/=gl;gy/=gl;
+        tx=pk.x-gx*(MR+PR-3);ty=pk.y-gy*(MR+PR-3);
+        if(ty<MR+3){ty=pk.y+2;tx=pk.x+(pk.x<W/2?MR:-MR)}
+        if(tx<MR+3||tx>W-MR-3)tx=pk.x+(pk.x<W/2?MR*.6:-MR*.6);
+        if(pk.vy<-1.5)ty=Math.min(ty,H*.2)}
       else{tx=W/2+(pk.x-W/2)*.55;ty=H*.13}
       moveMallet(ai,tx,ty,s,MR+2,H/2-MR);
       if(hold>0){hold-=dt;if(hold<=0)hold=0;else return}
@@ -45,6 +57,8 @@ ARC.add({id:'hoquei',name:'HÓQUEI DE MESA',unit:'VITÓRIAS',cell:8,lugar:'hocke
       if(pk.y<PR+2){if(inGoal){if(pk.y<-PR){goal(true);return}}else{pk.y=PR+2;pk.vy=Math.abs(pk.vy);sfx.note(660,.03,0,{vol:.03})}}
       if(pk.y>H-PR-2){if(inGoal){if(pk.y>H+PR){goal(false);return}}else{pk.y=H-PR-2;pk.vy=-Math.abs(pk.vy);sfx.note(660,.03,0,{vol:.03})}}
       collide(me);collide(ai);
+      // segurança: disco parado por muito tempo em qualquer lugar ganha um sopro de ar para o meio da mesa
+      still=spd<.25?still+dt:0;if(still>1.4){const cx=W/2-pk.x,cy=H/2-pk.y,cl=Math.hypot(cx,cy)||1;pk.vx+=cx/cl*1.6;pk.vy+=cy/cl*1.6;still=0;sfx.noise(.12,0,{f:900,vol:.03})}
       trail.push([pk.x,pk.y]);if(trail.length>5)trail.shift()}
     function draw(t){const x=ctx;
       x.fillStyle='#dfeaf8';x.fillRect(0,0,W,H);
@@ -66,6 +80,7 @@ ARC.add({id:'hoquei',name:'HÓQUEI DE MESA',unit:'VITÓRIAS',cell:8,lugar:'hocke
       x.font='bold 9px monospace';x.fillStyle='#2a6ad8';x.textAlign='left';x.fillText(RIVAIS[(round-1)%2].nome,4,10)}
     function loop(t){raf=requestAnimationFrame(loop);const dt=Math.min(.05,(t-(last||t))/1000);last=t;
       if(running&&!paused){step(dt);if(msgT>0)msgT-=dt}draw(t)}
+    window.__hoquei=()=>({pk,ai,W,H}); // leitura do estado para testes automáticos
     return{
       ready(){cancelAnimationFrame(raf);reset(true);running=false;paused=false;msg='';msgT=0;last=0;raf=requestAnimationFrame(loop)},
       start(){running=true;msg='RODADA 1: '+RIVAIS[0].nome;msgT=1.4;hold=.9},
