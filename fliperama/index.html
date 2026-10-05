@@ -8,7 +8,8 @@ try{if('scrollRestoration' in history)history.scrollRestoration='manual'}catch(e
 /* iPhone (atalho da Tela de Início): ao voltar de outra página, o WebKit às vezes informa as margens seguras (Dynamic Island,
    barra de início) como 0 até a próxima rolagem — o topo sobe e as molduras ficam no tamanho errado. Guardamos as maiores
    margens já medidas neste modo (app ou navegador) e o CSS usa --sat/--sab, com env() só como reserva. */
-(function(){const r=document.documentElement,K='navemae-safe-'+((window.matchMedia&&matchMedia('(display-mode: standalone)').matches)||navigator.standalone?'app':'web');
+(function(){const r=document.documentElement,M=(window.matchMedia&&matchMedia('(display-mode: standalone)').matches)||navigator.standalone?'app':'web',K='navemae-safe-'+M;
+  r.classList.add(M); /* html.app = atalho da Tela de Início (tela cheia); html.web = navegador, que já tem a barra dele em cima */
   let s={};try{s=JSON.parse(localStorage.getItem(K))||{}}catch(e){}
   const ap=()=>{if(s.t)r.style.setProperty('--sat',s.t+'px');if(s.b)r.style.setProperty('--sab',s.b+'px')};ap();
   function measure(){if(innerWidth>innerHeight)return; // só retrato
@@ -179,6 +180,8 @@ body.play[data-deco="hoquei"] .scr::after{box-shadow:inset 0 0 14px 2px rgba(0,0
 /* transição: entrar na máquina */
 #fade{position:fixed;inset:0;z-index:40;background:#000;pointer-events:none;opacity:0;transition:opacity .22s steps(4)}
 #fade.on{opacity:1}
+/* no navegador (fora do atalho) não há Dynamic Island nem desfoque no topo: menos folga em cima */
+html.web{--top:calc(var(--sat,var(--sat,env(safe-area-inset-top))) + 54px)}
 </style>
 </head>
 <body>
@@ -213,7 +216,7 @@ body.play[data-deco="hoquei"] .scr::after{box-shadow:inset 0 0 14px 2px rgba(0,0
 <script>
 /* atualização automática: compara com version.json e recarrega com ?v=<versão> no endereço (o iPhone não reaproveita a
    página guardada). Se mesmo com ?v=<versão> a página veio velha, não insiste (evita recarregar sem parar). */
-const APP_V='20261005175242';
+const APP_V='20261005175510';
 (function(){const H0=location.hash;
   async function check(){try{const r=await fetch('../version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     const q=new URLSearchParams(location.search).get('v');
