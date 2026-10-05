@@ -216,11 +216,30 @@ button{cursor:pointer;touch-action:manipulation}
 /* ---------- chave piloto | nave ---------- */
 .seg{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px}
 /* abas de categoria (fixas com o palco) */
-.cats{display:flex;gap:8px;overflow-x:auto;margin:14px -16px 0;padding:6px 16px 10px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.cats{display:flex;gap:6px;overflow-x:auto;margin:14px -16px 0;padding:6px 16px 10px;scrollbar-width:none;-webkit-overflow-scrolling:touch;
+  -webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 28px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 28px),transparent)}
 .cats::-webkit-scrollbar{display:none}
-.cat{flex:none;display:grid;justify-items:center;gap:5px;padding:9px 12px;font-family:var(--px);font-size:8px;color:var(--dim)}
-.cat small{display:flex;align-items:center;gap:4px;font-size:7px;color:var(--dim)}
-.cat.on{color:var(--amber);box-shadow:0 -4px 0 0 var(--amber),0 4px 0 0 var(--amber),-4px 0 0 0 var(--amber),4px 0 0 0 var(--amber)}
+.cat{position:relative;flex:none;width:66px;display:grid;justify-items:center;gap:5px;padding:8px 2px 7px;font-family:var(--px);color:var(--dim);background:var(--panel);
+  box-shadow:inset 0 0 0 2px var(--line)}
+.cat .ci{display:grid;place-items:center;height:24px;opacity:.6}
+.cat .cl{font-size:6px;letter-spacing:.02em}
+.cat small{font-size:6px;color:var(--dim)}
+.cat .cdot{position:absolute;top:6px;right:6px;width:8px;height:8px;background:var(--amber);box-shadow:0 0 0 2px #100e26}
+.cat.on .cdot{background:#1a1200;box-shadow:0 0 0 2px var(--amber)}
+.cat.on{background:var(--amber);color:#1a1200;box-shadow:inset 0 0 0 2px #7a3a00,0 4px 0 0 #7a3a00}
+.cat.on .ci{opacity:1}.cat.on small{color:#4a2a00}
+/* destaque estilo sci-fi: linha do rótulo até a parte que muda */
+.callout{position:absolute;inset:0;z-index:4;pointer-events:none}
+.callout svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.co-lbl{position:absolute;padding:6px 8px;font-family:var(--px);font-size:7px;line-height:1.4;color:#40d8ff;background:rgba(7,6,26,.88);box-shadow:inset 0 0 0 2px #40d8ff;white-space:nowrap;animation:coin .3s steps(3)}
+.co-lbl b{display:block;font-weight:400;color:#eceaff}
+.co-line{stroke:#40d8ff;stroke-width:2;fill:none;stroke-dasharray:400;stroke-dashoffset:400;animation:codraw .35s steps(7) forwards}
+.co-mk{stroke:#40d8ff;stroke-width:2;fill:none;animation:coblink 1s steps(1) infinite}
+.co-dot{fill:#40d8ff}
+@keyframes codraw{to{stroke-dashoffset:0}}
+@keyframes coblink{50%{opacity:.25}}
+@keyframes coin{from{opacity:0}}
+@media (prefers-reduced-motion:reduce){.co-line{animation:none;stroke-dashoffset:0}.co-mk{animation:none}}
 .nextcat{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;margin-top:16px;padding:14px;font-family:var(--px);font-size:9px;color:var(--ink)}
 .shop-it .pr.own{color:var(--green)}
 .shop-it .pr.eq{color:#1a1200;background:var(--amber);padding:4px 6px}
@@ -539,6 +558,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
       <div class="floor"></div>
       <div class="vhero" id="vHero"></div>
       <span class="ptag" id="vTag" hidden>🔒 PRÉVIA</span>
+      <div class="callout" id="vCall"></div>
     </div>
     <div class="stage st-hang" id="hStage" hidden>
       <div class="win" id="hWin"></div>
@@ -547,6 +567,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
       <div class="padw" id="hPad"></div>
       <div class="hship" id="hShip"></div>
       <span class="ptag" id="hTag" hidden>🔒 PRÉVIA</span>
+      <div class="callout" id="hCall"></div>
     </div>
     <div class="cats" id="cats"></div>
     </div>
@@ -661,7 +682,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 
 <script>
 /* atualização automática: compara com version.json e recarrega quando sai versão nova */
-const APP_V='20261004221643';
+const APP_V='20261005090930';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     if(v&&v!==APP_V&&sessionStorage.getItem('upd')!==v){sessionStorage.setItem('upd',v);location.replace(location.pathname+'?v='+v+H0)}}catch(e){}}
@@ -845,6 +866,7 @@ function hdRows(rows,s,ov){const key=s+'|'+rows.join('/')+'|'+(ov?JSON.stringify
 function spriteRows(rows,s=2,ov){const g=hdRows(rows,s,ov),h=g.length,w=g[0].length,px=s/Math.max(1,Math.round(s/GRID));let r='';
   g.forEach((row,y)=>{let x=0;while(x<w){const c=row[x];if(!c){x++;continue}let k=1;while(row[x+k]===c)k++;r+=`<rect x="${x}" y="${y}" width="${k}" height="1" fill="${c}"/>`;x+=k}});
   return `<svg class="spr" viewBox="0 0 ${w} ${h}" width="${w*px}" height="${h*px}" shape-rendering="crispEdges" aria-hidden="true">${r}</svg>`}
+Object.assign(SPR,{"ic_helmet": ["....kkkk....", "..kkLLLLkk..", ".kLLLLLLLMk.", ".kLLkkkkkMk.", "kLkccccccckk", "kLkcWcccccMk", "kLkccccccckk", "kMMkkkkkkkMk", ".kMMMMMMMMk.", "..kkkkkkkk..", "............", "............"], "ic_visor": ["............", "..kkkkkkkk..", ".kccccccccck", "kcWWcccccccD", "kcWccccccccD", "kccccccccccD", ".kcccccccckk", "..kkkkkkkk..", "............", "............", "............", "............"], "ic_suit": ["...kk..kk...", "..kLLkkLLk..", ".kLLLLLLLLk.", "kLLkOOOOkLMk", "kLLkOYYOkLMk", "kLLkkkkkkLMk", "kLLLLLLLLLMk", "kkLLLMMLLLkk", ".kLLLkkLLMk.", ".kLLMk.kLMk.", ".kkkkk.kkkk.", "............"], "ic_skin": ["...kkkkkk...", "..kSSSSSSk..", ".kSSSSSSSSk.", ".kSkkSSkkSk.", ".kSSSSSSSSk.", ".kSSSSSSSSk.", ".kSSkSSkSSk.", "..kSSkkSSk..", "...kkSSkk...", ".....kk.....", "............", "............"], "ic_emblem": ["kkkkkkkkkk..", "kDDDDDDDDk..", "kDDDODDDDk..", "kDDOOODDDk..", "kDOOOOODDk..", "kDDOOODDDk..", "kDDODODDDk..", "kDDDDDDDDk..", "kkkkkkkkkk..", "............", "............", "............"], "ic_gear": ["........kk..", ".......kWWk.", "......kWLk..", ".....kWLk...", "....kWLk....", "...kWLk.....", "..kMMk......", ".kMMMMk.....", "kMMkMMk.....", "kMk.kk......", ".k..........", "............"], "ic_title": ["..kkkkkkkk..", ".kYYYYYYYYk.", "kYOOOOOOOOYk", "kYOkkkkkkOYk", "kYOOOOOOOOYk", ".kYYYYYYYYk.", "..kkrkkrkk..", "...krk.krk..", "...krk.krk..", "...kk...kk..", "............", "............"], "ic_ship": [".....kk.....", "....kLLk....", "...kLccLk...", "...kLccMk...", "...kLLLMk...", "..kkLLLMkk..", ".krkLLLMkrk.", "krrkLMMMkrrk", "kkkkkkkkkkkk", "...kOkkOk...", "...kYk.kYk..", "............"], "ic_paint": ["......kk....", ".....kWLk...", ".....kLMk...", "....kLMk....", "...kkkkk....", "..kOOOOk....", "..kOOOk.....", ".kOOOk......", ".kOOk.......", "kOOk........", "kkk.........", "............"], "ic_flame": ["....k.......", "...kOk..k...", "...kOk.kOk..", "..kOYOkkOk..", "..kOYYOkOk..", ".kOYYYYOOk..", ".kOYWWYYOk..", ".kOYWWWYOk..", "..kOYYYOk...", "...kkkkk....", "............", "............"], "ic_decal": ["..kkkkkkkk..", ".kWWWWWWWWk.", "kWWWWOWWWWWk", "kWWWOOOWWWWk", "kWWOOOOOWWWk", "kWWWOOOWWWkk", "kWWWOWOWWkLk", "kWWWWWWWkLk.", ".kkkkkkkkk..", "............", "............", "............"], "ic_trail": ["...k........", "..kYk...k...", "...k...kYk..", ".......kYk..", ".k......k...", "kYk..k......", ".k..kYk.....", "....kYk..k..", ".....k..kYk.", "..k......k..", ".kYk........", "..k........."]}); // ícones das abas de categoria do Hangar
 SPR.en=['....kkk','...kYOk','..kYOk.','.kYOkkk','kYYYYOk','kkkYOk.','..kYk..','.kYk...','.kk....'];
 SPR.t_mis=["....kkkk....","..kkkMMkkk..",".kSSkkkkSSk.",".kSSSSSSSSk.",".kSgkSkkkSk.",".kSSSSSSSSk.",".kSgkSkkkSk.",".kSSSSSSSSk.",".kSOkSkkkSk.",".kSSSSSSSSk.",".kkkkkkkkkk.","............"];
 const sprite=(n,s=2,ov)=>spriteRows(SPR[n],s,ov);
@@ -1460,7 +1482,7 @@ function renderCloset(){const side=sub==='hang'?'hang':'vest',cats=SIDE[side],cc
   draft=Object.assign({},L,shopItem()?{[shopItem().c]:shopItem().it.id}:{});
   // abas de categoria
   $('#cats').innerHTML=cats.map(c=>{const list=ITEMS[c].list,own=list.filter(owned).length,can=list.some(it=>!owned(it)&&bal>=it.price);
-    return `<button class="cat px${c===cc?' on':''}" data-cat="${c}">${SHORT[c]}<small>${own}/${list.length}${can?' '+sprite('en',2):''}</small></button>`}).join('');
+    return `<button class="cat${c===cc?' on':''}" data-cat="${c}"><span class="ci">${sprite('ic_'+c,2)}</span><span class="cl">${SHORT[c]}</span><small>${own}/${list.length}</small>${can?'<i class="cdot" title="Dá para liberar"></i>':''}</button>`}).join('');
   // vitrine da categoria
   const list=ITEMS[cc].list,i=cats.indexOf(cc),nx=cats[(i+1)%cats.length];
   $(side==='vest'?'#vGrid':'#hGrid').innerHTML=`<div class="shop-g">`+list.map(it=>{const o=owned(it),eq=L[cc]===it.id,sl=shopSel===it.k;
@@ -1478,7 +1500,7 @@ function renderCloset(){const side=sub==='hang'?'hang':'vest',cats=SIDE[side],cc
     if(owned(it)){shopSel=null;if(look()[c]!==id){st.look=Object.assign({},look(),{[c]:id});save();cacheAvatar();$('#logoShip').innerHTML=shipOnly(2);SND.equip(1)}else SND.medal()}
     else{shopSel=shopSel===it.k?null:it.k;SND.medal()}
     renderCloset()});
-  shopBarRender(bal)}
+  shopBarRender(bal);requestAnimationFrame(()=>callout(side,cc))}
 function shopBarRender(bal){const x=shopItem(),bar=$('#shopBar');if(!x||view!=='crew'){bar.hidden=true;return}
   const can=bal>=x.it.price;
   bar.innerHTML=`<span class="sb-t"><b>${x.it.n.toUpperCase()}</b><small>${ITEMS[x.c].t}${can?'':' · faltam '+(x.it.price-bal)}</small></span>`+
@@ -1490,6 +1512,30 @@ function shopBarRender(bal){const x=shopItem(),bar=$('#shopBar');if(!x||view!=='
     shopSel=null;SND.unlock();toast('Liberado!');renderCloset();updBadges()}}
 function hangScene(){if(!winStars){for(let i=0;i<26;i++)winStars+=`<i class="${Math.random()<.2?'b':''}" style="left:${Math.random()*100|0}%;top:${Math.random()*100|0}%"></i>`;$('#hWin').innerHTML=winStars}
   $('#hPad').innerHTML=sprite('pad',4);$('#hShip').innerHTML=shipSVG(6,draft);$('#hShip').classList.toggle('trail',!!item('trail',draft.trail).p)}
+/* pontos (em pixels da arte do piloto: 32×47, já com a margem) que cada categoria indica */
+const PPT={helmet:[10,6],visor:[13,10],skin:[16,14],suit:[18,27],emblem:[6,21],
+  gear:{none:[3,21],lanterna:[23,15],tanques:[2,20],jetpack:[2,21],rastreador:[5,29],macarico:[27,28],antena:[23,1],drone:[1,8],bandeira:[28,14]}};
+function callout(side,cat){const host=$(side==='vest'?'#vCall':'#hCall');if(!host)return;const stg=host.parentElement,sr=stg.getBoundingClientRect();
+  if(!sr.width){host.innerHTML='';return}
+  let tx=null,ty=null,mk=12;
+  if(side==='vest'){const el=$('#vHero svg');if(el&&cat!=='title'){const r=el.getBoundingClientRect();let p=PPT[cat];if(cat==='gear')p=p[draft.gear]||p.none;
+      tx=r.left-sr.left+p[0]/32*r.width;ty=r.top-sr.top+p[1]/47*r.height}}
+  else{const sh=$('#hShip .fx'),body=sh&&sh.firstElementChild;if(sh&&body){const r=body.getBoundingClientRect(),parts=sh.children;
+      if(cat==='ship'){tx=r.left-sr.left+r.width/2;ty=r.top-sr.top+r.height*.28;mk=16}
+      else if(cat==='paint'){tx=r.left-sr.left+r.width*.3;ty=r.top-sr.top+r.height*.62}
+      else if(cat==='decal'){const d=item('decal',draft.decal);tx=r.left-sr.left+r.width/2;ty=r.top-sr.top+r.height*(d.p==='pontas'?.12:d.p==='chamas'?.8:.58)}
+      else{const t=(cat==='trail'&&parts[2])?parts[2]:parts[1];if(t){const q=t.getBoundingClientRect();tx=q.left-sr.left+q.width/2;ty=q.top-sr.top+q.height/2}}}}
+  const cur=item(cat,draft[cat]);
+  host.innerHTML=`<svg></svg><div class="co-lbl">${SHORT[cat]}<b>${cur.n.toUpperCase()}</b></div>`;
+  const lb=host.querySelector('.co-lbl'),lw=lb.offsetWidth,lh=lb.offsetHeight,W=sr.width,H=sr.height;
+  if(tx===null){lb.style.left=(W-lw)/2+'px';lb.style.bottom='10px';return} // título: aparece na placa logo abaixo do palco
+  const right=tx<W/2,lx=right?W-12-lw:12,ly=Math.max(10,Math.min(H-lh-50,ty-lh-18)),sx=right?lx:lx+lw,sy=ly+lh/2,kx=right?sx-14:sx+14;
+  lb.style.left=lx+'px';lb.style.top=ly+'px';
+  const rx=Math.round(tx/2)*2,ry=Math.round(ty/2)*2,h=mk/2,c=4;
+  host.querySelector('svg').innerHTML=`<polyline class="co-line" points="${sx},${sy} ${kx},${sy} ${rx+(right?h:-h)},${ry}" shape-rendering="crispEdges"/>
+    <path class="co-mk" d="M${rx-h} ${ry-h+c}V${ry-h}H${rx-h+c}M${rx+h-c} ${ry-h}H${rx+h}V${ry-h+c}M${rx+h} ${ry+h-c}V${ry+h}H${rx+h-c}M${rx-h+c} ${ry+h}H${rx-h}V${ry+h-c}" shape-rendering="crispEdges"/>
+    <rect class="co-dot" x="${rx-1}" y="${ry-1}" width="2" height="2"/>`}
+addEventListener('resize',()=>{if(view==='crew')callout(sub==='hang'?'hang':'vest',curCat[sub==='hang'?'hang':'vest'])});
 let winStars='';
 const renderVest=()=>renderCloset(),renderHang=()=>renderCloset();
 
