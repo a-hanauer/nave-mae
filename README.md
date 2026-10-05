@@ -98,6 +98,38 @@ Ao criar um app novo, informe em `APPS` o campo `store` com a chave do `localSto
 
 Abra o link no Safari, toque em Compartilhar e escolha **Adicionar à Tela de Início**. A Nave-Mãe abre em tela cheia, com ícone próprio, e os apps abrem dentro dela.
 
+## Fliperama (minigames)
+
+Depois que o turno de missões do dia fica completo, a aba Missões mostra o monitor **FLIPERAMA** com os minutos liberados. Ele abre a sala de recreação em `fliperama/`, no mesmo visual de cockpit.
+
+- **Tempo por dia:** definido na Área dos pais (Desligado, 5, 10, 15, 20 ou 30 min; padrão 10). Só corre com uma partida rodando. Se acabar no meio, a partida vai até o fim (aviso ÚLTIMA PARTIDA) e não começa outra. Com 1 min restante, o relógio fica vermelho e toca um aviso.
+- **Travas:** sem o turno completo de hoje, a sala mostra FLIPERAMA TRAVADO. Desligado pelos pais, mostra FLIPERAMA DESLIGADO.
+- **Recompensa:** só recorde pessoal por jogo, sem energia (as peças do Hangar continuam vindo das missões).
+- **Controles:** deslizar o dedo na tela do jogo ou o direcional de metal embaixo (no computador, as setas do teclado). Minimizar o app pausa a partida.
+- **Dados:** `localStorage['navemae-arcade']` = `{day, used (segundos usados hoje), best:{jogo:recorde}, plays:{jogo:partidas}}`. A liberação do dia é `navemae-v1.arcDay` e o tempo é `navemae-v1.arcMin`.
+
+### Jogos
+
+| Jogo | Arquivo | Como funciona |
+|---|---|---|
+| Verme nos dutos | `fliperama/jogos/verme.js` | Snake: um verme alien rasteja pelos dutos da estação comendo ovos. Cada ovo aumenta o corpo e a velocidade; parede ou o próprio corpo encerram. A cada 5 ovos, um ovo dourado aparece por pouco tempo (+3). |
+
+### Adicionar um jogo
+
+1. Crie `fliperama/jogos/<id>.js` chamando `ARC.add({...})`:
+
+```js
+ARC.add({id:'meujogo', name:'NOME NA TELA', unit:'PONTOS', cell:8,
+  desc:'Uma frase de como jogar.',
+  icon:[/* linhas de pixels do ícone do gabinete */], iconPal:{/* cor de cada letra */},
+  make(api){ // api: {cv, ctx, cols, rows, cell, sfx, score(n), over()}
+    return{ready(){}, start(){}, input(dir){}, pause(){}, resume(){}, stop(){}}}})
+```
+
+2. Acrescente o id na lista `JOGOS` em `fliperama/index.html`.
+
+A sala cuida do resto: gabinete com recorde, tela do jogo do tamanho da tela do iPhone (em células de `cell` pixels, a 2 px por pixel), início ao primeiro movimento, relógio, pausa, fim de jogo e recorde. `api.score(n)` atualiza o placar e `api.over()` encerra a partida.
+
 ## Adicionar um app novo
 
 1. Crie uma pasta com o app, por exemplo `leitura/index.html`.
