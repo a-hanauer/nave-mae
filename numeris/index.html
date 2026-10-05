@@ -378,7 +378,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 
 <script>
 /* atualização automática: compara com version.json e recarrega quando sai versão nova */
-const APP_V='20261005102645';
+const APP_V='20261005102805';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     if(v&&v!==APP_V&&sessionStorage.getItem('upd')!==v){sessionStorage.setItem('upd',v);location.replace(location.pathname+'?v='+v+H0)}}catch(e){}}
@@ -543,6 +543,17 @@ const sprite=(n,s=2,ov)=>spriteRows(SPR[n],s,ov);
 
 /* =================== som =================== */
 let AC=null;
+/* iOS: ao minimizar o app, o contexto de áudio fica "interrupted"/"suspended" e às vezes não volta sozinho.
+   Ao voltar: tenta retomar (e descarta se em 400 ms não voltar). No primeiro toque com o som parado: cria um contexto novo. */
+function audioWake(e){const c=AC;if(!c||c.state==='running')return;
+  try{navAudioMode()}catch(e){}
+  if(e&&(e.type==='touchstart'||e.type==='pointerdown')){if(performance.now()-(audioWake.t||0)<600)return;audioWake.t=performance.now(); // dentro do toque o iOS libera um contexto novo: troca na hora, o som deste toque já sai
+    try{c.close()}catch(_){}try{AC=new (window.AudioContext||window.webkitAudioContext)();AC.resume&&AC.resume()}catch(_){AC=null}return}
+  try{const p=c.resume&&c.resume();if(p&&p.catch)p.catch(()=>{})}catch(e){}
+  setTimeout(()=>{if(AC===c&&c.state!=='running'){try{c.close()}catch(e){}AC=null}},400)}
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)audioWake()});
+addEventListener('pageshow',audioWake);addEventListener('focus',audioWake);
+['touchstart','pointerdown'].forEach(t=>document.addEventListener(t,audioWake,{passive:true,capture:true}));
 const navSound=()=>{try{return (JSON.parse(localStorage.getItem('navemae-v1'))||{}).sound!==false}catch(e){return true}}; /* som definido nas configurações da Nave-Mãe */
 let soundOn=navSound();addEventListener('pageshow',()=>{soundOn=navSound()});
 function tone(f,d=.08,t=0,v=.06,type='square'){if(!soundOn)return;try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();

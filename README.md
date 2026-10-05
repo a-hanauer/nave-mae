@@ -58,6 +58,8 @@ Missão feita aparece sempre como **FEITO**. Jogar de novo uma missão feita no 
 
 Os três apps usam o mesmo sintetizador (`mkSYN`: notas com envelope, deslize de tom, vibrato e ruído filtrado). Cada contexto tem seu som: abas com notas diferentes, sopro ao abrir planeta, motor na decolagem, peças equipadas e bloqueadas, medalhas, dados exportados, área dos pais; nos jogos, bateria com tom subindo conforme a sala enche, equipes em acordes, esteira do hangar, raio contra o Alien, pedras com tom pelo valor do símbolo, desmoronar ao apagar, papel na tábua e contagem regressiva. Acertos seguidos sobem de tom (combo).
 
+Volta do segundo plano: ao minimizar, o iOS interrompe o áudio do app. Ao voltar, os três apps tentam retomar; se o som continuar parado, o primeiro toque cria um áudio novo (e esse toque já faz som), sem precisar fechar o app.
+
 Som no iPhone: a opção **Tocar no silencioso** (configurações) escolhe o modo de áudio do iOS. Desligada (padrão), os sons misturam com a música do celular e a chave de silencioso cala o app; ligada, o som sai mesmo no silencioso, mas o iOS pausa as outras mídias. O iOS não oferece a sites um modo que faça as duas coisas (o único que ignora o silencioso é o de reprodução, que não mistura).
 
 Cada toque em botão gera uma vibração leve. No iPhone (iOS 18 ou mais recente) o Safari não tem API de vibração: cada botão recebe por dentro um `<label>` invisível que cobre o botão e aciona um `<input type=checkbox switch>` escondido, então o próprio toque do dedo cai no interruptor nativo, que vibra; o clique continua chegando ao botão. Um `MutationObserver` arma os botões criados depois. Precisa de Ajustes › Sons e Tato › Tato do Sistema ligado. No Android usa `navigator.vibrate`.
