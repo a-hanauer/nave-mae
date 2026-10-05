@@ -872,7 +872,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 
 <script>
 /* atualização automática: compara com version.json e recarrega quando sai versão nova (uma vez por página e versão) */
-const APP_V='20261005112305';
+const APP_V='20261005113552';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     if(v&&v!==APP_V&&sessionStorage.getItem('upd:'+location.pathname)!==v){sessionStorage.setItem('upd:'+location.pathname,v);location.replace(location.pathname+'?v='+v+H0)}}catch(e){}}
