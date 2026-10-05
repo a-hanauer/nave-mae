@@ -214,7 +214,19 @@ button{cursor:pointer;touch-action:manipulation}
 .plate b{display:block;font-family:var(--px);font-size:13px;margin-top:6px;word-break:break-all}
 .small{padding:10px 12px;font-family:var(--px);font-size:8px;color:var(--amber)}
 /* ---------- chave piloto | nave ---------- */
-.seg{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:18px}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px}
+/* abas de categoria (fixas com o palco) */
+.cats{display:flex;gap:8px;overflow-x:auto;margin:14px -16px 0;padding:6px 16px 10px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.cats::-webkit-scrollbar{display:none}
+.cat{flex:none;display:grid;justify-items:center;gap:5px;padding:9px 12px;font-family:var(--px);font-size:8px;color:var(--dim)}
+.cat small{display:flex;align-items:center;gap:4px;font-size:7px;color:var(--dim)}
+.cat.on{color:var(--amber);box-shadow:0 -4px 0 0 var(--amber),0 4px 0 0 var(--amber),-4px 0 0 0 var(--amber),4px 0 0 0 var(--amber)}
+.nextcat{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;margin-top:16px;padding:14px;font-family:var(--px);font-size:9px;color:var(--ink)}
+.shop-it .pr.own{color:var(--green)}
+.shop-it .pr.eq{color:#1a1200;background:var(--amber);padding:4px 6px}
+.shop-it.eq{box-shadow:0 -4px 0 0 var(--amber),0 4px 0 0 var(--amber),-4px 0 0 0 var(--amber),4px 0 0 0 var(--amber)}
+.shop-it.sel{box-shadow:0 -4px 0 0 var(--cyan),0 4px 0 0 var(--cyan),-4px 0 0 0 var(--cyan),4px 0 0 0 var(--cyan)}
+#vGrid,#hGrid{margin-top:4px}
 .hen{display:flex;align-items:center;gap:6px;font-family:var(--px);font-size:10px;color:var(--amber)}
 /* Oficina */
 .shop-top{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center;padding:14px 16px;margin:18px 0 16px}
@@ -520,7 +532,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
   <!-- HANGAR: piloto + nave -->
   <section id="crew" hidden>
     <div class="ctop">    <div class="vtitle"><h2>HANGAR</h2><span class="hen" id="hEn"></span></div>
-    <div class="seg" id="seg"><button class="px" data-s="vest"><span data-ico="t_pil"></span>PILOTO</button><button class="px" data-s="hang"><span data-ico="t_hng"></span>NAVE</button><button class="px" data-s="shop"><span data-ico="en"></span>OFICINA</button></div>
+    <div class="seg" id="seg"><button class="px" data-s="vest"><span data-ico="t_pil"></span>PILOTO</button><button class="px" data-s="hang"><span data-ico="t_hng"></span>NAVE</button></div>
     <div class="stage st-vest" id="vStage">
       <div class="glow"></div><div class="lamp"></div>
       <div class="lockers l" data-lk="2"></div><div class="lockers r" data-lk="2"></div>
@@ -536,22 +548,15 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
       <div class="hship" id="hShip"></div>
       <span class="ptag" id="hTag" hidden>🔒 PRÉVIA</span>
     </div>
+    <div class="cats" id="cats"></div>
     </div>
     <div id="vest">
     <div class="plate"><div><span class="ptitle" id="vTitle"></span><b id="vName"></b></div><button class="small px" id="nmEdit">EDITAR NOME</button></div>
-    <div class="sels" id="vSels"></div>
+    <div id="vGrid"></div><div style="height:90px"></div>
     </div>
     <div id="hang" hidden>
     <div class="plate"><div><span class="ptitle">Nave de</span><b id="hName"></b></div></div>
-    <div class="sels" id="hSels"></div>
-    </div>
-    <!-- OFICINA: liberar itens com energia -->
-    <div id="shop" hidden>
-      <div class="shop-top px"><div class="shop-bal"><span id="shopBal"></span><small>ENERGIA</small></div>
-        <p>Faça as missões do dia para ganhar energia e liberar peças novas.</p></div>
-      <div class="seg2" id="shopSide"><button class="px" data-side="pilot">PILOTO</button><button class="px" data-side="ship">NAVE</button></div>
-      <div id="shopList"></div>
-      <div style="height:96px"></div>
+    <div id="hGrid"></div><div style="height:90px"></div>
     </div>
   </section>
 
@@ -656,7 +661,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 
 <script>
 /* atualização automática: compara com version.json e recarrega quando sai versão nova */
-const APP_V='20261004212425';
+const APP_V='20261004221631';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     if(v&&v!==APP_V&&sessionStorage.getItem('upd')!==v){sessionStorage.setItem('upd',v);location.replace(location.pathname+'?v='+v+H0)}}catch(e){}}
@@ -1346,16 +1351,13 @@ let navT=0;
 document.addEventListener('click',e=>{if(e.target.matches&&e.target.matches('label[data-hap]>input'))return; // clique interno da vibração
   if(performance.now()-navT<350&&e.target.closest('#app')){e.stopPropagation();e.preventDefault()}},true);
 const VIEWS=['home','planet','tasks','crew','medals'];let view='home',sub='vest';
-function go(v){navT=performance.now();if(v==='vest'||v==='hang'||v==='shop'){sub=v;v='crew'}view=v;draft=null;VIEWS.forEach(x=>$('#'+x).hidden=x!==v);
+function go(v){navT=performance.now();if(v==='shop')v='vest';if(v==='vest'||v==='hang'){if(v!==sub)shopSel=null;sub=v;v='crew'}view=v;draft=null;VIEWS.forEach(x=>$('#'+x).hidden=x!==v);
   $('#topHdr').hidden=v!=='home'; // cabeçalho NAVE-MÃE só no mapa
   document.querySelectorAll('.tabbar [data-v]').forEach(b=>b.classList.toggle('on',b.dataset.v===(v==='planet'?'home':v)));
   if(v==='home')renderHome();if(v==='tasks')renderTasks();if(v==='medals')renderMedals();
   $('#shopBar').hidden=true;
-  if(v==='crew'){const sh=sub==='shop';$('#vest').hidden=sub!=='vest';$('#hang').hidden=sub!=='hang';$('#shop').hidden=!sh;
-    $('#vStage').hidden=!(sub==='vest'||sh&&shopSide==='pilot');$('#hStage').hidden=!(sub==='hang'||sh&&shopSide==='ship');
-    document.querySelectorAll('#seg [data-s]').forEach(b=>b.classList.toggle('on',b.dataset.s===sub));
-    $('#hEn').innerHTML=sprite('en',2)+energy().bal;
-    sh?renderShop():sub==='vest'?renderVest():renderHang()}
+  if(v==='crew'){$('#vest').hidden=$('#vStage').hidden=sub!=='vest';$('#hang').hidden=$('#hStage').hidden=sub!=='hang';
+    document.querySelectorAll('#seg [data-s]').forEach(b=>b.classList.toggle('on',b.dataset.s===sub));renderCloset()}
   window.scrollTo(0,0);coverTop()}
 /* respiro do topo: quando o palco do hangar gruda, cobre o que passa por cima dele */
 function coverTop(){const s=null; // os blocos fixos agora têm fundo próprio
@@ -1443,48 +1445,53 @@ function energy(){const Ld=st.eLed=st.eLed||{},per={},full={};
   let ch=false;for(const k in per)if(per[k]>(Ld[k]||0)){Ld[k]=per[k];ch=true}if(ch)save();
   const earned=(st.eBonus||0)+Object.values(Ld).reduce((a,b)=>a+b,0);return{earned,bal:earned-(st.spent||0)}}
 const minPrice=()=>{let m=1e9;for(const c in ITEMS)ITEMS[c].list.forEach(it=>{if(it.price&&!owned(it)&&c!=='skin')m=Math.min(m,it.price)});return m};
-/* ---------- Oficina ---------- */
-let shopSide='pilot',shopSel=null;
-/* selo de energia na aba Hangar: aparece quando já dá para liberar algum item */
+/* ---------- Hangar: vitrine de peças em PILOTO e NAVE ----------
+   Abas de categoria fixas no topo; cada peça aparece como EM USO, COMPRADO (toque para usar) ou com o preço
+   (toque para ver a prévia no palco e liberar com energia). */
+const SIDE={vest:['helmet','visor','suit','skin','emblem','gear','title'],hang:['ship','paint','flame','decal','trail']};
+const SHORT={helmet:'CAPACETE',visor:'VISEIRA',suit:'TRAJE',skin:'PELE',emblem:'EMBLEMA',gear:'EQUIPAM.',title:'TÍTULO',ship:'MODELO',paint:'PINTURA',flame:'PROPULSOR',decal:'ADESIVO',trail:'RASTRO'};
+let curCat={vest:'helmet',hang:'ship'},shopSel=null;
+/* selo de energia na aba Hangar: aparece quando já dá para liberar alguma peça */
 function updBadges(){const b=$('#hBadge');if(!b)return;b.hidden=energy().bal<minPrice();b.innerHTML=sprite('en',2)}
-const SHOPC={pilot:['helmet','visor','suit','emblem','gear','title'],ship:['ship','paint','flame','decal','trail']};
-function renderShop(){const bal=energy().bal;$('#shopBal').innerHTML=sprite('en',2)+bal;$('#hEn').innerHTML=sprite('en',2)+bal;
-  document.querySelectorAll('#shopSide [data-side]').forEach(b=>b.classList.toggle('on',b.dataset.side===shopSide));
-  let h='';SHOPC[shopSide].forEach(c=>{const list=ITEMS[c].list.filter(it=>it.price);if(!list.length)return;const own=list.filter(owned).length;
-    h+=`<div class="shop-h"><span class="label">${ITEMS[c].t}</span><span class="label">${own} / ${list.length}</span></div><div class="shop-g">`+
-      list.map(it=>{const o=owned(it);return `<button class="shop-it px${o?' own':''}${shopSel===it.k?' sel':''}" data-k="${it.k}"><span class="th">${thumb(c,it,2)}</span>
-        <span class="nm">${it.n.toUpperCase()}</span><span class="pr${!o&&bal<it.price?' no':''}">${o?sprite('check',2)+'SEU':sprite('en',2)+it.price}</span></button>`}).join('')+'</div>'});
-  $('#shopList').innerHTML=h;
-  $('#shopList').querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{shopSel=shopSel===b.dataset.k?null:b.dataset.k;SND.medal();shopPreview();renderShop()});
-  shopPreview();shopBarRender(bal)}
 function shopItem(){if(!shopSel)return null;const[c,id]=shopSel.split(':');return{c,it:item(c,id)}}
-function shopPreview(){const x=shopItem();draft=Object.assign(look(),x?{[x.c]:x.it.id}:{});
-  if(shopSide==='pilot'){$('#vHero').innerHTML=pilotFull(4,draft);$('#vTag').hidden=!x||owned(x.it);
-    document.querySelectorAll('[data-lk]').forEach(el=>{if(!el.innerHTML)el.innerHTML=sprite('locker',4,{L:'#8a93a3',M:'#646c7c',D:'#454b57',E:'#2b2f38'}).repeat(+el.dataset.lk)})}
-  else{hangScene();$('#hTag').hidden=!x||owned(x.it)}}
-function shopBarRender(bal){const x=shopItem(),bar=$('#shopBar');if(!x||view!=='crew'||sub!=='shop'){bar.hidden=true;return}
-  const o=owned(x.it),can=bal>=x.it.price,eq=look()[x.c]===x.it.id;
-  bar.innerHTML=`<span class="sb-t"><b>${x.it.n.toUpperCase()}</b><small>${ITEMS[x.c].t}${o?' · já é seu':can?'':' · faltam '+(x.it.price-bal)}</small></span>`+
-    (o?`<button class="btn" id="sbGo"${eq?' disabled':''}>${eq?'EM USO':'USAR'}</button>`:`<button class="btn" id="sbGo"${can?'':' disabled'}>LIBERAR ${sprite('en',2)}${x.it.price}</button>`);
+function renderCloset(){const side=sub==='hang'?'hang':'vest',cats=SIDE[side],cc=curCat[side],bal=energy().bal,L=look();
+  $('#hEn').innerHTML=sprite('en',2)+bal;
+  const x=shopItem();if(x&&!cats.includes(x.c))shopSel=null;
+  draft=Object.assign({},L,shopItem()?{[shopItem().c]:shopItem().it.id}:{});
+  // abas de categoria
+  $('#cats').innerHTML=cats.map(c=>{const list=ITEMS[c].list,own=list.filter(owned).length,can=list.some(it=>!owned(it)&&bal>=it.price);
+    return `<button class="cat px${c===cc?' on':''}" data-cat="${c}">${SHORT[c]}<small>${own}/${list.length}${can?' '+sprite('en',2):''}</small></button>`}).join('');
+  // vitrine da categoria
+  const list=ITEMS[cc].list,i=cats.indexOf(cc),nx=cats[(i+1)%cats.length];
+  $(side==='vest'?'#vGrid':'#hGrid').innerHTML=`<div class="shop-g">`+list.map(it=>{const o=owned(it),eq=L[cc]===it.id,sl=shopSel===it.k;
+      const tag=eq?`<span class="pr eq">${sprite('check',2)}EM USO</span>`:o?`<span class="pr own">${it.price?'COMPRADO':'SEU'}</span>`:`<span class="pr${bal<it.price?' no':''}">${sprite('en',2)}${it.price}</span>`;
+      return `<button class="shop-it px${eq?' eq':o?' own':''}${sl?' sel':''}" data-k="${it.k}"><span class="th">${thumb(cc,it,2)}</span><span class="nm">${cc==='title'?'':it.n.toUpperCase()}</span>${tag}</button>`}).join('')+
+    `</div><button class="nextcat px" data-cat="${nx}">PRÓXIMO: ${SHORT[nx]} ${sprite('fwd',2)}</button>`;
+  // palco
+  if(side==='vest'){document.querySelectorAll('[data-lk]').forEach(el=>{if(!el.innerHTML)el.innerHTML=sprite('locker',4,{L:'#8a93a3',M:'#646c7c',D:'#454b57',E:'#2b2f38'}).repeat(+el.dataset.lk)});
+    $('#vHero').innerHTML=pilotFull(4,draft);$('#vTag').hidden=!shopSel;$('#vTitle').textContent=item('title',draft.title).n;$('#vName').textContent=st.pilot||'—'}
+  else{hangScene();$('#hTag').hidden=!shopSel;$('#hName').textContent=st.pilot||'—'}
+  // toques
+  document.querySelectorAll('#cats [data-cat],.nextcat').forEach(b=>b.onclick=()=>{curCat[side]=b.dataset.cat;shopSel=null;SND.tab(cats.indexOf(b.dataset.cat)%4);renderCloset();
+    const on=$('#cats .on');if(on)on.scrollIntoView({inline:'center',block:'nearest'});window.scrollTo(0,0)});
+  document.querySelectorAll('.shop-it[data-k]').forEach(b=>b.onclick=()=>{const[c,id]=b.dataset.k.split(':'),it=item(c,id);
+    if(owned(it)){shopSel=null;if(look()[c]!==id){st.look=Object.assign({},look(),{[c]:id});save();cacheAvatar();$('#logoShip').innerHTML=shipOnly(2);SND.equip(1)}else SND.medal()}
+    else{shopSel=shopSel===it.k?null:it.k;SND.medal()}
+    renderCloset()});
+  shopBarRender(bal)}
+function shopBarRender(bal){const x=shopItem(),bar=$('#shopBar');if(!x||view!=='crew'){bar.hidden=true;return}
+  const can=bal>=x.it.price;
+  bar.innerHTML=`<span class="sb-t"><b>${x.it.n.toUpperCase()}</b><small>${ITEMS[x.c].t}${can?'':' · faltam '+(x.it.price-bal)}</small></span>`+
+    `<button class="btn" id="sbGo"${can?'':' disabled'}>LIBERAR ${sprite('en',2)}${x.it.price}</button>`;
   bar.hidden=false;bar.style.bottom=($('.tabbar').offsetHeight+12)+'px';
-  $('#sbGo').onclick=()=>{const e=energy();if(!o){if(e.bal<x.it.price){SND.locked();return}st.spent=(st.spent||0)+x.it.price;st.own=st.own||[];st.own.push(x.it.k);SND.unlock();toast('Liberado!')}
-    else SND.equip(1);
-    st.look=Object.assign({},look(),{[x.c]:x.it.id});save();cacheAvatar();$('#logoShip').innerHTML=shipOnly(2);renderShop();updBadges()}}
-document.querySelectorAll('#shopSide [data-side]').forEach(b=>b.onclick=()=>{if(b.dataset.side===shopSide)return;shopSide=b.dataset.side;shopSel=null;SND.tab(shopSide==='pilot'?2:3);
-  $('#vStage').hidden=shopSide!=='pilot';$('#hStage').hidden=shopSide!=='ship';renderShop()});
+  $('#sbGo').onclick=()=>{if(energy().bal<x.it.price){SND.locked();return}
+    st.spent=(st.spent||0)+x.it.price;st.own=st.own||[];st.own.push(x.it.k);
+    st.look=Object.assign({},look(),{[x.c]:x.it.id});save();cacheAvatar();$('#logoShip').innerHTML=shipOnly(2); // liberou: já fica em uso
+    shopSel=null;SND.unlock();toast('Liberado!');renderCloset();updBadges()}}
 function hangScene(){if(!winStars){for(let i=0;i<26;i++)winStars+=`<i class="${Math.random()<.2?'b':''}" style="left:${Math.random()*100|0}%;top:${Math.random()*100|0}%"></i>`;$('#hWin').innerHTML=winStars}
   $('#hPad').innerHTML=sprite('pad',4);$('#hShip').innerHTML=shipSVG(6,draft);$('#hShip').classList.toggle('trail',!!item('trail',draft.trail).p)}
-function renderVest(){if(!draft)draft=look();
-  document.querySelectorAll('[data-lk]').forEach(el=>el.innerHTML=sprite('locker',4,{L:'#8a93a3',M:'#646c7c',D:'#454b57',E:'#2b2f38'}).repeat(+el.dataset.lk));
-  $('#vHero').innerHTML=pilotFull(4,draft);
-  $('#vTag').hidden=!anyLocked(VCATS);
-  $('#vTitle').textContent=item('title',draft.title).n;$('#vName').textContent=st.pilot||'—';
-  $('#vSels').innerHTML=VCATS.map(c=>selRow(c,draft)).join('');bindSels($('#vSels'),renderVest)}
 let winStars='';
-function renderHang(){if(!draft)draft=look();
-  hangScene();
-  $('#hTag').hidden=!anyLocked(HCATS);$('#hName').textContent=st.pilot||'—';
-  $('#hSels').innerHTML=HCATS.map(c=>selRow(c,draft)).join('');bindSels($('#hSels'),renderHang)}
+const renderVest=()=>renderCloset(),renderHang=()=>renderCloset();
 
 /* ---- parede de medalhas ---- */
 const CATS={missions:{t:'Missões',e:'md_star',rb:['#5fa8ff','#2f5fb8']},streak:{t:'Dias seguidos',e:'md_flame',rb:['#ff9a4a','#c45a10']},
