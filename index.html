@@ -685,6 +685,27 @@ body[data-v="home"] #app{padding-bottom:calc(var(--con) + var(--dash) + 24px)!im
 .arcp-go .spr{animation:nudge .8s steps(2) infinite}
 .arcp:active{transform:translate(2px,2px)}
 .arcp.off{animation:none;box-shadow:0 0 0 2px #000,0 0 0 4px #4a2a6a,0 0 0 6px #000;opacity:.7}
+/* Hangar com altura fixa: palco, abas e um carrossel de peças que rola para os lados (a página não rola) */
+body[data-v="crew"]{overflow:hidden}
+body[data-v="crew"] #crew{position:fixed;left:0;right:0;top:var(--hud);bottom:var(--con);z-index:1;display:flex;flex-direction:column;max-width:440px;margin:0 auto;
+  padding:16px calc(16px + env(safe-area-inset-right)) 14px calc(16px + env(safe-area-inset-left))}
+body[data-v="crew"] .ctop{position:static;margin:0;padding:0;background:none;flex:none}
+body[data-v="crew"] .seg{margin-bottom:16px}
+body[data-v="crew"] .seg button{padding:9px 0}
+body[data-v="crew"] .stage{height:clamp(190px,calc(100dvh - var(--hud) - var(--con) - 380px),250px)}
+body[data-v="crew"] .cats{margin-top:12px;padding-bottom:10px}
+#vest,#hang{flex:1;min-height:0;display:flex;flex-direction:column}
+#vGrid,#hGrid{flex:1;min-height:0;margin:0 -16px}
+.shop-g{display:flex!important;gap:16px!important;height:100%;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;
+  padding:10px 22px 10px!important;scroll-padding:0 22px}
+.shop-g::-webkit-scrollbar{display:none}
+.shop-g .shop-it{flex:none;width:calc((100% - 44px - 16px) / 2.35);height:100%;min-height:0;scroll-snap-align:start;align-content:space-between;grid-template-rows:1fr auto auto;padding:8px 8px 10px}
+.shop-g .shop-it .th{height:100%;min-height:44px}
+.shop-g .shop-it .nm{min-height:0;font-size:7px}
+.shop-it .pr.lib{color:#1a1200;background:var(--amber);padding:5px 6px;animation:libp .8s steps(2) infinite}
+@keyframes libp{50%{background:#ffd23f}}
+.shop-it.nextc .nm{color:var(--dim)}
+.shop-it.nextc .th{background:#05060f}
 </style>
 <script>
 /* sem zoom: bloqueia pinça e dois toques no app inteiro */
@@ -763,12 +784,10 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
     <div class="cats" id="cats"></div>
     </div>
     <div id="vest">
-    <div class="plate"><div><span class="ptitle" id="vTitle"></span><b id="vName"></b></div><button class="small px" id="nmEdit">EDITAR NOME</button></div>
-    <div id="vGrid"></div><div style="height:90px"></div>
+    <div id="vGrid"></div>
     </div>
     <div id="hang" hidden>
-    <div class="plate"><div><span class="ptitle">Nave de</span><b id="hName"></b></div></div>
-    <div id="hGrid"></div><div style="height:90px"></div>
+    <div id="hGrid"></div>
     </div>
   </section>
 
@@ -823,6 +842,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 <div class="overlay" id="cfg" hidden>
   <div class="modal px cfg">
     <h2 id="cfgTitle">CONFIGURAÇÕES</h2>
+    <div class="row2"><span class="label">Nome do piloto</span><button class="tog px" id="nmEdit">EDITAR</button></div>
     <div class="row2"><span class="label">Som</span><button class="tog px" id="cfgSnd"></button></div>
     <div class="row2"><span class="label">Tocar no silencioso</span><button class="tog px" id="cfgSil"></button></div>
     <p class="note" id="cfgSilNote"></p>
@@ -873,7 +893,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 <script>
 /* atualização automática: compara com version.json e recarrega com ?v=<versão> no endereço (o iPhone não reaproveita a
    página guardada). Se mesmo com ?v=<versão> a página veio velha, não insiste (evita recarregar sem parar). */
-const APP_V='20261005174750';
+const APP_V='20261005175242';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     const q=new URLSearchParams(location.search).get('v');
@@ -1717,7 +1737,7 @@ function bindTasks(){$('#tList').querySelectorAll('[data-m]').forEach(b=>b.oncli
 let toastT=0;function toast(t){const el=$('#toast');el.textContent=t;el.hidden=false;el.style.bottom=$('#shopBar').hidden?'':'calc(170px + env(safe-area-inset-bottom))';clearTimeout(toastT);toastT=setTimeout(()=>el.hidden=true,2600)}
 $('#pilotBtn').onclick=()=>{SND.open();go('vest')};
 document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>{b.closest('.overlay').hidden=true});
-$('#nmEdit').onclick=()=>{SND.open();$('#nameIn').value=st.pilot;$('#nameDlg').hidden=false};
+$('#nmEdit').onclick=()=>{SND.open();$('#cfg').hidden=true;$('#nameIn').value=st.pilot;$('#nameDlg').hidden=false};
 $('#nameForm').onsubmit=e=>{e.preventDefault();const v=$('#nameIn').value.trim().toUpperCase();if(v){st.pilot=v;save()}$('#nameDlg').hidden=true;if(view==='vest')renderVest()};
 
 /* ---- seletores ◀ ▶ (rascunho permite ver itens bloqueados) ---- */
@@ -1768,21 +1788,28 @@ function renderCloset(){const side=sub==='hang'?'hang':'vest',cats=SIDE[side],cc
   const list=ITEMS[cc].list,i=cats.indexOf(cc),nx=cats[(i+1)%cats.length];
   $(side==='vest'?'#vGrid':'#hGrid').innerHTML=`<div class="shop-g">`+list.map(it=>{const o=owned(it),eq=L[cc]===it.id,sl=shopSel===it.k;
       const tag=eq?`<span class="pr eq">${sprite('check',2)}EM USO</span>`:o?`<span class="pr own">DISPONÍVEL</span>`:`<span class="pr${bal<it.price?' no':''}">${sprite('en',2)}${it.price}</span>`;
-      return `<button class="shop-it px${eq?' eq':o?' own':' lk'}${sl?' sel':''}" data-k="${it.k}">${o?'':`<span class="lkic">${sprite('lock',2)}</span>`}<span class="th">${thumb(cc,it,2)}</span><span class="nm">${cc==='title'?'':it.n.toUpperCase()}</span>${tag}</button>`}).join('')+
-    `</div><button class="nextcat px" data-cat="${nx}">PRÓXIMO: ${SHORT[nx]} ${sprite('fwd',2)}</button>`;
+      // peça bloqueada em prévia: o próprio card vira o botão de liberar (toque de novo)
+      const lib=sl&&!o?(bal>=it.price?`<span class="pr lib">LIBERAR ${sprite('en',2)}${it.price}</span>`:`<span class="pr no">FALTAM ${sprite('en',2)}${it.price-bal}</span>`):tag;
+      return `<button class="shop-it px${eq?' eq':o?' own':' lk'}${sl?' sel':''}" data-k="${it.k}">${o?'':`<span class="lkic">${sprite('lock',2)}</span>`}<span class="th">${thumb(cc,it,2)}</span><span class="nm">${cc==='title'?'':it.n.toUpperCase()}</span>${lib}</button>`}).join('')+
+    `<button class="shop-it nextc px" data-cat="${nx}"><span class="th">${sprite('ic_'+nx,4)}</span><span class="nm">PRÓXIMO</span><span class="pr">${SHORT[nx]} ${sprite('fwd',2)}</span></button></div>`;
   // palco
   if(side==='vest'){document.querySelectorAll('[data-lk]').forEach(el=>{if(!el.innerHTML)el.innerHTML=sprite('locker',4,{L:'#8a93a3',M:'#646c7c',D:'#454b57',E:'#2b2f38'}).repeat(+el.dataset.lk)});
-    $('#vHero').innerHTML=pilotFull(2,draft);$('#vTag').hidden=!shopSel;$('#vTitle').textContent=item('title',draft.title).n;$('#vName').textContent=st.pilot||'—'}
-  else{hangScene();$('#hTag').hidden=!shopSel;$('#hName').textContent=st.pilot||'—'}
+    $('#vHero').innerHTML=pilotFull(2,draft);$('#vTag').hidden=!shopSel}
+  else{hangScene();$('#hTag').hidden=!shopSel}
   // toques
-  document.querySelectorAll('#cats [data-cat],.nextcat').forEach(b=>b.onclick=()=>{curCat[side]=b.dataset.cat;shopSel=null;SND.tab(cats.indexOf(b.dataset.cat)%4);renderCloset();
-    const on=$('#cats .on');if(on)on.scrollIntoView({inline:'center',block:'nearest'});window.scrollTo(0,0)});
+  document.querySelectorAll('#cats [data-cat],.nextc').forEach(b=>b.onclick=()=>{curCat[side]=b.dataset.cat;shopSel=null;SND.tab(cats.indexOf(b.dataset.cat)%4);renderCloset();
+    const on=$('#cats .on');if(on)on.scrollIntoView({inline:'center',block:'nearest'});const g=$('#'+(side==='vest'?'v':'h')+'Grid .shop-g');if(g)g.scrollLeft=0});
   document.querySelectorAll('.shop-it[data-k]').forEach(b=>b.onclick=()=>{const[c,id]=b.dataset.k.split(':'),it=item(c,id);
     if(owned(it)){shopSel=null;if(look()[c]!==id){st.look=Object.assign({},look(),{[c]:id});save();cacheAvatar();$('#logoShip').innerHTML=shipOnly(2);SND.equip(1)}else SND.medal()}
-    else{shopSel=shopSel===it.k?null:it.k;SND.medal()}
-    renderCloset()});
-  shopBarRender(bal);requestAnimationFrame(()=>callout(side,cc))}
-function shopBarRender(bal){const x=shopItem(),bar=$('#shopBar');if(!x||view!=='crew'){bar.hidden=true;return}
+    else if(shopSel===it.k){if(energy().bal>=it.price){buy({c,it});return}shopSel=null;SND.locked()}
+    else{shopSel=it.k;SND.medal()}
+    const g=b.parentNode,sl=g.scrollLeft;renderCloset();const g2=$('#'+(side==='vest'?'v':'h')+'Grid .shop-g');if(g2)g2.scrollLeft=sl});
+  shopBarRender(bal);requestAnimationFrame(()=>{callout(side,cc);const sl=document.querySelector('#'+(side==='vest'?'v':'h')+'Grid .shop-it.sel');if(sl){const g=sl.parentNode,l=sl.offsetLeft-22,r=sl.offsetLeft+sl.offsetWidth-g.clientWidth+22;if(g.scrollLeft>l)g.scrollLeft=l;else if(g.scrollLeft<r)g.scrollLeft=r}})}
+function buy(x){if(energy().bal<x.it.price){SND.locked();return}
+  st.spent=(st.spent||0)+x.it.price;st.own=st.own||[];st.own.push(x.it.k);
+  st.look=Object.assign({},look(),{[x.c]:x.it.id});save();cacheAvatar();$('#logoShip').innerHTML=shipOnly(2); // liberou: já fica em uso
+  const g=$('#'+(sub==='hang'?'h':'v')+'Grid .shop-g'),sl=g?g.scrollLeft:0;shopSel=null;SND.unlock();toast('Liberado!');renderCloset();updBadges();const g2=$('#'+(sub==='hang'?'h':'v')+'Grid .shop-g');if(g2)g2.scrollLeft=sl}
+function shopBarRender(bal){const bar=$('#shopBar');bar.hidden=true;return;const x=shopItem();if(!x||view!=='crew'){bar.hidden=true;return}
   const can=bal>=x.it.price;
   bar.innerHTML=`<span class="sb-t"><b>${x.it.n.toUpperCase()}</b><small>${ITEMS[x.c].t}${can?'':' · faltam '+(x.it.price-bal)}</small></span>`+
     `<button class="btn" id="sbGo"${can?'':' disabled'}>LIBERAR ${sprite('en',2)}${x.it.price}</button>`;
