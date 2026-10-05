@@ -8,7 +8,8 @@
    margens já medidas neste modo (app ou navegador) e o CSS usa --sat/--sab, com env() só como reserva. */
 /* o navegador não deve devolver a rolagem antiga ao voltar para a página: cada tela começa do topo */
 try{if('scrollRestoration' in history)history.scrollRestoration='manual'}catch(e){}
-(function(){const r=document.documentElement,K='navemae-safe-'+((window.matchMedia&&matchMedia('(display-mode: standalone)').matches)||navigator.standalone?'app':'web');
+(function(){const r=document.documentElement,M=(window.matchMedia&&matchMedia('(display-mode: standalone)').matches)||navigator.standalone?'app':'web',K='navemae-safe-'+M;
+  r.classList.add(M); /* html.app = atalho da Tela de Início (tela cheia); html.web = navegador, que já tem a barra dele em cima */
   let s={};try{s=JSON.parse(localStorage.getItem(K))||{}}catch(e){}
   const ap=()=>{if(s.t)r.style.setProperty('--sat',s.t+'px');if(s.b)r.style.setProperty('--sab',s.b+'px')};ap();
   function measure(){if(innerWidth>innerHeight)return; // só retrato
@@ -25,6 +26,8 @@ try{if('scrollRestoration' in history)history.scrollRestoration='manual'}catch(e
 <style>*,*::before,*::after{box-sizing:border-box}body{margin:0}img{max-width:100%}[hidden]{display:none!important}:root{padding-top:var(--sat,env(safe-area-inset-top));padding-bottom:var(--sab,env(safe-area-inset-bottom))}
 /* sem zoom de dois toques (cada área com rolagem precisa da regra) */
 *{touch-action:manipulation}
+/* no navegador (fora do atalho) não há Dynamic Island nem desfoque no topo: menos folga em cima */
+html.web #app{padding-block:20px 16px}
 </style>
 <title>Estação Nostro-9</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -414,7 +417,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 <script>
 /* atualização automática: compara com version.json e recarrega com ?v=<versão> no endereço (o iPhone não reaproveita a
    página guardada). Se mesmo com ?v=<versão> a página veio velha, não insiste (evita recarregar sem parar). */
-const APP_V='20261005175242';
+const APP_V='20261005175510';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     const q=new URLSearchParams(location.search).get('v');

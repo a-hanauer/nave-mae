@@ -8,7 +8,8 @@
    margens já medidas neste modo (app ou navegador) e o CSS usa --sat/--sab, com env() só como reserva. */
 /* o navegador não deve devolver a rolagem antiga ao voltar para a página: cada tela começa do topo */
 try{if('scrollRestoration' in history)history.scrollRestoration='manual'}catch(e){}
-(function(){const r=document.documentElement,K='navemae-safe-'+((window.matchMedia&&matchMedia('(display-mode: standalone)').matches)||navigator.standalone?'app':'web');
+(function(){const r=document.documentElement,M=(window.matchMedia&&matchMedia('(display-mode: standalone)').matches)||navigator.standalone?'app':'web',K='navemae-safe-'+M;
+  r.classList.add(M); /* html.app = atalho da Tela de Início (tela cheia); html.web = navegador, que já tem a barra dele em cima */
   let s={};try{s=JSON.parse(localStorage.getItem(K))||{}}catch(e){}
   const ap=()=>{if(s.t)r.style.setProperty('--sat',s.t+'px');if(s.b)r.style.setProperty('--sab',s.b+'px')};ap();
   function measure(){if(innerWidth>innerHeight)return; // só retrato
@@ -706,6 +707,9 @@ body[data-v="crew"] .cats{margin-top:12px;padding-bottom:10px}
 @keyframes libp{50%{background:#ffd23f}}
 .shop-it.nextc .nm{color:var(--dim)}
 .shop-it.nextc .th{background:#05060f}
+/* no navegador (fora do atalho) não há Dynamic Island nem desfoque no topo: menos folga em cima */
+html.web{--hud:calc(var(--sat,env(safe-area-inset-top)) + 52px)}
+html.web .overlay{padding-top:calc(24px + var(--sat,env(safe-area-inset-top)))}
 </style>
 <script>
 /* sem zoom: bloqueia pinça e dois toques no app inteiro */
@@ -893,7 +897,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 <script>
 /* atualização automática: compara com version.json e recarrega com ?v=<versão> no endereço (o iPhone não reaproveita a
    página guardada). Se mesmo com ?v=<versão> a página veio velha, não insiste (evita recarregar sem parar). */
-const APP_V='20261005175242';
+const APP_V='20261005175510';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     const q=new URLSearchParams(location.search).get('v');

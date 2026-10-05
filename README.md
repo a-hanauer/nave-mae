@@ -197,6 +197,8 @@ Os ids dos planetas são `mat`, `por`, `cie`, `ing`, `his` e `geo`.
 
 Antes de cada commit, rode `python3 bump.py`. Ele grava uma versão nova em `version.json` e nos apps. Quem estiver com o app aberto (inclusive pelo atalho da Tela de Início) recarrega sozinho quando a versão publicada muda.
 
+No navegador comum (fora do atalho da Tela de Início), os apps marcam `html.web` e usam menos folga no topo (sem Dynamic Island nem desfoque ali); no atalho (`html.app`) a folga extra continua.
+
 Toda navegação entre páginas leva `?v=<versão>` no endereço: a Nave-Mãe abre os jogos e o fliperama assim, e eles voltam para a Nave-Mãe assim (`../?v=<versão>#v=tasks`). Sem isso, o iPhone reabria a Nave-Mãe guardada (velha) ao voltar. Se uma página percebe que está velha, recarrega com `?v=<versão nova>`; se mesmo assim vier velha, não insiste.
 
 ## Dados
