@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#3a3f4e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="format-detection" content="telephone=no">
+<link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon-v2.png">
+<title>Fliperama · Nave-Mãe</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+<style>
+*{touch-action:manipulation}
+:root{--bg:#0c0b1d;--ink:#eceaff;--dim:#8f8cc7;--amber:#ffb300;--amber-d:#b37a00;--green:#39e35f;--red:#ff3d2e;--cyan:#40d8ff;
+  --px:"Press Start 2P",monospace;--vt:"VT323",monospace;
+  /* cockpit (o mesmo da Nave-Mãe) */
+  --h1:#68708a;--h2:#3a3f4e;--h3:#2b2f3b;--h4:#1c1f28;--h5:#090b10;--scr:#06100a;--scr2:#0b0c1f;
+  --hud:calc(env(safe-area-inset-top) + 72px);
+  --plate:repeating-linear-gradient(90deg,transparent 0 118px,var(--h4) 118px 120px),var(--h3);
+  --mon:0 0 0 2px #000,0 0 0 8px var(--h2),0 0 0 10px var(--h5)}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{background:#3a3f4e}
+body{background:var(--plate);color:var(--ink);font-family:var(--vt);font-size:22px;line-height:1.15;min-height:100vh;min-height:100dvh;overflow-x:hidden;
+  -webkit-text-size-adjust:100%;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;overscroll-behavior:none;-webkit-font-smoothing:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;touch-action:manipulation}
+.spr{display:block;image-rendering:pixelated}
+[hidden]{display:none!important}
+.crt{position:fixed;inset:0;pointer-events:none;z-index:50;background:repeating-linear-gradient(0deg,rgba(0,0,0,.18) 0 1px,transparent 1px 3px)}
+/* painel de cima */
+#hud{position:fixed;left:0;right:0;top:0;z-index:31;height:var(--hud);background:var(--h2);box-shadow:inset 0 -2px 0 0 var(--h1),0 4px 0 0 var(--h5);touch-action:none}
+.hud-in{position:absolute;left:0;right:0;bottom:5px;height:44px;max-width:440px;margin:0 auto;display:flex;align-items:center;gap:8px;
+  padding:0 calc(14px + env(safe-area-inset-right)) 0 calc(14px + env(safe-area-inset-left))}
+.hud-scr{flex:1;min-width:0;height:32px;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:0 10px;
+  background:repeating-linear-gradient(0deg,rgba(57,227,95,.05) 0 2px,transparent 2px 4px),var(--scr);
+  box-shadow:inset 0 0 10px 0 rgba(57,227,95,.18),0 0 0 2px var(--h5),0 0 0 4px var(--h3),0 0 0 6px var(--h5)}
+.hud-scr b{font-family:var(--px);font-size:10px;font-weight:400;color:#5dff83;text-shadow:0 0 6px rgba(57,227,95,.55);white-space:nowrap;overflow:hidden;line-height:20px;padding-top:3px}
+.hud-scr span{display:flex;align-items:center;gap:6px;flex:none;font-family:var(--px);font-size:9px;color:var(--amber);text-shadow:0 0 6px rgba(255,179,0,.45)}
+.hud-scr span.low{color:var(--red);animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:.35}}
+.leds{display:grid;grid-template-columns:repeat(2,6px);gap:4px;padding:5px;background:var(--h4);box-shadow:0 0 0 2px var(--h5),inset 2px 2px 0 0 #000}
+.leds i{width:6px;height:6px;background:#262a33}
+.leds i:nth-child(1){animation:ledG 2.4s steps(1) infinite}.leds i:nth-child(2){animation:ledA 1.1s steps(1) infinite}
+.leds i:nth-child(3){animation:ledR 3.7s steps(1) infinite}.leds i:nth-child(4){animation:ledC 1.9s steps(1) infinite}
+@keyframes ledG{0%,60%{background:var(--green);box-shadow:0 0 5px var(--green)}}@keyframes ledA{0%,40%{background:var(--amber);box-shadow:0 0 5px var(--amber)}}
+@keyframes ledR{0%,15%{background:var(--red);box-shadow:0 0 5px var(--red)}}@keyframes ledC{0%,50%{background:var(--cyan);box-shadow:0 0 5px var(--cyan)}}
+.key{display:flex;align-items:center;justify-content:center;gap:6px;height:32px;min-width:38px;padding:0 9px;font-family:var(--px);font-size:8px;color:#c9d0de;
+  background:var(--h3);box-shadow:inset 2px 2px 0 0 var(--h1),inset -2px -2px 0 0 var(--h5),0 0 0 2px var(--h5)}
+.key:active{box-shadow:inset 2px 2px 0 0 var(--h5),inset -2px -2px 0 0 var(--h1),0 0 0 2px var(--h5)}
+/* conteúdo */
+#app{position:relative;z-index:1;max-width:440px;margin:0 auto;padding:calc(var(--hud) + 26px) calc(18px + env(safe-area-inset-right)) calc(30px + env(safe-area-inset-bottom)) calc(18px + env(safe-area-inset-left))}
+.mon{position:relative;background:repeating-linear-gradient(0deg,rgba(255,255,255,.025) 0 2px,transparent 2px 4px),var(--scr2);box-shadow:var(--mon)}
+.mon::after{content:"";position:absolute;inset:-6px;pointer-events:none;--s:linear-gradient(var(--h1),var(--h1));
+  background:var(--s) 0 0/3px 3px no-repeat,var(--s) 100% 0/3px 3px no-repeat,var(--s) 0 100%/3px 3px no-repeat,var(--s) 100% 100%/3px 3px no-repeat}
+.intro{padding:16px;margin-bottom:30px}
+.intro h2{font-family:var(--px);font-size:11px;color:#5dff83;text-shadow:0 0 6px rgba(57,227,95,.4);line-height:1.5}
+.intro p{margin-top:8px;color:var(--dim)}
+.tbar{display:flex;gap:4px;margin-top:12px}
+.tbar i{flex:1;height:10px;background:#0a0920;box-shadow:inset 0 0 0 2px #3b3780}
+.tbar i.on{background:var(--amber);box-shadow:inset 0 -3px 0 0 var(--amber-d)}
+.cabs{display:grid;grid-template-columns:1fr 1fr;gap:26px 22px}
+.cab{display:grid;justify-items:center;gap:10px;padding:14px 8px 14px;text-align:center}
+.cab .art{display:grid;place-items:center;width:100%;height:92px;background:#05060f;box-shadow:inset 0 0 0 2px #1c1f3a}
+.cab b{font-family:var(--px);font-size:8px;line-height:1.5;font-weight:400;color:var(--ink)}
+.cab small{font-family:var(--px);font-size:7px;color:var(--amber)}
+.cab:active{transform:translate(2px,2px)}
+.cab.soon{background:transparent;box-shadow:none;outline:3px dashed #2b2f3b;outline-offset:-3px;color:var(--dim)}
+.cab.soon::after{display:none}
+.cab.soon b{color:#6b7184}
+.cab.off{opacity:.45}
+/* tela de jogo: tudo cabe na tela, sem rolar */
+#play{position:fixed;left:0;right:0;top:var(--hud);bottom:0;z-index:2;display:flex;flex-direction:column;align-items:center;
+  padding:14px calc(12px + env(safe-area-inset-right)) calc(10px + env(safe-area-inset-bottom)) calc(12px + env(safe-area-inset-left))}
+.ginfo{display:flex;gap:12px;justify-content:space-between;width:100%;max-width:416px;margin-bottom:16px}
+.ginfo span{font-family:var(--px);font-size:8px;color:#8e97ab;display:flex;align-items:center;gap:8px}
+.ginfo b{font-weight:400;font-size:11px;color:var(--amber);text-shadow:0 0 6px rgba(255,179,0,.4)}
+.ginfo .last{color:var(--red);animation:blink 1s steps(1) infinite}
+.scrw{position:relative;flex:1;min-height:0;width:100%;max-width:416px;display:grid;place-items:center}
+.scr{position:relative;line-height:0;box-shadow:0 0 0 3px #000,0 0 0 9px var(--h2),0 0 0 12px var(--h5)}
+.scr::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(0,0,0,.16) 0 1px,transparent 1px 2px)}
+#cv{display:block;image-rendering:pixelated;image-rendering:crisp-edges;touch-action:none}
+.gmsg{position:absolute;inset:0;z-index:2;line-height:1.2;display:grid;place-content:center;justify-items:center;gap:12px;padding:16px;text-align:center;background:rgba(5,6,15,.78)}
+.gmsg h3{font-family:var(--px);font-size:13px;line-height:1.5;color:var(--amber);text-shadow:2px 2px 0 #7a3a00}
+.gmsg p{color:#c9d0de;font-size:21px}
+.gmsg .big{font-family:var(--px);font-size:22px;color:#5dff83;text-shadow:0 0 8px rgba(57,227,95,.5)}
+.gmsg .rec{font-family:var(--px);font-size:8px;color:#1a1200;background:var(--amber);padding:6px 8px}
+.gbtn{display:flex;align-items:center;justify-content:center;gap:8px;min-width:180px;padding:14px 16px;font-family:var(--px);font-size:10px;color:#1a1200;background:var(--amber);
+  box-shadow:inset 0 -4px 0 0 var(--amber-d),0 0 0 3px var(--h5)}
+.gbtn:active{transform:translate(2px,2px)}
+.gbtn.alt{background:var(--h3);color:#c9d0de;box-shadow:inset 2px 2px 0 0 var(--h1),inset -2px -2px 0 0 var(--h5),0 0 0 3px var(--h5)}
+/* direcional: teclas de metal num console */
+.pad{flex:none;display:grid;grid-template-columns:repeat(3,64px);grid-template-rows:repeat(3,52px);gap:6px;margin-top:22px}
+.pad button{display:grid;place-items:center;background:var(--h3);box-shadow:inset 3px 3px 0 0 var(--h1),inset -3px -3px 0 0 var(--h5),0 0 0 3px var(--h5),3px 3px 0 3px #000}
+.pad button.dn,.pad button:active{box-shadow:inset 3px 3px 0 0 var(--h5),inset -3px -3px 0 0 var(--h1),0 0 0 3px var(--h5);transform:translate(2px,2px)}
+.pad .u{grid-column:2;grid-row:1}.pad .l{grid-column:1;grid-row:2}.pad .r{grid-column:3;grid-row:2}.pad .d{grid-column:2;grid-row:3}
+.pad .c{grid-column:2;grid-row:2;display:grid;place-items:center;background:var(--h4);box-shadow:inset 2px 2px 0 0 #000}
+.pad .c i{width:10px;height:10px;background:#262a33;box-shadow:0 0 0 2px var(--h5)}
+.pad .c i.on{background:var(--green);box-shadow:0 0 0 2px var(--h5),0 0 8px var(--green)}
+.pad.hide{visibility:hidden}
+@media (max-height:700px){.pad{grid-template-rows:repeat(3,44px);margin-top:16px}}
+</style>
+</head>
+<body>
+<div class="crt"></div>
+<div id="hud"><div class="hud-in">
+  <button class="key" id="back"><span id="backIco"></span><span id="backT">MISSÕES</span></button>
+  <div class="hud-scr"><b id="hudT">FLIPERAMA</b><span id="hudS"></span></div>
+  <span class="leds"><i></i><i></i><i></i><i></i></span>
+</div></div>
+<main id="app">
+  <section id="lobby">
+    <div class="mon intro"><h2 id="lobH">SALA DE RECREAÇÃO</h2><p id="lobP"></p><div class="tbar" id="tBar"></div></div>
+    <div class="cabs" id="cabs"></div>
+  </section>
+</main>
+<section id="play" hidden>
+  <div class="ginfo"><span id="gU">PONTOS <b id="gScore">0</b></span><span id="gLast" class="last" hidden>ÚLTIMA PARTIDA</span><span>RECORDE <b id="gBest">0</b></span></div>
+  <div class="scrw" id="scrw"><div class="scr" id="scr"><canvas id="cv"></canvas><div class="gmsg" id="gMsg" hidden></div></div></div>
+  <div class="pad" id="pad">
+    <button class="u" data-d="up" aria-label="Cima"></button><button class="l" data-d="left" aria-label="Esquerda"></button>
+    <span class="c"><i id="padLed"></i></span>
+    <button class="r" data-d="right" aria-label="Direita"></button><button class="d" data-d="down" aria-label="Baixo"></button>
+  </div>
+</section>
+<script>
+/* atualização automática: compara com version.json e recarrega quando sai versão nova */
+const APP_V='20261005104120';
+(function(){const H0=location.hash;
+  async function check(){try{const r=await fetch('../version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
+    if(v&&v!==APP_V&&sessionStorage.getItem('upd')!==v){sessionStorage.setItem('upd',v);location.replace(location.pathname+'?v='+v+H0)}}catch(e){}}
+  check();document.addEventListener('visibilitychange',()=>{if(!document.hidden)check()});addEventListener('pageshow',e=>{if(e.persisted)check()});
+})();
+</script>
+<script>
+/* som no iPhone (opção "Tocar no silencioso" das configurações da Nave-Mãe):
+   desligada = modo "ambiente": mistura com a música do celular, e a chave de silencioso cala o app;
+   ligada = modo "reprodução": toca mesmo no silencioso, mas o iOS pausa as outras mídias.
+   O iOS não oferece a sites um modo que faça as duas coisas. */
+function navAudioMode(){let on=false;try{on=!!(JSON.parse(localStorage.getItem('navemae-v1'))||{}).silentPlay}catch(e){}
+  try{if(navigator.audioSession)navigator.audioSession.type=on?'playback':'ambient'}catch(e){}}
+navAudioMode();addEventListener('pageshow',navAudioMode);
+/* vibração leve a cada toque.
+   iPhone: o Safari não tem API de vibração; o único jeito é o toque do próprio dedo cair num interruptor nativo
+   (<input type=checkbox switch>, iOS 18+). Por isso cada botão recebe por dentro um <label> invisível que cobre
+   o botão inteiro e aciona um interruptor escondido; o clique continua chegando ao botão normalmente.
+   Android: navigator.vibrate. */
+(function(){
+  const IOS=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+  const SEL='button,a[href],[role=button]';
+  if(!IOS){document.addEventListener('click',e=>{if(navigator.vibrate&&e.target.closest(SEL))try{navigator.vibrate(8)}catch(_){}} ,true);return}
+  function arm(el){if(el.disabled||el.querySelector(':scope>label[data-hap]'))return;
+    const l=document.createElement('label');l.setAttribute('data-hap','');l.setAttribute('aria-hidden','true');
+    const i=document.createElement('input');i.type='checkbox';i.setAttribute('switch','');i.tabIndex=-1;
+    i.addEventListener('click',e=>e.stopPropagation());l.append(i);
+    // o label "rouba" a ação nativa do elemento: refaz a navegação do link e o envio do formulário
+    l.addEventListener('click',e=>{if(e.target!==l)return;setTimeout(()=>{if(e.defaultPrevented)return;
+      if(el.tagName==='A'&&el.href)location.href=el.href;else if(el.type==='submit'&&el.form)el.form.requestSubmit(el)},0)});
+    if(getComputedStyle(el).position==='static')el.style.position='relative';
+    el.append(l)}
+  function scan(root){if(root.nodeType!==1)return;if(root.matches(SEL))arm(root);root.querySelectorAll(SEL).forEach(arm)}
+  const st=document.createElement('style');
+  st.textContent='label[data-hap]{position:absolute;inset:0;z-index:5;display:block;margin:0;padding:0;background:none;touch-action:manipulation;-webkit-tap-highlight-color:transparent}'+
+    'label[data-hap]>input{position:absolute;width:1px;height:1px;margin:0;opacity:0;pointer-events:none}'+
+    ':disabled>label[data-hap]{pointer-events:none}';
+  document.head.append(st);
+  function start(){scan(document.body);new MutationObserver(ms=>{for(const m of ms){m.addedNodes.forEach(scan);
+    if(m.type==='childList'&&m.target.closest){const t=m.target.closest(SEL);if(t)arm(t)} // texto do botão trocado: arma de novo
+    if(m.type==='attributes'&&m.target.matches&&m.target.matches(SEL))arm(m.target)}}).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['disabled']})}
+  if(document.body)start();else document.addEventListener('DOMContentLoaded',start);
+})();
+/* ---------- áudio ---------- */
+let AC=null;
+/* iOS: ao minimizar o app, o contexto de áudio fica "interrupted"/"suspended" e às vezes não volta sozinho.
+   Ao voltar: tenta retomar (e descarta se em 400 ms não voltar). No primeiro toque com o som parado: cria um contexto novo. */
+function audioWake(e){const c=AC;if(!c||c.state==='running')return;
+  try{navAudioMode()}catch(e){}
+  if(e&&(e.type==='touchstart'||e.type==='pointerdown')){if(performance.now()-(audioWake.t||0)<600)return;audioWake.t=performance.now(); // dentro do toque o iOS libera um contexto novo: troca na hora, o som deste toque já sai
+    try{c.close()}catch(_){}try{AC=new (window.AudioContext||window.webkitAudioContext)();AC.resume&&AC.resume()}catch(_){AC=null}return}
+  try{const p=c.resume&&c.resume();if(p&&p.catch)p.catch(()=>{})}catch(e){}
+  setTimeout(()=>{if(AC===c&&c.state!=='running'){try{c.close()}catch(e){}AC=null}},400)}
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)audioWake()});
+addEventListener('pageshow',audioWake);addEventListener('focus',audioWake);
+['touchstart','pointerdown'].forEach(t=>document.addEventListener(t,audioWake,{passive:true,capture:true}));
+
+</script>
+<script>
+const $=s=>document.querySelector(s);
+const PAL={"J":"#2a2e38","K":"#454b58","Q":"#737a88","U":"#b4bac6","0":"#ada38a","1":"#f2eee2","2":"#cfc8b2","3":"#9a927a","4":"#4f4a3c","5":"#24323c","6":"#0e161c","7":"#d9a06a","8":"#a8703a","9":"#e0d8c2","=":"#6e6652","A":"#ffe066","C":"#c8faff","D":"#5f5ca8","E":"#34316e","F":"#a8e8ff","G":"#b6ffcf","L":"#d8d6ff","M":"#9b98d4","O":"#ffb300","R":"#ff7a66","S":"#f6dcb6","W":"#ffffff","X":"#3ff2c4","Y":"#fff3a0","a":"#2b2f38","b":"#ffb300","c":"#40d8ff","g":"#39e35f","h":"#1f9a3a","k":"#0b0a1a","n":"#123a66","o":"#d97a00","q":"#8a1a10","r":"#e03a26","s":"#d9a066","t":"#a8703a","u":"#8a4a00","v":"#6b4520","x":"#1f9a7e"};
+const GRID=2,HDC=new Map(),BY4=[[0,8,2,10],[12,4,14,6],[3,11,1,9],[15,7,13,5]];
+function upx(g,n){const h=g.length,w=g[0].length,at=(x,y)=>x<0||y<0||x>=w||y>=h?'.':g[y][x];
+  if(n===2){const o=Array.from({length:h*2},()=>Array(w*2));
+    for(let y=0;y<h;y++)for(let x=0;x<w;x++){const P=g[y][x],A=at(x,y-1),B=at(x+1,y),C=at(x-1,y),D=at(x,y+1);
+      o[2*y][2*x]=C===A&&C!==D&&A!==B?A:P;o[2*y][2*x+1]=A===B&&A!==C&&B!==D?B:P;
+      o[2*y+1][2*x]=D===C&&D!==B&&C!==A?C:P;o[2*y+1][2*x+1]=B===D&&B!==A&&D!==C?D:P}return o}
+  if(n===3){const o=Array.from({length:h*3},()=>Array(w*3));
+    for(let y=0;y<h;y++)for(let x=0;x<w;x++){const E=g[y][x],A=at(x-1,y-1),B=at(x,y-1),C=at(x+1,y-1),D=at(x-1,y),F=at(x+1,y),G=at(x-1,y+1),H=at(x,y+1),I=at(x+1,y+1);
+      const r=[D===B&&B!==F&&D!==H?D:E,(D===B&&B!==F&&D!==H&&E!==C)||(B===F&&B!==D&&F!==H&&E!==A)?B:E,B===F&&B!==D&&F!==H?F:E,
+        (D===B&&B!==F&&D!==H&&E!==G)||(D===H&&D!==B&&H!==F&&E!==A)?D:E,E,(B===F&&B!==D&&F!==H&&E!==I)||(H===F&&D!==H&&B!==F&&E!==C)?F:E,
+        D===H&&D!==B&&H!==F?D:E,(D===H&&D!==B&&H!==F&&E!==I)||(H===F&&D!==H&&B!==F&&E!==G)?H:E,H===F&&D!==H&&B!==F?F:E];
+      for(let k=0;k<9;k++)o[3*y+(k/3|0)][3*x+k%3]=r[k]}return o}
+  if(n===4)return upx(upx(g,2),2);
+  if(n===6)return upx(upx(g,2),3);
+  return g}
+const hx=c=>{c=c.replace('#','');if(c.length===3)c=[...c].map(v=>v+v).join('');return[0,2,4].map(i=>parseInt(c.slice(i,i+2),16))};
+const mixc=(a,b,t)=>{const p=hx(a),q=hx(b);return '#'+p.map((v,i)=>Math.round(v+(q[i]-v)*t).toString(16).padStart(2,'0')).join('')};
+const lum=c=>{const[r,g,b]=hx(c);return(.2126*r+.7152*g+.0722*b)/255};
+function hdRows(rows,s,ov){const key=s+'|'+rows.join('/')+'|'+(ov?JSON.stringify(ov):'');if(HDC.has(key))return HDC.get(key);
+  const n=Math.max(1,Math.round(s/GRID));let g=upx(rows.map(r=>[...r]),n);
+  const h=g.length,w=g[0].length,col=g.map(r=>r.map(c=>c==='.'?null:((ov&&ov[c])||PAL[c])));
+  const out=c=>c===null||lum(c)<.05,O=(x,y)=>x<0||y<0||x>=w||y>=h||out(col[y][x]),T=(x,y)=>x<0||y<0||x>=w||y>=h||col[y][x]===null;
+  const res=col.map(r=>r.slice()),k=n>=2?1:.6;
+  for(let y=0;y<h;y++)for(let x=0;x<w;x++){const c=col[y][x];if(c===null)continue;
+    if(out(c)){ // contorno: do lado iluminado vira um tom escuro da cor vizinha
+      const nb=[[x+1,y],[x,y+1]].map(([a,b])=>!O(a,b)?col[b][a]:null).find(Boolean);
+      res[y][x]=nb?mixc(nb,'#05040c',.62):'#08070f';continue}
+    let d=c;
+    if(n>=2){ // volume: faixas de luz de cima para baixo, com pontilhado nas bordas das faixas
+      const v=y/h+(BY4[y%4][x%4]/16-.5)*.16;if(v<.3)d=mixc(c,'#fff4d6',.10);else if(v>.7)d=mixc(c,'#16113a',.14)}
+    const tl=O(x,y-1)||O(x-1,y),br1=O(x,y+1)||O(x+1,y),br2=n>=2&&(O(x,y+2)||O(x+2,y)),tl2=n>=2&&!tl&&(O(x,y-2)||O(x-2,y));
+    if(tl&&!br1)d=mixc(d,'#fff4d6',.34*k);
+    else if(tl2&&!br1)d=mixc(d,'#fff4d6',.14);
+    else if(br1)d=mixc(d,'#16113a',.32*k);
+    else if(br2)d=mixc(d,'#16113a',.16);
+    res[y][x]=d}
+  HDC.set(key,res);return res}
+function spriteRows(rows,s=2,ov){const g=hdRows(rows,s,ov),h=g.length,w=g[0].length,px=s/Math.max(1,Math.round(s/GRID));let r='';
+  g.forEach((row,y)=>{let x=0;while(x<w){const c=row[x];if(!c){x++;continue}let k=1;while(row[x+k]===c)k++;r+=`<rect x="${x}" y="${y}" width="${k}" height="1" fill="${c}"/>`;x+=k}});
+  return `<svg class="spr" viewBox="0 0 ${w} ${h}" width="${w*px}" height="${h*px}" shape-rendering="crispEdges" aria-hidden="true">${r}</svg>`}
+/* ---------- sintetizador 16-bit (mesmo código nos três apps) ----------
+   note: onda com envelope, deslize de tom (to) e vibrato (vib); noise: ruído filtrado para
+   sopros, batidas e desmoronamentos; arp: sequência de notas. */
+function mkSYN(ctx,on){let nb=null;
+  const buf=c=>{if(!nb){nb=c.createBuffer(1,c.sampleRate*.6|0,c.sampleRate);const d=nb.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1}return nb};
+  function note(f,d,t=0,o={}){if(!on())return;try{const c=ctx(),n=c.currentTime+t,os=c.createOscillator(),g=c.createGain(),v=o.vol||.05;
+    os.type=o.type||'square';os.frequency.setValueAtTime(f,n);if(o.to)os.frequency.exponentialRampToValueAtTime(o.to,n+d);
+    if(o.vib){const l=c.createOscillator(),lg=c.createGain();l.frequency.value=o.vib;lg.gain.value=f*.04;l.connect(lg).connect(os.frequency);l.start(n);l.stop(n+d+.05)}
+    g.gain.setValueAtTime(0,n);g.gain.linearRampToValueAtTime(v,n+.005);g.gain.setValueAtTime(v,n+d*.55);g.gain.linearRampToValueAtTime(0,n+d);
+    os.connect(g).connect(c.destination);os.start(n);os.stop(n+d+.03)}catch(e){}}
+  function noise(d,t=0,o={}){if(!on())return;try{const c=ctx(),n=c.currentTime+t,s=c.createBufferSource(),fl=c.createBiquadFilter(),g=c.createGain(),v=o.vol||.08;
+    s.buffer=buf(c);s.loop=true;fl.type=o.filter||'lowpass';fl.frequency.setValueAtTime(o.f||1200,n);if(o.to)fl.frequency.exponentialRampToValueAtTime(o.to,n+d);fl.Q.value=o.q||1;
+    g.gain.setValueAtTime(0,n);g.gain.linearRampToValueAtTime(v,n+(o.att||.008));g.gain.linearRampToValueAtTime(0,n+d);
+    s.connect(fl).connect(g).connect(c.destination);s.start(n);s.stop(n+d+.03)}catch(e){}}
+  const arp=(fs,step,o={})=>fs.forEach((f,i)=>note(f,o.d||step*1.15,i*step+(o.t||0),o));
+  return{note,noise,arp}}
+
+const SY=mkSYN(()=>{AC=AC||new (window.AudioContext||window.webkitAudioContext)();return AC},()=>soundOn);
+
+/* =================== FLIPERAMA ===================
+   Liberado no dia em que o turno de missões fica completo (a Nave-Mãe grava navemae-v1.arcDay).
+   Tempo por dia definido na Área dos pais (navemae-v1.arcMin, padrão 10 min; 0 = desligado).
+   Só conta o tempo com uma partida rodando. Se o tempo acaba no meio, a partida vai até o fim e não começa outra.
+   Dados próprios em localStorage['navemae-arcade']: {day, used (s), best:{jogo:pontos}, plays:{jogo:n}}.
+   Jogos novos: um arquivo em jogos/ que chama ARC.add({...}) e entra na lista JOGOS abaixo. */
+const JOGOS=['verme'];
+const dk=(d=new Date())=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+const NM=(()=>{try{return JSON.parse(localStorage.getItem('navemae-v1'))||{}}catch(e){return{}}})();
+let soundOn=NM.sound!==false;
+const KEY='navemae-arcade';
+let A=(()=>{try{return JSON.parse(localStorage.getItem(KEY))||{}}catch(e){return{}}})();
+A.best=A.best||{};A.plays=A.plays||{};
+if(A.day!==dk()){A.day=dk();A.used=0}
+const saveA=()=>{try{localStorage.setItem(KEY,JSON.stringify(A))}catch(e){}};saveA();
+const MIN=NM.arcMin==null?10:NM.arcMin;
+const unlocked=()=>NM.arcDay===dk();
+const left=()=>Math.max(0,MIN*60-(A.used||0));
+const fmt=s=>`${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;
+
+const RET=(()=>{const r=new URLSearchParams(location.hash.slice(1)).get('r');if(r)sessionStorage.setItem('arcRet',r);return sessionStorage.getItem('arcRet')||'tasks'})();
+const home=()=>{location.href='../#v=tasks'};
+
+const SND={
+  open:()=>SY.arp([523,659,784],.05,{vol:.04}),
+  back:()=>SY.arp([784,523],.05,{vol:.04}),
+  start:()=>SY.arp([392,523,659,784,1047],.06,{vol:.05}),
+  warn:()=>SY.arp([880,0,880],.09,{vol:.05}),
+  over:()=>{SY.arp([523,440,349,262],.11,{vol:.05,type:'triangle'})},
+  rec:()=>SY.arp([523,659,784,1047,784,1047,1319],.08,{vol:.05}),
+  tick:()=>SY.note(1200,.02,0,{vol:.02})
+};
+
+/* ---------- registro de jogos ---------- */
+const ARC={list:[],add(g){this.list.push(g)}};
+
+/* ---------- saguão ---------- */
+function hud(t,s,low){$('#hudT').textContent=t;$('#hudS').innerHTML=s||'';$('#hudS').classList.toggle('low',!!low)}
+function lobby(){$('#lobby').hidden=false;$('#play').hidden=true;$('#backT').textContent='MISSÕES';document.body.style.overflow='';
+  const ok=unlocked()&&MIN>0,l=left();
+  hud('FLIPERAMA',ok?'⏱ '+fmt(l):'',ok&&l<=60);
+  $('#lobH').textContent=MIN===0?'FLIPERAMA DESLIGADO':!unlocked()?'FLIPERAMA TRAVADO':l>0?'SALA DE RECREAÇÃO':'TEMPO DE HOJE ACABOU';
+  $('#lobP').textContent=MIN===0?'Desligado na Área dos pais.':!unlocked()?'Complete as missões de hoje para liberar.':
+    l>0?`Você tem ${l>=60?Math.ceil(l/60)+' min':l+' s'} de jogo hoje. O tempo só corre durante a partida.`:`Amanhã tem mais ${MIN} min. Complete as missões para liberar.`;
+  const seg=Math.max(1,MIN),on=Math.ceil(l/60);
+  $('#tBar').innerHTML=ok?Array.from({length:Math.min(seg,30)},(_,i)=>`<i class="${i<Math.ceil(on*Math.min(seg,30)/seg)?'on':''}"></i>`).join(''):'';
+  const can=ok&&l>0;
+  $('#cabs').innerHTML=ARC.list.map(g=>`<button class="cab mon${can?'':' off'}" data-g="${g.id}"><span class="art">${spriteRows(g.icon,4,g.iconPal)}</span><b>${g.name}</b><small>RECORDE ${A.best[g.id]||0}</small></button>`).join('')+
+    `<div class="cab soon"><span class="art" style="background:none;box-shadow:none;font-family:var(--px);font-size:22px;color:#3a3f4e">?</span><b>NOVO JOGO<br>EM BREVE</b></div>`;
+  document.querySelectorAll('.cab[data-g]').forEach(b=>b.onclick=()=>{if(!can){SND.warn();return}open(ARC.list.find(g=>g.id===b.dataset.g))})}
+
+/* ---------- partida ---------- */
+let G=null,cur=null,run=false,paused=false,last=false,score=0,timer=null;
+function size(){const w=$('#scrw').clientWidth-24,h=$('#scrw').clientHeight-24,c=cur.cell||8,px=2*c;
+  const cols=Math.max(10,Math.floor(w/px)),rows=Math.max(10,Math.floor(h/px));return{cols,rows,c}}
+function open(g){cur=g;SND.open();$('#lobby').hidden=true;$('#play').hidden=false;$('#backT').textContent='SAIR';document.body.style.overflow='hidden';
+  A.plays[g.id]=(A.plays[g.id]||0);
+  $('#gU').innerHTML=`${g.unit} <b id="gScore">0</b>`;$('#gBest').textContent=A.best[g.id]||0;
+  requestAnimationFrame(()=>{const{cols,rows,c}=size(),cv=$('#cv');cv.width=cols*c;cv.height=rows*c;cv.style.width=cols*c*2+'px';cv.style.height=rows*c*2+'px';
+    const ctx=cv.getContext('2d');ctx.imageSmoothingEnabled=false;
+    G=g.make({cv,ctx,cols,rows,cell:c,sfx:SY,
+      score:n=>{score=n;$('#gScore').textContent=n},
+      over:()=>gameOver()});
+    G.ready();ready()})}
+function ready(){run=false;score=0;$('#gScore').textContent=0;padLed(false);
+  hud(cur.name,'⏱ '+fmt(left()),left()<=60);
+  msg(`<h3>${cur.name}</h3><p>${cur.desc}</p><p style="color:var(--amber)">Deslize na tela ou use as setas para começar.</p>`)}
+function msg(h){const m=$('#gMsg');if(h==null){m.hidden=true;return}m.innerHTML=h;m.hidden=false}
+function begin(){if(run||left()<=0&&!last)return;run=true;paused=false;last=left()<=0;msg(null);SND.start();padLed(true);A.plays[cur.id]++;saveA();G.start();
+  clearInterval(timer);timer=setInterval(tick,1000)}
+function tick(){if(!run||paused)return;if(A.used<MIN*60){A.used++;saveA()}const l=left();
+  hud(cur.name,'⏱ '+fmt(l),l<=60);if(l===60)SND.warn();
+  if(l===0&&!last){last=true;$('#gLast').hidden=false;SND.warn()}}
+function gameOver(){run=false;clearInterval(timer);padLed(false);const b=A.best[cur.id]||0,rec=score>b;
+  if(rec){A.best[cur.id]=score;$('#gBest').textContent=score;saveA();setTimeout(SND.rec,300)}else SND.over();
+  const more=left()>0;$('#gLast').hidden=true;last=false;
+  msg(`<h3>${more?'FIM DE JOGO':'TEMPO ESGOTADO'}</h3><span class="big">${score}</span><p>${cur.unit.toLowerCase()}</p>${rec&&score?'<span class="rec">NOVO RECORDE!</span>':''}
+    ${more?'<button class="gbtn" id="gAgain">DE NOVO</button>':'<p>Amanhã tem mais.</p>'}<button class="gbtn alt" id="gExit">SAIR</button>`);
+  const a=$('#gAgain');if(a)a.onclick=()=>{G.ready();ready()};$('#gExit').onclick=exitPlay}
+function exitPlay(){if(G)G.stop();G=null;run=false;clearInterval(timer);SND.back();lobby()}
+function padLed(on){$('#padLed').classList.toggle('on',on)}
+function input(d){if(!G)return;if(!run){if($('#gMsg').querySelector('#gAgain,#gExit'))return;begin()}if(run&&!paused)G.input(d)}
+function pause(){if(!run||paused)return;paused=true;G.pause&&G.pause();msg('<h3>PAUSADO</h3><button class="gbtn" id="gRes">CONTINUAR</button><button class="gbtn alt" id="gExit">SAIR</button>');
+  $('#gRes').onclick=()=>{paused=false;msg(null);G.resume&&G.resume()};$('#gExit').onclick=()=>{gameOver2()}}
+function gameOver2(){if(G)G.stop();run=false;clearInterval(timer);exitPlay()}
+document.addEventListener('visibilitychange',()=>{if(document.hidden)pause()});
+
+/* controles: deslizar na tela, direcional e setas do teclado */
+document.querySelectorAll('#pad [data-d]').forEach(b=>{b.addEventListener('pointerdown',e=>{e.preventDefault();input(b.dataset.d);b.classList.add('dn');setTimeout(()=>b.classList.remove('dn'),120)})});
+(function(){let sx=0,sy=0,act=false;const el=$('#scr');
+  el.addEventListener('touchstart',e=>{const t=e.touches[0];sx=t.clientX;sy=t.clientY;act=true},{passive:true});
+  el.addEventListener('touchmove',e=>{if(!act)return;const t=e.touches[0],dx=t.clientX-sx,dy=t.clientY-sy;if(Math.max(Math.abs(dx),Math.abs(dy))<18)return;
+    e.preventDefault();input(Math.abs(dx)>Math.abs(dy)?(dx>0?'right':'left'):(dy>0?'down':'up'));sx=t.clientX;sy=t.clientY},{passive:false});
+  el.addEventListener('touchend',()=>{act=false},{passive:true});
+  addEventListener('keydown',e=>{const d={ArrowUp:'up',ArrowDown:'down',ArrowLeft:'left',ArrowRight:'right'}[e.key];if(d){e.preventDefault();input(d)}})})();
+
+$('#backIco').innerHTML=spriteRows(["...k","..kL",".kLL","kLLL",".kLL","..kL","...k"],2);
+$('#back').onclick=()=>{if(!$('#play').hidden){if(run){pause();return}exitPlay();return}SND.back();setTimeout(home,120)};
+['up','left','right','down'].forEach((d,i)=>{const r=["...kk...","..kLLk..",".kLLLLk.","kLLLLLLk","kkkLLkkk","..kLLk..","..kLLk..","..kkkk.."];
+  const rot=g=>g[0].split('').map((_,x)=>g.map(r=>r[x]).reverse().join(''));let g=r;const n={up:0,right:1,down:2,left:3}[d];for(let k=0;k<n;k++)g=rot(g);
+  $(`#pad [data-d="${d}"]`).innerHTML=spriteRows(g,2,{L:'#c9d0de'})});
+
+/* carrega os jogos (com a versão no endereço para não pegar arquivo velho do cache) */
+Promise.all(JOGOS.map(id=>new Promise(res=>{const s=document.createElement('script');s.src=`jogos/${id}.js?v=${APP_V}`;s.onload=s.onerror=res;document.head.append(s)}))).then(lobby);
+</script>
+</body>
+</html>

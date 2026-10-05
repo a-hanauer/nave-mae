@@ -581,8 +581,8 @@ body:not([data-v="home"]):not([data-v="planet"]) #wind{display:none}
 body[data-v="home"] #wind{bottom:calc(var(--con) + var(--dash))}
 body[data-v="home"] #app{padding-bottom:calc(var(--con) + var(--dash) + 24px)!important}
 /* monitor: moldura de metal com parafusos e tela escura */
-.mon,body[data-v="tasks"] .tapp,.mdetail,.mrow,.shop-it,.dash .pilot{background:repeating-linear-gradient(0deg,rgba(255,255,255,.025) 0 2px,transparent 2px 4px),var(--scr2);box-shadow:var(--mon);filter:none}
-.tapp::after,.mdetail::after,.mrow::after,.shop-it::after{content:"";position:absolute;inset:-6px;pointer-events:none;--s:linear-gradient(var(--h1),var(--h1));
+.mon,body[data-v="tasks"] .tapp,.arc,.mdetail,.mrow,.shop-it,.dash .pilot{background:repeating-linear-gradient(0deg,rgba(255,255,255,.025) 0 2px,transparent 2px 4px),var(--scr2);box-shadow:var(--mon);filter:none}
+.tapp::after,.arc::after,.mdetail::after,.mrow::after,.shop-it::after{content:"";position:absolute;inset:-6px;pointer-events:none;--s:linear-gradient(var(--h1),var(--h1));
   background:var(--s) 0 0/3px 3px no-repeat,var(--s) 100% 0/3px 3px no-repeat,var(--s) 0 100%/3px 3px no-repeat,var(--s) 100% 100%/3px 3px no-repeat}
 .tapp{margin-bottom:28px}
 .mrow{position:relative;padding:12px 12px 14px;margin:0 2px 26px}
@@ -631,6 +631,15 @@ body[data-v="home"] #app{padding-bottom:calc(var(--con) + var(--dash) + 24px)!im
 .small.px,.nextcat.px{background:var(--h3);color:var(--amber);filter:none;box-shadow:inset 2px 2px 0 0 var(--h1),inset -2px -2px 0 0 var(--h5),0 0 0 3px var(--h5)}
 .small.px:active,.nextcat.px:active{box-shadow:inset 2px 2px 0 0 var(--h5),inset -2px -2px 0 0 var(--h1),0 0 0 3px var(--h5)}
 #home .sec{margin-top:6px;padding:0 26px}
+.arc{display:flex;align-items:center;gap:14px;width:100%;padding:14px;margin:6px 0 30px;text-align:left}
+.arc-ic{flex:none;display:grid;place-items:center;width:48px;height:48px;background:var(--scr);box-shadow:inset 0 0 12px 0 rgba(57,227,95,.35),0 0 0 2px var(--h5)}
+.arc-t{flex:1;min-width:0}
+.arc b{display:block;font-family:var(--px);font-size:11px;font-weight:400;color:#5dff83;text-shadow:0 0 6px rgba(57,227,95,.45)}
+.arc small{display:block;margin-top:6px;font-family:var(--px);font-size:7px;color:var(--amber)}
+.arc .go2{display:flex;align-items:center;gap:8px;font-family:var(--px);font-size:8px;color:var(--amber)}
+.arc .go2 .spr{animation:nudge .8s steps(2) infinite}
+.arc.off{opacity:.55}.arc.off small{color:var(--dim)}
+.pa-arc{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin:12px 16px}
 </style>
 <script>
 /* sem zoom: bloqueia pinça e dois toques no app inteiro */
@@ -817,7 +826,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 
 <script>
 /* atualização automática: compara com version.json e recarrega quando sai versão nova */
-const APP_V='20261005102916';
+const APP_V='20261005104120';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     if(v&&v!==APP_V&&sessionStorage.getItem('upd')!==v){sessionStorage.setItem('upd',v);location.replace(location.pathname+'?v='+v+H0)}}catch(e){}}
@@ -1002,6 +1011,7 @@ function spriteRows(rows,s=2,ov){const g=hdRows(rows,s,ov),h=g.length,w=g[0].len
   g.forEach((row,y)=>{let x=0;while(x<w){const c=row[x];if(!c){x++;continue}let k=1;while(row[x+k]===c)k++;r+=`<rect x="${x}" y="${y}" width="${k}" height="1" fill="${c}"/>`;x+=k}});
   return `<svg class="spr" viewBox="0 0 ${w} ${h}" width="${w*px}" height="${h*px}" shape-rendering="crispEdges" aria-hidden="true">${r}</svg>`}
 Object.assign(SPR,{"ic_helmet": ["....kkkk....", "..kkLLLLkk..", ".kLLLLLLLMk.", ".kLLkkkkkMk.", "kLkccccccckk", "kLkcWcccccMk", "kLkccccccckk", "kMMkkkkkkkMk", ".kMMMMMMMMk.", "..kkkkkkkk..", "............", "............"], "ic_visor": ["............", "..kkkkkkkk..", ".kccccccccck", "kcWWcccccccD", "kcWccccccccD", "kccccccccccD", ".kcccccccckk", "..kkkkkkkk..", "............", "............", "............", "............"], "ic_suit": ["...kk..kk...", "..kLLkkLLk..", ".kLLLLLLLLk.", "kLLkOOOOkLMk", "kLLkOYYOkLMk", "kLLkkkkkkLMk", "kLLLLLLLLLMk", "kkLLLMMLLLkk", ".kLLLkkLLMk.", ".kLLMk.kLMk.", ".kkkkk.kkkk.", "............"], "ic_skin": ["...kkkkkk...", "..kSSSSSSk..", ".kSSSSSSSSk.", ".kSkkSSkkSk.", ".kSSSSSSSSk.", ".kSSSSSSSSk.", ".kSSkSSkSSk.", "..kSSkkSSk..", "...kkSSkk...", ".....kk.....", "............", "............"], "ic_emblem": ["kkkkkkkkkk..", "kDDDDDDDDk..", "kDDDODDDDk..", "kDDOOODDDk..", "kDOOOOODDk..", "kDDOOODDDk..", "kDDODODDDk..", "kDDDDDDDDk..", "kkkkkkkkkk..", "............", "............", "............"], "ic_gear": ["........kk..", ".......kWWk.", "......kWLk..", ".....kWLk...", "....kWLk....", "...kWLk.....", "..kMMk......", ".kMMMMk.....", "kMMkMMk.....", "kMk.kk......", ".k..........", "............"], "ic_title": ["..kkkkkkkk..", ".kYYYYYYYYk.", "kYOOOOOOOOYk", "kYOkkkkkkOYk", "kYOOOOOOOOYk", ".kYYYYYYYYk.", "..kkrkkrkk..", "...krk.krk..", "...krk.krk..", "...kk...kk..", "............", "............"], "ic_ship": [".....kk.....", "....kLLk....", "...kLccLk...", "...kLccMk...", "...kLLLMk...", "..kkLLLMkk..", ".krkLLLMkrk.", "krrkLMMMkrrk", "kkkkkkkkkkkk", "...kOkkOk...", "...kYk.kYk..", "............"], "ic_paint": ["......kk....", ".....kWLk...", ".....kLMk...", "....kLMk....", "...kkkkk....", "..kOOOOk....", "..kOOOk.....", ".kOOOk......", ".kOOk.......", "kOOk........", "kkk.........", "............"], "ic_flame": ["....k.......", "...kOk..k...", "...kOk.kOk..", "..kOYOkkOk..", "..kOYYOkOk..", ".kOYYYYOOk..", ".kOYWWYYOk..", ".kOYWWWYOk..", "..kOYYYOk...", "...kkkkk....", "............", "............"], "ic_decal": ["..kkkkkkkk..", ".kWWWWWWWWk.", "kWWWWOWWWWWk", "kWWWOOOWWWWk", "kWWOOOOOWWWk", "kWWWOOOWWWkk", "kWWWOWOWWkLk", "kWWWWWWWkLk.", ".kkkkkkkkk..", "............", "............", "............"], "ic_trail": ["...k........", "..kYk...k...", "...k...kYk..", ".......kYk..", ".k......k...", "kYk..k......", ".k..kYk.....", "....kYk..k..", ".....k..kYk.", "..k......k..", ".kYk........", "..k........."]}); // ícones das abas de categoria do Hangar
+SPR.t_arc=['....kkkk....','...kRRrrk...','...kRrrrk...','....kkkk....','.....kk.....','.....kk.....','..kkkkkkkk..','.kLLLLLLMMk.','.kLLYLLLMMk.','.kMMMMMMMDk.','..kkkkkkkk..','............'];
 SPR.en=['....kkk','...kYOk','..kYOk.','.kYOkkk','kYYYYOk','kkkYOk.','..kYk..','.kYk...','.kk....'];
 SPR.t_mis=["....kkkk....","..kkkMMkkk..",".kSSkkkkSSk.",".kSSSSSSSSk.",".kSgkSkkkSk.",".kSSSSSSSSk.",".kSgkSkkkSk.",".kSSSSSSSSk.",".kSOkSkkkSk.",".kSSSSSSSSk.",".kkkkkkkkkk.","............"];
 const sprite=(n,s=2,ov)=>spriteRows(SPR[n],s,ov);
@@ -1562,6 +1572,10 @@ function renderTasks(){
       <div class="ad-chips"><span>${sprite('flame',2)}<b>${s}</b> ${s===1?'DIA':'DIAS'}</span><span>${sprite('check',2)}<b>${ok}/${req.length}</b> MISSÕES</span>
         <span>NOVAS EM <b>${left>=60?Math.floor(left/60)+'H':left+'MIN'}</b></span></div></div>`;
     if(st.adDay!==dkey()){st.adDay=dkey();save();setTimeout(SND.alldone,250)}
+    if(st.arcDay!==dkey()){st.arcDay=dkey();save()} // libera o Fliperama de hoje
+    const am=st.arcMin==null?10:st.arcMin;
+    if(am>0){const ar=(()=>{try{return JSON.parse(localStorage.getItem('navemae-arcade'))||{}}catch(e){return{}}})(),lf=Math.max(0,am*60-(ar.day===dkey()?ar.used||0:0));
+      h+=`<button class="arc px${lf?'':' off'}" id="arcGo"><span class="arc-ic">${sprite('t_arc',2)}</span><span class="arc-t"><b>FLIPERAMA</b><small>${lf?`${Math.ceil(lf/60)} MIN LIBERADOS HOJE`:'TEMPO DE HOJE ACABOU'}</small></span>${lf?`<span class="go2">JOGAR${sprite('fwd',2)}</span>`:''}</button>`}
   }
   const nxA=APPS.find(a=>appTasks(a).some(t=>!t.opt&&!t.done)),nx=nxA&&nxA.id+':'+appTasks(nxA).find(t=>!t.opt&&!t.done).id; // próxima obrigatória (só uma na lista)
   if(allDone){const ex=APPS.flatMap(a=>appTasks(a).filter(t=>t.opt&&!t.done).map(t=>({a,t})));
@@ -1589,6 +1603,7 @@ function adStars(){if(!AD_ST){const L=(n,cls)=>{let b='';for(let i=0;i<n;i++){co
   AD_ST=L(18,'l1')+L(9,'l2')+L(4,'l3')}return AD_ST}
 const ADMSG=['Base em segurança, {n}.','Todas as estações operando. Bom trabalho!','O comando está orgulhoso de você, {n}.','Missões do dia cumpridas. Descanse os motores.','Turno encerrado. A galáxia agradece!','Relatório enviado: nota máxima, {n}!','Combustível cheio para amanhã.'];
 function bindTasks(){$('#tList').querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>takeoff(APPS.find(a=>a.id===b.dataset.a),'#m='+b.dataset.m+'&r=tasks'));
+  const ag=$('#arcGo');if(ag)ag.onclick=()=>{if(ag.classList.contains('off')){SND.locked();return}takeoff({url:'fliperama/'},'#r=tasks')};
   const tg=$('#tDoneTg');if(tg)tg.onclick=()=>{tDoneOpen=!tDoneOpen;SND.open();renderTasks()};
   $('#tList').querySelectorAll('[data-fold]').forEach(b=>b.onclick=()=>{const id=b.dataset.fold;tFold[id]=b.getAttribute('aria-expanded')!=='true';SND.tab(tFold[id]?1:0);renderTasks()})}
 let toastT=0;function toast(t){const el=$('#toast');el.textContent=t;el.hidden=false;el.style.bottom=$('#shopBar').hidden?'':'calc(170px + env(safe-area-inset-bottom))';clearTimeout(toastT);toastT=setTimeout(()=>el.hidden=true,2600)}
@@ -1836,6 +1851,11 @@ function missionRow(d,t){const o=d.mode(t.id);
   return row({go:`mis:${d.app.id}:${t.id}`,name:esc(t.n)+(t.opt?'<span class="pa-tag">Desafio</span>':''),sub,val:fmtP(o),pill:pill(o),bar:o})}
 
 /* páginas */
+function arcCard(){const m=st.arcMin==null?10:st.arcMin,ar=(()=>{try{return JSON.parse(localStorage.getItem('navemae-arcade'))||{}}catch(e){return{}}})();
+  const used=ar.day===dkey()?Math.round((ar.used||0)/60):0,best=ar.best||{};
+  return sec('Fliperama')+card(`<div class="pa-seg pa-arc">${[0,5,10,15,20,30].map(v=>`<button data-arc="${v}" class="${v===m?'on':''}">${v?v+' min':'Desligado'}</button>`).join('')}</div>`+
+    row({name:'Usado hoje',val:`${used} de ${m} min`})+row({name:'Recorde no Verme nos dutos',val:`${best.verme||0} ovos`}))+
+    note('Liberado depois que o turno de missões do dia fica completo. O tempo só corre durante a partida; se acabar no meio, a partida vai até o fim.')}
 function pgHome(){
   const D=APPS.map(appData),acc=D.map(d=>d.acc).reduce(sumO,Z);
   const dayset=[...new Set(D.flatMap(d=>d.dk))],fullDays=dayset.filter(k=>D.some(d=>d.isFull(k))).length;
@@ -1869,6 +1889,7 @@ function pgHome(){
     const o=ds.map(d=>d.acc).reduce(sumO,Z),mi=ds.reduce((t,d)=>t+d.missions,0);
     return row({go:`sub:${p.id}`,dot:p.pal[2],name:p.name,sub:`${plural(ds.length,'jogo')} · ${plural(mi,'missão','missões')}`,val:fmtP(o),pill:pill(o),bar:o})}).join(''));
   h+=note('Acerto de primeira: perguntas certas na primeira tentativa, só nas missões diárias. Ótimo é 85% ou mais, Bom de 65% a 84%, Atenção abaixo de 65%. Com menos de 5 respostas aparece Poucos dados.');
+  h+=arcCard();
   h+=note('Os dados ficam só neste aparelho. Use Exportar nas configurações para guardar uma cópia.');
   return h}
 
@@ -1935,6 +1956,7 @@ $('#paBody').onclick=e=>{const el=e.target.closest('button');if(!el)return;const
   if(ds.sw){PA.stack[PA.stack.length-1]=paParse(ds.sw);const x=$('#paBody .pa-tabs').scrollLeft;paRender();$('#paBody .pa-tabs').scrollLeft=x;return}
   if(ds.tip){const c=el.closest('.pa-card');c.querySelectorAll('.sel').forEach(x=>x.classList.remove('sel'));el.classList.add('sel');
     const t=c.querySelector('.pa-tip');t.textContent=ds.tip;t.classList.add('on');return}
+  if(ds.arc!=null){st.arcMin=+ds.arc;save();const y=$('#pais').scrollTop;paRender();$('#pais').scrollTop=y;return}
   const cur=PA.stack[PA.stack.length-1];
   if(ds.lv){PA.lv=+ds.lv;paRender();return}
   if('lvno' in ds){PA.lv=0;paRender();return}
