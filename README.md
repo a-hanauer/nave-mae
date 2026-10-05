@@ -64,6 +64,8 @@ Som no iPhone: a opção **Tocar no silencioso** (configurações) escolhe o mod
 
 Cada toque em botão gera uma vibração leve. No iPhone (iOS 18 ou mais recente) o Safari não tem API de vibração: cada botão recebe por dentro um `<label>` invisível que cobre o botão e aciona um `<input type=checkbox switch>` escondido, então o próprio toque do dedo cai no interruptor nativo, que vibra; o clique continua chegando ao botão. Um `MutationObserver` arma os botões criados depois. Precisa de Ajustes › Sons e Tato › Tato do Sistema ligado. No Android usa `navigator.vibrate`.
 
+**Timbre estilo SNES:** todos os sons passam por um sintetizador comum (Nave-Mãe, jogos e fliperama). No lugar do quadrado puro (som de Atari), as ondas têm harmônicos suaves; cada nota tem duas vozes levemente desafinadas, para dar corpo; o volume cai de forma natural; um filtro tira o chiado agudo, um compressor segura os picos e um eco curto dá o ambiente, como o eco do chip de som do Super Nintendo. Frequências e momentos dos sons continuam os mesmos.
+
 ## Arte 16-bit
 
 Todo desenho usa a mesma grade: cada pixel de arte ocupa 2px na tela. Os sprites continuam escritos em linhas de texto (`SPR`), e o `spriteRows(rows, s, cores)` amplia a arte com Scale2x/Scale3x até a grade de 2px (`s` 4 → 2x, `s` 6 → 3x), aplica luz de cima-esquerda, sombra embaixo-direita, faixas de volume com pontilhado e contorno colorido. Use sempre `s` par (2, 4, 6, 8). Os planetas são gerados direto na resolução final, com rampa de 7 tons.
@@ -135,7 +137,7 @@ Depois que o turno de missões do dia fica completo, o fliperama aparece em dois
 | Jogo | Arquivo | Como funciona |
 |---|---|---|
 | Hóquei de mesa | `fliperama/jogos/hoquei.js` | Jogado na mesa do meio da sala, contra o Kai e o Zorp. A mesa ocupa a tela toda (sem o painel de manche e START); tocar na mesa começa, continua e joga de novo. O rebatedor de baixo, maior, segue o dedo e fica um pouco acima dele, para não sumir embaixo; o disco também é maior, com borda amarela. Ganha a rodada quem fizer 5 gols; cada rodada vencida conta uma vitória e chama o próximo rival, mais rápido. Perder uma rodada encerra. Pontos = vitórias seguidas. O rebatedor do piloto usa a cor do capacete. |
-| Verme dos dutos | `fliperama/jogos/verme.js` | Snake: um verme alien rasteja pelos dutos da estação comendo ovos. Cada ovo aumenta o corpo e a velocidade; parede ou o próprio corpo encerram. A cada 5 ovos, um ovo dourado aparece por pouco tempo (+3). |
+| Verme dos dutos | `fliperama/jogos/verme.js` | Snake: um verme alien rasteja pelos dutos da estação comendo ovos. Cada ovo aumenta o corpo e a velocidade. Os dutos não têm fim: saindo por um lado, o verme entra pelo outro; só encostar no próprio corpo encerra. A cada 5 ovos, um ovo dourado aparece por pouco tempo (+3). |
 
 ### Adicionar um jogo
 
