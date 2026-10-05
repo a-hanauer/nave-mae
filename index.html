@@ -660,17 +660,17 @@ body[data-v="home"] #app{padding-bottom:calc(var(--con) + var(--dash) + 24px)!im
 .pa-arc{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin:12px 16px}
 .pa-arc~.pa-row{color:var(--t1)}.pa-arc~.pa-row .pa-rv{white-space:nowrap;color:var(--t1)}
 /* fliperama: cartão de destaque (Missões) e atalho na janela do mapa — visual de neon do próprio fliperama */
-.arch{position:relative;display:grid;justify-items:center;gap:12px;width:100%;margin:6px 0 34px;padding:0 0 18px;text-align:center;overflow:hidden;
+.arch{position:relative;display:grid;justify-items:center;gap:9px;width:100%;margin:6px 0 30px;padding:0 0 14px;text-align:center;overflow:hidden;
   background:#160f30;box-shadow:0 0 0 3px #000,0 0 0 6px #ff3df2,0 0 0 9px #000;animation:archGlow 1.6s steps(2) infinite}
 @keyframes archGlow{50%{box-shadow:0 0 0 3px #000,0 0 0 6px #2ad4ff,0 0 0 9px #000,0 0 26px 6px rgba(42,212,255,.45)}}
-.arch-sky{position:relative;display:block;width:100%;height:150px;background:radial-gradient(ellipse at 50% 70%,#3a1a6a 0,#160f30 70%);overflow:hidden}
-.arch-st{position:absolute;left:50%;top:22px;transform:translateX(-50%);animation:bob 1.4s steps(4) infinite}
-.arch-sign{position:absolute;left:0;right:0;bottom:12px;font-family:var(--px);font-size:18px;color:#ffd9fb;letter-spacing:.06em;
+.arch-sky{position:relative;display:block;width:100%;height:86px;background:radial-gradient(ellipse at 50% 70%,#3a1a6a 0,#160f30 70%);overflow:hidden}
+.arch-st{position:absolute;left:50%;top:10px;transform:translateX(-50%);animation:bob 1.4s steps(4) infinite}
+.arch-sign{position:absolute;left:0;right:0;bottom:9px;font-family:var(--px);font-size:14px;color:#ffd9fb;letter-spacing:.06em;
   text-shadow:0 0 4px #ff3df2,0 0 12px #ff3df2,0 0 22px rgba(255,61,242,.7);animation:flick 5s steps(1) infinite}
 @keyframes flick{0%,90%,96%{opacity:1}93%{opacity:.5}}
 .arch-b small{display:block;font-family:var(--px);font-size:8px;color:#2ad4ff;text-shadow:0 0 6px rgba(42,212,255,.6)}
-.arch-b b{display:block;margin-top:8px;font-family:var(--px);font-size:14px;font-weight:400;color:#ffd23f;text-shadow:2px 2px 0 #7a3a00}
-.arch-go{display:flex;align-items:center;gap:10px;padding:13px 16px;font-family:var(--px);font-size:10px;color:#1a0d00;background:#ffd23f;box-shadow:inset 0 -4px 0 0 #b38a10,0 0 0 3px #000}
+.arch-b b{display:block;margin-top:7px;font-family:var(--px);font-size:11px;font-weight:400;color:#ffd23f;text-shadow:2px 2px 0 #7a3a00}
+.arch-go{display:flex;align-items:center;gap:10px;padding:11px 14px;font-family:var(--px);font-size:9px;color:#1a0d00;background:#ffd23f;box-shadow:inset 0 -4px 0 0 #b38a10,0 0 0 3px #000}
 .arch-go .spr{animation:nudge .8s steps(2) infinite}
 .arch:active .arch-go{transform:translate(2px,2px)}
 .arch.off{animation:none;box-shadow:0 0 0 3px #000,0 0 0 6px #4a2a6a,0 0 0 9px #000}.arch.off .arch-sign{text-shadow:none;color:#6a4a8a;animation:none}
@@ -871,11 +871,11 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 </div></nav>
 
 <script>
-/* atualização automática: compara com version.json e recarrega quando sai versão nova */
-const APP_V='20261005111716';
+/* atualização automática: compara com version.json e recarrega quando sai versão nova (uma vez por página e versão) */
+const APP_V='20261005112305';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
-    if(v&&v!==APP_V&&sessionStorage.getItem('upd')!==v){sessionStorage.setItem('upd',v);location.replace(location.pathname+'?v='+v+H0)}}catch(e){}}
+    if(v&&v!==APP_V&&sessionStorage.getItem('upd:'+location.pathname)!==v){sessionStorage.setItem('upd:'+location.pathname,v);location.replace(location.pathname+'?v='+v+H0)}}catch(e){}}
   check();document.addEventListener('visibilitychange',()=>{if(!document.hidden)check()});addEventListener('pageshow',e=>{if(e.persisted)check()});
 })();
 </script>
@@ -1068,7 +1068,7 @@ const sprite=(n,s=2,ov)=>spriteRows(SPR[n],s,ov);
 /* piloto EVA: emblema no ombro + equipamento em camadas */
 SPR.pCheer=["...............................kkk...","..............................kQQKk..",".............................kQQKKKk.","............................kQQKKKKJk","............................kQJJJJJJk","............................kQQKKJJJk","............................kKkKKKkk.",".............................k1kkk3k.","..............kkkkkk.........k11223k.","............kk111222kk........k2233k.","...........k1111212222k.......kkkkkKk","..........k111121222233k......kkccKJk","..........k111112222333k......kkkkkJk",".........k15555555566664k.....k2233k.","........kQ55CCC555666656Qk....k1234k.",".....kkkQK55C55556666666QKkkk.k2233k.","....kUQkQQ55555555666666KKkQKkk1234k.","....kUUkQO55555556666666OJkKKk042344k","....kUckKK55555565666666KKkcJk0440=k.","....kUcQkKk555555666666kKkQcK0000==k.","....kUQQKK21255877866444JUQK=00000k..","....kUQKKJk223233334444kUQQK=0000=k..","....kUQQKJkk2233433444kkUQK=0000=k...","....kUQKKJk.kQkkkkkkJk.kUQQ=00000k...","....kUQQKJkkkQQQKKKKJkkk44444000k....","....k44444999kQKKKJJk0041222240k.....","...k1122224444kkkkkk44411122334k.....","..k1122223341212222333411223344k.....","..k1112233441122223233412233334k.....","..k2222334441222232333342334444k.....","..k422333341112kkkk33344433344k......","..k04444444112kOOKKk3444=kkkkk.......","..k90000k94111kQKcck3344=k...........",".k9000==k942122kkkk33444=k...........",".k99000kk99421223233334==k...........",".k90000kk99412222333344==k...........","k999000kk9994444444444===k...........","k99000k..k99900000000===k............","k90040k..k9999000000=0==k............","k94422k..k99900000000===k............","k11122k..k99============k............","k112222k..k09000000=0==k.............",".k112233k.k909000000=0=k.............","..k223233kk9===========k.............","...k223333k909000000===k.............","....k33334400000000====k.............",".....k33kkkkkkk4444kkkkk.............","......kkQKKKkQQ4234KKJ4Jk............","......kkQKKKkQK4234KJ424k............",".......kKKKk4kk4444kk424k............","........kKk2499900000434k............","........k9=4909000000=4=0k...........","........k9=99900000000===k...........","........k9=99000000======k...........","........k99===000000===0=k...........","........k99000==00==9000=k...........","........k99=00==kk9990=0=k...........","........k990==0=kk99==0==k...........","........k99000==kk990000=k...........","........k99000==kk99900==k...........",".........k9000==kk990000k............",".........k9=00==kk9000==k............",".........k00=0==kk990=00k............",".........k900===kk90000=k............",".........k0000==kk990000k............",".........k0444==kk90444=k............",".........k42224=kk942234k............","........k1122334kk1223334k...........","........k1222334kk1122334k...........",".........k42334=kk942334k............",".........k94440=kk994440k............",".........k99000=kk99900=k............",".........k99000=kk990000k............",".........k90000=kk99000=k............",".........k9900==kk99000=k............",".........k90000=kk99000=k............",".........k9900==kk99000=k............",".........k9000==kk90000=k............",".........k9900=k..k900==k............","..........k000=k..k0000k.............","..........k900=k..k900=k.............","..........k4444k..k4444k.............",".........k112233kk112233k............",".........k122334kk122334k............",".........kkkkkkkkkkkkkkkk............",".........kQKKKKJkkQQQKKKk............","........kQQKKKJJkkQQKQKKJk...........","........kQQKKKKJkkQQQKKKKk...........","........kQKKKKJJkkQQKKKKJk...........","........kQKKKJJJkkQKKKKJJk...........",".......kQQKKKKJJkkQQKKKKJJk..........",".......kQKKKKJJJkkQKKKKJJJk..........",".......kQQKKKKJJkkQQKKKKJJk..........","........kkkkkkkk..kkkkkkkk..........."]; /* comemorando: punho erguido, só cores */
 const PATCH_AT=[3,19],PATCH_CHEER=[5,27],PPAD=8; /* canto do brasão 5×5 na ombreira; margem do equipamento */
-const EMB={"none":null,"estrela":[".b.","bbb",".b."],"raio":["..b",".b.","b.."],"planeta":[".b.","bbb",".b."],"alvo":["bbb","b.b","bbb"],"alien":["bbb","b.b",".b."],"coroa":["b.b","bbb","bbb"],"coracao":["b.b","bbb",".b."],"lua":[".bb","b..",".bb"],"diamante":[".b.","b.b",".b."],"xis":["b.b",".b.","b.b"],"seta":[".b.","bbb",".b."],"cometa":["..b",".bb","bb."],"pi":["bbb",".b.",".b."],"olho":[".b.","bbb",".b."]};
+const EMB={"none":null,"estrela":[".b.","bbb",".b."],"raio":["..b",".b.","b.."],"planeta":[".b.","bbb",".b."],"alvo":["bbb","b.b","bbb"],"alien":["bbb","b.b",".b."],"coroa":["b.b","bbb","bbb"],"coracao":["b.b","bbb",".b."],"lua":[".bb","b..",".bb"],"diamante":[".b.","b.b",".b."],"xis":["b.b",".b.","b.b"],"seta":[".b.","bbb",".b."],"cometa":["..b",".bb","bb."],"pi":["bbb",".b.",".b."],"olho":[".b.","bbb",".b."],"folha":[".bb","bbb","b.."],"gota":[".b.","bbb","bbb"]};
 const GEAR={"lanterna":[[22,3,["..kk.......",".kQQk..A.A.","kQQUYkA.A.A","kQKKYkAA.A.","kKKJJk..A.A",".kKJk......","..kk......."],false]],"tanques":[[-3,7,["..kkk..........................kkk..",".kQQKk........................kQQKk.",".kQKJk........................kQKKk.",".kQKJk........................kQKJk.",".kKkJk........................kKkJk.",".kYOOk........................kYOok.","kYOOook......................kYYOouk","kYYOouk......................kYOOook","kYOOook......................kYYOouk","kYYOook......................kYOOook","kuuuuuk......................kuuuuuk","kYYOouk......................kYOOook","kYOOook......................kYOOouk","kYYOouk......................kYOOook","kYOOouk......................kYOoouk","kYYOouk......................kYOOook","kYOOouk......................kYOoouk","kYYOouk......................kYOOook","kYOOouk......................kYOoouk","kYOoouk......................kYOOook","kYOOouk......................kYOoouk","kYOoouk......................kYOOouk","kYOOouk......................kYOoouk","kuuuuuk......................kuuuuuk","kYOoouk......................kOOoouk","kYOoouk......................kYOOouk","kYOouuk......................kOOoouk","kYOoouk......................kYOOouk",".kOouk........................kOook.","..kok..........................kOk..","...k............................k..."],true]],"jetpack":[[-4,13,["..kkkk..........................kkkk..",".kUUQKk........................kUQQKk.","kUUQQKKk......................kUUQQKKk","kUUQQKKk......................kUUQQKJk","kUUccKKk......................kUUccKKk","kUUQKKJk......................kUUQKKJk","kUUQQKKk......................kUUQQKJk","kUUQKKJk......................kUQQKKJk","kUUQQKJk......................kUUQKKJk","kUQQKKJk......................kUQQKKJk","kUUQKKJk......................kUUQKKJk","kUQQKKJk......................kUQQKKJk","kUQQKJJk......................kUQQKKJk","kUQQKKJk......................kUQQKKJk","kUQKKJJk......................kUQQKJJk","kUQQKKJk......................kUQQKKJk","kQQKKJJk......................kUQKKJJk","kUQQKKJk......................kUQQKKJk","kUQKKJJk......................kQQKKJJk",".kkkkkk........................kkkkkk.","kQQKKJJk......................kQQKKJJk","kQKKKKJk......................kQQKKKJk","kQQKKJJk......................kQKKKJJk",".kkkkkk........................kkkkkk.",".kYYYYk........................kYYYYk.",".kOYYOk........................kOYYOk.","..kOOk..........................kOOk..","..krk...........................krk...","...krk...........................krk..","....k.............................k..."],true]],"rastreador":[[-4,42,["..kkkkkk..",".kUUUQQKk.","kUUUQQQrKk","kUUGgggKKk","kUUggGgKJk","kUUgGgGJJk","kUUggGgKJk","kQQgGggJJk","kUQQKKJJJk","kQQKKKJJJk",".kQQKKJJk.","..kkkkkk.."],false]],"macarico":[[21,41,["..kkkkkk.....",".kUUUQQKk....","kUUUQQKKKk...","kUOOOOKKKk...","kUQQKKKKJk...","kQQQkkkkkk...",".kQKKkQQKk...","..kkkUUQQKk..",".....kQQKKk..",".....kQQQKk..","......kQKKJk.","......kQQKKk.",".......kKKJJk","........kcck.","........kcCk.",".........kk.."],false]],"antena":[[17,-8,["..k..",".kOk.","kOYOk",".kQk.",".kQk.",".kQk.",".kQk.",".kQk.","kQQKk","kQKJk","kKKJk",".kkk."],false]],"drone":[[-8,-7,[".kkkkk.kkkkk.","kQQQQQkQQQQQk",".kkkUQQQkkkk.",".kUUUUQQKKk..",".kUUUQQKKJk..",".kUUQcCcJJk..",".kUQQKKJJJk..","..kkKKKJkk...","..kQkkkkkQk..","...k.....k..."],false]],"bandeira":[[27,-8,[".k.........","kYkkkkkkkk.","kQRRRRRRRRk","kQRRRRRRRRk","kQrrrrrrrrk","kQrrrrrrrrk","kQRRRRRRRRk","kQRRRRRRRRk","kQrrrrrrrrk","kQkkkkkkkk.","kQk........","kQk........","kQk........","kQk........","kQk........","kQk........","kQk........","kQk........","kQk........","kQk........","kQk........","kQk........","kQk........","kQk........","kQk........","kQk........","kQk........","kQk........","kQk........","kQk........","kQk........","kQk........","kQk........","kQk........","kQk........",".k........."],true]]};
 function compose(rows,layers,pad=4){const W=rows[0].length+2*pad,H=rows.length+2*pad,g=Array.from({length:H},()=>Array(W).fill('.'));
   const put=(x0,y0,rr,behind)=>rr.forEach((row,y)=>[...row].forEach((c,x)=>{if(c==='.')return;const X=x0+x+pad,Y=y0+y+pad;if(behind&&g[Y][X]!=='.')return;g[Y][X]=c}));
@@ -1127,7 +1127,10 @@ const ITEMS={
     {id:'roxo',n:'Roxo',c:ramp4('#eadcff','#b48cff','#7448c8','#34186a'),price:80},
     {id:'neon',n:'Neon',c:ramp4('#f4ffd0','#c8f050','#7aa820','#344a08'),price:80},
     {id:'cromado',n:'Cromado',c:ramp4('#ffffff','#d8dce4','#9aa0ac','#4a4f5a'),price:120},
-    {id:'cosmico',n:'Cósmico',c:ramp4('#c8b8ff','#6a58d0','#3a2a8a','#140a40'),price:180}]},
+    {id:'cosmico',n:'Cósmico',c:ramp4('#c8b8ff','#6a58d0','#3a2a8a','#140a40'),price:180},
+    {id:'esmeralda',n:'Esmeralda',c:ramp4('#c8ffd8','#3fd87a','#1f8a4a','#0a4a24'),price:30},{id:'floresta',n:'Floresta',c:ramp4('#b8d8a0','#5a8a3a','#335a20','#16300c'),price:30},
+    {id:'limao',n:'Limão',c:ramp4('#f4ffc0','#c8f04a','#86b020','#3e5a08'),price:50},{id:'jade',n:'Jade',c:ramp4('#d0fff0','#5fd8b0','#2a8a70','#0f4a3a'),price:50},
+    {id:'acido',n:'Ácido',c:ramp4('#eaffc8','#8dff3a','#3fb81a','#145a08'),price:80}]},
   visor:{t:'Viseira',list:[
     {id:'ciano',n:'Fumê',c:['#24323c','#0e161c']},
     {id:'ambar',n:'Âmbar',c:['#5a3a10','#2a1a06']},
@@ -1139,7 +1142,8 @@ const ITEMS={
     {id:'laranja',n:'Laranja',c:['#a84a10','#4a1a04'],price:50},
     {id:'gelo',n:'Gelo',c:['#5a9aaa','#1c3a44'],price:80},
     {id:'prata',n:'Prata',c:['#aab4c4','#3a4250'],price:120},
-    {id:'neon',n:'Neon',c:['#c8306a','#4a0a2a'],price:120}]},
+    {id:'neon',n:'Neon',c:['#c8306a','#4a0a2a'],price:120},
+    {id:'esmeralda',n:'Esmeralda',c:['#1f6a3a','#0a2a14'],price:30},{id:'radar',n:'Radar',c:['#3fb85a','#0a3a18'],price:50},{id:'limao',n:'Limão',c:['#8ab81a','#2a3a08'],price:80}]},
   suit:{t:'Traje',list:[
     {id:'lilas',n:'Creme',c:['#e0d8c2','#ada38a','#6e6652']},
     {id:'cinza',n:'Cinza',c:['#c8ccd2','#8e949c','#555a62']},
@@ -1154,7 +1158,9 @@ const ITEMS={
     {id:'menta',n:'Menta',c:['#b8f0d8','#68b898','#2a6a50'],price:50},
     {id:'roxo',n:'Roxo',c:['#c8a8ff','#8a5ad8','#44207a'],price:80},
     {id:'rubi',n:'Rubi',c:['#f08080','#b83a3a','#5a1414'],price:80},
-    {id:'dourado',n:'Dourado',c:['#ffe9a0','#d4a830','#7a5a10'],price:180}]},
+    {id:'dourado',n:'Dourado',c:['#ffe9a0','#d4a830','#7a5a10'],price:180},
+    {id:'esmeralda',n:'Esmeralda',c:['#8ae8a8','#3fb86a','#1a6a3a'],price:30},{id:'floresta',n:'Floresta',c:['#8aaa6a','#556e3e','#2a3a1e'],price:30},
+    {id:'limao',n:'Limão',c:['#e0f88a','#a8c83a','#5a7010'],price:50},{id:'jade',n:'Jade',c:['#a8f0d8','#4ab898','#1f6a54'],price:80},{id:'acido',n:'Ácido',c:['#c8ff8a','#6ad83a','#2a7a10'],price:80}]},
   emblem:{t:'Emblema',list:[
     {id:'none',n:'Nenhum'},
     {id:'estrela',n:'Estrela',c:['#2b2f38','#ffb300']},
@@ -1170,7 +1176,8 @@ const ITEMS={
     {id:'seta',n:'Seta',c:['#0e2a1a','#7aff9a'],price:50},
     {id:'cometa',n:'Cometa',c:['#2a1a3a','#c8a8ff'],price:80},
     {id:'pi',n:'Pi',c:['#1a2a3a','#ffd84a'],price:80},
-    {id:'olho',n:'Olho',c:['#1a1a1a','#ff3d2e'],price:120}]},
+    {id:'olho',n:'Olho',c:['#1a1a1a','#ff3d2e'],price:120},
+    {id:'folha',n:'Folha',c:['#0e2a14','#5dff83'],price:30},{id:'gota',n:'Gosma',c:['#142a0a','#8dff3a'],price:50}]},
   gear:{t:'Equipamento',list:[
     {id:'none',n:'Nenhum'},
     {id:'lanterna',n:'Lanterna',req:'f25'},
@@ -1203,7 +1210,8 @@ const ITEMS={
     {id:'heroi',n:'Herói da Estação',price:120},
     {id:'guardiao',n:'Guardião da Galáxia',price:120},
     {id:'supremo',n:'Comandante Supremo',price:180},
-    {id:'cosmos',n:'Lenda do Cosmos',price:180}]},
+    {id:'cosmos',n:'Lenda do Cosmos',price:180},
+    {id:'botanico',n:'Botânico Espacial',price:30},{id:'lagarto',n:'Lagarto Estelar',price:50},{id:'floresta',n:'Guardião da Floresta',price:80}]},
   ship:{t:'Modelo',list:[
     {id:'rocket',n:'Foguete',spr:'m_rocket'},
     {id:'fighter',n:'Caça',spr:'m_fighter',req:'m10'},
@@ -1223,7 +1231,12 @@ const ITEMS={
     {id:'ciano',n:'Ciano',c:{W:'#e8ffff',L:'#9af0f0',M:'#40c0c8',D:'#1f7a88',E:'#0f3a44',R:'#ff8a5a',r:'#c84a1a',q:'#5a1a08'},price:50},
     {id:'roxa',n:'Roxa',c:{W:'#f4e8ff',L:'#c8a8ff',M:'#9060e0',D:'#5a30a0',E:'#2a1050',R:'#7aff9a',r:'#2aa850',q:'#0f4a20'},price:80},
     {id:'camuflada',n:'Camuflada',c:{W:'#d8e0b8',L:'#a8b078',M:'#6e7848',D:'#454c2c',E:'#22261a',R:'#ffb300',r:'#a86f00',q:'#4a3000'},price:80},
-    {id:'cometa',n:'Cometa',c:{W:'#ffffff',L:'#2a2a4a',M:'#1a1a34',D:'#10102a',E:'#08081a',R:'#ff6ad5',r:'#a8208a',q:'#4a0a3a'},price:120}]},
+    {id:'cometa',n:'Cometa',c:{W:'#ffffff',L:'#2a2a4a',M:'#1a1a34',D:'#10102a',E:'#08081a',R:'#ff6ad5',r:'#a8208a',q:'#4a0a3a'},price:120},
+    {id:'esmeralda',n:'Esmeralda',c:{W:'#e6fff0',L:'#7ff0a8',M:'#2ac86a',D:'#14823e',E:'#0a3e1c',R:'#ffd84a',r:'#c89a10',q:'#5a4208'},price:30},
+    {id:'limao',n:'Limão',c:{W:'#fbffe0',L:'#e0f87a',M:'#a8d82a',D:'#6a9010',E:'#2e4206',R:'#5a3aa8',r:'#3a1a7a',q:'#1a0a3a'},price:50},
+    {id:'floresta',n:'Floresta',c:{W:'#d8ecc8',L:'#8ab86a',M:'#4e7a38',D:'#2c4a20',E:'#14260c',R:'#ffb35a',r:'#c86a1a',q:'#5a2a08'},price:50},
+    {id:'jade',n:'Jade',c:{W:'#e0fff6',L:'#8af0d0',M:'#3ac0a0',D:'#1a7a64',E:'#0a3a30',R:'#ff6a9a',r:'#b02a5a',q:'#5a0a28'},price:80},
+    {id:'acido',n:'Ácido',c:{W:'#f0ffd8',L:'#b8ff6a',M:'#6ae02a',D:'#2e9a10',E:'#103e06',R:'#1a1a24',r:'#0b0b14',q:'#000000'},price:80}]},
   flame:{t:'Propulsor',list:[
     {id:'laranja',n:'Laranja',c:{Y:'#fff3a0',O:'#ffb300',r:'#e03a26'}},
     {id:'azul',n:'Azul',c:{Y:'#e0fbff',O:'#40d8ff',r:'#1f6fa8'},req:'m25'},
@@ -1234,7 +1247,8 @@ const ITEMS={
     {id:'roxa',n:'Roxa',c:{Y:'#f4e0ff',O:'#b46aff',r:'#5a20a8'},price:50},
     {id:'vermelha',n:'Vermelha',c:{Y:'#ffe0c0',O:'#ff4a2a',r:'#8a1004'},price:50},
     {id:'dourada',n:'Dourada',c:{Y:'#fffbe0',O:'#ffd84a',r:'#c88a00'},price:80},
-    {id:'gelo',n:'Gelo',c:{Y:'#ffffff',O:'#a8f4ff',r:'#3ab8d8'},price:80}]},
+    {id:'gelo',n:'Gelo',c:{Y:'#ffffff',O:'#a8f4ff',r:'#3ab8d8'},price:80},
+    {id:'acido',n:'Ácido',c:{Y:'#f4ffc0',O:'#8dff3a',r:'#2a9a10'},price:50},{id:'esmeralda',n:'Esmeralda',c:{Y:'#e0ffe8',O:'#2ae07a',r:'#0a7a3a'},price:80}]},
   decal:{t:'Adesivo',list:[
     {id:'none',n:'Nenhum'},
     {id:'faixa',n:'Faixa vermelha',p:'faixa',c:['#ff5a4a','#a8201a'],price:30},
@@ -1245,7 +1259,8 @@ const ITEMS={
     {id:'xadrez',n:'Xadrez',p:'xadrez',c:['#f4f4f4','#2a2a34'],price:80},
     {id:'raio',n:'Raios',p:'raio',c:['#7af0ff','#1f8aa8'],price:80},
     {id:'chamas',n:'Chamas',p:'chamas',c:['#ff8a1f','#c83a10'],price:120},
-    {id:'galaxia',n:'Galáxia',p:'xadrez',c:['#b46aff','#3a1a6a'],price:120}]},
+    {id:'galaxia',n:'Galáxia',p:'xadrez',c:['#b46aff','#3a1a6a'],price:120},
+    {id:'faixav',n:'Faixa verde',p:'faixa',c:['#5dff83','#1f9a3a'],price:30},{id:'raiov',n:'Raios verdes',p:'raio',c:['#c8ff6a','#4a9a10'],price:80},{id:'chamasv',n:'Chamas verdes',p:'chamas',c:['#8dff3a','#2a8a10'],price:120}]},
   trail:{t:'Rastro',list:[
     {id:'none',n:'Nenhum'},
     {id:'fumaca',n:'Fumaça',p:'fumaca',c:{a:'#e8e8f0',b:'#9a9ab0'},price:30},
@@ -1253,7 +1268,8 @@ const ITEMS={
     {id:'bolhas',n:'Bolhas',p:'bolhas',c:{a:'#a8f4ff',b:'#3ab8d8'},price:50},
     {id:'cometa',n:'Cometa',p:'cometa',c:{a:'#ffffff',b:'#7ad8ff',c:'#3a6ad8'},price:80},
     {id:'coracoes',n:'Corações',p:'coracoes',c:{a:'#ff8ab8',b:'#c83a70'},price:80},
-    {id:'arco',n:'Arco-íris',p:'arco',c:{a:'#ff4a4a',b:'#ff9a2a',c:'#ffe24a',d:'#4ae06a',e:'#4aa8ff',f:'#a86aff'},price:180}]},
+    {id:'arco',n:'Arco-íris',p:'arco',c:{a:'#ff4a4a',b:'#ff9a2a',c:'#ffe24a',d:'#4ae06a',e:'#4aa8ff',f:'#a86aff'},price:180},
+    {id:'gosma',n:'Gosma',p:'bolhas',c:{a:'#c8ff8a',b:'#4ab81a'},price:50},{id:'estrelasv',n:'Estrelas verdes',p:'estrelas',c:{a:'#d8ffb0',b:'#39e35f'},price:50}]},
 };
 const DEF={helmet:'branco',visor:'ciano',suit:'lilas',skin:'p1',emblem:'estrela',gear:'none',title:'cadete',ship:'rocket',paint:'prata',flame:'laranja',decal:'none',trail:'none'};
 const item=(cat,id)=>ITEMS[cat].list.find(x=>x.id===id)||ITEMS[cat].list[0];
@@ -1553,7 +1569,7 @@ function takeoff(a,hash=''){
   (function f(t){const k=(t-t0)/700;x.fillStyle=`rgba(12,11,29,${.35})`;x.fillRect(0,0,W,H);
     pts.forEach(p=>{const r0=p.r,r1=p.r+=p.v*(2+k*14);x.strokeStyle=p.c;x.lineWidth=1;x.beginPath();
       x.moveTo(W/2+Math.cos(p.a)*r0|0,H/2+Math.sin(p.a)*r0|0);x.lineTo(W/2+Math.cos(p.a)*r1|0,H/2+Math.sin(p.a)*r1|0);x.stroke()});
-    if(k<1)requestAnimationFrame(f);else{x.fillStyle='#fff';x.fillRect(0,0,W,H);setTimeout(()=>{location.href=a.url+hash},60)}})(t0);
+    if(k<1)requestAnimationFrame(f);else{x.fillStyle='#fff';x.fillRect(0,0,W,H);setTimeout(()=>{location.href=a.url+'?v='+APP_V+hash},60)}})(t0);
 }
 addEventListener('pageshow',()=>{$('#warp').hidden=true;checkGoals();go(view==='planet'?'home':view);routeHash();setTimeout(showUnlock,400);
   // energia ganha nos jogos desde a última visita
@@ -1638,7 +1654,7 @@ function renderTasks(){
     if(st.adDay!==dkey()){st.adDay=dkey();save();setTimeout(SND.alldone,250)}
     const as=arcState();
     if(as){const lf=as.left,full=lf>=as.min*60;
-      h=`<button class="arch${lf?'':' off'}" id="arcGo"><span class="arch-sky">${adStars()}<span class="arch-st">${spriteRows(SPR.arcSt,4,ARC_OV)}</span><span class="arch-sign">FLIPERAMA</span></span>
+      h=`<button class="arch${lf?'':' off'}" id="arcGo"><span class="arch-sky">${adStars()}<span class="arch-st">${spriteRows(SPR.arcSt,2,ARC_OV)}</span><span class="arch-sign">FLIPERAMA</span></span>
         <span class="arch-b"><small>${lf?'RECOMPENSA DO DIA':'FICHAS DE HOJE ACABARAM'}</small><b>${lf?(full?`VOCÊ GANHOU ${as.min} MIN!`:`RESTAM ${Math.ceil(lf/60)} MIN`):'VOLTE AMANHÃ'}</b></span>
         ${lf?`<span class="arch-go">ENTRAR NO FLIPERAMA ${sprite('fwd',2)}</span>`:''}</button>`+h}
   }

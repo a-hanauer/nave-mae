@@ -98,6 +98,10 @@ Ao criar um app novo, informe em `APPS` o campo `store` com a chave do `localSto
 
 Abra o link no Safari, toque em Compartilhar e escolha **Adicionar à Tela de Início**. A Nave-Mãe abre em tela cheia, com ícone próprio, e os apps abrem dentro dela.
 
+## Peças verdes
+
+Para quem gosta de verde, cada categoria tem uma linha verde à venda no Hangar: capacetes Esmeralda, Floresta, Limão, Jade e Ácido; viseiras Esmeralda, Radar e Limão; trajes Esmeralda, Floresta, Limão, Jade e Ácido; emblemas Folha e Gosma; títulos Botânico Espacial, Lagarto Estelar e Guardião da Floresta; pinturas Esmeralda, Limão, Floresta, Jade e Ácido; propulsores Ácido e Esmeralda; adesivos Faixa verde, Raios verdes e Chamas verdes; rastros Gosma e Estrelas verdes (30 a 120 de energia).
+
 ## Fliperama (recompensa do dia)
 
 Depois que o turno de missões do dia fica completo, o fliperama aparece em dois lugares: no topo da aba Missões, um cartão grande de neon (estação-fliperama flutuando, VOCÊ GANHOU 10 MIN!, ENTRAR NO FLIPERAMA) acima do TURNO COMPLETO; e na janela do mapa, um atalho de neon logo acima do mapa estelar. O terminal avisa: Fliperama liberado. Ele leva a um fliperama virtual em `fliperama/`, um jogo dentro do jogo com visual próprio (neon, carpete de fliperama):
@@ -169,6 +173,8 @@ Os ids dos planetas são `mat`, `por`, `cie`, `ing`, `his` e `geo`.
 ## Publicar uma versão nova
 
 Antes de cada commit, rode `python3 bump.py`. Ele grava uma versão nova em `version.json` e nos apps. Quem estiver com o app aberto (inclusive pelo atalho da Tela de Início) recarrega sozinho quando a versão publicada muda.
+
+A trava que evita recarregar em looping é por página (`upd:<caminho>` no sessionStorage): cada app recarrega uma vez para cada versão nova, mesmo que outro já tenha recarregado. A Nave-Mãe abre os jogos e o fliperama com `?v=<versão>` no endereço, para o iPhone não usar a página guardada.
 
 ## Dados
 
