@@ -106,18 +106,19 @@ Para quem gosta de verde, cada categoria tem uma linha verde à venda no Hangar:
 
 Depois que o turno de missões do dia fica completo, o fliperama aparece em dois lugares: no topo da aba Missões, um cartão grande de neon (estação-fliperama flutuando, VOCÊ GANHOU 10 MIN!, ENTRAR NO FLIPERAMA) acima do TURNO COMPLETO; e na janela do mapa, um atalho de neon logo acima do mapa estelar. O terminal avisa: Fliperama liberado. Ele leva a um fliperama virtual em `fliperama/`, um jogo dentro do jogo com visual próprio (neon, carpete de fliperama):
 
-- **A sala:** vista de cima, 12×20 casas de 16 px (a câmera acompanha o piloto). Parede com letreiro de neon FLIPERAMA, oito máquinas (quatro no fundo e duas duplas no meio), garra, refrigerante, colunas de neon, mesa de hóquei, balcão de prêmios com atendente, um lounge com tapete, sofá, banco, lixeira e plantas, e o tapete da saída. O piloto aparece pequeno, com as cores do Hangar (capacete, viseira, traje e pele), andando nas quatro direções.
-- **Outros jogadores:** Kai e Zorp jogam hóquei, o robô R-0B tenta a garra, Luna e Tito passeiam pela sala e o Seu Nino cuida do balcão de prêmios. Ninguém atravessa ninguém; de frente para um deles, A puxa conversa.
+- **A sala:** vista de cima, sempre 12 casas de largura (cabe na tela, sem rolagem para os lados) e 28 de altura; a câmera acompanha o piloto para cima e para baixo. A sala ocupa a tela inteira, abaixo do letreiro. Tem parede com letreiro de neon FLIPERAMA, oito máquinas (quatro no fundo e duas duplas no meio), garra, refrigerante, colunas de neon, mesa de hóquei, balcão de prêmios com atendente, lounge com tapete, sofá, banco, lixeira e plantas, e uma área nova perto da entrada: jukebox (toca uma música diferente a cada toque), máquina de dança com pista iluminada, salgadinhos, bebedouro, placar de recordes do piloto, cabine de fotos e luminárias. O piloto aparece pequeno, com as cores do Hangar.
+- **Outros jogadores:** Kai e Zorp jogam hóquei, o robô R-0B tenta a garra, Luna e Tito passeiam, a Mel dança na máquina de dança e o Seu Nino cuida do balcão de prêmios. Ninguém atravessa ninguém.
 - **Conversas** (`fliperama/conversas.js`): o texto aparece letra a letra, em páginas (A ou toque avança). Cada personagem tem uma **história** contada aos poucos, no máximo duas partes por dia (a primeira no primeiro encontro), e uma lista de **curiosidades** ditas do jeito dele, sem repetir até acabar a lista. Depois de algumas conversas, eles cumprimentam o piloto pelo nome. As histórias se cruzam: algumas partes só aparecem depois que outro personagem contou a dele (`req`), como o presente do R-0B para a Luna.
   - **Kai** (Terra, nasceu em Porto Alegre; a mãe é engenheira da estação): corpo humano, tempo, tabuada e divisão no esporte.
   - **Zorp** (planeta Glimmer): a Terra vista por um alienígena: oceanos, continentes, Amazônia, animais, plantas, Brasil.
   - **R-0B** (robô, fala em maiúsculas, quer pegar um alienzinho de pelúcia para a Luna e aprende o que é amizade): números romanos, tabuada, divisão com resto, frações, primos, binário, medidas, geometria.
   - **Luna** (quer ser astrônoma): Sol, planetas, Lua e fases, Saturno, luz, Cruzeiro do Sul, Plutão, estrelas cadentes.
   - **Tito** (gaúcho, filho do cozinheiro, horta hidropônica): ciclo da água, alimentação, capivara, chimarrão, Porto Alegre, sementes, compostagem, frações na receita.
+  - **Mel** (dançarina de Salvador, monta uma banda com a turma): notas musicais, som e vibração, frações na música, samba, velocidade do som, agudo e grave, berimbau, frevo, Villa-Lobos, eco.
   - **Seu Nino** (ex-caminhoneiro espacial, balcão de prêmios): história e geografia do Brasil, pontos cardeais, acentos, dinossauros do RS, décadas e séculos.
   - O progresso de cada um fica em `navemae-arcade.npc` (`n` conversas, `arc` parte da história, `fi` curiosidade, `hoje` partes contadas no dia).
 - **Máquinas fechadas:** letreiro apagado, fita de interditado na tela e plaquinha pendurada; a conversa diz EM BREVE.
-- **Controles:** direcional (segurar anda direto; o dedo pode deslizar entre as setas, e cima+direita juntas andam na diagonal em escada, desviando do que estiver no caminho) e o botão vermelho **A** para interagir. Um passo emenda no outro sem pausa. Tocar num ponto da sala faz o piloto andar até lá; tocar numa máquina faz ele ir até a frente dela e abrir a conversa. No computador, setas e A/Enter.
+- **Controles (só toque):** tocar no chão faz o piloto andar até lá; segurar e arrastar faz ele seguir o dedo; tocar numa pessoa ou objeto faz ele ir até a frente e conversar. Um balão com ! mostra com quem dá para falar. Tocar em qualquer lugar avança a conversa. No computador continuam valendo as setas e Enter.
 - **Máquinas:** a que tem jogo fica com o letreiro aceso e a tela em modo de demonstração; quando o piloto está de frente, aparece um balão com A. A conversa mostra o nome, como jogar e o recorde, com JOGAR. As outras mostram EM BREVE. Garra, refrigerante, banco e planta têm falas próprias.
 - **Partida:** a tela inteira vira a frente da máquina, com o tema do jogo: em cima o letreiro iluminado com o nome (e a tecla ◂ SALA para voltar); no meio o monitor CRT na moldura preta, com placar e recorde no topo da tela, linhas de varredura, vinheta e reflexo do vidro; embaixo o painel com o **manche** e o botão **START** (começa, continua, joga de novo; pisca quando é a vez dele); no pé, a porta das fichas com o TEMPO restante. ◂ SALA durante a partida pausa; de novo, volta à sala. Deslizar o dedo na tela também controla. No computador: setas, Enter = START, Esc = voltar.
 - **Manche:** o centro é onde o dedo encosta (não precisa acertar a bola). A direção só vale depois de 20 px de movimento e só troca quando um eixo vence o outro com folga; numa diagonal indecisa, mantém a direção atual. Se o dedo vai longe, o centro acompanha.
@@ -133,6 +134,7 @@ Depois que o turno de missões do dia fica completo, o fliperama aparece em dois
 
 | Jogo | Arquivo | Como funciona |
 |---|---|---|
+| Hóquei de mesa | `fliperama/jogos/hoquei.js` | Jogado na mesa do meio da sala, contra o Kai e o Zorp. O rebatedor de baixo segue o dedo na mesa (`controls:'touch'`, sem manche). Ganha a rodada quem fizer 5 gols; cada rodada vencida conta uma vitória e chama o próximo rival, mais rápido. Perder uma rodada encerra. Pontos = vitórias seguidas. O rebatedor do piloto usa a cor do capacete. |
 | Verme dos dutos | `fliperama/jogos/verme.js` | Snake: um verme alien rasteja pelos dutos da estação comendo ovos. Cada ovo aumenta o corpo e a velocidade; parede ou o próprio corpo encerram. A cada 5 ovos, um ovo dourado aparece por pouco tempo (+3). |
 
 ### Adicionar um jogo
@@ -147,7 +149,7 @@ ARC.add({id:'meujogo', name:'NOME NA TELA', unit:'PONTOS', cell:8,
     return{ready(){}, start(){}, input(dir){}, pause(){}, resume(){}, stop(){}}}})
 ```
 
-2. Acrescente o id na lista `JOGOS` em `fliperama/index.html`. O jogo ocupa a próxima máquina livre da sala (ordem em `SLOTS`: as quatro do meio, depois as do fundo).
+2. Acrescente o id na lista `JOGOS` em `fliperama/index.html`. Com `lugar:'hockey'` (o tipo de um objeto da sala), o jogo fica naquele objeto em vez de numa máquina. Com `controls:'touch'`, o manche some e o jogo recebe `touch(x,y)` em pixels da arte enquanto o dedo está na tela. O jogo ocupa a próxima máquina livre da sala (ordem em `SLOTS`: as quatro do meio, depois as do fundo).
 3. Opcional: `attract(ctx,x,y,w,h,t)` desenha a tela da máquina na sala (8×7 pixels) em modo de demonstração.
 
 `fliperama/index.html` traz cópias do motor de sprites, do sintetizador, da vibração e da correção de áudio da Nave-Mãe (o mesmo código dos jogos); ao mudar esses trechos na Nave-Mãe, copie para lá também.
