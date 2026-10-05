@@ -693,7 +693,11 @@ body[data-v="crew"] #crew{position:fixed;left:0;right:0;top:var(--hud);bottom:va
 body[data-v="crew"] .ctop{position:static;margin:0;padding:0;background:none;flex:none}
 body[data-v="crew"] .seg{margin-bottom:16px}
 body[data-v="crew"] .seg button{padding:9px 0}
-body[data-v="crew"] .stage{height:clamp(190px,calc(100dvh - var(--hud) - var(--con) - 380px),250px)}
+/* o palco nunca fica menor que o piloto inteiro (204 px de arte com a margem do equipamento + 6 px do chão);
+   em telas mais baixas quem encolhe é o carrossel */
+body[data-v="crew"] .stage{height:clamp(216px,calc(100dvh - var(--hud) - var(--con) - 360px),250px)}
+body[data-v="crew"] .vhero{bottom:6px}
+body[data-v="crew"] .shop-g .shop-it{min-height:120px}
 body[data-v="crew"] .cats{margin-top:12px;padding-bottom:10px}
 #vest,#hang{flex:1;min-height:0;display:flex;flex-direction:column}
 #vGrid,#hGrid{flex:1;min-height:0;margin:0 -16px}
@@ -897,7 +901,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 <script>
 /* atualização automática: compara com version.json e recarrega com ?v=<versão> no endereço (o iPhone não reaproveita a
    página guardada). Se mesmo com ?v=<versão> a página veio velha, não insiste (evita recarregar sem parar). */
-const APP_V='20261005175510';
+const APP_V='20261005175716';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     const q=new URLSearchParams(location.search).get('v');
