@@ -213,7 +213,7 @@ body.play[data-deco="hoquei"] .scr::after{box-shadow:inset 0 0 14px 2px rgba(0,0
 <script>
 /* atualização automática: compara com version.json e recarrega com ?v=<versão> no endereço (o iPhone não reaproveita a
    página guardada). Se mesmo com ?v=<versão> a página veio velha, não insiste (evita recarregar sem parar). */
-const APP_V='20261005173909';
+const APP_V='20261005174409';
 (function(){const H0=location.hash;
   async function check(){try{const r=await fetch('../version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     const q=new URLSearchParams(location.search).get('v');
@@ -573,10 +573,11 @@ const NPC=NPCDEF.map(d=>Object.assign({px:d.x*T,py:d.y*T,mv:null,t0:0,step:0,wai
 
 /* ---------- estado ---------- */
 const P={x:5,y:MH-2,px:5*T,py:(MH-2)*T,dir:'up',mv:null,t0:0,path:[],step:0,goal:null,wait:0,lastAx:'v'};
-if(A.pos&&!solid(A.pos[0],A.pos[1])&&!NPC.some(n=>n.x===A.pos[0]&&n.y===A.pos[1])){P.x=A.pos[0];P.y=A.pos[1];P.px=P.x*T;P.py=P.y*T;P.dir=A.pos[2]||'up'}
+/* ao abrir o fliperama o piloto sempre aparece no tapete da porta, como quem acabou de entrar, e dá um passo para dentro */
+P.dir='up';
 let dlgOpen=null,cam={x:0,y:0},VW=MW*T,VH=MH*T,roomOn=true,raf=0,lastT=0;
 const DV={up:[0,-1],down:[0,1],left:[-1,0],right:[1,0]};
-const STEP=165,NSTEP=260;
+const STEP=165,NSTEP=260,NSLOW=480; // passo dos jogadores: normal e devagar (perto do piloto)
 const held=new Set();   // direções apertadas (direcional e teclado); cima+direita juntas = diagonal em escada
 function fit(){const st=$('#stage'),w=Math.floor(st.clientWidth/2),h=Math.floor(st.clientHeight/2);VW=Math.min(MW*T,w);VH=Math.min(MH*T,h);
   const c=$('#rc');c.width=VW;c.height=VH;c.style.width=VW*2+'px';c.style.height=VH*2+'px'}
@@ -591,7 +592,7 @@ function heldDir(){const ds=[...held];if(!ds.length)return null;
   const v=ds.filter(d=>d==='up'||d==='down').pop(),h=ds.filter(d=>d==='left'||d==='right').pop();
   if(v&&h){const first=P.lastAx==='v'?h:v,second=first===v?h:v;return canStep(first,P)?first:canStep(second,P)?second:first}
   return v||h}
-function arrive(who){who.x=who.mv.tx;who.y=who.mv.ty;const t=who.t0+(who===P?STEP:NSTEP);who.mv=null;return t}
+function arrive(who){who.x=who.mv.tx;who.y=who.mv.ty;const t=who.t0+(who===P?STEP:who.st||NSTEP);who.mv=null;return t}
 function playerArrived(tEnd){A.pos=[P.x,P.y,P.dir];saveA();
   if(isMat(P.x,P.y)&&!P.onMat){P.onMat=true;held.clear();P.path=[];talk('exit');return}
   if(!isMat(P.x,P.y))P.onMat=false;
@@ -609,20 +610,25 @@ function walkTo(tx,ty,goal){const path=bfs(P,tx,ty,false);if(!path)return;P.path
   if(!path.length){if(goal){P.dir=goal.face;P.goal=null;interact()}return}if(!P.mv&&canStep(P.path[0],P))tryMove(P.path.shift(),performance.now());else if(!P.mv)P.wait=performance.now()}
 
 /* ---------- outros jogadores ---------- */
+/* perto do piloto (até 3 casas) os jogadores andam devagar, esperam mais entre os passeios e não começam
+   a andar se ele estiver bem do lado (até 2 casas): fica fácil falar com eles ou desviar */
+const pDist=n=>Math.abs(n.x-P.x)+Math.abs(n.y-P.y);
+function startNpc(n,d,t){n.st=pDist(n)<=3?NSLOW:NSTEP;startStep(n,d,t)}
 function npcTick(n,t,dt){
-  if(n.mv){const k=Math.min(1,(t-n.t0)/NSTEP);n.px=(n.mv.fx+(n.mv.tx-n.mv.fx)*k)*T;n.py=(n.mv.fy+(n.mv.ty-n.mv.fy)*k)*T;
-    if(k>=1){const te=arrive(n);if(n.path.length&&canStep(n.path[0],n))startStep(n,n.path.shift(),te);else{n.path=[];n.wait=.6+Math.random()*2.2}}return}
+  if(n.mv){const k=Math.min(1,(t-n.t0)/(n.st||NSTEP));n.px=(n.mv.fx+(n.mv.tx-n.mv.fx)*k)*T;n.py=(n.mv.fy+(n.mv.ty-n.mv.fy)*k)*T;
+    if(k>=1){const te=arrive(n);if(n.path.length&&canStep(n.path[0],n)&&pDist(n)>2)startNpc(n,n.path.shift(),te);else{n.path=[];n.wait=pDist(n)<=3?3+Math.random()*3:.6+Math.random()*2.2}}return}
   n.px=n.x*T;n.py=n.y*T;
   if(dlgOpen&&dlgOpen.who===n)return;                     // conversando: fica parado
   if(n.mode==='hockey'){n.dir=n.x<6?'right':'left';return}
   if(n.mode==='dance')return;
   if(n.mode==='idle')return;
   n.wait-=dt;if(n.wait>0)return;
-  if(n.path.length){if(canStep(n.path[0],n))startStep(n,n.path.shift(),t);else{n.path=[];n.wait=.5}return}
+  if(pDist(n)<=2){n.wait=1+Math.random();return}             // piloto do lado: espera
+  if(n.path.length){if(canStep(n.path[0],n))startNpc(n,n.path.shift(),t);else{n.path=[];n.wait=.5}return}
   // escolhe um passeio curto perto de casa
   for(let k=0;k<8;k++){const tx=n.home[0]+Math.round((Math.random()-.5)*8),ty=n.home[1]+Math.round((Math.random()-.5)*6);
     if(solid(tx,ty)||busy(tx,ty,n)||isMat(tx,ty))continue;const p=bfs(n,tx,ty,true);if(p&&p.length&&p.length<12){n.path=p;break}}
-  n.wait=.4}
+  n.wait=pDist(n)<=3?2.5:.4}
 
 /* ---------- diálogos ---------- */
 /* máquinas recebem os jogos sem lugar fixo, na ordem de SLOTS; jogos com lugar (ex.: 'hockey') ficam no objeto da sala */
@@ -701,7 +707,7 @@ function drawRoom(t){const c=$('#rc'),x=c.getContext('2d');x.imageSmoothingEnabl
   items.push({y:P.py+T+.5,p:P});NPC.forEach(n=>items.push({y:n.py+T+.4,p:n}));items.sort((a,b)=>a.y-b.y);
   const near=!P.mv?facing():null,blink=Math.floor(t/400)%2;
   for(const it of items){
-    if(it.p){const w=it.p,img=(w===P?PF:w.img)[w.dir],st=w===P?STEP:NSTEP;
+    if(it.p){const w=it.p,img=(w===P?PF:w.img)[w.dir],st=w===P?STEP:w.st||NSTEP;
       const fr=w.mv?(((Math.floor((t-w.t0)/(st/2))+w.step)%2)?1:2):0;
       let bob=0;if(w.mode==='hockey'&&!w.mv)bob=Math.floor(t/220+(w.x))%2;
       if(w.mode==='dance'&&!w.mv){const st=Math.floor(t/260)%4;w.dir=dlgOpen&&dlgOpen.who===w?w.dir:['up','left','up','right'][st];x.drawImage(w.img[w.dir][1+st%2],Math.round(w.px+2-cam.x),Math.round(w.py+T-22-cam.y-(st%2)));continue}
@@ -830,6 +836,7 @@ $('#back').onclick=()=>{if(!$('#play').hidden){pressExit();return}talk('exit')};
 /* carrega os jogos e abre a sala */
 Promise.all(['conversas',...JOGOS.map(id=>'jogos/'+id)].map(f=>new Promise(res=>{const s=document.createElement('script');s.src=`${f}.js?v=${APP_V}`;s.onload=s.onerror=res;document.head.append(s)}))).then(()=>{
   fit();clock();raf=requestAnimationFrame(loop);
+  setTimeout(()=>{SND.door();P.onMat=true;tryMove('up',performance.now())},120);
   setTimeout(()=>{fit();if(!unlocked())talk('locked');else if(left()<=0)talk('out');else if(A.intro!==dk()){A.intro=dk();saveA();talk('intro')}},350)});
 addEventListener('resize',()=>{if(!$('#room').hidden)fit()});
 </script>
