@@ -3,6 +3,8 @@
 <head>
 <meta charset="utf-8">
 <script>
+/* o navegador não deve devolver a rolagem antiga ao voltar para a página: cada tela começa do topo */
+try{if('scrollRestoration' in history)history.scrollRestoration='manual'}catch(e){}
 /* iPhone (atalho da Tela de Início): ao voltar de outra página, o WebKit às vezes informa as margens seguras (Dynamic Island,
    barra de início) como 0 até a próxima rolagem — o topo sobe e as molduras ficam no tamanho errado. Guardamos as maiores
    margens já medidas neste modo (app ou navegador) e o CSS usa --sat/--sab, com env() só como reserva. */
@@ -90,7 +92,8 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;touch-
    e no pé a porta das fichas com o tempo restante. Tudo na cor do gabinete (--cab) e da luz dele (--mq). */
 body.play{background:var(--cab-d)}
 body.play #top{background:var(--cab);box-shadow:inset 0 -4px 0 0 var(--cab-d),0 3px 0 0 #000}
-body.play #top .tk,body.play #top .clock{display:none}
+body.play #top .clock{display:none}
+body.play #top .tk{background:var(--cab-d);color:#fff;box-shadow:0 0 0 2px #000,inset 0 0 0 2px rgba(255,255,255,.18)}
 body.play .neon{position:relative;flex:1;height:42px;display:grid;place-items:center;font-size:13px;letter-spacing:.04em;animation:none;
   color:#1a0820;text-shadow:1px 1px 0 rgba(255,255,255,.55);background:linear-gradient(180deg,#fff 0,var(--mq) 30%,var(--mq) 70%,var(--mq-d) 100%);
   box-shadow:0 0 0 3px #000,0 0 0 6px var(--cab-d),0 0 22px 4px var(--mq)}
@@ -124,7 +127,8 @@ body.play .neon::after{content:"";position:absolute;left:8px;right:8px;top:4px;h
 .deck{flex:none;position:relative;width:calc(100% + 44px);max-width:470px;display:flex;align-items:center;justify-content:space-between;
   margin-top:16px;padding:18px 34px 16px;background:linear-gradient(180deg,var(--cab-l) 0 6px,var(--cab) 6px);box-shadow:0 -3px 0 0 #000,inset 0 -4px 0 0 var(--cab-d)}
 .deck::before{content:"";position:absolute;left:0;right:0;top:6px;height:3px;background:rgba(0,0,0,.25)}
-.stick{position:relative;width:132px;height:132px;touch-action:none}
+.stick{position:relative;width:150px;height:140px;touch-action:none}
+.stick>i{margin-left:9px;margin-top:4px}
 .stick .base{position:absolute;left:26px;top:26px;width:80px;height:80px;border-radius:50%;background:radial-gradient(circle,#2a2630 0 34%,#0c0a10 36% 64%,#3a3442 66% 70%,#0c0a10 72%);
   box-shadow:0 4px 0 0 rgba(0,0,0,.45)}
 .stick .shaft{position:absolute;left:60px;top:60px;width:12px;height:12px;border-radius:50%;background:#bfc4cf;box-shadow:0 0 0 2px #000}
@@ -147,6 +151,14 @@ body.play .neon::after{content:"";position:absolute;left:8px;right:8px;top:4px;h
 .coin .slot::after{content:"";width:4px;height:14px;background:#ff5a3d;box-shadow:0 0 8px #ff5a3d}
 .coin .led{font-family:var(--px);font-size:10px;color:#ff5a3d;text-shadow:0 0 6px rgba(255,90,61,.7);background:#0b0710;padding:9px 10px;box-shadow:inset 0 0 0 2px #2a2430}
 .coin .led.low{animation:blink 1s steps(1) infinite}
+/* tema ÁCIDO (Verme dos dutos): laterais com faixa de risco, gosma escorrendo do letreiro, painel de chapa xadrez */
+body.play[data-deco="acido"] #play{background:repeating-linear-gradient(-45deg,#ffd23f 0 6px,#0b0710 6px 12px) left/10px 100% no-repeat,repeating-linear-gradient(-45deg,#ffd23f 0 6px,#0b0710 6px 12px) right/10px 100% no-repeat,var(--cab)}
+body.play[data-deco="acido"] .neon::before{content:"";position:absolute;left:0;right:0;bottom:-11px;height:11px;pointer-events:none;--g:linear-gradient(var(--mq),var(--mq));
+  background:var(--g) 6% 0/4px 6px no-repeat,var(--g) 14% 0/4px 10px no-repeat,var(--g) 31% 0/4px 4px no-repeat,var(--g) 47% 0/4px 8px no-repeat,var(--g) 63% 0/4px 5px no-repeat,var(--g) 78% 0/4px 11px no-repeat,var(--g) 91% 0/4px 6px no-repeat}
+body.play[data-deco="acido"] .deck{background:repeating-linear-gradient(45deg,rgba(255,255,255,.05) 0 2px,transparent 2px 9px),repeating-linear-gradient(-45deg,rgba(0,0,0,.12) 0 2px,transparent 2px 9px),linear-gradient(180deg,var(--cab-l) 0 6px,var(--cab) 6px)}
+body.play[data-deco="acido"] .coin .led{color:var(--mq);text-shadow:0 0 6px var(--mq)}
+body.play[data-deco="acido"] .coin .slot::after{background:var(--mq);box-shadow:0 0 8px var(--mq)}
+body.play[data-deco="acido"] .scrw{box-shadow:inset 0 0 0 2px #1a2a1a,inset 0 0 24px 0 rgba(141,255,58,.12)}
 @media (max-height:700px){.stick{transform:scale(.85)}.ab{transform:scale(.85)}.deck{padding:8px 26px 8px;margin-top:10px}}
 /* transição: entrar na máquina */
 #fade{position:fixed;inset:0;z-index:40;background:#000;pointer-events:none;opacity:0;transition:opacity .22s steps(4)}
@@ -180,7 +192,7 @@ body.play .neon::after{content:"";position:absolute;left:8px;right:8px;top:4px;h
   </div></div>
   <div class="deck">
     <div class="stick" id="stick"><i class="base"></i><i class="shaft"></i><i class="ball" id="ball"></i><small>MANCHE</small></div>
-    <div class="btns"><button class="ab exit" id="bExit" aria-label="Sair"><i></i><small>SAIR</small></button><button class="ab start" id="bStart" aria-label="Start"><i></i><small>START</small></button></div>
+    <div class="btns"><button class="ab start" id="bStart" aria-label="Start"><i></i><small>START</small></button></div>
   </div>
   <div class="coin"><span class="slot"></span><span class="led" id="cLed">--:--</span><span class="slot"></span></div>
 </section>
@@ -188,7 +200,7 @@ body.play .neon::after{content:"";position:absolute;left:8px;right:8px;top:4px;h
 
 <script>
 /* atualização automática: compara com version.json e recarrega quando sai versão nova */
-const APP_V='20261005111250';
+const APP_V='20261005111716';
 (function(){const H0=location.hash;
   async function check(){try{const r=await fetch('../version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     if(v&&v!==APP_V&&sessionStorage.getItem('upd')!==v){sessionStorage.setItem('upd',v);location.replace(location.pathname+'?v='+v+H0)}}catch(e){}}
@@ -410,7 +422,7 @@ const BG=cnv(MW*T,MH*T);
   OBJ.forEach(o=>R(0,x,o.x*T+1,o.y*T+T-2,o.w*T-2,3,'rgba(0,0,0,.45)'))})();
 
 /* sprites dos objetos */
-function cabSprite(body,glow,closed){const c=cnv(16,30),x=c.getContext('2d'),d=shade(body,-.35),l=shade(body,.25);
+function cabSprite(body,glow,closed,deco){const c=cnv(16,30),x=c.getContext('2d'),d=shade(body,-.35),l=shade(body,.25);
   R(0,x,1,0,14,30,'#07060f');R(0,x,2,1,12,28,body);R(0,x,2,1,1,28,l);R(0,x,13,1,1,28,d);
   R(0,x,2,1,12,5,'#0b0720');R(0,x,3,2,10,3,closed?'#2a2440':glow);if(!closed)R(0,x,3,2,10,1,'#ffffff');
   R(0,x,3,7,10,9,'#07060f');R(0,x,4,8,8,7,'#05040c');
@@ -423,6 +435,9 @@ function cabSprite(body,glow,closed){const c=cnv(16,30),x=c.getContext('2d'),d=s
     R(0,x,3,20,10,6,'#07060f');R(0,x,4,21,8,4,'#e8d8a8');R(0,x,4,24,8,1,'#a8986a');   // placa
     x.fillStyle='#b8203a';[[5,22],[6,22],[7,22],[9,22],[10,22],[5,23],[7,23],[9,23]].forEach(([a,b])=>x.fillRect(a,b,1,1)); // "EB" miudinho
     R(0,x,5,19,1,1,'#9aa6b8');R(0,x,10,19,1,1,'#9aa6b8')}                                   // correntinhas
+  if(deco==='acido'){ // gosma escorrendo do letreiro e faixa de risco biológico na base
+    [[3,6,2],[6,6,1],[9,6,3],[12,6,1]].forEach(([a,b,h])=>{R(0,x,a,b,1,h,glow)});R(0,x,9,9,1,1,shade(glow,.5));
+    for(let i=2;i<14;i++){x.fillStyle=((i>>1)%2)?'#07060f':'#ffd23f';x.fillRect(i,27,1,2)}}
   return c}
 function personPal(o){return Object.assign({},PC,o)}
 const SP={
@@ -622,7 +637,7 @@ function drawRoom(t){const c=$('#rc'),x=c.getContext('2d');x.imageSmoothingEnabl
       let bob=0;if(w.mode==='hockey'&&!w.mv)bob=Math.floor(t/220+(w.x))%2;
       x.drawImage(img[w.mode==='hockey'&&!w.mv?bob+1:fr],Math.round(w.px+2-cam.x),Math.round(w.py+T-22-cam.y));continue}
     const o=it.o,X=o.x*T-cam.x,Y=o.y*T+T-cam.y;
-    if(o.k==='cab'){const g=gameOf(o),col=CABCOL[Math.max(0,o.i)%CABCOL.length];o.img=o.img||cabSprite(col[0],col[1],!g);x.drawImage(o.img,X,Y-30);
+    if(o.k==='cab'){const g=gameOf(o),col=CABCOL[Math.max(0,o.i)%CABCOL.length];o.img=o.img||(g&&g.tema?cabSprite(g.tema.cab,g.tema.luz,false,g.tema.deco):cabSprite(col[0],col[1],!g));x.drawImage(o.img,X,Y-30);
       const sx=X+4,sy=Y-30+8,on=g&&unlocked()&&left()>0;
       if(g){if(on&&g.attract)g.attract(x,sx,sy,8,7,t);else{x.fillStyle=on?'#1a3a2a':'#0b1a10';x.fillRect(sx,sy,8,7)}
         if(on){x.fillStyle=blink?'rgba(255,255,255,.18)':'rgba(255,255,255,0)';x.fillRect(X+3,Y-28,10,3)}}}  // letreiro piscando
@@ -679,17 +694,17 @@ addEventListener('blur',()=>clearDp());
 let G=null,cur=null,curObj=null,run=false,paused=false,last=false,score=0,timer=null,state='off'; // off | ready | run | pause | over
 function size(){const w=$('#scrw').clientWidth-8,h=$('#scrw').clientHeight-8-$('.shud').offsetHeight,c=cur.cell||8,px=2*c;
   return{cols:Math.max(10,Math.floor(w/px)),rows:Math.max(10,Math.floor(h/px)),c}}
-function cabColors(o){const col=CABCOL[Math.max(0,o.i)%CABCOL.length],b=document.body.style;
+function cabColors(o){const g=gameOf(o),col=g&&g.tema?[g.tema.cab,g.tema.luz]:CABCOL[Math.max(0,o.i)%CABCOL.length],b=document.body.style;document.body.dataset.deco=(g&&g.tema&&g.tema.deco)||'';
   b.setProperty('--cab',col[0]);b.setProperty('--cab-l',shade(col[0],.28));b.setProperty('--cab-d',shade(col[0],-.45));
   b.setProperty('--mq',col[1]);b.setProperty('--mq-d',shade(col[1],-.45))}
 function enter(g,o){cur=g;curObj=o;SND.coin();$('#fade').classList.add('on');
-  setTimeout(()=>{roomOn=false;clearDp();cabColors(o);document.body.classList.add('play');$('#room').hidden=true;$('#play').hidden=false;$('#title').textContent=g.name;
+  setTimeout(()=>{roomOn=false;clearDp();cabColors(o);document.body.classList.add('play');$('#room').hidden=true;$('#play').hidden=false;$('#title').textContent=g.name;$('#backT').textContent='SALA';
     $('#gU').innerHTML=`${g.unit} <b id="gScore">0</b>`;$('#gBest').textContent=A.best[g.id]||0;
     requestAnimationFrame(()=>{const{cols,rows,c}=size(),cv=$('#cv');cv.width=cols*c;cv.height=rows*c;cv.style.width=cols*c*2+'px';cv.style.height=rows*c*2+'px';
       const ctx=cv.getContext('2d');ctx.imageSmoothingEnabled=false;
       G=g.make({cv,ctx,cols,rows,cell:c,sfx:SY,score:n=>{score=n;$('#gScore').textContent=n},over:()=>gameOver()});
       G.ready();ready();$('#fade').classList.remove('on')})},240)}
-const KEYS='<p><span class="k">START</span> joga · <span class="k x">SAIR</span> volta à sala</p>';
+const KEYS='<p><span class="k">START</span> joga<br><span class="k x">◂ SALA</span> volta à sala</p>';
 function ready(){state='ready';run=false;score=0;$('#gScore').textContent=0;clock();glow(true);
   msg(`<p>${cur.desc}</p><p class="att">MEXA O MANCHE<br>OU APERTE START</p>`)}
 function msg(h){const m=$('#gMsg');if(h==null){m.hidden=true;return}m.innerHTML=h;m.hidden=false}
@@ -702,26 +717,32 @@ function gameOver(){state='over';run=false;clearInterval(timer);const b=A.best[c
   if(rec){A.best[cur.id]=score;$('#gBest').textContent=score;saveA();setTimeout(SND.rec,300)}else SND.over();
   const more=left()>0;$('#gLast').hidden=true;last=false;glow(more);
   msg(`<h3>${more?'FIM DE JOGO':'FICHAS ACABARAM'}</h3><span class="big">${score}</span><p>${cur.unit}</p>${rec&&score?'<span class="rec">NOVO RECORDE!</span>':''}
-    ${more?KEYS.replace('joga','de novo'):'<p>Amanhã tem mais.<br><span class="k x">SAIR</span> volta à sala</p>'}`)}
+    ${more?KEYS.replace('joga','de novo'):'<p>Amanhã tem mais.<br><span class="k x">◂ SALA</span> volta à sala</p>'}`)}
 function exitPlay(){if(G)G.stop();G=null;state='off';run=false;clearInterval(timer);SND.back();$('#fade').classList.add('on');
-  setTimeout(()=>{document.body.classList.remove('play');$('#play').hidden=true;$('#room').hidden=false;$('#title').textContent='FLIPERAMA';$('#backT').textContent='NAVE';roomOn=true;clock();fit();$('#fade').classList.remove('on')},220)}
+  setTimeout(()=>{document.body.classList.remove('play');document.body.dataset.deco='';$('#play').hidden=true;$('#room').hidden=false;$('#title').textContent='FLIPERAMA';$('#backT').textContent='NAVE';roomOn=true;clock();fit();$('#fade').classList.remove('on')},220)}
 function input(d){if(!G)return;if(state==='ready')begin();if(state==='run'&&!paused)G.input(d)}
-function pause(){if(state!=='run')return;state='pause';paused=true;G.pause&&G.pause();glow(true);msg(`<h3>PAUSADO</h3><p><span class="k">START</span> continua<br><span class="k x">SAIR</span> volta à sala</p>`)}
+function pause(){if(state!=='run')return;state='pause';paused=true;G.pause&&G.pause();glow(true);msg(`<h3>PAUSADO</h3><p><span class="k">START</span> continua<br><span class="k x">◂ SALA</span> volta à sala</p>`)}
 function resume(){state='run';paused=false;msg(null);glow(false);G.resume&&G.resume()}
 function pressStart(){if(state==='ready')begin();else if(state==='pause')resume();else if(state==='over'&&left()>0){G.ready();ready()}}
 function pressExit(){if(state==='run')pause();else exitPlay()}
 function hit(el,f){el.addEventListener('pointerdown',e=>{e.preventDefault();el.classList.add('dn');setTimeout(()=>el.classList.remove('dn'),130);f()})}
-hit($('#bStart'),pressStart);hit($('#bExit'),pressExit);
+hit($('#bStart'),pressStart);
 document.addEventListener('visibilitychange',()=>{if(document.hidden){pause();clearDp()}});
-/* manche: arrastar a bola; a direção vale quando o manche passa do centro (e muda assim que vira para outro lado) */
-(function(){const el=$('#stick'),ball=$('#ball');let id=null,dir=null;
-  function at(e){const r=el.getBoundingClientRect();let dx=e.clientX-(r.left+r.width/2),dy=e.clientY-(r.top+r.height/2);const m=Math.hypot(dx,dy),R=26;
-    if(m>R){dx=dx/m*R;dy=dy/m*R}ball.style.transform=`translate(${Math.round(dx/2)*2}px,${Math.round(dy/2)*2}px)`;
-    if(m<12)return;const d=Math.abs(dx)>Math.abs(dy)?(dx>0?'right':'left'):(dy>0?'down':'up');if(d!==dir){dir=d;input(d);SY.note(180,.02,0,{vol:.02})}}
-  el.addEventListener('pointerdown',e=>{e.preventDefault();id=e.pointerId;dir=null;try{el.setPointerCapture(id)}catch(_){}at(e)});
+/* manche: o centro é onde o dedo encostou (não precisa acertar a bola). A direção só vale depois de 20 px de
+   movimento, e só troca quando um eixo vence o outro com folga — na diagonal indecisa, mantém a direção atual.
+   Se o dedo vai longe, o centro acompanha, para a próxima virada pedir só um movimento curto e firme. */
+(function(){const el=$('#stick'),ball=$('#ball');let id=null,dir=null,ox=0,oy=0;const DEAD=20,R=30,FAR=46;
+  function at(e){let dx=e.clientX-ox,dy=e.clientY-oy,m=Math.hypot(dx,dy);
+    if(m>FAR){ox=e.clientX-dx/m*FAR;oy=e.clientY-dy/m*FAR;dx=e.clientX-ox;dy=e.clientY-oy;m=FAR}
+    const k=m>R?R/m:1;ball.style.transform=`translate(${Math.round(dx*k/2)*2}px,${Math.round(dy*k/2)*2}px)`;
+    if(m<DEAD){if(m<8)dir=null;return}
+    const ax=Math.abs(dx),ay=Math.abs(dy);let d=null;
+    if(ax>ay*1.3)d=dx>0?'right':'left';else if(ay>ax*1.3)d=dy>0?'down':'up';else return;
+    if(d!==dir){dir=d;input(d);SY.note(180,.02,0,{vol:.02})}}
+  el.addEventListener('pointerdown',e=>{e.preventDefault();if(id!==null)return;id=e.pointerId;dir=null;ox=e.clientX;oy=e.clientY;try{el.setPointerCapture(id)}catch(_){}});
   el.addEventListener('pointermove',e=>{if(e.pointerId===id)at(e)});
   const up=e=>{if(e.pointerId!==id)return;id=null;dir=null;ball.style.transform=''};['pointerup','pointercancel','lostpointercapture'].forEach(t=>el.addEventListener(t,up))})();
-/* deslizar o dedo na tela também vale; teclado: setas, Enter = START, Esc = SAIR */
+/* deslizar o dedo na tela também vale; teclado: setas, Enter = START, Esc = voltar */
 (function(){let sx=0,sy=0,act=false;const el=$('#scr');
   el.addEventListener('touchstart',e=>{const t=e.touches[0];sx=t.clientX;sy=t.clientY;act=true},{passive:true});
   el.addEventListener('touchmove',e=>{if(!act)return;const t=e.touches[0],dx=t.clientX-sx,dy=t.clientY-sy;if(Math.max(Math.abs(dx),Math.abs(dy))<18)return;
