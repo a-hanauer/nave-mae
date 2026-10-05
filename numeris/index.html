@@ -378,7 +378,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 
 <script>
 /* atualização automática: compara com version.json e recarrega quando sai versão nova */
-const APP_V='20261004221631';
+const APP_V='20261004221643';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     if(v&&v!==APP_V&&sessionStorage.getItem('upd')!==v){sessionStorage.setItem('upd',v);location.replace(location.pathname+'?v='+v+H0)}}catch(e){}}
@@ -774,7 +774,7 @@ function endButtons(again){const nx=MODES.find(m=>!doneToday().includes(m)),back
     :[{label:'VOLTAR AO TEMPLO',cls:'btn',fn:back},{label:'JOGAR DE NOVO',cls:'ghost px pbtn',fn:rep}]}
 function finishMission(){
   const f=R.firsts,m=mode,fresh=!doneToday().includes(m);delete S.run[m];markDone(m);save();SND.grind();sfx.win();
-  const en=fresh?10+Math.min(10,f)+(mainDone(dkey())>=3?10:0):0; // energia para a Oficina
+  const en=fresh?10+Math.min(10,f)+(mainDone(dkey())>=3?10:0):0; // energia para peças do Hangar
   celebrate({title:f===ROUNDS?'MISSÃO PERFEITA!':'MISSÃO CUMPRIDA!',sub:'O portão se abriu.',stars:f===ROUNDS?3:f/ROUNDS>=.6?2:1,
     score:[f,ROUNDS],energy:en,turno:turnoInfo(fresh),buttons:endButtons(()=>startMission(m)),onDone:checkLevel});
 }

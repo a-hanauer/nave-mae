@@ -395,7 +395,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 
 <script>
 /* atualização automática: compara com version.json e recarrega quando sai versão nova */
-const APP_V='20261004221631';
+const APP_V='20261004221643';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     if(v&&v!==APP_V&&sessionStorage.getItem('upd')!==v){sessionStorage.setItem('upd',v);location.replace(location.pathname+'?v='+v+H0)}}catch(e){}}
@@ -751,7 +751,7 @@ function endButtons(again){const nx=MODES.find(m=>!doneToday().includes(m)),back
   return nx?[{label:'Próxima missão',cls:'primary pbtn',fn:()=>{click();START[nx]()}},{label:'Jogar de novo',cls:'ghost pbtn',fn:rep},{label:'Voltar à ponte',cls:'ghost pbtn',fn:back}]
     :[{label:'Voltar à ponte',cls:'primary pbtn',fn:back},{label:'Jogar de novo',cls:'ghost pbtn',fn:rep}]}
 function missionEnd(mode,S,again,what){const {firsts,total,nw}=S;fanfare();
-  // energia para a Oficina (mesma regra da Nave-Mãe): missão +10, acertos de primeira +1 (até 10), turno completo +10
+  // energia para peças do Hangar (mesma regra da Nave-Mãe): missão +10, acertos de primeira +1 (até 10), turno completo +10
   const en=nw?10+Math.min(10,firsts)+(countReq(doneToday())>=MODES.length?10:0):0;
   celebrate({title:firsts===total?'MISSÃO PERFEITA!':'MISSÃO CUMPRIDA!',sub:what,stars:firsts===total?3:firsts/total>=.6?2:1,
     score:[firsts,total],energy:en,turno:turnoInfo(!!nw),buttons:endButtons(again)})}
