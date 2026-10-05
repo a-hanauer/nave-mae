@@ -188,7 +188,7 @@ body.play .neon::after{content:"";position:absolute;left:8px;right:8px;top:4px;h
 
 <script>
 /* atualização automática: compara com version.json e recarrega quando sai versão nova */
-const APP_V='20261005110719';
+const APP_V='20261005111250';
 (function(){const H0=location.hash;
   async function check(){try{const r=await fetch('../version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     if(v&&v!==APP_V&&sessionStorage.getItem('upd')!==v){sessionStorage.setItem('upd',v);location.replace(location.pathname+'?v='+v+H0)}}catch(e){}}
@@ -494,16 +494,11 @@ const PF=frames(PC);
 
 /* outros jogadores: cores próprias, uns passeiam, outros jogam hóquei ou ficam na garra */
 const NPCDEF=[
-  {pal:{1:'#a8d8ff',2:'#5fa0d8',3:'#2a5a8a',5:'#1a1a2a',6:'#08080f',9:'#f0a050',0:'#b8642a','=':'#6a3410',7:'#f1c9a0',8:'#c98f64'},x:4,y:12,dir:'right',mode:'hockey',nm:'KAI',
-   say:['Ponto! Agora é minha vez de sacar.','Esse disco de hóquei voa, hein?']},
-  {pal:{1:'#c8ffb0',2:'#7ad86a',3:'#3a8a3a',5:'#07070a',6:'#000000',9:'#c8a8ff',0:'#8a5ad8','=':'#44207a',7:'#7ad86a',8:'#3a8a3a'},x:7,y:12,dir:'left',mode:'hockey',nm:'ZORP',
-   say:['Zorp! No meu planeta o disco é de gelo de verdade.','Você é o piloto da nave-mãe? Legal!']},
-  {pal:{1:'#e8eaf0',2:'#9aa0ac',3:'#5a606c',5:'#4a0a0a',6:'#ff3d2e',9:'#c8ccd2',0:'#8e949c','=':'#555a62',7:'#ff3d2e',8:'#a01a10'},x:0,y:4,dir:'up',mode:'idle',nm:'R-0B',
-   say:['BIP BOP. TENTATIVA 47 NA GARRA.','PROBABILIDADE DE PEGAR O BICHINHO: 3%. CONTINUANDO.']},
-  {pal:{1:'#ffd6e8',2:'#f08cb8',3:'#b04880',5:'#24323c',6:'#0e161c',9:'#f4f4f6',0:'#c4c8d0','=':'#7a808a',7:'#8a5a3a',8:'#5a3a20'},x:6,y:6,dir:'down',mode:'wander',nm:'LUNA',
-   say:['Ouvi dizer que vão chegar jogos novos nessas máquinas fechadas.','Qual é o seu recorde no Verme? O meu é segredo.']},
-  {pal:{1:'#ffe9a0',2:'#d4a830',3:'#7a5a10',5:'#1a3a6a',6:'#0a1a3a',9:'#a3ab78',0:'#6b7248','=':'#3c4028',7:'#d9a06a',8:'#a8703a'},x:3,y:17,dir:'right',mode:'wander',nm:'TITO',
-   say:['Esse sofá é o melhor lugar da estação.','Dica: no Verme, não encurrale o próprio rabo.']}];
+  {pal:{1:'#a8d8ff',2:'#5fa0d8',3:'#2a5a8a',5:'#1a1a2a',6:'#08080f',9:'#f0a050',0:'#b8642a','=':'#6a3410',7:'#f1c9a0',8:'#c98f64'},x:4,y:12,dir:'right',mode:'hockey',id:'kai'},
+  {pal:{1:'#c8ffb0',2:'#7ad86a',3:'#3a8a3a',5:'#07070a',6:'#000000',9:'#c8a8ff',0:'#8a5ad8','=':'#44207a',7:'#7ad86a',8:'#3a8a3a'},x:7,y:12,dir:'left',mode:'hockey',id:'zorp'},
+  {pal:{1:'#e8eaf0',2:'#9aa0ac',3:'#5a606c',5:'#4a0a0a',6:'#ff3d2e',9:'#c8ccd2',0:'#8e949c','=':'#555a62',7:'#ff3d2e',8:'#a01a10'},x:0,y:4,dir:'up',mode:'idle',id:'rob'},
+  {pal:{1:'#ffd6e8',2:'#f08cb8',3:'#b04880',5:'#24323c',6:'#0e161c',9:'#f4f4f6',0:'#c4c8d0','=':'#7a808a',7:'#8a5a3a',8:'#5a3a20'},x:6,y:6,dir:'down',mode:'wander',id:'luna'},
+  {pal:{1:'#ffe9a0',2:'#d4a830',3:'#7a5a10',5:'#1a3a6a',6:'#0a1a3a',9:'#a3ab78',0:'#6b7248','=':'#3c4028',7:'#d9a06a',8:'#a8703a'},x:3,y:17,dir:'right',mode:'wander',id:'tito'}];
 const NPC=NPCDEF.map(d=>Object.assign({px:d.x*T,py:d.y*T,mv:null,t0:0,step:0,wait:1+Math.random()*2,path:[],home:[d.x,d.y],img:frames(Object.assign({},PC,d.pal))},d));
 
 /* ---------- estado ---------- */
@@ -563,16 +558,37 @@ function gameOf(o){return o&&o.k==='cab'&&o.i>=0?ARC.list[o.i]:null}
 function dlg(h,btns,who){const d=$('#dlg');dlgOpen=btns||[];dlgOpen.who=who;d.innerHTML=h+(btns&&btns.length?`<div class="row">${btns.map((b,i)=>`<button class="${b.alt?'alt':''}" data-i="${i}">${b.t}</button>`).join('')}</div>`:'<i class="nx"></i>');
   d.hidden=false;SND.talk();held.clear();clearDp();d.querySelectorAll('[data-i]').forEach(b=>b.onclick=e=>{e.stopPropagation();const f=dlgOpen[+b.dataset.i];closeDlg();f.f&&f.f()});
   $('#aBtn').classList.remove('hint')}
-function closeDlg(){$('#dlg').hidden=true;dlgOpen=null}
+function closeDlg(){$('#dlg').hidden=true;dlgOpen=null;clearInterval(typer)}
+let typer=0;
+/* fala em páginas: o texto aparece letra a letra; A ou toque completa a página, depois passa para a próxima */
+function sayPages(title,pages,who){dlg('',null,who);dlgOpen.pages=pages;dlgOpen.pi=0;dlgOpen.title=title;showPage()}
+function showPage(){const o=dlgOpen,d=$('#dlg'),txt=o.pages[o.pi],more=o.pi<o.pages.length-1;
+  d.innerHTML=`<h4>${o.title}</h4><p></p><i class="nx"${more?'':' style="clip-path:none;width:8px;height:8px"'}></i>`;const p=d.querySelector('p'),nx=d.querySelector('.nx');nx.hidden=true;
+  let i=0;o.typing=true;clearInterval(typer);
+  typer=setInterval(()=>{i+=2;p.textContent=txt.slice(0,i);if(i%6===0)SY.note(o.who&&o.who.id==='rob'?520:780+((i/6)%3)*60,.02,0,{vol:.018});
+    if(i>=txt.length){clearInterval(typer);o.typing=false;nx.hidden=false}},28);
+  o.full=()=>{clearInterval(typer);p.textContent=txt;o.typing=false;nx.hidden=false}}
+function adv(){const o=dlgOpen;if(!o)return;if(o.pages){if(o.typing){o.full();return}if(o.pi<o.pages.length-1){o.pi++;showPage();return}}closeDlg()}
+/* escolhe o que o personagem fala: parte da história (no máx. 2 por dia; a 1ª no primeiro encontro) ou uma curiosidade */
+function converse(id,who){const C=CONVERSAS[id];if(!C)return;A.npc=A.npc||{};const s=A.npc[id]=A.npc[id]||{n:0,arc:0,fi:0,day:'',hoje:0};
+  if(s.day!==dk()){s.day=dk();s.hoje=0}s.n++;
+  const pn=NM.pilot||'piloto',nome=pn.charAt(0)+pn.slice(1).toLowerCase(),fill=x=>x.replace(/\{nome\}/g,nome).replace(/\{NOME\}/g,pn.toUpperCase());
+  const h=C.historia[s.arc],ok=h&&(!h.req||((A.npc[h.req[0]]||{}).arc||0)>=h.req[1]);
+  let txt;
+  if(ok&&(s.arc===0||(s.hoje<2&&s.n%2===0))){txt=h.t;s.arc++;s.hoje++}
+  else{const f=C.fatos;txt=f[s.fi%f.length];s.fi++;
+    if(s.n>4&&s.fi%4===1)txt=(C.robo?'ATUALIZAÇÃO DE CONHECIMENTO, AMIGO {NOME}!|':['E aí, {nome}! Sabe o que eu descobri?|','Oi de novo, {nome}!|','Que bom te ver, {nome}!|'][s.n%3])+txt}
+  saveA();sayPages(C.nome,fill(txt).split('|'),who)}
 function talk(kind){
   if(kind==='exit'){dlg('<h4>SAÍDA</h4><p>Voltar para a nave?</p>',[{t:'VOLTAR',f:()=>{SND.door();$('#fade').classList.add('on');setTimeout(home,260)}},{t:'FICAR',alt:true}]);return}
   if(kind==='intro'){dlg(`<h4>RECOMPENSA DO DIA!</h4><p>Missões completas: você ganhou ${MIN} min de fliperama. As máquinas acesas estão funcionando; ande até uma e aperte A.</p>`);return}
   if(kind==='locked'){dlg(MIN===0?'<h4>FLIPERAMA FECHADO</h4><p>Desligado na Área dos pais.</p>':'<h4>FLIPERAMA FECHADO</h4><p>As máquinas ligam quando as missões de hoje estiverem completas.</p>');return}
   if(kind==='out'){dlg(`<h4>FICHAS DE HOJE ACABARAM</h4><p>Amanhã tem mais ${MIN} min. Complete as missões para liberar.</p>`);return}}
-function interact(){if(dlgOpen){const b=dlgOpen;if(b.length){const f=b[0];closeDlg();f.f&&f.f()}else closeDlg();return}
+function interact(){if(dlgOpen){const b=dlgOpen;if(b.length){const f=b[0];closeDlg();f.f&&f.f()}else adv();return}
   if(isMat(P.x,P.y)){talk('exit');return}
   const o=facing();if(!o)return;
-  if(o.say){const n=o;n.dir=OPPD[P.dir];n.si=((n.si==null?-1:n.si)+1)%n.say.length;dlg(`<h4>${n.nm}</h4><p>${n.say[n.si]}</p>`,null,n);return}
+  if(o.id){const n=o;n.dir=OPPD[P.dir];converse(n.id,n);return}
+  if(o.k==='counter'){converse('nino',null);return}
   if(o.k==='cab'){const g=gameOf(o);
     if(!g){dlg('<h4>EM BREVE</h4><p>Esta máquina está interditada: ainda estão instalando um jogo novo nela.</p>');return}
     if(!unlocked()){talk('locked');return}if(left()<=0){talk('out');return}
@@ -618,7 +634,7 @@ function drawRoom(t){const c=$('#rc'),x=c.getContext('2d');x.imageSmoothingEnabl
       ;x.drawImage(img,0,22,48,16,X,Y-img.height+22,48,16)}
     else{const img=SP[o.k];x.drawImage(img,X+(o.w*T-img.width)/2,Y-img.height)}
     if(near===o&&!dlgOpen)bubble(x,X+o.w*T/2-5,Y-(o.k==='cab'||o.k==='claw'||o.k==='soda'?44:o.k==='pillar'?54:o.k==='counter'?52:o.k==='hockey'?44:o.k==='plant'?38:28)+(blink?0:-1))}
-  if(near&&near.say&&!dlgOpen)bubble(x,Math.round(near.px+T/2-5-cam.x),Math.round(near.py-20-cam.y)+(blink?0:-1));
+  if(near&&near.id&&!dlgOpen)bubble(x,Math.round(near.px+T/2-5-cam.x),Math.round(near.py-20-cam.y)+(blink?0:-1));
   $('#aBtn').classList.toggle('hint',!!near&&!dlgOpen||isMat(P.x,P.y)&&!dlgOpen&&!P.mv)}
 function bubble(x,bx,by){x.fillStyle='#07060f';x.fillRect(bx-1,by-1,12,11);x.fillStyle='#f3eeff';x.fillRect(bx,by,10,9);x.fillRect(bx+4,by+9,2,2);
   x.fillStyle='#ff3d2e';[[4,1,2,1],[3,2,1,2],[6,2,1,2],[3,4,4,1],[3,5,1,3],[6,5,1,3]].forEach(([a,b,w,h])=>x.fillRect(bx+a,by+b,w,h))}
@@ -637,12 +653,12 @@ function syncHeld(){held.clear();for(const ds of dpPtr.values())ds.forEach(d=>he
 function clearDp(){dpPtr.clear();keyHeld.clear();syncHeld()}
 const keyHeld=new Set();
 (function(){const el=$('#dp');
-  el.addEventListener('pointerdown',e=>{e.preventDefault();if(dlgOpen&&!dlgOpen.length)closeDlg();if(dlgOpen)return;try{el.setPointerCapture(e.pointerId)}catch(_){}dpPtr.set(e.pointerId,dpDirs(el,e.clientX,e.clientY));syncHeld()});
+  el.addEventListener('pointerdown',e=>{e.preventDefault();if(dlgOpen){if(!dlgOpen.length)adv();return}try{el.setPointerCapture(e.pointerId)}catch(_){}dpPtr.set(e.pointerId,dpDirs(el,e.clientX,e.clientY));syncHeld()});
   el.addEventListener('pointermove',e=>{if(!dpPtr.has(e.pointerId))return;dpPtr.set(e.pointerId,dpDirs(el,e.clientX,e.clientY));syncHeld()});
   const up=e=>{dpPtr.delete(e.pointerId);syncHeld()};['pointerup','pointercancel','lostpointercapture'].forEach(t=>el.addEventListener(t,up));
   el.addEventListener('contextmenu',e=>e.preventDefault())})();
 $('#aBtn').addEventListener('pointerdown',e=>{e.preventDefault();$('#aBtn').classList.add('dn');setTimeout(()=>$('#aBtn').classList.remove('dn'),120);interact()});
-$('#rc').addEventListener('pointerdown',e=>{if(dlgOpen){if(!dlgOpen.length)closeDlg();return}
+$('#rc').addEventListener('pointerdown',e=>{if(dlgOpen){if(!dlgOpen.length)adv();return}
   const r=$('#rc').getBoundingClientRect(),ax=(e.clientX-r.left)/2+cam.x,ay=(e.clientY-r.top)/2+cam.y;const tx=Math.floor(ax/T),ty=Math.floor(ay/T);
   // tocou num jogador: vai até ele e conversa
   const n=NPC.find(n=>Math.abs(n.px+T/2-ax)<9&&ay>n.py-6&&ay<n.py+T+1);
@@ -651,10 +667,10 @@ $('#rc').addEventListener('pointerdown',e=>{if(dlgOpen){if(!dlgOpen.length)close
   let o=null;for(let k=0;k<3&&!o;k++)o=objAt(tx,ty+k);
   if(o){const fx=Math.min(o.x+o.w-1,Math.max(o.x,tx)),fy=o.y+1;if(!solid(fx,fy)){walkTo(fx,fy,{face:'up'});return}}
   if(!solid(tx,ty))walkTo(tx,ty)});
-$('#dlg').addEventListener('pointerdown',e=>{if(e.target.closest('button'))return;if(dlgOpen&&!dlgOpen.length)closeDlg()});
+$('#dlg').addEventListener('pointerdown',e=>{if(e.target.closest('button'))return;if(dlgOpen&&!dlgOpen.length)adv()});
 const KD={ArrowUp:'up',ArrowDown:'down',ArrowLeft:'left',ArrowRight:'right',w:'up',s:'down',a:'left',d:'right'};
 addEventListener('keydown',e=>{if($('#room').hidden)return;const d=KD[e.key];
-  if(d&&!(e.key==='a'&&false)){e.preventDefault();if(dlgOpen&&!dlgOpen.length)closeDlg();if(!dlgOpen){keyHeld.add(d);syncHeld()}}
+  if(d){e.preventDefault();if(dlgOpen){if(!dlgOpen.length&&!e.repeat)adv()}else{keyHeld.add(d);syncHeld()}}
   else if(e.key==='Enter'||e.key===' '||e.key==='z'){e.preventDefault();interact()}});
 addEventListener('keyup',e=>{const d=KD[e.key];if(d){keyHeld.delete(d);syncHeld()}});
 addEventListener('blur',()=>clearDp());
@@ -723,7 +739,7 @@ $('#backIco').innerHTML=spriteRows(["...k","..kL",".kLL","kLLL",".kLL","..kL",".
 $('#back').onclick=()=>{if(!$('#play').hidden){pressExit();return}talk('exit')};
 
 /* carrega os jogos e abre a sala */
-Promise.all(JOGOS.map(id=>new Promise(res=>{const s=document.createElement('script');s.src=`jogos/${id}.js?v=${APP_V}`;s.onload=s.onerror=res;document.head.append(s)}))).then(()=>{
+Promise.all(['conversas',...JOGOS.map(id=>'jogos/'+id)].map(f=>new Promise(res=>{const s=document.createElement('script');s.src=`${f}.js?v=${APP_V}`;s.onload=s.onerror=res;document.head.append(s)}))).then(()=>{
   fit();clock();raf=requestAnimationFrame(loop);
   setTimeout(()=>{fit();if(!unlocked())talk('locked');else if(left()<=0)talk('out');else if(A.intro!==dk()){A.intro=dk();saveA();talk('intro')}},350)});
 addEventListener('resize',()=>{if(!$('#room').hidden)fit()});
