@@ -102,10 +102,12 @@ Abra o link no Safari, toque em Compartilhar e escolha **Adicionar à Tela de In
 
 Depois que o turno de missões do dia fica completo, a aba Missões mostra o monitor **FLIPERAMA · RECOMPENSA DO DIA**. Ele leva a um fliperama virtual em `fliperama/`, um jogo dentro do jogo com visual próprio (neon, carpete de fliperama):
 
-- **A sala:** vista de cima, 12×15 casas de 16 px. Parede com letreiro de neon FLIPERAMA, seis máquinas, uma máquina de garra, uma de refrigerante, banco, planta e o tapete da saída. O piloto aparece pequeno, com as cores do Hangar (capacete, viseira, traje e pele), andando nas quatro direções.
-- **Controles:** direcional (segurar anda direto) e o botão vermelho **A** para interagir. Tocar num ponto da sala faz o piloto andar até lá; tocar numa máquina faz ele ir até a frente dela e abrir a conversa. No computador, setas e A/Enter.
+- **A sala:** vista de cima, 12×20 casas de 16 px (a câmera acompanha o piloto). Parede com letreiro de neon FLIPERAMA, oito máquinas (quatro no fundo e duas duplas no meio), garra, refrigerante, colunas de neon, mesa de hóquei, balcão de prêmios com atendente, um lounge com tapete, sofá, banco, lixeira e plantas, e o tapete da saída. O piloto aparece pequeno, com as cores do Hangar (capacete, viseira, traje e pele), andando nas quatro direções.
+- **Outros jogadores:** Kai e Zorp jogam hóquei, o robô R-0B tenta a garra, Luna e Tito passeiam pela sala. Ninguém atravessa ninguém; de frente para um deles, A puxa conversa.
+- **Máquinas fechadas:** letreiro apagado, fita de interditado na tela e plaquinha pendurada; a conversa diz EM BREVE.
+- **Controles:** direcional (segurar anda direto; o dedo pode deslizar entre as setas, e cima+direita juntas andam na diagonal em escada, desviando do que estiver no caminho) e o botão vermelho **A** para interagir. Um passo emenda no outro sem pausa. Tocar num ponto da sala faz o piloto andar até lá; tocar numa máquina faz ele ir até a frente dela e abrir a conversa. No computador, setas e A/Enter.
 - **Máquinas:** a que tem jogo fica com o letreiro aceso e a tela em modo de demonstração; quando o piloto está de frente, aparece um balão com A. A conversa mostra o nome, como jogar e o recorde, com JOGAR. As outras mostram EM BREVE. Garra, refrigerante, banco e planta têm falas próprias.
-- **Partida:** a tela vira a máquina por dentro (moldura na cor do gabinete, letreiro com o nome), com o placar, o recorde e o direcional. VOLTAR À SALA devolve o piloto na frente da máquina.
+- **Partida:** a tela vira a máquina por dentro (moldura e luz na cor do gabinete; o nome do jogo fica só no letreiro de cima), com o placar, o recorde e o direcional (também dá para deslizar o dedo de uma seta para outra). VOLTAR À SALA devolve o piloto na frente da máquina.
 - **Primeira entrada do dia:** aviso RECOMPENSA DO DIA com os minutos ganhos.
 - **Tempo por dia:** definido na Área dos pais (Desligado, 5, 10, 15, 20 ou 30 min; padrão 10). Andar pela sala não gasta tempo; só a partida. Se acabar no meio, a partida vai até o fim (ÚLTIMA PARTIDA) e as máquinas não aceitam outra (FICHAS DE HOJE ACABARAM). Com 1 min restante, o relógio fica vermelho e toca um aviso.
 - **Travas:** sem o turno completo de hoje, ou desligado pelos pais, a sala abre com FLIPERAMA FECHADO e as máquinas não ligam.
@@ -131,7 +133,7 @@ ARC.add({id:'meujogo', name:'NOME NA TELA', unit:'PONTOS', cell:8,
     return{ready(){}, start(){}, input(dir){}, pause(){}, resume(){}, stop(){}}}})
 ```
 
-2. Acrescente o id na lista `JOGOS` em `fliperama/index.html`. O jogo ocupa a próxima máquina livre da sala (ordem em `SLOTS`: as duas da ilha do meio, depois as do fundo).
+2. Acrescente o id na lista `JOGOS` em `fliperama/index.html`. O jogo ocupa a próxima máquina livre da sala (ordem em `SLOTS`: as quatro do meio, depois as do fundo).
 3. Opcional: `attract(ctx,x,y,w,h,t)` desenha a tela da máquina na sala (8×7 pixels) em modo de demonstração.
 
 `fliperama/index.html` traz cópias do motor de sprites, do sintetizador, da vibração e da correção de áudio da Nave-Mãe (o mesmo código dos jogos); ao mudar esses trechos na Nave-Mãe, copie para lá também.
