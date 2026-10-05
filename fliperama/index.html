@@ -172,6 +172,9 @@ body.play[data-deco="acido"] .deck{background:repeating-linear-gradient(45deg,rg
 body.play[data-deco="acido"] .coin .led{color:var(--mq);text-shadow:0 0 6px var(--mq)}
 body.play[data-deco="acido"] .coin .slot::after{background:var(--mq);box-shadow:0 0 8px var(--mq)}
 body.play[data-deco="acido"] .scrw{box-shadow:inset 0 0 0 2px #1a2a1a,inset 0 0 24px 0 rgba(141,255,58,.12)}
+/* tema ESTRELAS (Patrulha Estelar): laterais com faixa de luzes de pista */
+body.play[data-deco="estrelas"] #play{background:repeating-linear-gradient(0deg,#ff8a3d 0 4px,#0b0710 4px 16px) left/10px 100% no-repeat,repeating-linear-gradient(0deg,#ff8a3d 0 4px,#0b0710 4px 16px) right/10px 100% no-repeat,var(--cab)}
+body.play[data-deco="estrelas"] .scrw{background:#02020a}
 /* tema MESA (hóquei): laterais de borracha azul e branca, letreiro gelo */
 body.play[data-deco="hoquei"] #play{background:repeating-linear-gradient(0deg,#e8f0ff 0 8px,#2a6ad8 8px 16px) left/10px 100% no-repeat,repeating-linear-gradient(0deg,#e8f0ff 0 8px,#2a6ad8 8px 16px) right/10px 100% no-repeat,var(--cab)}
 body.play[data-deco="hoquei"] .scrw{background:#0a1a3a}
@@ -216,7 +219,7 @@ html.web{--top:calc(var(--sat,var(--sat,env(safe-area-inset-top))) + 54px)}
 <script>
 /* atualização automática: compara com version.json e recarrega com ?v=<versão> no endereço (o iPhone não reaproveita a
    página guardada). Se mesmo com ?v=<versão> a página veio velha, não insiste (evita recarregar sem parar). */
-const APP_V='20261005184750';
+const APP_V='20261005185959';
 (function(){const H0=location.hash;
   async function check(){try{const r=await fetch('../version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     const q=new URLSearchParams(location.search).get('v');
@@ -361,7 +364,7 @@ const SY=mkSYN(()=>{AC=AC||newAC();return AC},()=>soundOn);
    Tempo por dia: Área dos pais (navemae-v1.arcMin, padrão 10 min; 0 = desligado). Se acabar no meio, a partida vai até o fim.
    Dados próprios em localStorage['navemae-arcade']: {day, used (s), intro (dia da boas-vindas), best:{jogo}, plays:{jogo}}.
    Jogos novos: arquivo em jogos/ que chama ARC.add({...}), id na lista JOGOS; a próxima máquina livre da sala passa a rodar o jogo. */
-const JOGOS=['verme','hoquei'];
+const JOGOS=['verme','hoquei','patrulha'];
 const dk=(d=new Date())=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 const NM=(()=>{try{return JSON.parse(localStorage.getItem('navemae-v1'))||{}}catch(e){return{}}})();
 const AV=(()=>{try{return JSON.parse(localStorage.getItem('navemae-avatar'))||{}}catch(e){return{}}})();
@@ -777,7 +780,7 @@ function enter(g,o){cur=g;curObj=o;SND.coin();$('#fade').classList.add('on');
       G.ready();ready();$('#fade').classList.remove('on')})},240)}
 const KEYS='<p><span class="k">START</span> joga<br><span class="k x">◂ SALA</span> volta à sala</p>',KEYT='<p><span class="k">TOQUE NA MESA</span> joga<br><span class="k x">◂ SALA</span> volta à sala</p>';
 function ready(){state='ready';run=false;score=0;$('#gScore').textContent=0;clock();glow(true);
-  msg(`<p>${cur.desc}</p><p class="att">${cur.controls==='touch'?'TOQUE NA MESA<br>PARA COMEÇAR':'MEXA O MANCHE<br>OU APERTE START'}</p>`)}
+  msg(`<p>${cur.desc}</p><p class="att">${cur.controls==='touch'?(cur.lugar==='hockey'?'TOQUE NA MESA':'TOQUE NA TELA')+'<br>PARA COMEÇAR':'MEXA O MANCHE<br>OU APERTE START'}</p>`)}
 function msg(h){const m=$('#gMsg');if(h==null){m.hidden=true;return}m.innerHTML=h;m.hidden=false}
 function glow(on){$('#bStart').classList.toggle('glow',on)}
 function begin(){if(run||left()<=0)return;state='run';run=true;paused=false;last=false;msg(null);glow(false);SND.start();A.plays[cur.id]=(A.plays[cur.id]||0)+1;saveA();G.start();
@@ -788,11 +791,11 @@ function gameOver(){state='over';run=false;clearInterval(timer);const b=A.best[c
   if(rec){A.best[cur.id]=score;$('#gBest').textContent=score;saveA();setTimeout(SND.rec,300)}else SND.over();
   const more=left()>0;$('#gLast').hidden=true;last=false;glow(more);
   msg(`<h3>${more?'FIM DE JOGO':'FICHAS ACABARAM'}</h3><span class="big">${score}</span><p>${cur.unit}</p>${rec&&score?'<span class="rec">NOVO RECORDE!</span>':''}
-    ${more?(cur.controls==='touch'?KEYT:KEYS).replace('joga','de novo'):'<p>Amanhã tem mais.<br><span class="k x">◂ SALA</span> volta à sala</p>'}`)}
+    ${more?(cur.controls==='touch'?KEYT.replace('MESA',cur.lugar==='hockey'?'MESA':'TELA'):KEYS).replace('joga','de novo'):'<p>Amanhã tem mais.<br><span class="k x">◂ SALA</span> volta à sala</p>'}`)}
 function exitPlay(){if(G)G.stop();G=null;state='off';run=false;clearInterval(timer);SND.back();$('#fade').classList.add('on');
   setTimeout(()=>{document.body.classList.remove('play');document.body.dataset.deco='';$('#play').hidden=true;$('#room').hidden=false;$('#title').textContent='FLIPERAMA';$('#backT').textContent='NAVE';roomOn=true;clock();fit();$('#fade').classList.remove('on')},220)}
 function input(d){if(!G)return;if(state==='ready')begin();if(state==='run'&&!paused)G.input(d)}
-function pause(){if(state!=='run')return;state='pause';paused=true;G.pause&&G.pause();glow(true);msg(`<h3>PAUSADO</h3><p><span class="k">${cur.controls==='touch'?'TOQUE NA MESA':'START'}</span> continua<br><span class="k x">◂ SALA</span> volta à sala</p>`)}
+function pause(){if(state!=='run')return;state='pause';paused=true;G.pause&&G.pause();glow(true);msg(`<h3>PAUSADO</h3><p><span class="k">${cur.controls==='touch'?(cur.lugar==='hockey'?'TOQUE NA MESA':'TOQUE NA TELA'):'START'}</span> continua<br><span class="k x">◂ SALA</span> volta à sala</p>`)}
 function resume(){state='run';paused=false;msg(null);glow(false);G.resume&&G.resume()}
 function pressStart(){if(state==='ready')begin();else if(state==='pause')resume();else if(state==='over'&&left()>0){G.ready();ready()}}
 function pressExit(){if(state==='run')pause();else exitPlay()}
