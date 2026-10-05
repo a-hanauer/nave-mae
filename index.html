@@ -2,6 +2,22 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
+<script>
+/* iPhone (atalho da Tela de Início): ao voltar de outra página, o WebKit às vezes informa as margens seguras (Dynamic Island,
+   barra de início) como 0 até a próxima rolagem — o topo sobe e as molduras ficam no tamanho errado. Guardamos as maiores
+   margens já medidas neste modo (app ou navegador) e o CSS usa --sat/--sab, com env() só como reserva. */
+(function(){const r=document.documentElement,K='navemae-safe-'+((window.matchMedia&&matchMedia('(display-mode: standalone)').matches)||navigator.standalone?'app':'web');
+  let s={};try{s=JSON.parse(localStorage.getItem(K))||{}}catch(e){}
+  const ap=()=>{if(s.t)r.style.setProperty('--sat',s.t+'px');if(s.b)r.style.setProperty('--sab',s.b+'px')};ap();
+  function measure(){if(innerWidth>innerHeight)return; // só retrato
+    const p=document.createElement('div');p.style.cssText='position:fixed;left:0;top:0;width:0;height:0;visibility:hidden;pointer-events:none;padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)';
+    r.appendChild(p);const cs=getComputedStyle(p),t=parseFloat(cs.paddingTop)||0,b=parseFloat(cs.paddingBottom)||0;p.remove();
+    let ch=false;if(t>(s.t||0)){s.t=t;ch=true}if(b>(s.b||0)){s.b=b;ch=true}
+    if(ch){try{localStorage.setItem(K,JSON.stringify(s))}catch(e){}ap()}}
+  measure();addEventListener('DOMContentLoaded',measure);addEventListener('load',measure);
+  addEventListener('pageshow',()=>{measure();setTimeout(measure,300)});addEventListener('resize',()=>setTimeout(measure,200))})();
+</script>
+
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#3a3f4e">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -25,7 +41,7 @@
   --px:"Press Start 2P",monospace;
   /* cockpit (casco de metal escuro) */
   --h1:#68708a;--h2:#3a3f4e;--h3:#2b2f3b;--h4:#1c1f28;--h5:#090b10;--scr:#06100a;
-  --hud:calc(env(safe-area-inset-top) + 72px); /* 20px a mais abaixo da Dynamic Island: o desfoque do iOS na borda de cima não pega a tela do painel */--con:calc(env(safe-area-inset-bottom) + 76px);--vt:"VT323",monospace;
+  --hud:calc(var(--sat,env(safe-area-inset-top)) + 72px); /* 20px a mais abaixo da Dynamic Island: o desfoque do iOS na borda de cima não pega a tela do painel */--con:calc(var(--sab,env(safe-area-inset-bottom)) + 76px);--vt:"VT323",monospace;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html{background:#3a3f4e} /* mesma cor do topo do cockpit: área da Dynamic Island contínua, sem faixa de outra cor */
@@ -42,7 +58,7 @@ button{cursor:pointer;touch-action:manipulation}
 .crt{position:fixed;inset:0;pointer-events:none;z-index:50;
   background:repeating-linear-gradient(0deg,rgba(0,0,0,.22) 0 1px,transparent 1px 3px)}
 #app{position:relative;z-index:1;max-width:440px;margin:0 auto;
-  padding:calc(var(--hud) + 18px) calc(16px + env(safe-area-inset-right)) calc(40px + env(safe-area-inset-bottom)) calc(16px + env(safe-area-inset-left))}
+  padding:calc(var(--hud) + 18px) calc(16px + env(safe-area-inset-right)) calc(40px + var(--sab,env(safe-area-inset-bottom))) calc(16px + env(safe-area-inset-left))}
 
 /* painel pixelado (cantos em degrau) */
 .px{background:var(--panel);position:relative;
@@ -145,7 +161,7 @@ button{cursor:pointer;touch-action:manipulation}
 #warp{position:fixed;inset:0;z-index:60;pointer-events:none;image-rendering:pixelated}
 
 /* modais */
-.overlay{position:fixed;inset:0;z-index:40;display:flex;overflow:auto;-webkit-overflow-scrolling:touch;padding:calc(52px + env(safe-area-inset-top)) 16px calc(16px + env(safe-area-inset-bottom));background:rgba(7,6,20,.92)}
+.overlay{position:fixed;inset:0;z-index:40;display:flex;overflow:auto;-webkit-overflow-scrolling:touch;padding:calc(52px + var(--sat,env(safe-area-inset-top))) 16px calc(16px + var(--sab,env(safe-area-inset-bottom)));background:rgba(7,6,20,.92)}
 .modal{width:100%;max-width:400px;padding:22px 18px;text-align:center;margin:auto}
 .modal h2{font-family:var(--px);font-size:13px;color:var(--amber);line-height:1.5;margin:18px 0 10px}
 .modal p{color:var(--dim)}
@@ -204,10 +220,10 @@ button{cursor:pointer;touch-action:manipulation}
   box-shadow:0 -4px 0 0 var(--h5),inset 0 2px 0 0 var(--h1)}
 .tabbar::before{content:"";position:absolute;left:0;right:0;top:2px;height:6px;pointer-events:none;
   --z:repeating-linear-gradient(90deg,var(--amber) 0 6px,var(--h5) 6px 12px);background:var(--z) 0 0/48px 6px no-repeat,var(--z) 100% 0/48px 6px no-repeat}
-.tabbar::after{content:"";position:absolute;left:32px;right:32px;bottom:8px;height:max(0px,calc(env(safe-area-inset-bottom) - 16px));pointer-events:none;
+.tabbar::after{content:"";position:absolute;left:32px;right:32px;bottom:8px;height:max(0px,calc(var(--sab,env(safe-area-inset-bottom)) - 16px));pointer-events:none;
   background:repeating-linear-gradient(0deg,var(--h5) 0 2px,transparent 2px 6px)} /* grade de ventilação na faixa da barra de início do iPhone */
 .tabbar .in{display:grid;grid-template-columns:repeat(4,1fr);gap:0;width:100%;max-width:440px}
-.tabbar button{position:relative;display:grid;justify-items:center;align-content:start;gap:8px;padding:14px 0 calc(8px + env(safe-area-inset-bottom));font-family:var(--px);font-size:7px;color:#8e97ab;letter-spacing:.04em}
+.tabbar button{position:relative;display:grid;justify-items:center;align-content:start;gap:8px;padding:14px 0 calc(8px + var(--sab,env(safe-area-inset-bottom)));font-family:var(--px);font-size:7px;color:#8e97ab;letter-spacing:.04em}
 .tabbar [data-ico]{position:relative;display:grid;place-items:center;width:58px;height:36px;background:var(--scr);
   box-shadow:inset 0 2px 0 0 #000,0 0 0 2px var(--h5),0 0 0 4px var(--h3),0 0 0 6px var(--h5)}
 .tabbar [data-ico] .spr{opacity:.35;filter:saturate(.3)}
@@ -243,7 +259,7 @@ button{cursor:pointer;touch-action:manipulation}
 .stage{position:relative;height:250px;overflow:hidden;margin-bottom:0;
   box-shadow:0 -4px 0 0 var(--line),0 4px 0 0 var(--line),-4px 0 0 0 var(--line),4px 0 0 0 var(--line);filter:drop-shadow(4px 4px 0 #000)}
 /* faixa que cobre o respiro acima do palco quando ele gruda no topo */
-#topCover{position:fixed;left:0;right:0;top:0;height:calc(36px + env(safe-area-inset-top));background:var(--bg);z-index:5;pointer-events:none}
+#topCover{position:fixed;left:0;right:0;top:0;height:calc(36px + var(--sat,env(safe-area-inset-top)));background:var(--bg);z-index:5;pointer-events:none}
 .stage .floor{position:absolute;left:0;right:0;bottom:0;height:44px}
 .st-vest{background:repeating-linear-gradient(90deg,#1f1c40 0 46px,#1a1838 46px 48px),#1f1c40}
 .st-vest::before{content:"";position:absolute;left:0;right:0;top:0;height:16px;background:#141230;box-shadow:inset 0 -4px 0 0 #0b0a1a}
@@ -486,7 +502,7 @@ button{cursor:pointer;touch-action:manipulation}
   -webkit-font-smoothing:antialiased;image-rendering:auto;text-align:left}
 #pais button{font-family:inherit;line-height:inherit}
 .pa-top{position:sticky;top:0;z-index:2;background:rgba(0,0,0,.8);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);
-  padding:calc(28px + env(safe-area-inset-top)) env(safe-area-inset-right) 0 env(safe-area-inset-left);border-bottom:.5px solid var(--sep)}
+  padding:calc(28px + var(--sat,env(safe-area-inset-top))) env(safe-area-inset-right) 0 env(safe-area-inset-left);border-bottom:.5px solid var(--sep)}
 .pa-nav{position:relative;display:flex;align-items:center;justify-content:space-between;gap:12px;height:44px;padding:0 8px;max-width:640px;margin:0 auto}
 .pa-back{display:flex;align-items:center;gap:3px;color:var(--acc);font-size:17px;padding:8px 4px;min-width:0;max-width:100%}
 .pa-back svg{flex:none}
@@ -497,7 +513,7 @@ button{cursor:pointer;touch-action:manipulation}
 .pa-seg button{flex:1;height:30px;border-radius:7px;font-size:13px;font-weight:500;color:var(--t1);white-space:nowrap;padding:0 4px}
 .pa-seg button.on{background:#636366;font-weight:600;box-shadow:0 3px 8px rgba(0,0,0,.12),0 3px 1px rgba(0,0,0,.04)}
 .pa-top .pa-seg{max-width:608px;margin:0 auto 10px;margin-inline:max(16px,calc((100% - 608px)/2))}
-.pa-body{max-width:640px;margin:0 auto;padding:4px calc(16px + env(safe-area-inset-right)) calc(40px + env(safe-area-inset-bottom)) calc(16px + env(safe-area-inset-left))}
+.pa-body{max-width:640px;margin:0 auto;padding:4px calc(16px + env(safe-area-inset-right)) calc(40px + var(--sab,env(safe-area-inset-bottom))) calc(16px + env(safe-area-inset-left))}
 .pa-h1{font-size:30px;line-height:1.15;font-weight:700;letter-spacing:-.02em;margin-top:18px}
 .pa-sub{color:var(--t2);font-size:15px;margin-top:4px}
 .pa-h{font-size:13px;color:var(--t2);text-transform:uppercase;letter-spacing:.01em;margin:28px 16px 8px}
@@ -827,7 +843,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 
 <script>
 /* atualização automática: compara com version.json e recarrega quando sai versão nova */
-const APP_V='20261005104141';
+const APP_V='20261005104545';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     if(v&&v!==APP_V&&sessionStorage.getItem('upd')!==v){sessionStorage.setItem('upd',v);location.replace(location.pathname+'?v='+v+H0)}}catch(e){}}
@@ -1487,7 +1503,7 @@ function openPlanet(pid){navT=performance.now();
   }
   $('#missions').innerHTML=h;
   $('#missions').querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>takeoff(APPS.find(a=>a.id===b.dataset.go),'#r=p.'+pid));
-  VIEWS.forEach(x=>$('#'+x).hidden=x!=='planet');view='planet';$('#topHdr').hidden=true;window.scrollTo(0,0);hud();document.body.dataset.v='planet';
+  VIEWS.forEach(x=>$('#'+x).hidden=x!=='planet');view='planet';$('#topHdr').hidden=true;window.scrollTo(0,0);hud();document.body.dataset.v='planet';frameFix();
 }
 $('#back').onclick=()=>{SND.back();go('home')};
 
@@ -1542,7 +1558,12 @@ function go(v){navT=performance.now();if(v==='shop')v='vest';if(v==='vest'||v===
   $('#shopBar').hidden=true;
   if(v==='crew'){$('#vest').hidden=$('#vStage').hidden=sub!=='vest';$('#hang').hidden=$('#hStage').hidden=sub!=='hang';
     document.querySelectorAll('#seg [data-s]').forEach(b=>b.classList.toggle('on',b.dataset.s===sub));renderCloset()}
-  window.scrollTo(0,0);coverTop();hud();document.body.dataset.v=v}
+  window.scrollTo(0,0);coverTop();hud();document.body.dataset.v=v;frameFix()}
+/* troca de tela: mede o painel do piloto na hora e redesenha as peças fixas (no iPhone, depois de scrollTo,
+   elementos fixos às vezes ficam na posição antiga até a próxima rolagem) */
+function frameFix(){const d=$('#dash');document.documentElement.style.setProperty('--dash',(view==='home'&&d?d.offsetHeight:0)+'px');
+  requestAnimationFrame(()=>{['#wind','#hud','.tabbar','#dash'].forEach(q=>{const el=$(q);if(!el)return;el.style.transform='translateZ(0)';void el.offsetHeight;el.style.transform=''})})}
+addEventListener('pageshow',()=>setTimeout(frameFix,50));
 /* painel de cima: título e número da tela atual; voltar no planeta e configurações no mapa */
 function hud(){const vt=$('#'+view)&&$('#'+view).querySelector('.vtitle');
   $('#hudT').textContent=vt?vt.querySelector('h2').textContent:view==='planet'?'EM ÓRBITA':'NAVE-MÃE';

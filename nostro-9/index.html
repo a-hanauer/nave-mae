@@ -2,9 +2,25 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
+<script>
+/* iPhone (atalho da Tela de Início): ao voltar de outra página, o WebKit às vezes informa as margens seguras (Dynamic Island,
+   barra de início) como 0 até a próxima rolagem — o topo sobe e as molduras ficam no tamanho errado. Guardamos as maiores
+   margens já medidas neste modo (app ou navegador) e o CSS usa --sat/--sab, com env() só como reserva. */
+(function(){const r=document.documentElement,K='navemae-safe-'+((window.matchMedia&&matchMedia('(display-mode: standalone)').matches)||navigator.standalone?'app':'web');
+  let s={};try{s=JSON.parse(localStorage.getItem(K))||{}}catch(e){}
+  const ap=()=>{if(s.t)r.style.setProperty('--sat',s.t+'px');if(s.b)r.style.setProperty('--sab',s.b+'px')};ap();
+  function measure(){if(innerWidth>innerHeight)return; // só retrato
+    const p=document.createElement('div');p.style.cssText='position:fixed;left:0;top:0;width:0;height:0;visibility:hidden;pointer-events:none;padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)';
+    r.appendChild(p);const cs=getComputedStyle(p),t=parseFloat(cs.paddingTop)||0,b=parseFloat(cs.paddingBottom)||0;p.remove();
+    let ch=false;if(t>(s.t||0)){s.t=t;ch=true}if(b>(s.b||0)){s.b=b;ch=true}
+    if(ch){try{localStorage.setItem(K,JSON.stringify(s))}catch(e){}ap()}}
+  measure();addEventListener('DOMContentLoaded',measure);addEventListener('load',measure);
+  addEventListener('pageshow',()=>{measure();setTimeout(measure,300)});addEventListener('resize',()=>setTimeout(measure,200))})();
+</script>
+
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#0c0b1d">
-<style>*,*::before,*::after{box-sizing:border-box}body{margin:0}img{max-width:100%}[hidden]{display:none!important}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+<style>*,*::before,*::after{box-sizing:border-box}body{margin:0}img{max-width:100%}[hidden]{display:none!important}:root{padding-top:var(--sat,env(safe-area-inset-top));padding-bottom:var(--sab,env(safe-area-inset-bottom))}
 /* sem zoom de dois toques (cada área com rolagem precisa da regra) */
 *{touch-action:manipulation}
 </style>
@@ -270,7 +286,7 @@ h2{margin:0;font-family:var(--px);font-size:14px;line-height:1.7;font-weight:400
 .asking .story,#hangar.asking .stepper{display:none}
 /* pergunta final da tarefa sobe como painel fixo no rodapé */
 .ask{position:fixed;left:0;right:0;bottom:0;z-index:30;max-width:480px;margin:0 auto;max-height:72dvh;overflow:auto;
-  padding:16px 16px calc(16px + env(safe-area-inset-bottom));animation:sheet .24s steps(4)}
+  padding:16px 16px calc(16px + var(--sab,env(safe-area-inset-bottom)));animation:sheet .24s steps(4)}
 .ask+.ask{margin-top:0}
 @keyframes sheet{from{transform:translateY(100%)}}
 @media (max-height:700px){#partilha,#grupos,#hangar,#desafio,#d-play{gap:10px}.stepper{padding:8px 14px}.story{font-size:18px}.hangar{gap:4px;padding:8px}.conta{padding:12px 8px 10px}.conta strong{font-size:26px}.key{padding:11px 0}#radar{height:min(150px,18dvh)}}
@@ -395,7 +411,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 
 <script>
 /* atualização automática: compara com version.json e recarrega quando sai versão nova */
-const APP_V='20261005104141';
+const APP_V='20261005104545';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     if(v&&v!==APP_V&&sessionStorage.getItem('upd')!==v){sessionStorage.setItem('upd',v);location.replace(location.pathname+'?v='+v+H0)}}catch(e){}}
