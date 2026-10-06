@@ -35,12 +35,12 @@ O turno de Matemática tem 6 missões obrigatórias: 2 de cada jogo (Nostro-9, N
 
 ## Mina de Cristais
 
-Conta armada de divisão pelo método da chave, no **processo longo**: o produto e a subtração ficam escritos embaixo de cada passo, numa folha quadriculada (cada quadrado é uma casa). Segue a BNCC EF04MA07 (divisor com até 2 algarismos). O divisor de 2 algarismos aparece desde o começo, misturado com o de 1 algarismo.
+Conta armada de divisão pelo método da chave, no **processo longo**: o produto e a subtração ficam escritos embaixo de cada passo, numa folha quadriculada (cada quadrado é uma casa). Segue a BNCC EF04MA07 (divisor com até 2 algarismos). Começa com divisor de 1 algarismo; o de 2 algarismos chega na galeria 3, misturado com o de 1.
 
 Cada passo acende uma luz **DIVIDIR · MULTIPLICAR · SUBTRAIR · BAIXAR**:
 
 1. **Separar:** a criança toca nos algarismos da esquerda até formar o primeiro pedaço em que o divisor cabe. Separar pouco ou demais é erro.
-2. **Dividir:** escolhe o algarismo do quociente. Com divisor de 2 algarismos aparece a dica de arredondar (23 ≈ 20, pense em 7 ÷ 2).
+2. **Dividir:** escolhe o algarismo do quociente. Com divisor de 2 algarismos (galeria 3 em diante) aparece a dica de arredondar (23 ≈ 20, pense em 7 ÷ 2).
 3. **Multiplicar:** digita algarismo × divisor. Se o produto passa do pedaço, a linha fica vermelha e ela diminui o algarismo.
 4. **Subtrair:** digita a diferença. Se sobra um número maior ou igual ao divisor, a linha fica vermelha e ela aumenta o algarismo.
 5. **Baixar:** toca no próximo algarismo do dividendo, que desce para o lado do resto.
@@ -51,11 +51,11 @@ No fim de cada conta: quociente, resto, a **prova real** (quociente × divisor +
 Missões:
 
 - **Carga guiada** (4 contas, divisor de 1 algarismo): o algarismo do quociente se escolhe com − e +, vendo uma barra do produto contra o pedaço (PASSOU! ou SOBRA N). A máquina faz a multiplicação.
-- **Turno completo** (3 contas): a criança faz todos os passos. Sempre tem uma conta com 0 no quociente e uma com divisor de 2 algarismos.
+- **Turno completo** (3 contas): a criança faz todos os passos. Sempre tem uma conta com 0 no quociente e, da galeria 3 em diante, uma com divisor de 2 algarismos.
 - **Inspeção** (4 contas): o robô ROB-8 armou a conta com um erro: esqueceu o 0 do quociente, parou com resto maior que o divisor, errou uma subtração ou errou uma multiplicação. Depois do erro, o robô segue certo com os números errados. A criança toca na linha ou no quociente com erro (pode usar a prova real) e digita o valor certo.
 - **Tempestade** (desafio opcional): 3 contas completas antes da tempestade chegar à mina. Cada passo certo afasta a nuvem; cada erro aproxima.
 
-Galerias (níveis): divisores de 2 algarismos até 19, 29, 49 e 99; a partir da 3ª, dividendos de 4 algarismos com divisor de 1 algarismo. Sobe depois de 2 dias com o turno completo. Os pais podem trocar a galeria na área dos pais.
+Galerias (níveis): 1) divisor de 1 algarismo, dividendo até 999; 2) divisor de 1 algarismo, dividendo até 9999; 3) entra o divisor de 2 algarismos, até 19; 4) divisor de 2 algarismos até 99. Sobe depois de 2 dias com o turno completo. Os pais podem trocar a galeria na área dos pais (por exemplo, liberar o divisor de 2 algarismos antes).
 
 Erros guardados por tipo (`errM`) para a área dos pais: separar o pedaço, estimativa alta, estimativa baixa, zero no quociente, multiplicação, subtração, baixar o algarismo e, na Inspeção, qual erro do robô não foi achado.
 
