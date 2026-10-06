@@ -483,11 +483,11 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
     <h2>MANUAL DO MINERADOR</h2>
     <p>A conta armada de divisão, passo a passo:</p>
     <ul>
-      <li><b>D</b><span><b style="font-size:9px">DIVIDIR.</b> Separe o primeiro pedaço e veja quantas vezes o divisor cabe nele.</span></li>
+      <li><b>D</b><span><b style="font-size:9px">DIVIDIR.</b> Comece pelo primeiro algarismo: quantas vezes o divisor cabe nele?</span></li>
       <li><b>M</b><span><b style="font-size:9px">MULTIPLICAR.</b> Esse algarismo × o divisor. Escreva embaixo do pedaço.</span></li>
       <li><b>S</b><span><b style="font-size:9px">SUBTRAIR.</b> Tire do pedaço. O que sobra tem que ser menor que o divisor.</span></li>
       <li><b>B</b><span><b style="font-size:9px">BAIXAR.</b> Desça o próximo algarismo e comece de novo.</span></li>
-      <li><b>0</b><span>Não coube nenhuma vez? Escreva 0 no quociente e baixe o próximo.</span></li>
+      <li><b>0</b><span>Não coube nenhuma vez? Escreva 0 no quociente, faça − 0 e baixe o próximo.</span></li>
       <li><b>≈</b><span>Divisor com 2 algarismos: arredonde. 23 ≈ 20, então pense em 7 ÷ 2.</span></li>
     </ul>
     <div class="ex"><b>PROVA REAL</b><br>quociente × divisor + resto = dividendo<br>32 × 23 + 9 = 745 ✓</div>
@@ -508,7 +508,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 <script>
 /* atualização automática: compara com version.json e recarrega com ?v=<versão> no endereço (o iPhone não reaproveita a
    página guardada). Se mesmo com ?v=<versão> a página veio velha, não insiste (evita recarregar sem parar). */
-const APP_V='20261005222719';
+const APP_V='20261006050656';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris|mina)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     const q=new URLSearchParams(location.search).get('v');
@@ -567,13 +567,15 @@ function rotReq(app,k){const all=ROT[app];if(!all)return[];if(k<ROT_FROM)return 
   return all.filter((_,i)=>i!==(n+off)%3)}
 
 /* =================== conta armada de divisão (método da chave, processo longo) ===================
-   solve(745,23): separa o primeiro pedaço (74), e para cada algarismo do quociente guarda
-   o pedaço (partial), o algarismo (q), o produto (q × divisor) e o resto da subtração. */
-function solve(D,d){const s=String(D);let L=1;while(L<s.length&&+s.slice(0,L)<d)L++;
+   Como na escola do Sebastião: começa sempre pelo primeiro algarismo. Quando o divisor não cabe,
+   escreve 0 no quociente, faz "− 0", e só então baixa o próximo. 745 ÷ 23: 7 ÷ 23 = 0 (7 − 0 = 7),
+   baixa o 4: 74 ÷ 23 = 3 (74 − 69 = 5), baixa o 5: 55 ÷ 23 = 2 (55 − 46 = 9) → 032, resto 9.
+   Para cada algarismo do dividendo guarda o pedaço (partial), o algarismo (q), o produto e o resto. */
+function solve(D,d){const s=String(D),L=1;
   const steps=[];let rem=0;
   for(let i=L-1;i<s.length;i++){const partial=i===L-1?+s.slice(0,L):rem*10+ +s[i],q=Math.floor(partial/d),prod=q*d;rem=partial-prod;steps.push({i,partial,q,prod,rem})}
   return{D,d,s,L,steps,q:Math.floor(D/d),r:D%d}}
-const rowsOf=steps=>1+2*steps.filter(s=>s.q>0).length;
+const rowsOf=steps=>1+2*steps.length; // todo passo tem multiplicação e subtração (inclusive o − 0)
 
 /* galerias (níveis): começa com divisor de 1 algarismo; o divisor de 2 algarismos chega na galeria 3, misturado com o de 1 */
 const LEVELS=[
@@ -586,7 +588,7 @@ const L=()=>LEVELS[S.level-1];
 const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
 const pick=a=>a[Math.floor(Math.random()*a.length)];
 const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
-const hasZero=c=>c.steps.some(s=>s.q===0);
+const hasZero=c=>c.steps.some((s,j)=>s.q===0&&c.steps.slice(0,j).some(x=>x.q>0)); // 0 no meio ou no fim do quociente
 /* kind 'g1': só divisor de 1 algarismo (Carga guiada) · 'mix': metade com divisor de 2 algarismos
    o.zero: o quociente tem um 0 no meio ou no fim · o.two / o.one: força o tamanho do divisor */
 function genConta(kind,o={}){const lv=L();
@@ -602,7 +604,7 @@ function genConta(kind,o={}){const lv=L();
     const c=solve(D,d);
     if(o.zero&&!hasZero(c))continue;
     if(c.q<2)continue;
-    if(c.steps.length<2&&!(two&&Math.random()<.25))continue; // quase sempre 2 ou mais algarismos no quociente
+    if(String(c.q).length<2&&!(two&&Math.random()<.25))continue; // quase sempre 2 ou mais algarismos no quociente
     if(kind==='g1'&&c.steps.length>3)continue;
     return c}
   return solve(745,23)}
@@ -614,7 +616,7 @@ function robot(c,t){const st=c.steps.map(s=>Object.assign({},s)),d=c.d,last=st.l
   const cont=(j)=>{for(let k=j+1;k<st.length;k++){const s=st[k];s.partial=st[k-1].rem*10+ +c.s[s.i];s.q=Math.floor(s.partial/d);s.prod=s.q*d;s.rem=s.partial-s.prod}};
   const out=(o)=>Object.assign({t,steps:st,qTxt:st.map(s=>s.q).join(''),rem:st[last].rem},o);
   if(t==='zero'){if(!hasZero(c))return null;
-    return out({j:-1,qTxt:st.filter(s=>s.q>0).map(s=>s.q).join(''),hot:['q'],why:'O robô esqueceu o 0 do quociente.',ask:'Escreva o quociente certo:',ans:c.q,fixK:'zero',
+    return out({j:-1,qTxt:st.map((s,j)=>s.q===0&&st.slice(0,j).some(x=>x.q>0)?'':s.q).join(''),hot:['q'],why:'O robô esqueceu o 0 do quociente.',ask:'Escreva o quociente certo:',ans:c.q,fixK:'zero',
       tip:'Cada algarismo que desce põe um algarismo no quociente, mesmo quando é 0.'})}
   if(t==='resto'){const s=st[last];if(s.q<2)return null;s.q--;s.prod=s.q*d;s.rem=s.partial-s.prod;
     return out({j:last,hot:['q','r:'+last],why:`Sobrou ${s.rem}, e ${s.rem} é maior que ${d}: ainda cabia mais um.`,ask:'Qual é o último algarismo certo do quociente?',ans:c.steps[last].q,fixK:'low',
@@ -901,7 +903,7 @@ function startMission(m){
   if(!S.seenMan){S.seenMan=true;save();openMan()}
 }
 function newConta(){const q=R.qs[R.i],c=solve(q.D,q.d);locked=false;combo=0;
-  C={c,q,ph:mode==='inspecao'?'look':'sep',sel:0,k:0,qd:[],typ:'',est:1,cur:{},miss:false,errK:[],tries:0,flash:null,fallJ:-1,msg:null,pv:false,
+  C={c,q,ph:mode==='inspecao'?'look':'est',sel:0,k:0,qd:[],typ:'',est:1,cur:{},miss:false,errK:[],tries:0,flash:null,fallJ:-1,msg:null,pv:false,
     rob:mode==='inspecao'?robot(c,q.t):null};
   if(C.rob)SND.robot();
   if(D){D.pause=false;D.last=performance.now()}
@@ -921,15 +923,15 @@ function endTxt(){const c=C.c;
    colunas: 0 = sinal de menos, 1..n = algarismos do dividendo; à direita da chave, o divisor e o quociente */
 const CW=30,CH=30;
 function viewOf(){const c=C.c,steps=[],end=C.ph==='end'||C.ph==='lost';
-  if(C.rob&&!end){C.rob.steps.forEach((s,j)=>steps.push({i:s.i,down:j>0,prod:s.q>0?String(s.prod):null,rem:s.q>0?String(s.rem):null}));
+  if(C.rob&&!end){C.rob.steps.forEach((s,j)=>steps.push({i:s.i,down:j>0,prod:String(s.prod),rem:String(s.rem)}));
     return{steps,qTxt:C.rob.qTxt,hot:C.ph==='look',fin:true,finRem:C.rob.rem,nq:c.steps.length}}
   const K=C.ph==='sep'?-1:end?c.steps.length-1:C.k;
   for(let j=0;j<=K;j++){const s=c.steps[j],cur=j===C.k&&!end,o={i:s.i,down:j>0,fall:j===C.fallJ};
-    if(!cur||C.ph==='bx'){if(s.q>0){o.prod=String(s.prod);o.rem=String(s.rem)}}
+    if(!cur||C.ph==='bx'){o.prod=String(s.prod);o.rem=String(s.rem)}
     else if(C.ph==='mul'){o.prod=C.typ;o.pslot=true;o.pauto=mode==='carga';if(C.flash==='p')o.pbad=true}
     else if(C.ph==='sub'){o.prod=String(C.cur.q*c.d);o.rem=C.typ;o.rslot=true;if(C.flash==='r')o.rbad=true}
     steps.push(o)}
-  const qTxt=end?String(c.q):C.qd.join('');
+  const qTxt=end?c.steps.map(s=>s.q).join(''):C.qd.join('');
   const qNext=C.ph==='est'?(mode==='carga'?String(C.est):(C.typ||'?')):(C.ph==='mul'||C.ph==='sub')?String(C.cur.q):null;
   return{steps,qTxt,qNext,sel:C.ph==='sep'?C.sel:0,tap:C.ph==='sep'||C.ph==='bx',bxi:C.ph==='bx'?c.steps[C.k+1].i:-1,
     used:C.ph==='sep'?0:c.steps[Math.min(K<0?0:K,c.steps.length-1)].i+1,curJ:['est','mul','sub'].includes(C.ph)?C.k:-1,fin:end,finRem:c.r,nq:c.steps.length}}
@@ -1016,7 +1018,7 @@ function pvHTML(){const c=C.c,rb=C.rob,qn=+rb.qTxt,P=qn*c.d+rb.rem,okD=P===c.D,o
 function endHTML(){const c=C.c,last=R.i>=ROUNDS[mode];
   return `<div class="endc px"><div class="er"><div><span class="label">QUOCIENTE</span><b>${c.q}</b></div><div><span class="label">RESTO</span><b>${c.r}</b></div></div>
     <p class="pv"><span class="label">PROVA REAL</span>${c.q} × ${c.d} + ${c.r} = <b>${c.D} ✓</b></p>
-    <p class="ctx">${endTxt()}</p>
+    ${c.steps[0].q===0?`<p class="ctx">O 0 da frente não muda o número: ${c.steps.map(s=>s.q).join('')} = ${c.q}.</p>`:''}<p class="ctx">${endTxt()}</p>
     <button class="btn" id="eNext">${last?'CONCLUIR':'PRÓXIMA CONTA'}</button></div>`}
 function render(){if(!C)return;const b=boardHTML(viewOf()),bd=$('#board');bd.innerHTML=b.h;bd.style.width=b.w+'px';bd.style.height=b.hgt+'px';
   $('#story').innerHTML=storyTxt();renderGuide();renderPad();bindBoard()}
@@ -1057,9 +1059,9 @@ function sepOk(){if(locked||!C.sel)return;const c=C.c,v=+c.s.slice(0,C.sel);
 function toEst(){C.ph='est';C.typ='';C.cur={};C.tries=0;C.flash=null;render()}
 function flash(w,then){locked=true;C.flash=w;render();setTimeout(()=>{locked=false;C.flash=null;then()},1100)}
 function estimate(q){const c=C.c,s=c.steps[C.k],d=c.d,t=s.q;
-  if(s.partial<d){if(q!==0){err('zero',`O ${d} não cabe em ${s.partial}. <b>Escreva 0 no quociente.</b>`);C.typ='';return render()}
-    good();C.qd.push(0);C.msg={t:'ok',h:`O ${d} não cabe em ${s.partial}: <b>0 no quociente.</b>`};stepDone();return}
-  if(q===0){err('low',`O ${d} cabe em ${s.partial} pelo menos uma vez.`);C.typ='';return render()}
+  /* não cabe: o algarismo é 0, e a conta segue igual (0 × divisor = 0, pedaço − 0) */
+  if(s.partial<d&&q!==0){err('zero',`O ${d} não cabe em ${s.partial}. <b>Escreva 0 no quociente</b> e faça − 0.`);C.typ='';return render()}
+  if(q===0&&s.partial>=d){err('low',`O ${d} cabe em ${s.partial} pelo menos uma vez.`);C.typ='';return render()}
   if(mode==='carga'){
     if(q>t){err('high',`${q} × ${d} = ${q*d}, passa de ${s.partial}. <b>Diminua.</b>`);return render()}
     if(q<t){err('low',`Sobra ${s.partial-q*d}, e o ${d} ainda cabe nisso. <b>Aumente.</b>`);return render()}

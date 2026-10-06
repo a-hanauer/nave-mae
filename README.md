@@ -39,12 +39,11 @@ Conta armada de divisão pelo método da chave, no **processo longo**: o produto
 
 Cada passo acende uma luz **DIVIDIR · MULTIPLICAR · SUBTRAIR · BAIXAR**:
 
-1. **Separar:** a criança toca nos algarismos da esquerda até formar o primeiro pedaço em que o divisor cabe. Separar pouco ou demais é erro.
-2. **Dividir:** escolhe o algarismo do quociente. Com divisor de 2 algarismos (galeria 3 em diante) aparece a dica de arredondar (23 ≈ 20, pense em 7 ÷ 2).
-3. **Multiplicar:** digita algarismo × divisor. Se o produto passa do pedaço, a linha fica vermelha e ela diminui o algarismo.
-4. **Subtrair:** digita a diferença. Se sobra um número maior ou igual ao divisor, a linha fica vermelha e ela aumenta o algarismo.
-5. **Baixar:** toca no próximo algarismo do dividendo, que desce para o lado do resto.
-6. Quando o divisor não cabe, o quociente ganha um **0**.
+1. **Dividir:** começa sempre pelo primeiro algarismo do dividendo e escolhe o algarismo do quociente. Com divisor de 2 algarismos (galeria 3 em diante) aparece a dica de arredondar (23 ≈ 20, pense em 7 ÷ 2).
+2. **Multiplicar:** digita algarismo × divisor. Se o produto passa do pedaço, a linha fica vermelha e ela diminui o algarismo.
+3. **Subtrair:** digita a diferença. Se sobra um número maior ou igual ao divisor, a linha fica vermelha e ela aumenta o algarismo.
+4. **Baixar:** toca no próximo algarismo do dividendo, que desce para o lado do resto.
+5. Quando o divisor não cabe (inclusive no primeiro algarismo), o quociente ganha um **0**, a criança faz **− 0** e a subtração, e só então baixa o próximo — como ela aprende na escola. Ex.: 745 ÷ 23 → 7 − 0 = 7, baixa o 4; 74 − 69 = 5, baixa o 5; 55 − 46 = 9 → quociente 032 (= 32), resto 9. No fim, a tela explica que o 0 da frente não muda o número.
 
 No fim de cada conta: quociente, resto, a **prova real** (quociente × divisor + resto = dividendo) e a frase do problema (repartir em vagonetes ou quantos vagonetes enchem).
 
@@ -57,7 +56,7 @@ Missões:
 
 Galerias (níveis): 1) divisor de 1 algarismo, dividendo até 999; 2) divisor de 1 algarismo, dividendo até 9999; 3) entra o divisor de 2 algarismos, até 19; 4) divisor de 2 algarismos até 99. Sobe depois de 2 dias com o turno completo. Os pais podem trocar a galeria na área dos pais (por exemplo, liberar o divisor de 2 algarismos antes).
 
-Erros guardados por tipo (`errM`) para a área dos pais: separar o pedaço, estimativa alta, estimativa baixa, zero no quociente, multiplicação, subtração, baixar o algarismo e, na Inspeção, qual erro do robô não foi achado.
+Erros guardados por tipo (`errM`) para a área dos pais: estimativa alta, estimativa baixa, zero no quociente, multiplicação, subtração, baixar o algarismo e, na Inspeção, qual erro do robô não foi achado.
 
 Saindo no meio, a missão continua da conta em que parou. Se a criança sai na tela da última conta, a missão é entregue quando ela voltar.
 
