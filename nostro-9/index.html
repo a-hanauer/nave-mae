@@ -365,6 +365,31 @@ button.dcard .ok,button.dcard .st{position:static;display:flex;align-items:cente
 /* logo igual ao card do jogo na Nave-Mãe: quadro de 72 px com o ícone a 4 px por pixel */
 .brand .logo{width:72px;height:72px;padding:0;background:var(--panel2);font-size:0;text-shadow:none;box-shadow:0 -4px 0 0 var(--edge),0 4px 0 0 var(--edge),-4px 0 0 0 var(--edge),4px 0 0 0 var(--edge);filter:drop-shadow(4px 4px 0 #000)}
 .brand .logo .spr{display:block}
+/* ---------- mesma estrutura dos outros jogos (Numeris, Mina, Biblioteca, Máquina do Tempo) ---------- */
+#app{max-width:440px;padding-inline:0}
+.back{padding:11px 12px}
+.brand{gap:14px}
+.brand .t{display:block}
+.brand .eyebrow{font-size:8px;line-height:1.15;letter-spacing:.1em;text-transform:uppercase}
+.brand h1{font-size:15px;line-height:1.45;margin-top:8px;text-shadow:2px 2px 0 #000}
+.terminal{padding:14px 16px 12px;font-size:21px;line-height:1.15}
+.terminal .tmsg{min-height:48px}
+.terminal .cursor{width:10px;height:18px;vertical-align:-2px;margin-left:2px}
+#menu.screen{gap:0}
+#menu>.bar{margin:0 0 18px}
+#menu>.brand{margin-bottom:20px}
+#menu>.terminal{margin-bottom:24px}
+#menu>.missions{margin-bottom:22px}
+/* cabeçalho das missões igual aos outros jogos: título e contador numa linha, segmentos finos */
+.play-head{display:flex;justify-content:space-between;align-items:center}
+.play-head .label{line-height:1.15;letter-spacing:.08em}
+.screen>.bar+.play-head{margin-top:4px}
+.screen>.play-head+.segs{margin-top:0}
+.screen>.play-head+.segs+*{margin-top:2px}
+.segs:not(.mini){display:flex;gap:4px}
+.segs:not(.mini) i{flex:1;height:10px;background:#0b0a1a;box-shadow:inset 0 0 0 2px var(--edge2);animation:none}
+.segs:not(.mini) i.on{background:var(--ok);box-shadow:none}
+.segs:not(.mini) i.cur{background:var(--amber);box-shadow:none}
 </style>
 <script>
 /* sem zoom: bloqueia pinça e dois toques no app inteiro */
@@ -382,7 +407,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
   <header class="brand">
     <div class="logo px" id="logo" aria-label="Estação Nostro-9"></div>
     <div class="t">
-      <p class="eyebrow">Terminal de bordo</p>
+      <p class="eyebrow">Planeta Matemática</p>
       <h1>Estação Nostro-9</h1>
     </div>
   </header>
@@ -393,16 +418,17 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
     <p class="streak" id="streak"></p>
   </div>
   <nav class="missions">
-    <button class="mission pbtn" data-go="partilha"><span class="code"><span data-spr="bat" data-s="4"></span></span><span class="mt"><b>Dividir baterias</b><small>Partes iguais</small><span class="st check" data-check="partilha"></span></span></button>
-    <button class="mission pbtn" data-go="grupos"><span class="code"><span data-spr="radar" data-s="4"></span></span><span class="mt"><b>Equipes de busca</b><small>Quantos grupos?</small><span class="st check" data-check="grupos"></span></span></button>
-    <button class="mission pbtn" data-go="hangar"><span class="code"><span data-spr="crate" data-s="4"></span></span><span class="mt"><b>Carga do hangar</b><small>Resolva e confira</small><span class="st check" data-check="hangar"></span></span></button>
+    <button class="mission pbtn" data-go="partilha"><span class="code"><span data-spr="bat" data-s="2"></span></span><span class="mt"><b>Dividir baterias</b><small>Partes iguais</small><span class="st check" data-check="partilha"></span></span></button>
+    <button class="mission pbtn" data-go="grupos"><span class="code"><span data-spr="radar" data-s="2"></span></span><span class="mt"><b>Equipes de busca</b><small>Quantos grupos?</small><span class="st check" data-check="grupos"></span></span></button>
+    <button class="mission pbtn" data-go="hangar"><span class="code"><span data-spr="crate" data-s="2"></span></span><span class="mt"><b>Carga do hangar</b><small>Resolva e confira</small><span class="st check" data-check="hangar"></span></span></button>
   </nav>
-  <button class="alien-btn dcard pbtn" data-go="desafio"><span class="ey"><span>DESAFIO OPCIONAL</span><span class="st check" data-check="desafio"></span></span><span class="dg"><span><span class="ti">Fuja do Alien</span><span class="su">Tabuada contra o relógio</span></span><span class="dico"><span data-spr="siren" data-s="4"></span></span></span></button>
+  <button class="alien-btn dcard pbtn" data-go="desafio"><span class="ey"><span>DESAFIO OPCIONAL</span><span class="st check" data-check="desafio"></span></span><span class="dg"><span><span class="ti">Fuja do Alien</span><span class="su">Tabuada contra o relógio</span></span><span class="dico"><span data-spr="siren" data-s="2"></span></span></span></button>
 </section>
 
 <!-- M1 PARTILHA -->
 <section class="screen" id="partilha" hidden>
-  <div class="bar"><button class="back pbtn" data-back>&lt; Ponte</button><span class="prog" id="p-prog"></span></div>
+  <div class="bar"><button class="back pbtn" data-back>&lt; Ponte</button></div>
+  <div class="play-head"><span class="label">M1 · DIVIDIR BATERIAS</span><span class="label" id="p-prog"></span></div>
   <div class="segs" id="p-segs"></div>
   <div class="conta px" id="p-conta"></div>
   <p class="story" id="p-brief"></p>
@@ -414,7 +440,8 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 
 <!-- M2 GRUPOS -->
 <section class="screen" id="grupos" hidden>
-  <div class="bar"><button class="back pbtn" data-back>&lt; Ponte</button><span class="prog" id="g-prog"></span></div>
+  <div class="bar"><button class="back pbtn" data-back>&lt; Ponte</button></div>
+  <div class="play-head"><span class="label">M2 · EQUIPES DE BUSCA</span><span class="label" id="g-prog"></span></div>
   <div class="segs" id="g-segs"></div>
   <div class="conta px" id="g-conta"></div>
   <p class="story" id="g-brief"></p>
@@ -426,7 +453,8 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 
 <!-- M3 HANGAR -->
 <section class="screen" id="hangar" hidden>
-  <div class="bar"><button class="back pbtn" data-back>&lt; Ponte</button><span class="prog" id="h-prog"></span></div>
+  <div class="bar"><button class="back pbtn" data-back>&lt; Ponte</button></div>
+  <div class="play-head"><span class="label">M3 · CARGA DO HANGAR</span><span class="label" id="h-prog"></span></div>
   <div class="segs" id="h-segs"></div>
   <div class="conta px" id="h-conta"></div>
   <p class="story" id="h-brief"></p>
@@ -443,7 +471,8 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 
 <!-- FUJA DO ALIEN -->
 <section class="screen" id="desafio" hidden>
-  <div class="bar"><button class="back pbtn" data-back>&lt; Ponte</button><span class="prog" id="d-prog"></span></div>
+  <div class="bar"><button class="back pbtn" data-back>&lt; Ponte</button></div>
+  <div class="play-head"><span class="label">DESAFIO OPCIONAL</span><span class="label" id="d-prog"></span></div>
   <div id="d-choose" class="screen">
     <h2 class="danger-title">Fuja do Alien</h2>
     <button class="primary pbtn" id="d-resume" hidden></button>
@@ -471,7 +500,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 <script>
 /* atualização automática: compara com version.json e recarrega com ?v=<versão> no endereço (o iPhone não reaproveita a
    página guardada). Se mesmo com ?v=<versão> a página veio velha, não insiste (evita recarregar sem parar). */
-const APP_V='20261006080354';
+const APP_V='20261006081617';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     const q=new URLSearchParams(location.search).get('v');
@@ -912,7 +941,7 @@ function pNew(){
 }
 function pSave(){saveProg('partilha',{i:P.i,firsts:P.firsts,task:{k:P.k,q:P.q,n:P.n,depot:P.depot,rooms:P.rooms,done:P.done}})}
 function pSetup(){
-  $('#p-prog').textContent=`Tarefa ${P.i+1}/${P.total}`;segs($('#p-segs'),P.i,P.total);
+  $('#p-prog').textContent=`${P.i+1}/${P.total}`;segs($('#p-segs'),P.i,P.total);
   conta('#p-conta',P.n,'baterias',P.k,'salas','cada sala');
   $('#p-brief').innerHTML=`Toque nas salas até todas ficarem <b>iguais</b>.`;
   $('#p-ask').innerHTML='';$('#partilha').classList.remove('asking');setMsg('#p-msg','');pRender();pSave();
@@ -961,7 +990,7 @@ function gNew(){
 function gSave(){saveProg('grupos',{i:G.i,firsts:G.firsts,task:{g:G.g,t:G.t,n:G.n,groups:G.groups,team:G.team,done:G.done,pos:G.pos}})}
 function gSetup(){
   G.sel=[];
-  $('#g-prog').textContent=`Tarefa ${G.i+1}/${G.total}`;segs($('#g-segs'),G.i,G.total);
+  $('#g-prog').textContent=`${G.i+1}/${G.total}`;segs($('#g-segs'),G.i,G.total);
   conta('#g-conta',G.n,'sinais',G.g,'por equipe','equipes');
   $('#g-brief').innerHTML=`Toque em <b>${G.g} sinais</b> para formar uma equipe.`;
   $('#g-ask').innerHTML='';$('#grupos').classList.remove('asking');$('#g-tools').hidden=G.done;gRender();gSave();
@@ -1006,7 +1035,7 @@ function hNew(){
 }
 function hSave(){saveProg('hangar',{i:H.i,firsts:H.firsts,task:{k:H.k,q:H.q,n:H.n,w:H.w,loaded:H.loaded,firstTry:H.firstTry,done:H.done}})}
 function hSetup(){
-  $('#h-prog').textContent=`Tarefa ${H.i+1}/${H.total}`;segs($('#h-segs'),H.i,H.total);
+  $('#h-prog').textContent=`${H.i+1}/${H.total}`;segs($('#h-segs'),H.i,H.total);
   $('#h-brief').innerHTML=`Escolha com <b>−</b> e <b>+</b> e carregue.`;
   $('#h-ask').innerHTML='';$('#hangar').classList.remove('asking');$('#h-load').hidden=H.done;setMsg('#h-msg','');
   $('#h-grid').classList.toggle('win',H.done);hRender();hSave();
