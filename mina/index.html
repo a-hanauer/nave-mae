@@ -3,6 +3,16 @@
 <head>
 <meta charset="utf-8">
 <script>
+/* recomeço do turno de 06/10/2026 (uma vez por aparelho): as missões feitas hoje voltam a ficar abertas, porque o
+   turno sorteado começa hoje. A energia já ganha hoje fica (o registro guarda o maior valor do dia). */
+(function(){const K='navemae-reset-2026-10-06',D='2026-10-06';
+  try{if(localStorage.getItem(K))return;
+    ['nostro9-stats-v1','numeris-stats-v1','mina-stats-v1','biblio-stats-v1','ivoti-stats-v1'].forEach(s=>{const o=JSON.parse(localStorage.getItem(s)||'null');if(!o)return;
+      if(o.days)delete o.days[D];if(o.run)o.run={};if(o.prog)o.prog={};if(Array.isArray(o.lvDays))o.lvDays=o.lvDays.filter(x=>String(x).slice(0,10)!==D);
+      localStorage.setItem(s,JSON.stringify(o))});
+    localStorage.setItem(K,'1')}catch(e){}})();
+</script>
+<script>
 /* iPhone (atalho da Tela de Início): ao voltar de outra página, o WebKit às vezes informa as margens seguras (Dynamic Island,
    barra de início) como 0 até a próxima rolagem — o topo sobe e as molduras ficam no tamanho errado. Guardamos as maiores
    margens já medidas neste modo (app ou navegador) e o CSS usa --sat/--sab, com env() só como reserva. */
@@ -505,7 +515,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 <script>
 /* atualização automática: compara com version.json e recarrega com ?v=<versão> no endereço (o iPhone não reaproveita a
    página guardada). Se mesmo com ?v=<versão> a página veio velha, não insiste (evita recarregar sem parar). */
-const APP_V='20261006081617';
+const APP_V='20261006081853';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris|mina)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     const q=new URLSearchParams(location.search).get('v');
@@ -559,7 +569,7 @@ function newAC(){navAudioMode();return new (window.AudioContext||window.webkitAu
    e o resto entre todas (no máximo 2 do mesmo jogo), evitando repetir o sorteio do dia anterior. O sorteio usa
    a data como semente, então a Nave-Mãe e os jogos chegam à mesma lista sem trocar dados. As outras missões
    ficam abertas como treino extra. Antes de PLAN_FROM vale a regra antiga (rodízio de Matemática). */
-const PLAN_FROM='2026-10-07',PLAN_N=5;
+const PLAN_FROM='2026-10-06',PLAN_N=5;
 const PLAN_APPS=[
   {id:'nostro9',p:'mat',s:'nostro9-stats-v1',m:['partilha','grupos','hangar']},
   {id:'numeris',p:'mat',s:'numeris-stats-v1',m:['montar','ler','sub']},
