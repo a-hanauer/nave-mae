@@ -51,12 +51,12 @@ Missões:
 
 - **Carga guiada** (4 contas, divisor de 1 algarismo): o algarismo do quociente se escolhe com − e +, vendo uma barra do produto contra o pedaço (PASSOU! ou SOBRA N). A máquina faz a multiplicação.
 - **Turno completo** (3 contas): a criança faz todos os passos. Sempre tem uma conta com 0 no quociente e, da galeria 3 em diante, uma com divisor de 2 algarismos.
-- **Inspeção** (4 contas): o robô ROB-8 armou a conta com um erro: esqueceu o 0 do quociente, parou com resto maior que o divisor, errou uma subtração ou errou uma multiplicação. Depois do erro, o robô segue certo com os números errados. A criança toca na linha ou no quociente com erro (pode usar a prova real) e digita o valor certo.
+- **Complete a conta** (4 contas): o robô ROB-8 armou a conta inteira e deixou uma casa vazia, já destacada: um algarismo do quociente, um produto ou uma subtração. A criança calcula só aquela casa (a guia mostra qual conta é: dividir, multiplicar ou subtrair). Errou: explica; na segunda vez, mostra a resposta para digitar. Ver o processo pronto e completar um passo ajuda quem está começando.
 - **Tempestade** (desafio opcional): 3 contas completas antes da tempestade chegar à mina. Cada passo certo afasta a nuvem; cada erro aproxima.
 
 Galerias (níveis): 1) divisor de 1 algarismo, dividendo até 999; 2) divisor de 1 algarismo, dividendo até 9999; 3) entra o divisor de 2 algarismos, até 19; 4) divisor de 2 algarismos até 99. Sobe depois de 2 dias com o turno completo. Os pais podem trocar a galeria na área dos pais (por exemplo, liberar o divisor de 2 algarismos antes).
 
-Erros guardados por tipo (`errM`) para a área dos pais: estimativa alta, estimativa baixa, zero no quociente, multiplicação, subtração, baixar o algarismo e, na Inspeção, qual erro do robô não foi achado.
+Erros guardados por tipo (`errM`) para a área dos pais: estimativa alta, estimativa baixa, zero no quociente, multiplicação, subtração, baixar o algarismo e, em Complete a conta, o tipo de casa que errou.
 
 Saindo no meio, a missão continua da conta em que parou. Se a criança sai na tela da última conta, a missão é entregue quando ela voltar.
 
