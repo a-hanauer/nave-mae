@@ -361,6 +361,10 @@ button.dcard .su{display:block;margin-top:8px;font-family:var(--vt);font-size:20
 button.dcard .dico{position:static;width:56px;height:56px;display:grid;place-items:center;background:rgba(0,0,0,.28);box-shadow:inset 0 0 0 3px rgba(0,0,0,.35)}
 button.dcard .ok,button.dcard .st{position:static;display:flex;align-items:center;gap:6px;margin:0;font-family:var(--px);font-size:8px;color:var(--M-ok);text-shadow:2px 2px 0 #000;letter-spacing:0}
 :root{--M-tile:var(--panel2);--M-line:var(--edge);--M-ink:var(--text);--M-dim:var(--dim);--M-ok:var(--ok);--M-next:var(--amber);--M-mid:var(--amber);--M-xt:#62e6ff;--M-donetxt:#7f9a88}
+
+/* logo igual ao card do jogo na Nave-Mãe: quadro de 72 px com o ícone a 4 px por pixel */
+.brand .logo{width:72px;height:72px;padding:0;background:var(--panel2);font-size:0;text-shadow:none;box-shadow:0 -4px 0 0 var(--edge),0 4px 0 0 var(--edge),-4px 0 0 0 var(--edge),4px 0 0 0 var(--edge);filter:drop-shadow(4px 4px 0 #000)}
+.brand .logo .spr{display:block}
 </style>
 <script>
 /* sem zoom: bloqueia pinça e dois toques no app inteiro */
@@ -376,7 +380,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 <section class="screen" id="menu">
   <div class="bar"><button class="back pbtn" data-home>&lt; Nave-Mãe</button></div>
   <header class="brand">
-    <div class="logo px" id="logo" aria-label="Estação Nostro-9">N9</div>
+    <div class="logo px" id="logo" aria-label="Estação Nostro-9"></div>
     <div class="t">
       <p class="eyebrow">Terminal de bordo</p>
       <h1>Estação Nostro-9</h1>
@@ -467,7 +471,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 <script>
 /* atualização automática: compara com version.json e recarrega com ?v=<versão> no endereço (o iPhone não reaproveita a
    página guardada). Se mesmo com ?v=<versão> a página veio velha, não insiste (evita recarregar sem parar). */
-const APP_V='20261005215348';
+const APP_V='20261005215837';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     const q=new URLSearchParams(location.search).get('v');
@@ -573,6 +577,10 @@ function hdRows(rows,s,ov){const key=s+'|'+rows.join('/')+'|'+(ov?JSON.stringify
 function spriteRows(rows,s=2,ov){const g=hdRows(rows,s,ov),h=g.length,w=g[0].length,px=s/Math.max(1,Math.round(s/GRID));let r='';
   g.forEach((row,y)=>{let x=0;while(x<w){const c=row[x];if(!c){x++;continue}let k=1;while(row[x+k]===c)k++;r+=`<rect x="${x}" y="${y}" width="${k}" height="1" fill="${c}"/>`;x+=k}});
   return `<svg class="spr" viewBox="0 0 ${w} ${h}" width="${w*px}" height="${h*px}" shape-rendering="crispEdges" aria-hidden="true">${r}</svg>`}
+
+/* logo: o mesmo ícone do jogo na lista do planeta (Nave-Mãe) */
+const HUB_ICON=["kkkkk......kkkkk", "kcCck......kbcbk", "kbcbk......knbnk", "kcbck......kbnbk", "kbcbkMkkkkDknbnk", "kcbckkLWLMkkbnbk", "kbcbkLWLMLMknbnk", "kkkkkLLCcMMkkkkk", "....kLCcbcMk....", "....kLcOobMk....", "kkkkkLbbnnMkkkkk", "kcCckLLLMMMkbcbk", "kbcbkkMLMDkknbnk", "kcbckMkkkkDkbnbk", "kbcbk......knbnk", "kkkkk......kkkkk"],HUB_PAL={"s": "#d9a066", "F": "#a8e8ff", "b": "#ffb300", "O": "#ffb300", "J": "#2a2e38", "U": "#b4bac6", "W": "#ffffff", "v": "#6b4520", "k": "#0b0a1a", "Q": "#737a88", "x": "#1f9a7e", "n": "#123a66", "X": "#3ff2c4", "D": "#5f5ca8", "Y": "#fff3a0", "o": "#d97a00", "G": "#b6ffcf", "M": "#9b98d4", "L": "#d8d6ff", "c": "#40d8ff", "h": "#1f9a3a", "t": "#a8703a", "g": "#39e35f", "C": "#c8faff", "S": "#f6dcb6"};
+document.getElementById('logo').innerHTML=spriteRows(HUB_ICON,4,HUB_PAL);
 const sprite=(n,s=2,ov)=>spriteRows(SPR[n],s,ov);
 
 document.querySelectorAll('[data-spr]').forEach(el=>el.innerHTML=sprite(el.dataset.spr,+el.dataset.s||2));

@@ -106,6 +106,8 @@ Os jogos em que a criança aparece usam o piloto e a nave como foram customizado
 
 No menu de cada jogo, a mensagem do terminal e o turno do dia ficam numa tela só, na estética de tela de computador (fósforo da cor do jogo): mensagem, linha tracejada, "TURNO DE HOJE" com a contagem, os 7 dias da semana e a sequência. Assim a primeira missão fica mais perto do topo.
 
+O logo de cada jogo é o mesmo ícone do card do jogo na tela do planeta (quadro de 72 px, ícone a 4 px por pixel); o desenho fica em `HUB_ICON` no jogo e em `SPR` na Nave-Mãe.
+
 Os cards de missão seguem o mesmo padrão nos quatro jogos: ícone num quadro de 56 px à esquerda (no maior tamanho nítido que cabe), título em Press Start 10, subtítulo em VT 20 e status embaixo (FEITO, PRÓXIMA, CONTINUAR · n/total, TREINO EXTRA ou A FAZER), nas cores do jogo. O card do desafio também: "DESAFIO OPCIONAL" com o FEITO à direita, título em maiúsculas, subtítulo e ícone num quadro de 56 px à direita.
 
 Missão feita aparece sempre como **FEITO**. Jogar de novo uma missão feita no dia é jogo livre: começa do zero, não guarda andamento e a missão continua feita, mesmo se a criança sair no meio.

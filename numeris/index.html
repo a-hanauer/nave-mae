@@ -345,6 +345,10 @@ button.dcard .su{display:block;margin-top:8px;font-family:var(--vt);font-size:20
 button.dcard .dico{position:static;width:56px;height:56px;display:grid;place-items:center;background:rgba(0,0,0,.28);box-shadow:inset 0 0 0 3px rgba(0,0,0,.35)}
 button.dcard .ok,button.dcard .st{position:static;display:flex;align-items:center;gap:6px;margin:0;font-family:var(--px);font-size:8px;color:var(--M-ok);text-shadow:2px 2px 0 #000;letter-spacing:0}
 :root{--M-tile:var(--panel2);--M-line:var(--line);--M-ink:var(--ink);--M-dim:var(--dim);--M-ok:var(--green);--M-next:var(--amber);--M-mid:var(--glow);--M-xt:#62e6ff;--M-donetxt:#7f9a88}
+
+/* logo igual ao card do jogo na Nave-Mãe: quadro de 72 px com o ícone a 4 px por pixel */
+.brand .logo{width:72px;height:72px;padding:0;background:var(--panel2);font-size:0;text-shadow:none;box-shadow:0 -4px 0 0 var(--line),0 4px 0 0 var(--line),-4px 0 0 0 var(--line),4px 0 0 0 var(--line);filter:drop-shadow(4px 4px 0 #000)}
+.brand .logo .spr{display:block}
 </style>
 <script>
 /* sem zoom: bloqueia pinça e dois toques no app inteiro */
@@ -361,7 +365,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 <section class="screen" id="menu">
   <div class="bar"><button class="back px pbtn" data-home>&lt; Nave-Mãe</button></div>
   <header class="brand">
-    <div class="logo" id="logo" aria-label="Ruínas de Numeris">XIV</div>
+    <div class="logo" id="logo" aria-label="Ruínas de Numeris"></div>
     <div class="t"><p>PLANETA MATEMÁTICA</p><h1>Ruínas de Numeris</h1></div>
   </header>
   <div class="term"><div class="tmsg"><span id="term"></span><span class="cursor"></span></div>
@@ -442,7 +446,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 <script>
 /* atualização automática: compara com version.json e recarrega com ?v=<versão> no endereço (o iPhone não reaproveita a
    página guardada). Se mesmo com ?v=<versão> a página veio velha, não insiste (evita recarregar sem parar). */
-const APP_V='20261005215348';
+const APP_V='20261005215837';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     const q=new URLSearchParams(location.search).get('v');
@@ -616,6 +620,10 @@ function spriteRows(rows,s=2,ov){const g=hdRows(rows,s,ov),h=g.length,w=g[0].len
   g.forEach((row,y)=>{let x=0;while(x<w){const c=row[x];if(!c){x++;continue}let k=1;while(row[x+k]===c)k++;r+=`<rect x="${x}" y="${y}" width="${k}" height="1" fill="${c}"/>`;x+=k}});
   return `<svg class="spr" viewBox="0 0 ${w} ${h}" width="${w*px}" height="${h*px}" shape-rendering="crispEdges" aria-hidden="true">${r}</svg>`}
 const sprite=(n,s=2,ov)=>spriteRows(SPR[n],s,ov);
+
+/* logo: o mesmo ícone do jogo na lista do planeta (Nave-Mãe) */
+const HUB_ICON=[".....kkkkkk.....", "...kkSSSssskk...", ".kkSSSSstsssskk.", "kSSSSssstttssssk", "kkkkkkkkkkkkkkkk", ".kSsktttvvvktsk.", ".kSsktkkkkvktsk.", ".kSsktkXxkvktsk.", ".kSsktkxxkvktsk.", ".kSsktkXxkvktsk.", ".kSsktkkkkvktsk.", ".kSsktttvvvktsk.", ".kSsktttvvvktsk.", "kkkkkkkkkkkkkkkk", "kSSSSssstttssssk", "kkkkkkkkkkkkkkkk"],HUB_PAL={"s": "#d9a066", "F": "#a8e8ff", "b": "#ffb300", "O": "#ffb300", "J": "#2a2e38", "U": "#b4bac6", "W": "#ffffff", "v": "#6b4520", "k": "#0b0a1a", "Q": "#737a88", "x": "#1f9a7e", "n": "#123a66", "X": "#3ff2c4", "D": "#5f5ca8", "Y": "#fff3a0", "o": "#d97a00", "G": "#b6ffcf", "M": "#9b98d4", "L": "#d8d6ff", "c": "#40d8ff", "h": "#1f9a3a", "t": "#a8703a", "g": "#39e35f", "C": "#c8faff", "S": "#f6dcb6"};
+document.getElementById('logo').innerHTML=spriteRows(HUB_ICON,4,HUB_PAL);
 const fitS=n=>{const r=SPR[n];return r&&r[0].length*4<=48&&r.length*4<=48?4:2}; /* ícone dos cards: o maior tamanho nítido que cabe no quadro de 56 px */
 
 
