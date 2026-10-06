@@ -72,7 +72,7 @@ button,a{font:inherit;color:inherit;background:none;border:0;text-decoration:non
 .snd{flex:none;width:46px;height:46px;display:grid;place-items:center;font-family:var(--px);font-size:8px;color:var(--amber)}
 
 /* terminal */
-.term{padding:14px 16px;margin-bottom:24px;min-height:88px;color:var(--glow);font-size:21px;background:#07140f;
+.term{padding:14px 16px;margin-bottom:24px;color:var(--glow);font-size:21px;background:#071318;
   box-shadow:0 -4px 0 0 #155446,0 4px 0 0 #155446,-4px 0 0 0 #155446,4px 0 0 0 #155446;filter:drop-shadow(4px 4px 0 #000)}
 .cursor{display:inline-block;width:10px;height:18px;background:var(--glow);vertical-align:-2px;margin-left:2px;animation:blink 1s steps(1) infinite}
 @keyframes blink{50%{opacity:0}}
@@ -372,6 +372,24 @@ html.web .screen.game:not([hidden]){min-height:calc(100dvh - 36px - var(--sat,en
 .words li{display:block}
 .words li b{display:block;font-size:9px!important;margin-bottom:4px}
 @media (max-height:700px){.page{font-size:21px;padding:12px 14px}.ctitle{margin-bottom:8px}.nav3 .key,.tts,.nxt{height:50px}.opt{padding:12px}}
+
+/* terminal + turno do dia numa tela só (menos blocos no topo) */
+.term{padding:14px 16px 12px}
+.term .tmsg{min-height:48px}
+.term{box-shadow:0 -4px 0 0 #1d5a6b,0 4px 0 0 #1d5a6b,-4px 0 0 0 #1d5a6b,4px 0 0 0 #1d5a6b}
+.tdiv{height:2px;margin:12px 0 10px;background:repeating-linear-gradient(90deg,var(--glow) 0 6px,transparent 6px 11px);opacity:.45}
+.trow{display:flex;justify-content:space-between;align-items:baseline;font-family:var(--px);font-size:8px;letter-spacing:.08em;color:var(--glow)}
+.trow>span{opacity:.7}
+.trow .turno-n{font-size:12px;color:var(--glow);text-shadow:none}
+.trow .turno-n.all{color:var(--green)}
+.term .week{display:flex;gap:6px;margin:10px 0 8px}
+.term .day{flex:1;display:grid;justify-items:center;gap:5px;font-family:var(--px);font-size:8px;color:var(--glow);opacity:.6}
+.term .day i{width:100%;height:12px;background:transparent;box-shadow:inset 0 0 0 2px var(--glow)}
+.term .day.part i{background:repeating-linear-gradient(90deg,var(--glow) 0 2px,transparent 2px 4px)}
+.term .day.full i{background:var(--glow)}
+.term .day.today{opacity:1}
+.term .streak{margin:0;font-size:20px;line-height:1.1;color:var(--glow);opacity:.85}
+.term .streak b{color:var(--glow);font-weight:normal;opacity:1;text-shadow:0 0 6px var(--glow)}
 </style>
 <script>
 /* sem zoom: bloqueia pinça e dois toques no app inteiro */
@@ -391,17 +409,16 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
     <div class="logo" id="logo" aria-label="Máquina do Tempo"></div>
     <div class="t"><p>PLANETA HISTÓRIA · TERRA</p><h1>Máquina do Tempo</h1></div>
   </header>
-  <div class="term"><span id="term"></span><span class="cursor"></span></div>
+  <div class="term"><div class="tmsg"><span id="term"></span><span class="cursor"></span></div>
+    <div class="tdiv"></div>
+    <div class="trow"><span>TURNO DE HOJE</span><span class="turno-n" id="turnoN">0 / 3</span></div>
+    <div class="week" id="week"></div>
+    <p class="streak" id="streak"></p>
+  </div>
 
   <div class="viagem px">
     <div class="turno-top"><span class="label">Viagem por Ivoti</span><span class="turno-n" id="capN">0 / 12</span></div>
     <div class="caps" id="caps"></div>
-  </div>
-
-  <div class="turno px">
-    <div class="turno-top"><span class="label">Turno de hoje</span><span class="turno-n" id="turnoN">0 / 3</span></div>
-    <div class="week" id="week"></div>
-    <p class="streak" id="streak"></p>
   </div>
 
   <nav class="missions">
@@ -484,7 +501,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 <script>
 /* atualização automática: compara com version.json e recarrega com ?v=<versão> no endereço (o iPhone não reaproveita a
    página guardada). Se mesmo com ?v=<versão> a página veio velha, não insiste (evita recarregar sem parar). */
-const APP_V='20261005213653';
+const APP_V='20261005214224';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris|mina|ivoti)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     const q=new URLSearchParams(location.search).get('v');
