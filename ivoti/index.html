@@ -1,0 +1,1316 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<script>
+/* iPhone (atalho da Tela de Início): ao voltar de outra página, o WebKit às vezes informa as margens seguras (Dynamic Island,
+   barra de início) como 0 até a próxima rolagem — o topo sobe e as molduras ficam no tamanho errado. Guardamos as maiores
+   margens já medidas neste modo (app ou navegador) e o CSS usa --sat/--sab, com env() só como reserva. */
+/* o navegador não deve devolver a rolagem antiga ao voltar para a página: cada tela começa do topo */
+try{if('scrollRestoration' in history)history.scrollRestoration='manual'}catch(e){}
+(function(){const r=document.documentElement,M=(window.matchMedia&&matchMedia('(display-mode: standalone)').matches)||navigator.standalone?'app':'web',K='navemae-safe-'+M;
+  r.classList.add(M); /* html.app = atalho da Tela de Início (tela cheia); html.web = navegador, que já tem a barra dele em cima */
+  let s={};try{s=JSON.parse(localStorage.getItem(K))||{}}catch(e){}
+  const ap=()=>{if(s.t)r.style.setProperty('--sat',s.t+'px');if(s.b)r.style.setProperty('--sab',s.b+'px')};ap();
+  function measure(){if(innerWidth>innerHeight)return; // só retrato
+    const p=document.createElement('div');p.style.cssText='position:fixed;left:0;top:0;width:0;height:0;visibility:hidden;pointer-events:none;padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)';
+    r.appendChild(p);const cs=getComputedStyle(p),t=parseFloat(cs.paddingTop)||0,b=parseFloat(cs.paddingBottom)||0;p.remove();
+    let ch=false;if(t>(s.t||0)){s.t=t;ch=true}if(b>(s.b||0)){s.b=b;ch=true}
+    if(ch){try{localStorage.setItem(K,JSON.stringify(s))}catch(e){}ap()}}
+  measure();addEventListener('DOMContentLoaded',measure);addEventListener('load',measure);
+  addEventListener('pageshow',()=>{measure();setTimeout(measure,300)});addEventListener('resize',()=>setTimeout(measure,200))})();
+</script>
+
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#100c0a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="format-detection" content="telephone=no">
+<title>Máquina do Tempo · Ivoti</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+<style>
+/* sem zoom de dois toques (cada área com rolagem precisa da regra) */
+*{touch-action:manipulation}
+:root{
+  --bg:#100c0a;--panel:#1e1712;--panel2:#2a2019;--line:#4a3a2c;--line2:#86694e;--ink:#f5ecdc;--dim:#b8a68e;
+  --st1:#1a120c;--st2:#4a3524;--st3:#7a5a3c;--st4:#c9a77a;--st5:#f0dcb8;
+  --glow:#7fe3ff;--glow-d:#1d6f86;--amber:#ffb300;--amber-d:#b37a00;--red:#ff4a3d;--green:#5dff9a;--paper:#efe2c4;--paper-d:#c9b48a;
+  --px:"Press Start 2P",monospace;--vt:"VT323",monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{background:var(--bg)}
+body{background:var(--bg);color:var(--ink);font-family:var(--vt);font-size:22px;line-height:1.15;min-height:100vh;min-height:100dvh;
+  overflow-x:hidden;-webkit-text-size-adjust:100%;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;
+  -webkit-font-smoothing:none;image-rendering:pixelated}
+button,a{font:inherit;color:inherit;background:none;border:0;text-decoration:none;cursor:pointer;touch-action:manipulation}
+[hidden]{display:none!important}
+.spr{display:block;image-rendering:pixelated}
+#bgc{position:fixed;inset:0;width:100%;height:100%;z-index:0;image-rendering:pixelated}
+.crt{position:fixed;inset:0;pointer-events:none;z-index:80;background:repeating-linear-gradient(0deg,rgba(0,0,0,.22) 0 1px,transparent 1px 3px)}
+#app{position:relative;z-index:1;max-width:440px;margin:0 auto;
+  padding:calc(52px + var(--sat,env(safe-area-inset-top))) calc(16px + env(safe-area-inset-right)) calc(16px + var(--sab,env(safe-area-inset-bottom))) calc(16px + env(safe-area-inset-left))}
+
+/* painéis com canto em degrau */
+.px{background:var(--panel);position:relative;
+  box-shadow:0 -4px 0 0 var(--line),0 4px 0 0 var(--line),-4px 0 0 0 var(--line),4px 0 0 0 var(--line);filter:drop-shadow(4px 4px 0 #000)}
+.pbtn:active{transform:translate(4px,4px);filter:none}
+.label{font-family:var(--px);font-size:9px;letter-spacing:.08em;color:var(--dim);text-transform:uppercase}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 18px}
+.back{display:inline-flex;align-items:center;gap:8px;padding:11px 12px;font-family:var(--px);font-size:9px;color:var(--dim)}
+.chip{padding:11px 12px;font-family:var(--px);font-size:9px;color:var(--glow)}
+/* marca */
+.brand{display:flex;align-items:center;gap:14px;margin-bottom:20px}
+.logo{flex:none;width:62px;height:62px;display:grid;place-items:center;position:relative;overflow:hidden;
+  font-family:var(--px);font-size:15px;color:var(--glow);text-shadow:2px 2px 0 var(--glow-d);
+  background:var(--st2);box-shadow:0 -4px 0 0 var(--st1),0 4px 0 0 var(--st1),-4px 0 0 0 var(--st1),4px 0 0 0 var(--st1),inset 0 -6px 0 0 var(--st1),inset 0 4px 0 0 var(--st3);
+  filter:drop-shadow(4px 4px 0 #000);touch-action:none}
+.brand .t{flex:1;min-width:0}
+.brand .t p{font-family:var(--px);font-size:8px;color:var(--dim);letter-spacing:.1em}
+.brand h1{font-family:var(--px);font-size:15px;line-height:1.45;margin-top:8px;color:var(--st5);text-shadow:2px 2px 0 var(--st1)}
+.snd{flex:none;width:46px;height:46px;display:grid;place-items:center;font-family:var(--px);font-size:8px;color:var(--amber)}
+
+/* terminal */
+.term{padding:14px 16px;margin-bottom:24px;min-height:88px;color:var(--glow);font-size:21px;background:#07140f;
+  box-shadow:0 -4px 0 0 #155446,0 4px 0 0 #155446,-4px 0 0 0 #155446,4px 0 0 0 #155446;filter:drop-shadow(4px 4px 0 #000)}
+.cursor{display:inline-block;width:10px;height:18px;background:var(--glow);vertical-align:-2px;margin-left:2px;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+
+/* nível */
+.nivel{display:flex;align-items:center;gap:14px;padding:16px;margin-bottom:24px}
+.nivel .n{font-family:var(--px);font-size:22px;color:var(--glow);text-shadow:2px 2px 0 var(--glow-d);min-width:34px;text-align:center}
+.nivel b{display:block;font-family:var(--px);font-size:10px;line-height:1.5;color:var(--st5)}
+.nivel span{display:block;color:var(--dim);font-size:19px;margin-top:2px}
+.pips{display:flex;gap:6px;margin-left:auto;flex:none}
+.pips i{width:14px;height:14px;background:#0b0810;box-shadow:inset 0 0 0 3px var(--line)}
+.pips i.on{background:var(--glow);box-shadow:inset 0 -4px 0 0 var(--glow-d)}
+
+/* turno */
+.turno{padding:14px 16px;margin-bottom:24px}
+.turno-top{display:flex;justify-content:space-between;align-items:baseline}
+.turno-n{font-family:var(--px);font-size:12px;color:var(--amber)}
+.turno-n.all{color:var(--green)}
+.week{display:flex;gap:6px;margin:12px 0 10px}
+.day{flex:1;display:grid;justify-items:center;gap:5px;font-family:var(--px);font-size:8px;color:var(--dim)}
+.day i{width:100%;height:14px;background:#0b0810;box-shadow:inset 0 0 0 2px var(--line2)}
+.day.part i{background:var(--amber-d)}
+.day.full i{background:var(--green)}
+.day.today{color:var(--ink)}
+.streak{color:var(--dim);font-size:20px}
+.streak b{color:var(--amber);font-weight:normal}
+
+/* missões */
+.missions{display:grid;gap:18px;margin-bottom:24px}
+.mission{display:grid;grid-template-columns:52px 1fr;gap:12px;align-items:center;padding:14px;text-align:left;width:100%}
+.mission .code{width:52px;height:52px;display:grid;place-items:center;font-family:var(--px);font-size:11px;color:var(--glow);
+  background:var(--panel2);box-shadow:inset 0 0 0 3px var(--line)}
+.mission b{display:block;font-family:var(--px);font-size:10px;line-height:1.5;color:var(--ink)}
+.mission small{display:block;color:var(--dim);font-size:19px;margin-top:3px}
+.mission .st{display:flex;align-items:center;gap:6px;margin-top:8px;font-family:var(--px);font-size:8px;color:var(--amber)}
+.mission .st.ok{color:var(--green)}
+.mission .st:not(.ok):not(.mid):not(.nx){color:var(--dim)}
+.mission .st.mid{color:var(--glow)}
+.mission.done{background:#10241a}
+.mission.done .code{opacity:.55}
+.mission.done b,.mission.done small{color:#7f9a88}
+.mission.done b{text-decoration:line-through;text-decoration-thickness:2px}
+.mission.next{background:var(--panel2);box-shadow:0 -4px 0 0 var(--amber),0 4px 0 0 var(--amber),-4px 0 0 0 var(--amber),4px 0 0 0 var(--amber)}
+.mission .st.nx::after{content:"";width:0;height:0;border-left:7px solid var(--amber);border-top:6px solid transparent;border-bottom:6px solid transparent;animation:nudge .8s steps(2) infinite}
+@keyframes nudge{50%{transform:translateX(4px)}}
+.danger.done{filter:saturate(.35) brightness(.75) drop-shadow(4px 4px 0 #000)}
+
+.danger{position:relative;display:block;width:100%;text-align:left;padding:16px;margin-bottom:22px;color:#fff;
+  background:repeating-linear-gradient(135deg,rgba(0,0,0,.2) 0 12px,transparent 12px 24px),#8a3a12;
+  box-shadow:0 -4px 0 0 var(--amber),0 4px 0 0 var(--amber),-4px 0 0 0 var(--amber),4px 0 0 0 var(--amber);filter:drop-shadow(4px 4px 0 #000);
+  animation:rumble 2s steps(1) infinite}
+@keyframes rumble{0%,90%{background-color:#8a3a12}92%{background-color:#a4461a}}
+.danger .ey{font-family:var(--px);font-size:8px;letter-spacing:.12em;opacity:.85}
+.danger .ti{font-family:var(--px);font-size:16px;margin:10px 0 8px;line-height:1.3}
+.danger .su{font-size:19px;opacity:.9}
+.danger .ok{position:absolute;top:14px;right:14px;font-family:var(--px);font-size:8px;color:var(--green)}
+.danger.done{animation:none;background:repeating-linear-gradient(135deg,rgba(0,0,0,.2) 0 12px,transparent 12px 24px),#3f2a1c}
+.tabua-btn{display:flex;width:100%;align-items:center;justify-content:center;gap:10px;padding:14px;font-family:var(--px);font-size:10px;color:var(--st5)}
+/* jogar */
+.play-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.play-head .label{color:var(--st4)}
+.segs{display:flex;gap:4px;margin-bottom:16px}
+.segs i{flex:1;height:10px;background:#0b0810;box-shadow:inset 0 0 0 2px var(--line2)}
+.segs i.on{background:var(--green)}
+.segs i.cur{background:var(--amber)}
+.brief{color:var(--dim);font-size:20px;margin-bottom:16px}
+.brief b{color:var(--st5);font-weight:normal}
+.ask{font-family:var(--px);font-size:11px;line-height:1.6;text-align:center;color:var(--st5);margin:4px 0 14px}
+
+/* ---- comemoração de missão concluída (mesmo código nos dois jogos) ---- */
+.cel{display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;width:100%}
+.cel-hero{position:relative;width:100%;height:190px;display:grid;place-items:center}
+.cel-rays{position:absolute;left:50%;top:50%;width:300px;height:300px;margin:-150px 0 0 -150px;border-radius:50%;
+  background:repeating-conic-gradient(var(--cel-ray) 0 12deg,transparent 12deg 24deg);
+  -webkit-mask:radial-gradient(circle,#000 22%,transparent 68%);mask:radial-gradient(circle,#000 22%,transparent 68%);animation:celspin 9s steps(36) infinite}
+@keyframes celspin{to{transform:rotate(360deg)}}
+.cel-av{position:relative;animation:celjump .8s steps(2) infinite}
+.cel-av .spr,.cel-av svg{display:block}
+@keyframes celjump{50%{transform:translateY(-12px)}}
+.cel.lose .cel-av{animation:celshake .3s steps(2) 4}
+@keyframes celshake{50%{transform:translateX(-6px)}}
+.cel-t{margin:0;font-family:var(--px);font-size:19px;line-height:1.4;color:var(--cel-acc);text-shadow:2px 2px 0 var(--cel-acc-d)}
+.cel.lose .cel-t{color:var(--cel-bad);text-shadow:2px 2px 0 #000}
+.cel-sub{margin:-4px 0 0;font-size:20px;line-height:1.15;color:var(--cel-dim)}
+.cel-pop{animation:celpop .36s steps(3) both}
+@keyframes celpop{0%{transform:scale(0)}65%{transform:scale(1.3)}100%{transform:scale(1)}}
+.cel-stars{display:flex;gap:16px;align-items:flex-end;height:70px}
+.cel-stars span:nth-child(2){margin-bottom:12px}
+.cel-score{display:flex;align-items:baseline;gap:4px;font-family:var(--px);color:var(--cel-ink)}
+.cel-score b{font-weight:400;font-size:28px;color:var(--cel-acc);text-shadow:2px 2px 0 var(--cel-acc-d);min-width:1.1em;text-align:right}
+.cel-score span{font-size:16px}
+.cel-score small{font-family:var(--vt);font-size:20px;color:var(--cel-dim);margin-left:10px}
+.cel-en{display:flex;align-items:center;gap:8px;margin-top:-4px;font-family:var(--px);font-size:10px;color:#ffb300;text-shadow:2px 2px 0 #000;animation-delay:.3s}
+.cel-turno{width:100%;padding:12px 14px;text-align:left}
+.cel-tl{display:flex;justify-content:space-between;font-family:var(--px);font-size:8px;line-height:1;color:var(--cel-dim)}
+.cel-tl b{font-weight:400;color:var(--cel-ink)}
+.cel-segs{display:flex;gap:6px;margin-top:10px}
+.cel-segs i{flex:1;height:12px;background:rgba(0,0,0,.4);box-shadow:inset 0 0 0 2px var(--cel-edge)}
+.cel-segs i.on{background:var(--cel-ok);box-shadow:inset 0 -4px 0 0 rgba(0,0,0,.3)}
+.cel-segs i.flash{animation:celflash .5s steps(2) 3}
+@keyframes celflash{50%{background:#fff}}
+.cel-banner{margin-top:12px;padding:10px 8px;font-family:var(--px);font-size:9px;line-height:1.5;text-align:center;color:#1a1200;background:var(--cel-acc2)}
+.cel-btns{width:100%;display:flex;flex-direction:column;gap:12px;visibility:hidden}
+.cel-btns.on{visibility:visible;animation:celup .3s steps(3)}
+@keyframes celup{from{transform:translateY(16px);opacity:0}}
+.cel-cf{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:45;image-rendering:pixelated}
+@media (prefers-reduced-motion:reduce){.cel-rays,.cel-av{animation:none}}
+.cel-btns>*{margin:0!important;width:100%}
+#res{--cel-acc:var(--glow);--cel-acc-d:var(--glow-d);--cel-acc2:var(--amber);--cel-dim:var(--dim);--cel-ink:var(--ink);--cel-ok:var(--green);--cel-edge:var(--line2);--cel-bad:var(--red);--cel-ray:rgba(63,242,196,.22)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.ghost{height:52px;display:flex;align-items:center;justify-content:center;gap:8px;font-family:var(--px);font-size:9px;color:var(--dim)}
+.btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;margin-top:14px;padding:17px 12px;font-family:var(--px);font-size:12px;
+  background:var(--amber);color:#1a1200;
+  box-shadow:0 -4px 0 0 var(--amber-d),0 4px 0 0 var(--amber-d),-4px 0 0 0 var(--amber-d),4px 0 0 0 var(--amber-d),inset 0 -5px 0 0 var(--amber-d);
+  filter:drop-shadow(4px 4px 0 #000)}
+.btn:active{transform:translate(4px,4px);filter:none}
+.btn[disabled]{opacity:.45}
+
+.keys{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.key{height:50px;font-family:var(--px);font-size:18px;color:var(--ink)}
+.key.ok{background:var(--amber);color:#1a1200;box-shadow:0 -4px 0 0 var(--amber-d),0 4px 0 0 var(--amber-d),-4px 0 0 0 var(--amber-d),4px 0 0 0 var(--amber-d),inset 0 -5px 0 0 var(--amber-d)}
+
+.opts{display:grid;gap:14px}
+.opt{padding:16px 12px;font-family:var(--px);font-size:18px;color:var(--glow);text-shadow:2px 2px 0 var(--glow-d);text-align:center}
+.opt.n{color:var(--ink);text-shadow:none}
+.opt.bad{opacity:.35;text-decoration:line-through}
+.opt.good{background:#153a26}
+.pair{display:flex;align-items:center;justify-content:center;gap:18px}
+.pair .vs{font-family:var(--px);font-size:10px;color:var(--st1)}
+
+.fb{min-height:0;margin-top:12px;padding:0 14px;font-size:21px;line-height:1.2}
+.fb:not(:empty){padding:12px 14px}
+.fb.ok{color:var(--green);background:#0e2016;box-shadow:inset 4px 0 0 0 var(--green)}
+.fb.no{color:#ffb4aa;background:#2a1011;box-shadow:inset 4px 0 0 0 var(--red)}
+.fb b{font-family:var(--px);font-size:10px;display:block;margin-bottom:6px}
+.fb.ok b{color:var(--green)}.fb.no b{color:var(--red)}
+.fb .eq{color:var(--ink)}
+/* resultado */
+.result{text-align:center;padding:26px 18px}
+.result h2{font-family:var(--px);font-size:15px;line-height:1.5;color:var(--glow);margin:18px 0 10px}
+.result .score{font-family:var(--px);font-size:28px;color:var(--st5);margin:14px 0 6px}
+.result p{color:var(--dim)}
+.gate{display:grid;place-items:center}
+
+/* sobreposições */
+.overlay{position:fixed;inset:0;z-index:60;display:flex;overflow:auto;-webkit-overflow-scrolling:touch;
+  padding:calc(52px + var(--sat,env(safe-area-inset-top))) 16px calc(16px + var(--sab,env(safe-area-inset-bottom)));background:rgba(8,6,12,.93)}
+.modal{width:100%;max-width:400px;padding:22px 18px;margin:auto}
+.modal h2{font-family:var(--px);font-size:12px;color:var(--amber);line-height:1.5;margin-bottom:14px;text-align:center}
+.modal p{color:var(--dim);margin-top:10px}
+.modal ul{list-style:none;display:grid;gap:10px;margin-top:14px}
+.modal li{color:var(--ink);font-size:20px}
+.modal li b{font-family:var(--px);font-size:12px;color:var(--glow);font-weight:normal;margin-right:6px}
+.tsyms{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.tsyms .s{height:70px;display:grid;place-items:center;align-content:center;gap:6px;background:var(--st2);box-shadow:inset 0 -5px 0 0 var(--st1),inset 0 4px 0 0 var(--st3)}
+.tsyms .s b{font-family:var(--px);font-size:18px;color:var(--glow);text-shadow:2px 2px 0 var(--glow-d)}
+.tsyms .s i{font-style:normal;font-size:20px;color:var(--st5)}
+.tsyms .s.lock{background:var(--panel2);box-shadow:inset 0 0 0 3px var(--line)}
+.tsyms .s.lock b,.tsyms .s.lock i{color:#9a8aa0;text-shadow:none}
+.levelup{text-align:center}
+.levelup .big{font-family:var(--px);font-size:48px;color:var(--glow);text-shadow:4px 4px 0 var(--glow-d);margin:18px 0 6px}
+.stat{margin-top:14px}
+.stat .top{display:flex;justify-content:space-between;font-size:20px}
+.stat .top .v{color:var(--dim)}
+.meter{height:10px;background:#0b0810;box-shadow:inset 0 0 0 2px var(--line);margin-top:6px}
+.meter i{display:block;height:100%;background:var(--glow)}
+.errs{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.errs span{background:var(--panel2);padding:4px 8px;font-size:19px}
+.lv{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
+.lv button{padding:12px 0;font-family:var(--px);font-size:10px;color:var(--dim)}
+.lv button.on{color:var(--glow);box-shadow:0 -4px 0 0 var(--glow),0 4px 0 0 var(--glow),-4px 0 0 0 var(--glow),4px 0 0 0 var(--glow)}
+.sep{height:3px;margin:18px 0 4px;background:repeating-linear-gradient(90deg,var(--line) 0 6px,transparent 6px 12px)}
+.shake{animation:shake .3s steps(4)}
+@keyframes shake{25%{transform:translateX(-6px)}50%{transform:translateX(6px)}75%{transform:translateX(-3px)}}
+/* no navegador (fora do atalho) não há Dynamic Island nem desfoque no topo: menos folga em cima */
+html.web #app{padding-top:calc(20px + var(--sat,env(safe-area-inset-top)))}
+html.web .overlay{padding-top:calc(24px + var(--sat,env(safe-area-inset-top)))}
+
+/* ---------- Máquina do Tempo: menu ---------- */
+.logo{background:#2a2019}
+.mission .st.xt{color:var(--glow)}
+.viagem{padding:14px 16px;margin-bottom:24px}
+.viagem .turno-top{margin-bottom:12px}
+.caps{display:flex;gap:8px;overflow-x:auto;padding:4px 4px 8px;margin:0 -4px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.caps::-webkit-scrollbar{display:none}
+.cap{flex:none;width:62px;display:grid;justify-items:center;gap:6px;padding:8px 2px 7px;background:#140f0b;box-shadow:inset 0 0 0 2px var(--line)}
+.cap i{height:34px;display:grid;place-items:center;font-style:normal}
+.cap span{font-family:var(--px);font-size:6px;line-height:1.3;color:var(--dim);text-align:center}
+.cap.ok{background:#20301e;box-shadow:inset 0 0 0 2px #3f7a35}
+.cap.ok span{color:var(--green)}
+.cap.now{background:var(--panel2);box-shadow:inset 0 0 0 2px var(--amber)}
+.cap.now span{color:var(--amber)}
+.cap.lock i{font-family:var(--px);font-size:14px;color:#5a4a3a}
+.pass{padding:14px 16px;margin-bottom:22px}
+.stamps{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
+.stamp{display:grid;justify-items:center;gap:8px;padding:12px 4px 10px;background:#140f0b;box-shadow:inset 0 0 0 2px var(--line)}
+.stamp .ring{width:54px;height:54px;display:grid;place-items:center;
+  background:repeating-linear-gradient(90deg,transparent 0 4px,#140f0b 4px 6px) 0 0/100% 3px no-repeat,repeating-linear-gradient(90deg,transparent 0 4px,#140f0b 4px 6px) 0 100%/100% 3px no-repeat;
+  box-shadow:inset 0 0 0 3px #4a3a2c}
+.stamp .ring .spr{opacity:.25;filter:grayscale(1)}
+.stamp span{font-family:var(--px);font-size:6px;line-height:1.4;color:var(--dim);text-align:center}
+.stamp.got{background:#2a1a14}
+.stamp.got .ring{box-shadow:inset 0 0 0 3px #e03a26;transform:rotate(-6deg)}
+.stamp.got .ring .spr{opacity:1;filter:none}
+.stamp.got span{color:#ffb4a8}
+.danger{background:repeating-linear-gradient(135deg,rgba(0,0,0,.22) 0 12px,transparent 12px 24px),#6b4528;animation:none}
+.danger.done{background:repeating-linear-gradient(135deg,rgba(0,0,0,.2) 0 12px,transparent 12px 24px),#3a2a1c}
+.danger .dico{position:absolute;right:14px;bottom:12px}
+.danger .ok{color:var(--green)}
+
+/* ---------- telas de jogo ---------- */
+.screen.game:not([hidden]){display:flex;flex-direction:column;min-height:calc(100vh - 68px - var(--sat,env(safe-area-inset-top)) - var(--sab,env(safe-area-inset-bottom)));
+  min-height:calc(100dvh - 68px - var(--sat,env(safe-area-inset-top)) - var(--sab,env(safe-area-inset-bottom)))}
+html.web .screen.game:not([hidden]){min-height:calc(100dvh - 36px - var(--sat,env(safe-area-inset-top)) - var(--sab,env(safe-area-inset-bottom)))}
+.ctitle{font-family:var(--px);font-size:13px;line-height:1.5;color:var(--st5);margin:-4px 0 12px;text-shadow:2px 2px 0 #000}
+/* cena */
+.scn{position:relative;align-self:center;margin-bottom:14px;box-shadow:0 -4px 0 0 var(--st2),0 4px 0 0 var(--st2),-4px 0 0 0 var(--st2),4px 0 0 0 var(--st2);filter:drop-shadow(4px 4px 0 #000);background:#000}
+.scn canvas{display:block;image-rendering:pixelated}
+.scn .lbl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;font-family:var(--px);font-size:8px;line-height:1;pointer-events:none}
+.scn .sg{padding:5px 6px 4px;color:#f5ecdc;background:#6b4528;box-shadow:0 -2px 0 0 #3b2416,0 2px 0 0 #3b2416,-2px 0 0 0 #3b2416,2px 0 0 0 #3b2416}
+.scn .cap{display:block;width:auto;padding:0;background:none;box-shadow:none;color:#3b2416}
+.scn .bub{padding:6px 7px 5px;color:#140c08;background:#fff;box-shadow:0 -2px 0 0 #140c08,0 2px 0 0 #140c08,-2px 0 0 0 #140c08,2px 0 0 0 #140c08}
+/* texto do diário: papel antigo */
+.page{position:relative;padding:14px 16px 16px;margin-bottom:14px;color:#2a1a10;background:var(--paper);font-size:22px;line-height:1.12;
+  box-shadow:0 -4px 0 0 var(--paper-d),0 4px 0 0 var(--paper-d),-4px 0 0 0 var(--paper-d),4px 0 0 0 var(--paper-d),inset 0 -5px 0 0 #e0cfa6;filter:drop-shadow(4px 4px 0 #000)}
+.word{margin-top:12px;padding:10px 12px;background:#2a2019;color:var(--ink);font-size:20px;box-shadow:inset 4px 0 0 0 var(--amber)}
+.word b{display:block;font-family:var(--px);font-size:8px;font-weight:normal;color:var(--amber);margin-bottom:6px;letter-spacing:.06em}
+.word b em{font-style:normal;color:#fff}
+.dots{display:flex;justify-content:center;gap:6px;margin-bottom:12px}
+.dots i{width:10px;height:10px;background:#140f0b;box-shadow:inset 0 0 0 2px var(--line2)}
+.dots i.on{background:var(--amber);box-shadow:none}
+.nav3{display:grid;grid-template-columns:62px 1fr 62px;gap:10px;margin-top:auto}
+.nav3 .key{height:56px}
+.key[disabled]{opacity:.35;filter:none}
+.tts{display:flex;align-items:center;justify-content:center;gap:10px;height:56px;font-family:var(--px);font-size:10px;color:var(--glow)}
+.tts.on{color:#06140c;background:var(--glow)}
+.tts.on .spr{filter:invert(1)}
+.nxt{height:56px;margin:0}
+/* perguntas */
+.qbox{padding:14px 16px;margin-bottom:14px}
+.qtag{font-family:var(--px);font-size:7px;color:var(--dim);margin-bottom:10px;letter-spacing:.06em}
+.qtxt{font-size:24px;line-height:1.12;color:var(--ink)}
+.opts{display:grid;gap:12px;margin-bottom:12px}
+.opt{text-shadow:none;padding:15px 12px;font-family:var(--vt);font-size:23px;line-height:1.05;color:var(--ink);text-align:left}
+.opt.good{background:#153a26;box-shadow:0 -4px 0 0 var(--green),0 4px 0 0 var(--green),-4px 0 0 0 var(--green),4px 0 0 0 var(--green)}
+.opt.bad{opacity:.4;text-decoration:line-through}
+.opt.show{background:#153a26}
+.qfoot{display:grid;grid-template-columns:1fr;gap:10px;margin-top:auto}
+.qfoot.two{grid-template-columns:1fr 1fr}
+/* linha do tempo */
+.ins{color:var(--dim);font-size:21px;margin-bottom:12px}
+.ins b{color:var(--amber);font-weight:normal}
+.tl{position:relative;display:grid;gap:8px;padding-left:26px;margin-bottom:14px}
+.tl::before{content:"";position:absolute;left:9px;top:6px;bottom:6px;width:4px;background:var(--line2)}
+.slot{position:relative;min-height:46px;display:flex;align-items:center;gap:10px;padding:6px 10px;background:#140f0b;box-shadow:inset 0 0 0 2px var(--line);color:var(--dim);font-size:20px}
+.slot::before{content:"";position:absolute;left:-22px;top:50%;width:12px;height:12px;margin-top:-6px;background:var(--line2)}
+.slot.f{background:var(--paper);color:#2a1a10;box-shadow:none}
+.slot.f::before{background:var(--amber)}
+.slot .yr{flex:none;min-width:58px;font-family:var(--px);font-size:8px;line-height:1.3;color:#7a3a10}
+.slot.new{animation:pop .3s steps(3)}
+@keyframes pop{from{transform:scale(.6)}}
+.bank{display:grid;grid-template-columns:1fr;gap:10px;margin-top:auto}
+.evc{display:grid;grid-template-columns:34px 1fr;gap:10px;align-items:center;min-height:52px;padding:8px 12px;text-align:left;font-size:21px;line-height:1.02;color:var(--ink)}
+.evc .ic{display:grid;place-items:center}
+.evc.bad{background:#3a1410}
+.fb{min-height:0;margin:0 0 12px;padding:0 14px;font-size:21px;line-height:1.15}
+.fb:not(:empty){padding:12px 14px}
+/* arquivo */
+.drawers{display:flex;gap:6px;margin-bottom:14px}
+.drawers i{flex:1;display:grid;justify-items:center;gap:4px;padding:6px 0 5px;font-style:normal;font-family:var(--px);font-size:7px;color:var(--dim);background:#140f0b;box-shadow:inset 0 0 0 2px var(--line)}
+.drawers i b{font-weight:normal;font-size:10px;color:var(--ink)}
+.drawers i.hot{box-shadow:inset 0 0 0 2px var(--amber)}
+.drawers i.up{animation:pop .4s steps(3)}
+/* casa enxaimel */
+.hs{position:absolute;padding:0;background:rgba(127,227,255,.14);box-shadow:inset 0 0 0 2px rgba(127,227,255,.75);animation:hsb 1s steps(2) infinite}
+@keyframes hsb{50%{background:rgba(127,227,255,.32)}}
+.mats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.mats button{display:flex;align-items:center;justify-content:center;gap:10px;height:52px;font-family:var(--px);font-size:9px;color:var(--dim)}
+.mats button i{width:18px;height:14px}
+.mats button.on{color:var(--ink);box-shadow:0 -4px 0 0 var(--amber),0 4px 0 0 var(--amber),-4px 0 0 0 var(--amber),4px 0 0 0 var(--amber)}
+.guide{padding:12px 14px;margin-bottom:12px}
+.guide .label{color:var(--amber);margin-bottom:8px}
+.guide p{font-size:21px;line-height:1.12;color:var(--ink)}
+.guide p.fact{margin-top:6px;color:var(--glow);font-size:20px}
+.steps{display:flex;gap:4px;margin-bottom:12px}
+.steps i{flex:1;height:10px;background:#140f0b;box-shadow:inset 0 0 0 2px var(--line2)}
+.steps i.on{background:var(--green);box-shadow:none}
+.steps i.cur{background:var(--amber);box-shadow:none}
+/* viagem no tempo */
+#warp{position:fixed;inset:0;z-index:70;display:grid;place-items:center;background:#05040f}
+#warp canvas{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated}
+#warp .yr{position:relative;font-family:var(--px);font-size:34px;color:var(--amber);text-shadow:4px 4px 0 #000;text-align:center;line-height:1.3}
+#warp .yr small{display:block;font-size:10px;color:var(--glow);margin-bottom:14px;letter-spacing:.1em}
+/* carimbo novo */
+.stampbig{display:grid;place-items:center;margin:10px auto 6px;width:120px;height:120px;transform:rotate(-8deg);box-shadow:inset 0 0 0 6px #e03a26;animation:stamp .5s steps(4) both}
+@keyframes stamp{from{transform:rotate(-8deg) scale(2.2);opacity:0}}
+.words li{display:block}
+.words li b{display:block;font-size:9px!important;margin-bottom:4px}
+@media (max-height:700px){.page{font-size:21px;padding:12px 14px}.ctitle{margin-bottom:8px}.nav3 .key,.tts,.nxt{height:50px}.opt{padding:12px}}
+</style>
+<script>
+/* sem zoom: bloqueia pinça e dois toques no app inteiro */
+['gesturestart','gesturechange','gestureend'].forEach(t=>document.addEventListener(t,e=>e.preventDefault(),{passive:false}));
+document.addEventListener('touchmove',e=>{if(e.touches.length>1)e.preventDefault()},{passive:false});
+document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
+</script>
+</head>
+<body>
+<canvas id="bgc"></canvas>
+
+<main id="app">
+<!-- MENU -->
+<section class="screen" id="menu">
+  <div class="bar"><button class="back px pbtn" data-home>&lt; Nave-Mãe</button></div>
+  <header class="brand">
+    <div class="logo" id="logo" aria-label="Máquina do Tempo"></div>
+    <div class="t"><p>PLANETA HISTÓRIA · TERRA</p><h1>Máquina do Tempo</h1></div>
+  </header>
+  <div class="term"><span id="term"></span><span class="cursor"></span></div>
+
+  <div class="viagem px">
+    <div class="turno-top"><span class="label">Viagem por Ivoti</span><span class="turno-n" id="capN">0 / 12</span></div>
+    <div class="caps" id="caps"></div>
+  </div>
+
+  <div class="turno px">
+    <div class="turno-top"><span class="label">Turno de hoje</span><span class="turno-n" id="turnoN">0 / 3</span></div>
+    <div class="week" id="week"></div>
+    <p class="streak" id="streak"></p>
+  </div>
+
+  <nav class="missions">
+    <button class="mission px pbtn" data-go="diario"><span class="code" data-ico="scroll"></span><span><b>Diário da viagem</b><small id="diaSub">Capítulo do dia</small><span class="st" data-st="diario"></span></span></button>
+    <button class="mission px pbtn" data-go="linha"><span class="code" data-ico="hourglass"></span><span><b>Linha do tempo</b><small>O que veio antes?</small><span class="st" data-st="linha"></span></span></button>
+    <button class="mission px pbtn" data-go="arquivo"><span class="code" data-ico="stampMuseum"></span><span><b>Arquivo da memória</b><small>Lembre o que já viu</small><span class="st" data-st="arquivo"></span></span></button>
+  </nav>
+
+  <button class="danger" id="goCasa">
+    <div class="ey">DESAFIO OPCIONAL</div>
+    <div class="ti">MONTE A CASA ENXAIMEL</div>
+    <div class="su">Madeira, pregos de pau, barro e tijolo.</div>
+    <span class="ok" id="casaOk" hidden>FEITO ✓</span>
+    <span class="dico" id="casaIco"></span>
+  </button>
+
+  <div class="pass px">
+    <div class="turno-top"><span class="label">Passaporte de Ivoti</span><span class="turno-n" id="passN">0 / 6</span></div>
+    <div class="stamps" id="stamps"></div>
+  </div>
+
+  <button class="tabua-btn px pbtn" id="openWords"><span id="wordIco"></span>CADERNO DE PALAVRAS</button>
+</section>
+
+<!-- DIÁRIO -->
+<section class="screen game" id="dia" hidden>
+  <div class="bar"><button class="back px pbtn" data-back>&lt; Máquina</button><button class="chip px pbtn" data-words>PALAVRAS</button></div>
+  <div class="play-head"><span class="label" id="dHead"></span><span class="label" id="dPg"></span></div>
+  <h2 class="ctitle" id="dTitle"></h2>
+  <div id="dBody" style="display:flex;flex-direction:column;flex:1"></div>
+</section>
+
+<!-- LINHA DO TEMPO -->
+<section class="screen game" id="lin" hidden>
+  <div class="bar"><button class="back px pbtn" data-back>&lt; Máquina</button></div>
+  <div class="play-head"><span class="label">LINHA DO TEMPO</span><span class="label" id="lN"></span></div>
+  <div class="segs" id="lSegs"></div>
+  <p class="ins">Toque no acontecimento <b>mais antigo</b> que ainda falta.</p>
+  <div class="tl" id="tl"></div>
+  <div class="fb" id="lfb"></div>
+  <div class="bank" id="bank"></div>
+</section>
+
+<!-- ARQUIVO -->
+<section class="screen game" id="arq" hidden>
+  <div class="bar"><button class="back px pbtn" data-back>&lt; Máquina</button><button class="chip px pbtn" data-words>PALAVRAS</button></div>
+  <div class="play-head"><span class="label">ARQUIVO DA MEMÓRIA</span><span class="label" id="aN"></span></div>
+  <div class="segs" id="aSegs"></div>
+  <div class="drawers" id="drawers"></div>
+  <div id="aBody" style="display:flex;flex-direction:column;flex:1"></div>
+</section>
+
+<!-- CASA ENXAIMEL -->
+<section class="screen game" id="casa" hidden>
+  <div class="bar"><button class="back px pbtn" data-back>&lt; Máquina</button></div>
+  <div class="play-head"><span class="label">MONTE A CASA ENXAIMEL</span><span class="label" id="cN"></span></div>
+  <div class="steps" id="cSteps"></div>
+  <div id="cBody" style="display:flex;flex-direction:column;flex:1"></div>
+</section>
+
+<!-- RESULTADO -->
+<section class="screen" id="res" hidden></section>
+</main>
+
+<div id="warp" hidden><canvas id="warpc"></canvas><div class="yr" id="warpY"></div></div>
+
+<!-- CADERNO DE PALAVRAS -->
+<div class="overlay" id="words" hidden>
+  <div class="modal px">
+    <h2>CADERNO DE PALAVRAS</h2>
+    <ul class="words" id="wordList"></ul>
+    <button class="btn" data-close>FECHAR</button>
+  </div>
+</div>
+<!-- CARIMBO -->
+<div class="overlay" id="passDlg" hidden>
+  <div class="modal px" id="passBody"></div>
+</div>
+
+<script>
+/* atualização automática: compara com version.json e recarrega com ?v=<versão> no endereço (o iPhone não reaproveita a
+   página guardada). Se mesmo com ?v=<versão> a página veio velha, não insiste (evita recarregar sem parar). */
+const APP_V='20261005213653';
+(function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris|mina|ivoti)\/$/,'');
+  async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
+    const q=new URLSearchParams(location.search).get('v');
+    if(v&&v!==APP_V&&q!==v)location.replace(location.pathname+'?v='+v+H0)}catch(e){}}
+  check();document.addEventListener('visibilitychange',()=>{if(!document.hidden)check()});addEventListener('pageshow',e=>{if(e.persisted)check()});
+})();
+</script>
+<script>
+/* som no iPhone (opção "Tocar no silencioso" das configurações da Nave-Mãe):
+   desligada = modo "ambiente": mistura com a música do celular, e a chave de silencioso cala o app;
+   ligada = modo "reprodução": toca mesmo no silencioso, mas o iOS pausa as outras mídias.
+   O iOS não oferece a sites um modo que faça as duas coisas. */
+function navAudioMode(){let on=false;try{on=!!(JSON.parse(localStorage.getItem('navemae-v1'))||{}).silentPlay}catch(e){}
+  try{if(navigator.audioSession)navigator.audioSession.type=on?'playback':'ambient'}catch(e){}}
+navAudioMode();addEventListener('pageshow',navAudioMode);
+/* todo contexto de áudio nasce depois de reafirmar o modo (no iOS, o modo vale para o contexto criado em seguida) */
+function newAC(){navAudioMode();return new (window.AudioContext||window.webkitAudioContext)()}
+/* vibração leve a cada toque.
+   iPhone: o Safari não tem API de vibração; o único jeito é o toque do próprio dedo cair num interruptor nativo
+   (<input type=checkbox switch>, iOS 18+). Por isso cada botão recebe por dentro um <label> invisível que cobre
+   o botão inteiro e aciona um interruptor escondido; o clique continua chegando ao botão normalmente.
+   Android: navigator.vibrate. */
+(function(){
+  const IOS=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+  const SEL='button,a[href],[role=button]';
+  if(!IOS){document.addEventListener('click',e=>{if(navigator.vibrate&&e.target.closest(SEL))try{navigator.vibrate(8)}catch(_){}} ,true);return}
+  function arm(el){if(el.disabled||el.querySelector(':scope>label[data-hap]'))return;
+    const l=document.createElement('label');l.setAttribute('data-hap','');l.setAttribute('aria-hidden','true');
+    const i=document.createElement('input');i.type='checkbox';i.setAttribute('switch','');i.tabIndex=-1;
+    i.addEventListener('click',e=>e.stopPropagation());l.append(i);
+    // o label "rouba" a ação nativa do elemento: refaz a navegação do link e o envio do formulário
+    l.addEventListener('click',e=>{if(e.target!==l)return;setTimeout(()=>{if(e.defaultPrevented)return;
+      if(el.tagName==='A'&&el.href)location.href=el.href;else if(el.type==='submit'&&el.form)el.form.requestSubmit(el)},0)});
+    if(getComputedStyle(el).position==='static')el.style.position='relative';
+    el.append(l)}
+  function scan(root){if(root.nodeType!==1)return;if(root.matches(SEL))arm(root);root.querySelectorAll(SEL).forEach(arm)}
+  const st=document.createElement('style');
+  st.textContent='label[data-hap]{position:absolute;inset:0;z-index:5;display:block;margin:0;padding:0;background:none;touch-action:manipulation;-webkit-tap-highlight-color:transparent}'+
+    'label[data-hap]>input{position:absolute;width:1px;height:1px;margin:0;opacity:0;pointer-events:none}'+
+    ':disabled>label[data-hap]{pointer-events:none}';
+  document.head.append(st);
+  function start(){scan(document.body);new MutationObserver(ms=>{for(const m of ms){m.addedNodes.forEach(scan);
+    if(m.type==='childList'&&m.target.closest){const t=m.target.closest(SEL);if(t)arm(t)} // texto do botão trocado: arma de novo
+    if(m.type==='attributes'&&m.target.matches&&m.target.matches(SEL))arm(m.target)}}).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['disabled']})}
+  if(document.body)start();else document.addEventListener('DOMContentLoaded',start);
+})();
+</script>
+<script>
+/* =================== conteúdo: a história de Ivoti ===================
+   Fontes: Prefeitura de Ivoti (Ponte do Imperador, Núcleo de Casas Enxaimel, Museu Cláudio Oscar Becker,
+   Memorial da Colônia Japonesa), Wikipédia (Ivoti, Colônia Ivoti) e Cidades do Meu Brasil.
+   Cada capítulo: páginas (cena + texto), palavra nova, acontecimentos da linha do tempo e perguntas
+   (a primeira alternativa é a certa; o jogo embaralha). Texto curto, para leitura de criança de 9 anos. */
+const EVENTS={
+  povos:{y:-12000,lb:'HÁ 12 MIL ANOS',t:'Os primeiros povos vivem na região',ic:'arrow'},
+  colono:{y:1824,lb:'1824',t:'Primeiros imigrantes alemães chegam a São Leopoldo',ic:'ship'},
+  picada:{y:1826,lb:'1826',t:'Famílias alemãs começam a morar à beira do Arroio Feitoria',ic:'person'},
+  evang:{y:1846,lb:'1846',t:'Começa a comunidade evangélica',ic:'church'},
+  catol:{y:1857,lb:'1857',t:'Pedra fundamental da igreja católica',ic:'church'},
+  ponte:{y:1864,lb:'1864',t:'Fica pronta a Ponte do Imperador',ic:'stampBridge'},
+  bomj:{y:1867,lb:'1867',t:'O lugar passa a se chamar Bom Jardim',ic:'scroll'},
+  ivoti:{y:1938,lb:'1938',t:'O nome muda para Ivoti, que quer dizer flor',ic:'flowerP'},
+  cidade:{y:1964,lb:'1964',t:'Ivoti vira município',ic:'urna'},
+  posse:{y:1965,lb:'1965',t:'Toma posse o primeiro prefeito de Ivoti',ic:'scroll'},
+  japao:{y:1966,lb:'1966',t:'Chegam as primeiras famílias japonesas',ic:'stampSakura'},
+  iphan:{y:1986,lb:'1986',t:'A Ponte do Imperador vira patrimônio do Brasil',ic:'stampBridge'},
+  dist92:{y:1992,lb:'1992',t:'Lindolfo Collor e Presidente Lucena viram municípios',ic:'scroll'},
+  museu:{y:1995,lb:'1995',t:'Abre o Museu Cláudio Oscar Becker',ic:'stampMuseum'},
+  memor:{y:2011,lb:'2011',t:'Abre o Memorial da Colônia Japonesa',ic:'stampSakura'},
+  hoje:{y:2026,lb:'HOJE',t:'Você estuda a história de Ivoti',ic:'hourglass'},
+};
+const CAPS=[
+ {id:'intro',ano:'HOJE',t:'Pouso em Ivoti',ic:'hourglass',
+  pg:[{sc:'space',tx:'Piloto, a Nave-Mãe chegou ao planeta Terra! Lá embaixo fica o Brasil. No sul do Brasil fica o estado do Rio Grande do Sul.'},
+      {sc:'cidade',tx:'No Rio Grande do Sul existe uma cidade chamada Ivoti. Ela é conhecida como a Cidade das Flores.'},
+      {sc:'maquina',tx:'A Nave-Mãe tem uma Máquina do Tempo. A cada dia, ela leva você a uma época da história de Ivoti.'},
+      {sc:'linha',tx:'Primeiro viveram aqui os povos indígenas, há milhares de anos. Depois chegaram imigrantes alemães. Em 1964, Ivoti virou cidade. E hoje você está aqui!'}],
+  w:['LINHA DO TEMPO','Os acontecimentos em ordem, do mais antigo para o mais novo.'],
+  ev:['povos','picada','cidade','hoje'],
+  q:[{k:'Estado de Ivoti',q:'Em que estado fica Ivoti?',a:['Rio Grande do Sul','Santa Catarina','Bahia'],x:'Ivoti fica no Rio Grande do Sul, no sul do Brasil.'},
+     {k:'Apelido de Ivoti',q:'Qual é o apelido de Ivoti?',a:['Cidade das Flores','Cidade das Pedras','Cidade do Mar'],x:'Ivoti é a Cidade das Flores.'},
+     {k:'O que veio primeiro',q:'O que veio primeiro na história de Ivoti?',a:['Os povos indígenas','Os imigrantes alemães','A cidade de Ivoti'],x:'Os povos indígenas viveram aqui milhares de anos antes de todos.'}]},
+ {id:'povos',ano:'HÁ 12 MIL ANOS',t:'Os primeiros moradores',ic:'arrow',
+  pg:[{sc:'mata',tx:'Muito antes de existir cidade, já viviam pessoas nesta região. Elas chegaram há uns 12 mil anos!'},
+      {sc:'mata2',tx:'Esses povos caçavam, pescavam e coletavam frutos na mata. Eles faziam pontas de flecha de pedra.'},
+      {sc:'escava',tx:'Como sabemos disso? Arqueólogos acham pontas de flecha enterradas no chão. Os cientistas chamam esses povos de Tradição Umbu.'},
+      {sc:'mata3',tx:'Mais tarde, povos indígenas como os Guarani e os Kaingang viveram no Rio Grande do Sul. Até o nome Ivoti vem de uma língua indígena!'}],
+  w:['ARQUEÓLOGO','Cientista que estuda objetos antigos para descobrir como as pessoas viviam.'],
+  ev:['povos'],
+  q:[{k:'Primeiros moradores: quando',q:'Há quanto tempo chegaram os primeiros moradores da região?',a:['Uns 12 mil anos','Uns 100 anos','Uns 10 anos'],x:'Eles chegaram há uns 12 mil anos.'},
+     {k:'Pontas de flecha',q:'O que esses povos faziam de pedra?',a:['Pontas de flecha','Pontes','Casas'],x:'Eles faziam pontas de flecha de pedra.'},
+     {k:'Arqueólogo',q:'Quem estuda objetos antigos enterrados no chão?',a:['O arqueólogo','O astronauta','O dentista'],x:'O arqueólogo estuda objetos antigos.'},
+     {k:'Língua do nome Ivoti',q:'O nome Ivoti vem de que língua?',a:['Tupi-guarani, uma língua indígena','Alemão','Japonês'],x:'Ivoti vem do tupi-guarani.'}]},
+ {id:'viagem',ano:'1824',t:'A grande viagem',ic:'ship',
+  pg:[{sc:'mar',tx:'Em 1824, o Brasil tinha um imperador: Dom Pedro I. O governo convidou famílias da Alemanha para morar e plantar no sul do Brasil.'},
+      {sc:'mar2',tx:'Muitas famílias vinham de uma região alemã chamada Hunsrück. Elas cruzaram o Oceano Atlântico de navio. A viagem durava meses!'},
+      {sc:'porto',tx:'No dia 25 de julho de 1824, os primeiros imigrantes alemães chegaram a São Leopoldo, pertinho de onde hoje é Ivoti. Por isso, 25 de julho é o Dia do Colono.'}],
+  w:['IMIGRANTE','Pessoa que sai do seu país para morar em outro.'],
+  ev:['colono'],
+  q:[{k:'País dos imigrantes',q:'De qual país vieram esses imigrantes?',a:['Alemanha','Japão','Portugal'],x:'Eles vieram da Alemanha, de uma região chamada Hunsrück.'},
+     {k:'Como cruzaram o oceano',q:'Como eles cruzaram o oceano?',a:['De navio','De avião','De trem'],x:'De navio, numa viagem de meses.'},
+     {k:'Dia do Colono',q:'Em que dia de 1824 chegaram os primeiros a São Leopoldo?',a:['25 de julho','25 de dezembro','1º de janeiro'],x:'25 de julho, o Dia do Colono.'},
+     {k:'Imigrante',q:'O que é um imigrante?',a:['Quem muda de país para morar','Quem nunca sai de casa','Quem constrói navios'],x:'Imigrante é quem sai do seu país para morar em outro.'}]},
+ {id:'picada',ano:'1826',t:'A Picada dos Berghahn',ic:'person',
+  pg:[{sc:'lotes',tx:'Por volta de 1826, famílias de imigrantes chegaram aqui. A terra foi dividida em 48 lotes ao longo do Arroio Feitoria.'},
+      {sc:'picada',tx:'Tudo era mata fechada. Para chegar aos lotes, eles abriam caminhos no meio da mata, chamados picadas.'},
+      {sc:'placa_bh',tx:'Uma das primeiras famílias era a família Berghahn. Por isso, o lugar ganhou o nome de Berghahnerschneiss: a Picada dos Berghahn.'},
+      {sc:'roca',tx:'As famílias derrubavam árvores, construíam casas e plantavam para comer e para vender.'}],
+  w:['ARROIO','Um rio pequeno. Os lotes ficavam ao longo do Arroio Feitoria.'],
+  ev:['picada'],
+  q:[{k:'Arroio Feitoria',q:'Os lotes ficavam ao longo de qual arroio?',a:['Arroio Feitoria','Arroio Dourado','Rio Amazonas'],x:'Os lotes ficavam ao longo do Arroio Feitoria.'},
+     {k:'Picada',q:'O que é uma picada?',a:['Um caminho aberto na mata','Uma comida alemã','Um tipo de barco'],x:'Picada é um caminho aberto no meio da mata.'},
+     {k:'Primeiro nome',q:'Qual foi o primeiro nome do lugar?',a:['Picada dos Berghahn','Ivoti','Bom Jardim'],x:'Berghahnerschneiss, a Picada dos Berghahn.'},
+     {k:'48 lotes',q:'Em quantos lotes a terra foi dividida?',a:['48','4','1.000'],x:'Em 48 lotes.'}]},
+ {id:'enxaimel',ano:'1826–1950',t:'Casas de enxaimel',ic:'stampHouse',
+  pg:[{sc:'nucleo',tx:'Os imigrantes construíam casas com uma técnica europeia chamada enxaimel.'},
+      {sc:'enx_esq',tx:'Primeiro montavam a estrutura de madeira, com peças em pé, deitadas e na diagonal. As peças eram presas com encaixes e pregos de pau.'},
+      {sc:'enx_cheia',tx:'Depois preenchiam os espaços com barro ou com tijolos. A madeira fica aparecendo por fora, formando desenhos.'},
+      {sc:'nucleo2',tx:'No bairro Feitoria Nova fica um dos maiores conjuntos de casas enxaimel do Brasil, feitas entre 1826 e 1950. Numa delas funciona o Museu Cláudio Oscar Becker.'}],
+  w:['ENXAIMEL','Casa com esqueleto de madeira aparente, preenchido com barro ou tijolos.'],
+  ev:['museu'],
+  q:[{k:'Pregos de pau',q:'Como eram presas as madeiras da casa enxaimel?',a:['Com encaixes e pregos de pau','Com parafusos de ferro','Com fita adesiva'],x:'Com encaixes e pregos de pau.'},
+     {k:'Preenchimento',q:'Com o que se preenchiam os espaços entre as madeiras?',a:['Barro ou tijolos','Vidro','Papelão'],x:'Com barro ou com tijolos.'},
+     {k:'Bairro do Núcleo',q:'Em que bairro de Ivoti fica o Núcleo de Casas Enxaimel?',a:['Feitoria Nova','Copacabana','Centro de Porto Alegre'],x:'No bairro Feitoria Nova.'},
+     {k:'Museu na casa',q:'O que funciona numa casa enxaimel do Núcleo?',a:['Um museu','Um aeroporto','Um shopping'],x:'O Museu Cláudio Oscar Becker.'}]},
+ {id:'fe',ano:'1846',t:'Igrejas e língua',ic:'church',
+  pg:[{sc:'igreja',tx:'As famílias também se reuniam para rezar. A comunidade evangélica começou em 1846.'},
+      {sc:'pedra',tx:'A pedra fundamental da igreja católica foi colocada em 1857. A da igreja evangélica, em 1868.'},
+      {sc:'conversa',tx:'Em casa, os imigrantes falavam um dialeto alemão do Hunsrück. Até hoje muitos moradores mais velhos de Ivoti falam esse dialeto!'}],
+  w:['PEDRA FUNDAMENTAL','A primeira pedra de uma construção, colocada numa cerimônia.'],
+  ev:['evang','catol'],
+  q:[{k:'Dialeto',q:'Que língua os imigrantes falavam em casa?',a:['Um dialeto alemão','Japonês','Inglês'],x:'Um dialeto alemão do Hunsrück, falado até hoje.'},
+     {k:'Pedra fundamental',q:'O que é a pedra fundamental?',a:['A primeira pedra de uma construção','A pedra mais pesada do rio','Uma pedra preciosa'],x:'É a primeira pedra de uma construção.'},
+     {k:'Comunidade de 1846',q:'Qual comunidade começou em 1846?',a:['A evangélica','A japonesa','A dos tropeiros'],x:'A comunidade evangélica começou em 1846.'}]},
+ {id:'ponte',ano:'1857–1864',t:'A Ponte do Imperador',ic:'stampBridge',
+  pg:[{sc:'arroio',tx:'Os colonos precisavam levar seus produtos para vender. Mas o Arroio Feitoria atrapalhava o caminho.'},
+      {sc:'ponte_obra',tx:'O imperador Dom Pedro II mandou 30 contos de réis, o dinheiro da época, para fazer uma ponte. A obra durou de 1857 a 1864.'},
+      {sc:'ponte',tx:'A ponte tem 148 metros e três grandes arcos. Foi feita de pedra grés empilhada e encaixada. Só as três colunas levam cimento.'},
+      {sc:'ponte_iphan',tx:'Em 1986, a ponte foi tombada pelo IPHAN. Isso quer dizer que ela é patrimônio histórico do Brasil e precisa ser protegida.'}],
+  w:['PATRIMÔNIO','Algo tão importante para a história que todos devem cuidar e proteger.'],
+  ev:['ponte','iphan'],
+  q:[{k:'Dinheiro da ponte',q:'Quem mandou o dinheiro para construir a ponte?',a:['O imperador Dom Pedro II','Os imigrantes japoneses','O prefeito de Ivoti'],x:'Dom Pedro II mandou 30 contos de réis.'},
+     {k:'Arcos da ponte',q:'Quantos grandes arcos tem a Ponte do Imperador?',a:['Três','Um','Dez'],x:'Três grandes arcos.'},
+     {k:'Material da ponte',q:'De que é feita a ponte?',a:['Pedra grés','Madeira','Ferro'],x:'De pedra grés empilhada e encaixada.'},
+     {k:'Tamanho da ponte',q:'Quanto mede a ponte?',a:['148 metros','14 metros','1.480 metros'],x:'148 metros.'},
+     {k:'Para que a ponte',q:'Por que construíram a ponte?',a:['Para levar produtos e vender','Para corridas de carro','Para pescar'],x:'Para os colonos levarem seus produtos para vender.'}]},
+ {id:'bomjardim',ano:'1867',t:'Bom Jardim',ic:'scroll',
+  pg:[{sc:'vila',tx:'O lugar foi crescendo: mais famílias, casas, igrejas e comércio.'},
+      {sc:'placa_bj',tx:'Em 1867, uma lei mudou o nome de Picada dos Berghahn para Bom Jardim.'},
+      {sc:'distrito',tx:'Bom Jardim ainda não era uma cidade. Era um distrito, uma parte do município de São Leopoldo.'}],
+  w:['DISTRITO','Uma parte de um município. O distrito não tem prefeito próprio.'],
+  ev:['bomj'],
+  q:[{k:'Nome de 1867',q:'Qual nome o lugar ganhou em 1867?',a:['Bom Jardim','Ivoti','Nova Alemanha'],x:'Bom Jardim.'},
+     {k:'Município de Bom Jardim',q:'Bom Jardim era um distrito de qual município?',a:['São Leopoldo','Gramado','Pelotas'],x:'De São Leopoldo.'},
+     {k:'Distrito',q:'O que é um distrito?',a:['Uma parte de um município','Um país','Um tipo de escola'],x:'Distrito é uma parte de um município.'}]},
+ {id:'flor',ano:'1938',t:'Ivoti quer dizer flor',ic:'flowerP',
+  pg:[{sc:'placa_iv',tx:'Em 1938, o nome mudou de novo: Bom Jardim passou a se chamar Ivoti.'},
+      {sc:'flores',tx:'Ivoti vem do tupi-guarani e quer dizer flor. Um nome indígena para um lugar cheio de flores!'},
+      {sc:'feira',tx:'Por isso Ivoti é a Cidade das Flores. Na primavera acontece a Feira das Flores, no Núcleo de Casas Enxaimel.'}],
+  w:['TUPI-GUARANI','Família de línguas de povos indígenas do Brasil.'],
+  ev:['ivoti'],
+  q:[{k:'Significado de Ivoti',q:'O que quer dizer Ivoti?',a:['Flor','Pedra','Rio'],x:'Ivoti quer dizer flor, em tupi-guarani.'},
+     {k:'Ano do nome Ivoti',q:'Em que ano o nome mudou para Ivoti?',a:['1938','1826','2000'],x:'Em 1938.'},
+     {k:'Nome antes de Ivoti',q:'Qual era o nome antes de Ivoti?',a:['Bom Jardim','Picada dos Japoneses','Flores do Sul'],x:'Bom Jardim.'},
+     {k:'Feira das Flores',q:'Em que estação acontece a Feira das Flores?',a:['Na primavera','No inverno','No verão'],x:'Na primavera.'}]},
+ {id:'cidade',ano:'1964',t:'Ivoti vira cidade',ic:'urna',
+  pg:[{sc:'vila2',tx:'Os moradores queriam ter prefeito e vereadores próprios. Para isso, o distrito precisava se emancipar.'},
+      {sc:'urna',tx:'Em 12 de julho de 1964 houve um plebiscito: os moradores votaram se queriam a emancipação. Ganhou o sim!'},
+      {sc:'lei',tx:'Em 19 de outubro de 1964, o governador Ildo Meneghetti assinou a lei que criou o município de Ivoti. Por isso o aniversário de Ivoti é 19 de outubro!'},
+      {sc:'posse',tx:'Em 26 de janeiro de 1965 tomaram posse o primeiro prefeito e os primeiros vereadores de Ivoti.'}],
+  w:['EMANCIPAÇÃO','Quando um distrito vira município, com prefeito próprio.'],
+  ev:['cidade','posse'],
+  q:[{k:'Aniversário de Ivoti',q:'Quando é o aniversário de Ivoti?',a:['19 de outubro','25 de julho','7 de setembro'],x:'19 de outubro: o dia da lei que criou o município, em 1964.'},
+     {k:'Plebiscito',q:'O que é um plebiscito?',a:['Uma votação do povo','Uma festa de rua','Um tipo de ponte'],x:'Plebiscito é uma votação em que o povo decide.'},
+     {k:'Quem assinou a lei',q:'Quem assinou a lei que criou o município?',a:['O governador Ildo Meneghetti','O imperador Dom Pedro II','A família Berghahn'],x:'O governador Ildo Meneghetti.'},
+     {k:'Emancipação',q:'O que é emancipação?',a:['Um distrito virar município','Mudar de casa','Plantar flores'],x:'É quando um distrito vira município.'}]},
+ {id:'japao',ano:'1966',t:'Vizinhos do Japão',ic:'stampSakura',
+  pg:[{sc:'japao',tx:'Em 1966 chegaram a Ivoti duas famílias de imigrantes japoneses: os Sasada e os Tanisaki.'},
+      {sc:'uvas',tx:'Depois vieram outras famílias. Elas plantavam, entre outras coisas, uva. Hoje Ivoti tem a maior colônia japonesa do Rio Grande do Sul.'},
+      {sc:'memorial',tx:'Em 2011 abriu o Memorial da Colônia Japonesa, num prédio que antes era uma escola, na Rua Sakura. Sakura é a flor de cerejeira!'}],
+  w:['MEMORIAL','Lugar que guarda objetos e histórias para ninguém esquecer.'],
+  ev:['japao','memor'],
+  q:[{k:'Ano dos japoneses',q:'Em que ano chegaram as primeiras famílias japonesas?',a:['1966','1824','1500'],x:'Em 1966.'},
+     {k:'Primeiras famílias japonesas',q:'Quantas famílias japonesas chegaram primeiro?',a:['Duas','Cem','Nenhuma'],x:'Duas: os Sasada e os Tanisaki.'},
+     {k:'Sakura',q:'O que quer dizer sakura?',a:['Flor de cerejeira','Ponte de pedra','Casa de barro'],x:'Sakura é a flor de cerejeira.'},
+     {k:'Memorial',q:'O que é um memorial?',a:['Um lugar que guarda histórias','Uma loja de doces','Um estádio'],x:'Um lugar que guarda objetos e histórias.'}]},
+ {id:'hoje',ano:'1992–HOJE',t:'Ivoti hoje',ic:'hourglass',
+  pg:[{sc:'mapa92',tx:'Em 1992, dois distritos de Ivoti viraram municípios: Lindolfo Collor e Presidente Lucena.'},
+      {sc:'hoje',tx:'Hoje Ivoti tem fábricas de calçados, feiras como a das Flores e a do Mel, casas enxaimel e a cultura japonesa.'},
+      {sc:'familia',tx:'A história continua sendo escrita. Pergunte a alguém da sua família: como era Ivoti quando essa pessoa era criança?'}],
+  w:['HISTÓRIA ORAL','Aprender o passado ouvindo as lembranças das pessoas.'],
+  ev:['dist92','hoje'],
+  q:[{k:'Distritos de 1992',q:'Quais distritos de Ivoti viraram municípios em 1992?',a:['Lindolfo Collor e Presidente Lucena','Gramado e Canela','Porto Alegre e Pelotas'],x:'Lindolfo Collor e Presidente Lucena.'},
+     {k:'Fábricas de Ivoti',q:'Que tipo de fábrica é importante em Ivoti?',a:['De calçados','De aviões','De navios'],x:'Fábricas de calçados.'},
+     {k:'História oral',q:'Como aprender história com a família?',a:['Ouvindo as lembranças das pessoas','Só jogando videogame','Não dá para aprender'],x:'Ouvindo as lembranças das pessoas: é a história oral.'}]},
+];
+/* passaporte: visitas de verdade, confirmadas por um adulto na área dos pais da Nave-Mãe */
+const PASS=[
+  {id:'ponte',n:'Ponte do Imperador',ic:'stampBridge',d:'A ponte de pedra de 1857–1864 sobre o Arroio Feitoria, no Núcleo de Casas Enxaimel, a 1 km do centro. Aberta sempre, de graça.'},
+  {id:'nucleo',n:'Núcleo de Casas Enxaimel',ic:'stampHouse',d:'Casas enxaimel originais na Rua da Cascata, bairro Feitoria Nova. Aberto sempre, de graça.'},
+  {id:'museu',n:'Museu Cláudio Oscar Becker',ic:'stampMuseum',d:'Museu numa casa enxaimel do tempo da colonização, dentro do Núcleo de Casas Enxaimel.'},
+  {id:'memorial',n:'Memorial da Colônia Japonesa',ic:'stampSakura',d:'Na Rua Sakura, bairro Palmares. Terça a sexta, 8h–12h e 13h–17h; sábado, domingo e feriado, 10h–12h e 13h–17h. Confira antes de ir.'},
+  {id:'feira',n:'Feira das Flores',ic:'stampFlower',d:'Na primavera, no Núcleo de Casas Enxaimel.'},
+  {id:'familia',n:'Entrevista com a família',ic:'stampFamily',d:'Pergunte a um avô, uma avó ou um vizinho: como era Ivoti quando eram crianças? O que mudou?'},
+];
+/* desafio: perguntas do mestre carpinteiro, no fim da construção */
+const CASA_Q=[
+  {k:'Casa: pregos de pau',q:'Na casa enxaimel, como as madeiras ficam presas?',a:['Com encaixes e pregos de pau','Com cola','Com pregos de ouro'],x:'Encaixes e pregos de pau.'},
+  {k:'Casa: preenchimento',q:'Com o que se preenchem os espaços entre as madeiras?',a:['Barro ou tijolos','Areia solta','Folhas de papel'],x:'Barro ou tijolos.'},
+  {k:'Casa: madeira aparente',q:'O que aparece por fora de uma casa enxaimel?',a:['A estrutura de madeira','Os canos de água','Nada, é toda pintada'],x:'A madeira fica aparecendo, formando desenhos.'},
+];
+
+
+/* =================== memória local =================== */
+const STORE='ivoti-stats-v1',MODES=['diario','linha','arquivo'];
+const fresh=()=>({modes:{diario:{a:0,c:0},linha:{a:0,c:0},arquivo:{a:0,c:0},desafio:{a:0,c:0}},erros:{},errM:{},days:{},log:{},caps:{},rr:{},cards:{},pass:{},passSeen:[],run:{}});
+let S=(()=>{try{const o=JSON.parse(localStorage.getItem(STORE));return o?Object.assign(fresh(),o):fresh()}catch(e){return fresh()}})();
+const save=()=>{try{localStorage.setItem(STORE,JSON.stringify(S))}catch(e){}};
+/* o passaporte é confirmado na Nave-Mãe (área dos pais): relê antes de mostrar */
+function reload(){try{const o=JSON.parse(localStorage.getItem(STORE));if(o&&o.pass)S.pass=o.pass}catch(e){}}
+const dkey=(d=new Date())=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+const addDays=(k,n)=>{const d=new Date(k+'T12:00');d.setDate(d.getDate()+n);return dkey(d)};
+const doneToday=()=>S.days[dkey()]||[];
+const mainDone=k=>MODES.filter(m=>(S.days[k]||[]).includes(m)).length;
+const isFull=k=>mainDone(k)>=MODES.length;
+function markDone(m){const k=dkey(),l=S.days[k]||[];if(!l.includes(m)){l.push(m);S.days[k]=l}
+  const ks=Object.keys(S.days).sort();while(ks.length>120)delete S.days[ks.shift()];save()}
+function streak(){const d=new Date();let n=0;if(!isFull(dkey(d)))d.setDate(d.getDate()-1);while(isFull(dkey(d))){n++;d.setDate(d.getDate()-1)}return n}
+function record(mode,ok,key){const m=S.modes[mode];m.a++;if(ok)m.c++;else if(key)errAdd(mode,key,true);
+  const k=dkey(),d=S.log[k]=S.log[k]||{},r=d[mode]=d[mode]||[0,0];r[0]++;if(ok)r[1]++;
+  const ks=Object.keys(S.log).sort();while(ks.length>120)delete S.log[ks.shift()];save()}
+function errAdd(mode,key,ns){S.erros[key]=(S.erros[key]||0)+1;const e=S.errM[mode]=S.errM[mode]||{};e[key]=(e[key]||0)+1;if(!ns)save()}
+/* piloto como foi customizado na Nave-Mãe (o boneco antigo fica de reserva) */
+function navAvatar(k,s){try{const a=JSON.parse(localStorage.getItem('navemae-avatar')),v=a&&a[k];if(!v)return '';
+  const m=v.match(/viewBox="0 0 (\d+) (\d+)"/);return v.replace(/width="\d+" height="\d+"/,`width="${m[1]*s}" height="${m[2]*s}"`)}catch(e){return ''}}
+const pilot=(()=>{try{return (JSON.parse(localStorage.getItem('navemae-v1'))||{}).pilot||''}catch(e){return ''}})();
+
+/* =================== sprites =================== */
+const PAL={"k": "#140c08", "W": "#ffffff", "T": "#3b2416", "t": "#6b4528", "s": "#a87a4a", "B": "#d9c49a", "b": "#b79e70", "R": "#b84a2e", "r": "#7d2a18", "G": "#d6d0c2", "g": "#9a9486", "q": "#5e5a52", "O": "#e0703e", "o": "#9a3e1e", "L": "#6cc84f", "l": "#2f7a2a", "z": "#1a4a1a", "A": "#5ab4ea", "a": "#23608f", "P": "#ff7ab0", "p": "#c03a78", "Y": "#ffd84a", "y": "#c99a1a", "S": "#f1c9a0", "d": "#c98f64", "C": "#3a6ab0", "c": "#233a66", "M": "#efe6d0", "m": "#b3a684", "V": "#8a4ac0", "v": "#4a1a6a", "K": "#ffd0e0", "H": "#ff8fb8", "U": "#d4d8e0", "u": "#8a8f99", "n": "#4a4e57", "X": "#ffe27a", "x": "#c9962a", "E": "#e03a26", "e": "#8a1a10", "F": "#a8e8ff", "f": "#4a8ab0"};
+const SPR={"arrow": ["....k....", "...kGk...", "...kGgk..", "..kGGgk..", "..kGggk..", ".kGGgggk.", ".kGgggqk.", "kGGggggqk", "kGgggqqqk", ".kkgqqkk.", "...kqk...", "...kqk...", "....k...."], "ship": ["............kk............", "...........kEEk...........", "...........k..............", "......k....k.......k......", "...kkkkkkk.k....kkkkkkk...", "...kMMMMMk.k....kMMMMMk...", "...kMMMMMk.kk...kMMMMMk...", "...kMMMMMk.kMk..kMMMMMk...", "...kMMMMMk.kMMk.kMMMMMk...", "...kmmmmmk.kMMMkkmmmmmk...", "...kkkkkkk.kkkkkkkkkkkk...", "......k....k.......k......", "kkkkkkkkkkkkkkkkkkkkkkkkkk", "kssssssssssssssssssssssssk", ".kttttttttttttttttttttttk.", "..kTTTTTTTTTTTTTTTTTTTTk..", "...kkkkkkkkkkkkkkkkkkkk..."], "person": ["...kkkk...", "..kttttk..", ".kkkkkkkk.", "..kSSSSk..", "..kSkSkk..", "..kSSSdk..", "...kddk...", "..kMMMMk..", ".kMMMMMmk.", "kSkMMMMkSk", "kdkMMMmkdk", "..kCCCck..", "..kCCcck..", "..kCk.kck.", "..kCk.kck.", "..kTk.kTk.", "..kkk.kkk."], "urna": ["..kkkkkkkkkk..", "..kUUnnnnUUk..", ".kkkkkkkkkkkk.", ".kUUUUUUUUUuk.", ".kUCCCCCCCCuk.", ".kUCWWCWWWCuk.", ".kUCCCCCCCCuk.", ".kUUUUUUUUUuk.", ".kUUUUUUUUuuk.", ".kuuuuuuuuuuk.", ".kkkkkkkkkkkk."], "scroll": [".kkkkkkkkkkkk.", "kMMMMMMMMMMmmk", ".kkkkkkkkkkkk.", "..kMMMMMMMMk..", "..kMmmmmmmMk..", "..kMMMMMMMMk..", "..kMmmmmmMMk..", "..kMMMMMMMMk..", "..kMmmmmmmMk..", "..kMMMMMcMMk..", "..kMMMMcMcMk..", ".kkkkkkkkkkkk.", "kMMMMMMMMMMmmk", ".kkkkkkkkkkkk."], "grape": ["...kk...", "..ktk...", ".kVVkk..", "kVVVVVk.", "kVvVVvk.", ".kVVVVk.", ".kVvVk..", "..kVVk..", "...kk..."], "shoe": ["..kkkk..........", "..kttk..........", "..kttkkkkk......", "..ktsssssskk....", "..ktsstsssssk...", ".kttttttttttskk.", "ktTTTTTTTTTTTTsk", "kkkkkkkkkkkkkkkk"], "flowerP": ["..kk..", "kkPPkk", "kPYYPk", ".kPPk.", "..lk..", ".kllk.", "..lk.."], "church": [".......kk.......", "......kXXk......", ".......kk.......", "......kook......", ".....kOOOok.....", "....kOOOOOok....", "....kMMMMMmk....", "....kMkkkkmk....", "....kMkFFkmk....", "....kMMMMMmk....", "..kkkkkkkkkkkk..", ".kOOOOOOOOOOook.", "kOOOOOOOOOOOOOok", "kkkkkkkkkkkkkkkk", ".kMMMMMMMMMMMmk.", ".kMkFkMMMMkFkmk.", ".kMkFkMkkMkFkmk.", ".kMMMMMktkMMMmk.", ".kMMMMMktkMMMmk.", ".kkkkkkkkkkkkkk."], "stampBridge": ["kkkkkkkkkkkkkkkkkkkkkk", "kGGGGGGGGGGGGGGGGGGGGk", "kggggggggggggggggggggk", "kggg..gggg..gggg..gggk", "kgg....gg....gg....ggk", "kgg....gg....gg....ggk", "kggAAAAggAAAAggAAAAggk", "kggAAAAggAAAAggAAAAggk", ".AAAAAAAAAAAAAAAAAAAA.", "..aaaaaaaaaaaaaaaaaa.."], "stampHouse": [".....kk.....", "....kOOk....", "...kOOOOk...", "..kOOOOOOk..", ".kkkkkkkkkk.", ".kTTTTTTTTk.", ".kTBTBTkTBk.", ".kTTBTTTTTk.", ".kTBTBTkTTk.", ".kTTTTTkTTk.", ".kkkkkkkkkk."], "stampMuseum": [".....kk.....", "...kkMMkk...", ".kkMMMMMMkk.", "kkkkkkkkkkkk", ".kMk.kMk.kMk", ".kMk.kMk.kMk", ".kMk.kMk.kMk", ".kMk.kMk.kMk", "kkkkkkkkkkkk", "kmmmmmmmmmmk", "kkkkkkkkkkkk"], "stampSakura": ["....kk..kk..", "...kKKkkHKk.", "..kKHHKKHHk.", "..kKHYHKKk..", "...kKHHKk...", "..kkKkKKk...", ".kHKkk.kk...", ".kKHk.......", "..kk........"], "stampFlower": ["....kkkk....", "..kkPPPPkk..", ".kPPYYYYPPk.", ".kPYYYYYYPk.", ".kPPYYYYPPk.", "..kkPPPPkk..", "....klk.....", "..kk.lk.kk..", ".kllk.lkllk.", "..kk..lk.k..", "......k....."], "stampFamily": ["..kkk...kkk.", ".kttsk.kMMMk", ".kSSSk.kSSSk", ".kSkSk.kSkSk", "..kSk...kSk.", ".kCCCk.kPPPk", "kCCCCCkPPPPk", "kCCCCCkPPPPk", ".kk.kk.kk.kk"], "hourglass": ["kkkkkkkkkkkkkk", "ktttttttttttsk", "kkkkkkkkkkkkkk", ".kFFFFFFFFFFk.", ".kFYYYYYYYYFk.", "..kFYYYYYYFk..", "...kFYYYYFk...", "....kFYYFk....", ".....kFYk.....", "....kFFYFk....", "...kFFFYFFk...", "..kFFFYYYFFk..", ".kFYYYYYYYYFk.", "kkkkkkkkkkkkkk", "ktttttttttttsk", "kkkkkkkkkkkkkk"], "speaker": ["....k..", "...kk..", "kkkWk.k", "kWWWk..", "kWWWk.k", "kkkWk..", "...kk.k", "....k.."], "check": ["........kk", ".......kLk", "kk....kLlk", "kLk..kLlk.", "klLkkLlk..", ".klLLlk...", "..klzk....", "...kk....."], "tree": ["....kkkk....", "..kkLLLLkk..", ".kLLLLlLLLk.", "kLLlLLLLlLLk", "kLLLLLlLLLLk", "kLlLLLLLLlLk", ".kLLLlLLLLk.", "..kkLLLLkk..", "....ktk.....", "....ktk.....", "...kttk....."], "araucaria": ["......kk......", "....kkllkk....", "..kkllLLllkk..", "kkllLLLLLLllkk", ".kkkkkkkkkkkk.", "......kt......", "....kkllkk....", "..kkllLLllkk..", ".kkkkkkkkkkkk.", "......kt......", "......kt......", "......kt......", "......kt......", "......kt......"], "sakura": ["....kkkk..kkk...", "..kkKKHHkkKHHk..", ".kKKHKKKHHKKHHk.", "kKHHKKHKKKHKKHk.", "kKKKHHKKHHKKKKkk", ".kkKKKkKKKKkkkk.", "...kkktkkkkk....", "......ktk.......", "......ktk.......", ".....kttk.......", ".....kttk......."]};
+/* ---------- arte 16-bit: grade única de 2px ----------
+   O "s" de cada desenho é o tamanho do pixel original. A arte é ampliada com Scale2x/Scale3x
+   até cada pixel ficar com 2px na tela (mesma grade em todo o app) e ganha luz de cima-esquerda,
+   sombra embaixo-direita e contorno colorido, como nos jogos de SNES. */
+const GRID=2,HDC=new Map(),BY4=[[0,8,2,10],[12,4,14,6],[3,11,1,9],[15,7,13,5]];
+function upx(g,n){const h=g.length,w=g[0].length,at=(x,y)=>x<0||y<0||x>=w||y>=h?'.':g[y][x];
+  if(n===2){const o=Array.from({length:h*2},()=>Array(w*2));
+    for(let y=0;y<h;y++)for(let x=0;x<w;x++){const P=g[y][x],A=at(x,y-1),B=at(x+1,y),C=at(x-1,y),D=at(x,y+1);
+      o[2*y][2*x]=C===A&&C!==D&&A!==B?A:P;o[2*y][2*x+1]=A===B&&A!==C&&B!==D?B:P;
+      o[2*y+1][2*x]=D===C&&D!==B&&C!==A?C:P;o[2*y+1][2*x+1]=B===D&&B!==A&&D!==C?D:P}return o}
+  if(n===3){const o=Array.from({length:h*3},()=>Array(w*3));
+    for(let y=0;y<h;y++)for(let x=0;x<w;x++){const E=g[y][x],A=at(x-1,y-1),B=at(x,y-1),C=at(x+1,y-1),D=at(x-1,y),F=at(x+1,y),G=at(x-1,y+1),H=at(x,y+1),I=at(x+1,y+1);
+      const r=[D===B&&B!==F&&D!==H?D:E,(D===B&&B!==F&&D!==H&&E!==C)||(B===F&&B!==D&&F!==H&&E!==A)?B:E,B===F&&B!==D&&F!==H?F:E,
+        (D===B&&B!==F&&D!==H&&E!==G)||(D===H&&D!==B&&H!==F&&E!==A)?D:E,E,(B===F&&B!==D&&F!==H&&E!==I)||(H===F&&D!==H&&B!==F&&E!==C)?F:E,
+        D===H&&D!==B&&H!==F?D:E,(D===H&&D!==B&&H!==F&&E!==I)||(H===F&&D!==H&&B!==F&&E!==G)?H:E,H===F&&D!==H&&B!==F?F:E];
+      for(let k=0;k<9;k++)o[3*y+(k/3|0)][3*x+k%3]=r[k]}return o}
+  if(n===4)return upx(upx(g,2),2);
+  if(n===6)return upx(upx(g,2),3);
+  return g}
+const hx=c=>{c=c.replace('#','');if(c.length===3)c=[...c].map(v=>v+v).join('');return[0,2,4].map(i=>parseInt(c.slice(i,i+2),16))};
+const mixc=(a,b,t)=>{const p=hx(a),q=hx(b);return '#'+p.map((v,i)=>Math.round(v+(q[i]-v)*t).toString(16).padStart(2,'0')).join('')};
+const lum=c=>{const[r,g,b]=hx(c);return(.2126*r+.7152*g+.0722*b)/255};
+function hdRows(rows,s,ov){const key=s+'|'+rows.join('/')+'|'+(ov?JSON.stringify(ov):'');if(HDC.has(key))return HDC.get(key);
+  const n=Math.max(1,Math.round(s/GRID));let g=upx(rows.map(r=>[...r]),n);
+  const h=g.length,w=g[0].length,col=g.map(r=>r.map(c=>c==='.'?null:((ov&&ov[c])||PAL[c])));
+  const out=c=>c===null||lum(c)<.05,O=(x,y)=>x<0||y<0||x>=w||y>=h||out(col[y][x]),T=(x,y)=>x<0||y<0||x>=w||y>=h||col[y][x]===null;
+  const res=col.map(r=>r.slice()),k=n>=2?1:.6;
+  for(let y=0;y<h;y++)for(let x=0;x<w;x++){const c=col[y][x];if(c===null)continue;
+    if(out(c)){ // contorno: do lado iluminado vira um tom escuro da cor vizinha
+      const nb=[[x+1,y],[x,y+1]].map(([a,b])=>!O(a,b)?col[b][a]:null).find(Boolean);
+      res[y][x]=nb?mixc(nb,'#05040c',.62):'#08070f';continue}
+    let d=c;
+    if(n>=2){ // volume: faixas de luz de cima para baixo, com pontilhado nas bordas das faixas
+      const v=y/h+(BY4[y%4][x%4]/16-.5)*.16;if(v<.3)d=mixc(c,'#fff4d6',.10);else if(v>.7)d=mixc(c,'#16113a',.14)}
+    const tl=O(x,y-1)||O(x-1,y),br1=O(x,y+1)||O(x+1,y),br2=n>=2&&(O(x,y+2)||O(x+2,y)),tl2=n>=2&&!tl&&(O(x,y-2)||O(x-2,y));
+    if(tl&&!br1)d=mixc(d,'#fff4d6',.34*k);
+    else if(tl2&&!br1)d=mixc(d,'#fff4d6',.14);
+    else if(br1)d=mixc(d,'#16113a',.32*k);
+    else if(br2)d=mixc(d,'#16113a',.16);
+    res[y][x]=d}
+  HDC.set(key,res);return res}
+function spriteRows(rows,s=2,ov){const g=hdRows(rows,s,ov),h=g.length,w=g[0].length,px=s/Math.max(1,Math.round(s/GRID));let r='';
+  g.forEach((row,y)=>{let x=0;while(x<w){const c=row[x];if(!c){x++;continue}let k=1;while(row[x+k]===c)k++;r+=`<rect x="${x}" y="${y}" width="${k}" height="1" fill="${c}"/>`;x+=k}});
+  return `<svg class="spr" viewBox="0 0 ${w} ${h}" width="${w*px}" height="${h*px}" shape-rendering="crispEdges" aria-hidden="true">${r}</svg>`}
+const sprite=(n,s=2,ov)=>spriteRows(SPR[n],s,ov);
+/* =================== cenas em pixel art (canvas, 1 pixel de arte = 2 px na tela) ===================
+   drawScene(canvas,id) desenha o fundo e os objetos; devolve as placas de texto (HTML por cima, letra nítida). */
+const SC_H=100;
+function drawScene(cv,id,arg){const W=cv.width,H=cv.height,X=cv.getContext('2d');X.imageSmoothingEnabled=false;
+  const R=(c,x,y,w,h)=>{X.fillStyle=c;X.fillRect(Math.round(x),Math.round(y),Math.round(w),Math.round(h))};
+  const sky=(cs)=>{const n=cs.length,bh=H/n;for(let i=0;i<n;i++){R(cs[i],0,i*bh,W,bh+1);
+      if(i<n-1)for(let y=Math.floor((i+1)*bh)-2;y<(i+1)*bh;y++)for(let x=(y%2);x<W;x+=2)R(cs[i+1],x,y,1,1)}};
+  let sd=7;const rnd=()=>{sd=(sd*16807)%2147483647;return sd/2147483647};
+  const stars=n=>{for(let i=0;i<n;i++){const x=rnd()*W,y=rnd()*H;R(rnd()<.2?'#ffffff':'#8f8ac8',x,y,1,1)}};
+  const hills=(y,c,a,f,ph)=>{for(let x=0;x<W;x++){const h=y-a*(Math.sin(x*f+ph)*.6+Math.sin(x*f*2.3+ph*1.7)*.4);R(c,x,h,1,H-h)}};
+  const ground=(y,c,c2)=>{R(c,0,y,W,H-y);if(c2)for(let x=0;x<W;x+=3)R(c2,x+((x/3)%2),y,1,1)};
+  const river=(y,h)=>{R('#23608f',0,y,W,h);R('#5ab4ea',0,y,W,2);for(let i=0;i<W/6;i++)R('#9fd8ff',rnd()*W,y+3+rnd()*(h-4),3,1)};
+  const S=(n,x,y,o={})=>{const rows=SPR[n];if(!rows)return;const g=hdRows(rows,2,o.ov),s=o.s||1,w=g[0].length,h=g.length,x0=Math.round(x-(o.c?w*s/2:0)),y0=Math.round(y-h*s);
+    for(let yy=0;yy<h;yy++)for(let xx=0;xx<w;xx++){const c=g[yy][o.f?w-1-xx:xx];if(c){X.fillStyle=c;X.fillRect(x0+xx*s,y0+yy*s,s,s)}}};
+  const trees=(y,n,kinds,sp)=>{for(let i=0;i<n;i++){const k=kinds[i%kinds.length];S(k,(i+.5)*W/n+(rnd()-.5)*sp,y+rnd()*3,{c:1})}};
+  const flowers=(y0,y1,n)=>{const cs=[{},{P:'#ffd84a',p:'#c99a1a',Y:'#ffffff'},{P:'#b48cff',p:'#6a3ab8'},{P:'#ff6a4a',p:'#a8301a'}];for(let i=0;i<n;i++)S('flowerP',rnd()*W,y0+rnd()*(y1-y0),{c:1,ov:cs[i%4]})};
+  const person=(x,y,v=0,f)=>{const V=[{},{C:'#8a3a6a',c:'#5a1a44',M:'#f0d0e0',m:'#c0a0b0',t:'#3a2416'},{t:'#d0d0d0',M:'#cfd8e8',m:'#8f9ab0',C:'#5a5a5a',c:'#383838'},{S:'#e8b890',d:'#b88a60',t:'#1a1410',M:'#ffffff',C:'#2a5a3a',c:'#183a24'}];S('person',x,y,{c:1,ov:V[v],f})};
+  /* casa enxaimel desenhada por código: st = quanto já está montado (o desafio usa os mesmos passos) */
+  const house=(cx,by,w,o={})=>{const st=o.st==null?99:o.st,fill=o.fill||{},hw=Math.round(w*(o.roofK||.5)),wall=Math.round(w*.5),x0=Math.round(cx-w/2),bw=3,base=Math.max(3,Math.round(w*.08));
+    const top=by-base-wall;
+    if(st>=1){const sw=(w+4)/4;for(let i=0;i<4;i++){if(st===1&&o.stones&&!o.stones.includes(i))continue;R('#5e5a52',x0-2+i*sw,by-base,sw,base);for(let j=1;j<sw-2;j+=6)R('#9a9486',x0-2+i*sw+j,by-base+1,4,base-2)}}
+    const cols=4,rows=2,cw=(w-bw)/cols,rh=(wall-bw)/rows,wood='#3b2416',hl='#6b4528';
+    // painéis
+    if(st>=6)for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){const k=r*cols+c,px=x0+bw+c*cw,py=top+bw+r*rh,isW=r===0&&(c===1||c===2),isD=r===1&&c===2;
+      if(isW){R('#2a4a6a',px,py,cw-bw,rh-bw);R('#9fd2ff',px+2,py+2,cw-bw-4,rh-bw-4);R(wood,px+(cw-bw)/2-1,py,2,rh-bw);R(wood,px,py+(rh-bw)/2-1,cw-bw,2);continue}
+      if(isD){R('#6b4528',px+2,py+2,cw-bw-4,rh-bw-2);R('#3b2416',px+cw/2-2,py+rh/2,2,2);continue}
+      const f=fill[k]||(o.st==null?(k%3===0?'t':'b'):null);
+      if(f==='b'){R('#d9c49a',px,py,cw-bw,rh-bw);for(let i=0;i<5;i++)R('#b79e70',px+((i*7)%(cw-bw-2)),py+((i*5)%(rh-bw-2)),2,1)}
+      else if(f==='t'){R('#b84a2e',px,py,cw-bw,rh-bw);for(let yy=py+2;yy<py+rh-bw;yy+=3){R('#7d2a18',px,yy,cw-bw,1);for(let xx=px+((yy/3|0)%2)*3;xx<px+cw-bw;xx+=6)R('#7d2a18',xx,yy-2,1,2)}}
+      else if(o.ghost)R('rgba(255,255,255,.07)',px,py,cw-bw,rh-bw)}
+    // madeiras em pé
+    if(st>=2)for(let c=0;c<=cols;c++)if(st>2||o.posts==null||o.posts.includes(c)){R(wood,x0+c*cw,top,bw,wall);R(hl,x0+c*cw,top,1,wall)}
+    // vigas deitadas
+    if(st>=3)for(let r=rows;r>=0;r--)if(st>3||o.beams==null||o.beams.includes(r)){R(wood,x0,top+r*rh,w,bw);R(hl,x0,top+r*rh,w,1)}
+    // diagonais nos cantos de baixo
+    if(st>=4){const dg=(px,py,dir)=>{for(let i=0;i<rh-bw;i++){const xx=dir>0?px+i*(cw-bw)/(rh-bw):px+cw-bw-1-i*(cw-bw)/(rh-bw);R(wood,xx,py+i,bw,1)}};
+      const hd=i=>st>4||o.diag==null||o.diag.includes(i);if(hd(0))dg(x0+bw,top+bw+rh,1);if(hd(1))dg(x0+bw+3*cw,top+bw+rh,-1)}
+    // pregos de pau nos cruzamentos
+    if(st>=5)for(let r=0;r<=rows;r++)for(let c=0;c<=cols;c++)if(st>5||o.pegs==null||o.pegs.includes(r*(cols+1)+c))R('#e8c08a',x0+c*cw+1,top+r*rh+1,1,1);
+    // telhado
+    if(st>=7){const n=o.roof==null?3:o.roof;for(let y=0;y<hw;y++){const lvl=Math.floor((hw-1-y)/(hw/3));if(lvl>=n)continue;const ww=(w+8)*(y+1)/hw;
+      R(y%3===0?'#9a3e1e':'#e0703e',cx-ww/2,top-hw+y,ww,1)}
+      if(n>=3){R('#9a3e1e',cx-1,top-hw-2,2,2)}}
+    return{x0,top,cw,rh,cols,rows,bw,w,wall,base,by,hw}};
+  /* ponte de pedra com arcos redondos e pilares (Ponte do Imperador: três arcos) */
+  const bridge=(x0,x1,y,arches=3,done=3)=>{const w=x1-x0,aw=w/arches,p=6,r=(aw-p)/2,deck=4,bot=y+deck+r+3;
+    for(let a=0;a<Math.min(done,arches);a++){const ax=x0+a*aw,cx=ax+aw/2;
+      for(let x=Math.floor(ax);x<ax+aw;x++){const dx=x+.5-cx,op=Math.abs(dx)<r?Math.sqrt(r*r-dx*dx):0,yb=bot-op;
+        R('#9a9486',x,y,1,yb-y);R('#d6d0c2',x,y,1,1);if(op>0)R('#5e5a52',x,yb-1,1,1)}
+      for(let yy=y+3;yy<bot;yy+=3)for(let x=Math.floor(ax)+((yy/3|0)%2)*3;x<ax+aw;x+=6){const dx=x+.5-cx,op=Math.abs(dx)<r?Math.sqrt(r*r-dx*dx):0;if(yy<bot-op-1)R('#7a756a',x,yy,1,1)}}
+    const ww=Math.min(w,done*aw);R('#5e5a52',x0,y-2,ww,2);for(let x=x0;x<x0+ww;x+=4)R('#8a857a',x,y-4,2,2)};
+  const sign=(x,y,txt)=>{R('#3b2416',x-1,y-6,2,14);return{t:txt,x,y:y-9,k:'sg'}};
+  const ov=[];const A=o=>ov.push(o);
+  const day=()=>sky(['#5ab4ea','#7cc6f0','#a3d8f5','#cdeafa']),dawn=()=>sky(['#3a3a7a','#8a5a9a','#e08a7a','#ffc88a']),old=()=>sky(['#7aa8c8','#a8c4d4','#d8d4c0','#f0e4c8']);
+  const gnd=()=>{hills(H*.62,'#4f8f45',6,.05,1);hills(H*.7,'#3f7a35',4,.08,3);ground(H*.78,'#5aa04a','#4a8a3a')};
+  switch(id){
+  case 'space':{sky(['#05040f','#0a0820','#120e30']);stars(60);earth(X,W*.62,H*.55,34);
+    if(SHIP)S2(X,SHIP,W*.22,H*.42);break}
+  case 'cidade':{day();gnd();house(W*.25,H*.82,34);R('#efe6d0',W*.48,H*.6,22,18);R('#b84a2e',W*.47,H*.56,24,4);R('#3a6ab0',W*.53,H*.66,5,6);
+    house(W*.78,H*.84,28,{});flowers(H*.86,H-2,26);A(sign(W*.5,H*.95,'IVOTI'));break}
+  case 'maquina':{sky(['#0a0820','#1a1440','#2a1e5a']);stars(30);for(let r=40;r>8;r-=6){X.strokeStyle=r%12?'#40d8ff':'#ffb300';X.lineWidth=2;X.beginPath();X.ellipse(W/2,H/2,r*1.4,r*.8,0,0,6.3);X.stroke()}
+    S('hourglass',W/2,H/2+16,{c:1,s:2});break}
+  case 'linha':{R('#efe2c4',0,0,W,H);for(let y=0;y<H;y+=4)R('#e4d4b0',0,y,W,1);R('#6b4528',10,H*.55,W-20,3);
+    const it=[['arrow','12 MIL ANOS'],['person','1826'],['urna','1964'],['hourglass','HOJE']];it.forEach(([n,t],i)=>{const x=20+i*(W-40)/3;R('#3b2416',x-1,H*.5,3,10);S(n,x,H*.48,{c:1});A({t,x,y:H*.78,k:'cap'})});break}
+  case 'mata':case 'mata2':case 'mata3':{dawn();hills(H*.55,'#1f4a2a',8,.04,2);trees(H*.7,9,['araucaria','tree'],8);river(H*.78,12);ground(H*.9,'#2f5a2a');trees(H*1.02,7,['tree'],10);
+    if(id==='mata2'){S('arrow',W*.3,H-1,{c:1});S('arrow',W*.7,H-1,{c:1,f:1});S('arrow',W*.5,H-2,{c:1})}
+    if(id==='mata3')flowers(H*.9,H-2,12);break}
+  case 'escava':{R('#8fc8e8',0,0,W,H*.25);ground(H*.25,'#5aa04a');R('#7a5a3a',0,H*.32,W,H*.25);R('#5a3e26',0,H*.57,W,H*.2);R('#3e2a1a',0,H*.77,W,H*.23);
+    for(let i=0;i<40;i++)R('#9a7a5a',rnd()*W,H*.35+rnd()*H*.6,2,1);S('arrow',W*.3,H*.72,{c:1,s:2});S('arrow',W*.62,H*.92,{c:1,s:2,f:1});S('arrow',W*.82,H*.62,{c:1});
+    A({t:'ACHADO!',x:W*.3,y:H*.45,k:'sg'});break}
+  case 'mar':case 'mar2':{sky(['#4a7ab0','#7aa8d0','#a8cce4']);R('#1a4a7a',0,H*.62,W,H*.38);for(let i=0;i<50;i++)R(rnd()<.5?'#5a9ad0':'#2a6aa0',rnd()*W,H*.64+rnd()*H*.34,4,1);
+    S('ship',W*(id==='mar'?.45:.6),H*.7,{c:1,s:2});if(id==='mar2')A({t:'OCEANO ATLÂNTICO',x:W*.3,y:H*.18,k:'sg'});break}
+  case 'porto':{old();hills(H*.55,'#5a8a4a',5,.05,1);river(H*.62,16);S('ship',W*.3,H*.72,{c:1});ground(H*.78,'#6a9a4a','#5a8a3a');
+    person(W*.55,H*.97);person(W*.65,H*.97,1);person(W*.75,H*.97,2);A(sign(W*.88,H*.95,'SÃO LEOPOLDO'));break}
+  case 'lotes':{old();hills(H*.5,'#3f7a35',6,.05,1);ground(H*.55,'#5aa04a','#4a8a3a');river(H*.68,8);
+    for(let i=0;i<6;i++){const x=10+i*(W-20)/5;R('#6b4528',x,H*.56,1,10);R('#6b4528',x,H*.8,1,12)}
+    house(W*.2,H*.66,16,{});house(W*.55,H*.66,16,{});house(W*.85,H*.95,18,{});A({t:'ARROIO FEITORIA',x:W*.5,y:H*.88,k:'cap'});break}
+  case 'picada':{old();hills(H*.5,'#3f6a35',5,.05,2);trees(H*.55,10,['araucaria','tree'],6);ground(H*.6,'#2f5a2a');
+    for(let y=H*.6;y<H;y++){const w=10+(y-H*.6)*1.4;R('#c8a070',W/2-w/2,y,w,1)}trees(H*.85,4,['tree'],4);
+    R('#6b4528',W*.18,H*.88,22,4);R('#a87a4a',W*.18,H*.88,22,1);person(W*.6,H*.98);break}
+  case 'placa_bh':{old();hills(H*.55,'#3f6a35',5,.05,2);trees(H*.6,8,['tree','araucaria'],6);ground(H*.66,'#4a8a3a');R('#c8a070',0,H*.8,W,6);house(W*.75,H*.8,22,{});person(W*.3,H*.98,0);person(W*.4,H*.98,1,1);
+    A(sign(W*.5,H*.62,'PICADA DOS BERGHAHN'));break}
+  case 'roca':{day();hills(H*.55,'#3f7a35',5,.05,1);ground(H*.6,'#6a9a4a');for(let y=H*.66;y<H;y+=5)for(let x=6;x<W*.6;x+=4){R('#3f7a35',x,y,2,2);R('#6cc84f',x,y-1,1,1)}
+    house(W*.8,H*.8,26,{});person(W*.66,H*.98,0,1);R('#6b4528',W*.4,H*.92,18,3);break}
+  case 'nucleo':case 'nucleo2':{day();hills(H*.6,'#4f8f45',5,.05,2);ground(H*.72,'#5aa04a','#4a8a3a');house(W*.2,H*.78,30,{fill:{4:'t',5:'t',7:'t'}});house(W*.52,H*.8,36,{});house(W*.84,H*.78,30,{fill:{0:'b',3:'b',4:'b',5:'b',7:'b'}});
+    if(id==='nucleo2')A(sign(W*.5,H*.98,'FEITORIA NOVA'));break}
+  case 'enx_esq':{day();gnd();house(W*.42,H*.92,64,{st:5,ghost:1});person(W*.82,H*.98);break}
+  case 'enx_cheia':{day();gnd();house(W*.42,H*.92,64,{});person(W*.82,H*.98,1);break}
+  case 'igreja':{day();gnd();S('church',W*.5,H*.86,{c:1,s:2});person(W*.22,H*.98);person(W*.3,H*.98,1);person(W*.75,H*.98,2,1);break}
+  case 'pedra':{day();gnd();R('#9a9486',W*.42,H*.74,22,14);R('#d6d0c2',W*.42,H*.74,22,2);A({t:'1857 · 1868',x:W*.5+0,y:H*.5,k:'sg'});person(W*.25,H*.98);person(W*.75,H*.98,2,1);break}
+  case 'conversa':{day();gnd();house(W*.7,H*.84,40,{});person(W*.25,H*.98,2);person(W*.38,H*.98,1,1);A({t:'HUNSRIK',x:W*.32,y:H*.4,k:'bub'});break}
+  case 'arroio':{old();hills(H*.5,'#3f7a35',5,.05,1);ground(H*.55,'#5aa04a');river(H*.68,18);person(W*.2,H*.67);R('#a87a4a',W*.08,H*.6,10,7);R('#6b4528',W*.08,H*.6,10,1);break}
+  case 'ponte_obra':case 'ponte':case 'ponte_iphan':{day();hills(H*.4,'#3f7a35',6,.05,1);ground(H*.46,'#5aa04a');river(H*.6,40);
+    bridge(W*.1,W*.9,H*.42,3,id==='ponte_obra'?2:3);
+    if(id==='ponte_obra'){for(let i=0;i<4;i++)R('#a87a4a',W*.68+i*6,H*.3,1,40);R('#a87a4a',W*.67,H*.36,22,1);R('#a87a4a',W*.67,H*.5,22,1);person(W*.45,H*.4)}
+    if(id==='ponte_iphan')A({t:'PATRIMÔNIO HISTÓRICO',x:W*.5,y:H*.2,k:'sg'});break}
+  case 'vila':case 'vila2':{day();gnd();house(W*.15,H*.8,22,{});S('church',W*.42,H*.86,{c:1});house(W*.65,H*.82,26,{});house(W*.9,H*.8,20,{fill:{0:'b',4:'b',5:'b',7:'b',3:'b'}});person(W*.3,H*.98);person(W*.78,H*.98,1,1);break}
+  case 'placa_bj':{day();gnd();house(W*.78,H*.82,30,{});flowers(H*.85,H-2,10);A(sign(W*.32,H*.75,'BOM JARDIM'));break}
+  case 'distrito':{R('#efe2c4',0,0,W,H);for(let y=0;y<H;y+=4)R('#e4d4b0',0,y,W,1);
+    X.strokeStyle='#6b4528';X.lineWidth=2;X.strokeRect(10,10,W-20,H-20);R('#b8d898',W*.62,H*.3,W*.24,H*.42);X.strokeRect(W*.62,H*.3,W*.24,H*.42);
+    A({t:'SÃO LEOPOLDO',x:W*.32,y:H*.5,k:'cap'});A({t:'BOM JARDIM',x:W*.74,y:H*.51,k:'cap'});break}
+  case 'placa_iv':{day();gnd();house(W*.8,H*.82,28,{});flowers(H*.82,H-2,30);A(sign(W*.32,H*.75,'IVOTI'));break}
+  case 'flores':{day();hills(H*.5,'#4f8f45',4,.06,1);ground(H*.55,'#5aa04a');flowers(H*.6,H,70);A({t:'IVOTI = FLOR',x:W*.5,y:H*.22,k:'sg'});break}
+  case 'feira':{day();gnd();house(W*.85,H*.78,26,{});for(let i=0;i<3;i++){const x=W*.12+i*W*.22;for(let k=0;k<20;k+=4)R(k%8?'#ffffff':'#e03a26',x+k,H*.62,4,5);R('#efe6d0',x,H*.67,20,10);R('#6b4528',x,H*.67,1,16);R('#6b4528',x+19,H*.67,1,16)}
+    flowers(H*.86,H-2,20);person(W*.3,H*.99);person(W*.55,H*.99,1,1);break}
+  case 'urna':{day();gnd();R('#efe6d0',W*.2,H*.42,W*.6,H*.4);R('#9a3e1e',W*.17,H*.36,W*.66,6);for(let i=0;i<4;i++)R('#d6d0c2',W*.25+i*W*.16,H*.48,4,H*.34);
+    S('urna',W*.5,H*.95,{c:1,s:2});person(W*.2,H*.99);person(W*.8,H*.99,1,1);A({t:'SIM',x:W*.5,y:H*.28,k:'bub'});break}
+  case 'lei':{R('#2a2133',0,0,W,H);for(let i=0;i<W;i+=8)R('#241c2c',i,0,4,H);S('scroll',W*.5,H*.95,{c:1,s:5});A({t:'19/10/1964',x:W*.5,y:H*.5,k:'cap'});break}
+  case 'posse':{day();gnd();R('#efe6d0',W*.2,H*.42,W*.6,H*.4);R('#9a3e1e',W*.17,H*.36,W*.66,6);for(let i=0;i<4;i++)R('#d6d0c2',W*.25+i*W*.16,H*.48,4,H*.34);
+    for(let i=0;i<5;i++)person(W*.2+i*W*.15,H*.99,i%4,i%2);A(sign(W*.5,H*.34,'PREFEITURA'));break}
+  case 'japao':{day();gnd();house(W*.2,H*.8,22,{});R('#efe6d0',W*.6,H*.58,32,20);R('#4a4e57',W*.58,H*.54,36,4);R('#6b4528',W*.6+13,H*.58+10,6,10);R('#5ab4ea',W*.6+4,H*.58+5,5,5);R('#5ab4ea',W*.6+23,H*.58+5,5,5);person(W*.42,H*.99,3);person(W*.5,H*.99,3,1);S('sakura',W*.88,H*.86,{c:1});break}
+  case 'uvas':{day();hills(H*.5,'#4f8f45',4,.06,2);ground(H*.55,'#6a9a4a');for(let r=0;r<3;r++){const y=H*.62+r*H*.12;R('#6b4528',8,y,W-16,1);for(let x=10;x<W-10;x+=16){R('#6b4528',x,y,1,8);R('#3f7a35',x-4,y-3,10,3);S('grape',x+3,y+9,{c:1})}}person(W*.85,H*.99,3,1);break}
+  case 'memorial':{day();gnd();R('#efe6d0',W*.32,H*.46,W*.42,H*.36);R('#4a4e57',W*.3,H*.4,W*.46,6);for(let i=0;i<3;i++)R('#5ab4ea',W*.36+i*W*.12,H*.54,8,8);
+    S('sakura',W*.15,H*.88,{c:1,s:2});S('sakura',W*.88,H*.86,{c:1});A(sign(W*.52,H*.98,'RUA SAKURA'));break}
+  case 'mapa92':{R('#efe2c4',0,0,W,H);for(let y=0;y<H;y+=4)R('#e4d4b0',0,y,W,1);X.strokeStyle='#6b4528';X.lineWidth=2;
+    X.strokeRect(W*.08,H*.15,W*.36,H*.7);X.strokeRect(W*.5,H*.1,W*.42,H*.36);X.strokeRect(W*.5,H*.54,W*.42,H*.36);R('#b8d898',W*.08,H*.15,W*.36,H*.7);
+    A({t:'IVOTI',x:W*.26,y:H*.5,k:'cap'});A({t:'LINDOLFO COLLOR',x:W*.71,y:H*.28,k:'cap'});A({t:'PRES. LUCENA',x:W*.71,y:H*.72,k:'cap'});break}
+  case 'hoje':{day();gnd();R('#cfd8e8',W*.08,H*.5,W*.34,H*.32);R('#8a8f99',W*.12,H*.3,6,H*.2);R('#4a4e57',W*.06,H*.46,W*.38,4);S('shoe',W*.25,H*.74,{c:1});
+    house(W*.62,H*.82,24,{});flowers(H*.86,H-2,16);S('sakura',W*.9,H*.86,{c:1});break}
+  case 'familia':{day();gnd();house(W*.75,H*.84,40,{});R('#6b4528',W*.18,H*.86,30,3);R('#6b4528',W*.2,H*.89,2,6);R('#6b4528',W*.18+26,H*.89,2,6);person(W*.24,H*.9,2);person(W*.34,H*.98,0,1);A({t:'COMO ERA?',x:W*.34,y:H*.38,k:'bub'});break}
+  case 'casa':{day();gnd();ov.geo=house(W/2,H*.95,Math.round(W*.56),Object.assign({ghost:1,roofK:.38},arg));break}
+  default:day();gnd()}
+  return ov}
+/* nave do piloto (pixels da Nave-Mãe) */
+let SHIP=null;try{const a=JSON.parse(localStorage.getItem('navemae-avatar'));if(a&&a.shipPx)SHIP=a.shipPx}catch(e){}
+function S2(X,sp,cx,cy){const r=sp.rows,h=r.length,w=r[0].length;for(let y=0;y<h;y++)for(let x=0;x<w;x++){const c=r[y][x];if(c!=='.'){X.fillStyle=sp.pal[c]||'#fff';X.fillRect(Math.round(cx-w/2+x),Math.round(cy-h/2+y),1,1)}}}
+/* a Terra vista do espaço, com o Rio Grande do Sul marcado (mesmo desenho do planeta da Nave-Mãe) */
+const WORLD=["....................................",".........####......#....##########..",".#####.######..#..##.##############.","....########......#.#.############..",".....#######.....#####.##########...",".....######......######.#########...","......####.......#######.#######....",".......###.......########.#..###....","..........####.....######.....##.#..","..........#####....######.....####..","..........#####....####......#####..","...........####....###.......#####..","...........##......##.........###...","...........#..................#.....","...........#........................","....................................","....................................","...................................."];
+function earth(X,cx,cy,r){const B=[[0,8,2,10],[12,4,14,6],[3,11,1,9],[15,7,13,5]],sea=['#06173f','#0c3a86','#2a7ad8','#9fd2ff'],land=['#1b4d1c','#3b8f33','#86c95e','#d8e9a0'],ice=['#7d8fb0','#b8c6de','#e3ecf8','#ffffff'];
+  for(let y=-r;y<r;y++)for(let x=-r;x<r;x++){const dx=x+.5,dy=y+.5;if(dx*dx+dy*dy>r*r)continue;const nx=dx/r,ny=dy/r,nz=Math.sqrt(Math.max(0,1-nx*nx-ny*ny));
+    let sh=nx*-.55+ny*-.62+nz*.56;const Xx=nx,Yy=-ny,rh=Math.hypot(Xx,Yy),c=Math.asin(Math.min(1,rh)),f0=-15*Math.PI/180,l0=-55*Math.PI/180;
+    const lat=rh?Math.asin(Math.cos(c)*Math.sin(f0)+Yy*Math.sin(c)*Math.cos(f0)/rh):f0,lon=l0+Math.atan2(Xx*Math.sin(c),rh*Math.cos(c)*Math.cos(f0)-Yy*Math.sin(c)*Math.sin(f0));
+    const la=lat*180/Math.PI,lo=((lon*180/Math.PI+540)%360)-180,q=(B[(y+99)%4][(x+99)%4]/16-.5)*.6;
+    const gi=Math.min(17,Math.max(0,Math.floor((90-la)/10+q))),gj=((Math.floor((lo+180)/10+q)%36)+36)%36;
+    let pal=la>72||la<-66?ice:WORLD[gi][gj]==='#'?land:sea;
+    const t=Math.max(0,Math.min(3,Math.floor((sh+.15)*3.4+(B[(y+99)%4][(x+99)%4]/16-.5))));let col=pal[t];
+    if(Math.sin(lat*7+1.8*Math.sin(lon*3+1))+.5*Math.sin(lon*11-lat*3)+q*.2>1.25)col=t>=2?'#ffffff':'#c9d6ea';
+    if(Math.abs(la+29.6)<3.2&&Math.abs(lo+51.2)<3.2)col='#ff3d2e';
+    X.fillStyle=col;X.fillRect(Math.round(cx+x),Math.round(cy+y),1,1)}}
+
+
+/* =================== som e narração =================== */
+let AC=null;
+/* iOS: ao minimizar o app, o contexto de áudio fica "interrupted"/"suspended" e às vezes não volta sozinho.
+   Ao voltar: tenta retomar (e descarta se em 400 ms não voltar). No primeiro toque com o som parado: cria um contexto novo. */
+function audioWake(e){const c=AC;if(!c||c.state==='running')return;
+  try{navAudioMode()}catch(e){}
+  if(e&&(e.type==='touchstart'||e.type==='pointerdown')){if(performance.now()-(audioWake.t||0)<600)return;audioWake.t=performance.now(); // dentro do toque o iOS libera um contexto novo: troca na hora, o som deste toque já sai
+    try{c.close()}catch(_){}try{AC=newAC();AC.resume&&AC.resume()}catch(_){AC=null}return}
+  try{const p=c.resume&&c.resume();if(p&&p.catch)p.catch(()=>{})}catch(e){}
+  setTimeout(()=>{if(AC===c&&c.state!=='running'){try{c.close()}catch(e){}AC=null}},400)}
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)audioWake()});
+addEventListener('pageshow',audioWake);addEventListener('focus',audioWake);
+['touchstart','pointerdown'].forEach(t=>document.addEventListener(t,audioWake,{passive:true,capture:true}));
+const navSound=()=>{try{return (JSON.parse(localStorage.getItem('navemae-v1'))||{}).sound!==false}catch(e){return true}}; /* som definido nas configurações da Nave-Mãe */
+let soundOn=navSound();addEventListener('pageshow',()=>{soundOn=navSound()});
+function tone(f,d=.08,t=0,v=.06,type='square'){SY.note(f,d,t,{vol:v*.75,type})} // passa pelo sintetizador (som SNES)
+document.addEventListener('touchstart',function u(){try{AC=AC||newAC();AC.resume&&AC.resume()}catch(e){}document.removeEventListener('touchstart',u)},{passive:true});
+/* sintetizador e sons por contexto */
+/* ---------- sintetizador 16-bit (mesmo código na Nave-Mãe, nos jogos e no fliperama) ----------
+   note: onda com envelope, deslize de tom (to) e vibrato (vib); noise: ruído filtrado para
+   sopros, batidas e desmoronamentos; arp: sequência de notas. */
+function mkSYN(ctx,on){let nb=null;
+  /* som estilo SNES (não Atari): ondas com harmônicos suaves no lugar do quadrado puro, duas vozes levemente
+     desafinadas (corpo de amostra), envelope com queda natural, filtro que tira o chiado agudo, compressor
+     que segura o volume e um eco curto, como o eco do chip de som do Super Nintendo. Tudo passa pelo mesmo barramento. */
+  const buf=c=>{if(!nb){nb=c.createBuffer(1,c.sampleRate*.6|0,c.sampleRate);const d=nb.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1}return nb};
+  function bus(c){if(c._nm)return c._nm;
+    const inp=c.createGain(),lp=c.createBiquadFilter(),cmp=c.createDynamicsCompressor(),dl=c.createDelay(.5),fb=c.createGain(),dlp=c.createBiquadFilter(),wet=c.createGain();
+    inp.gain.value=.62;lp.type='lowpass';lp.frequency.value=4600;lp.Q.value=.4;
+    cmp.threshold.value=-20;cmp.knee.value=12;cmp.ratio.value=4;cmp.attack.value=.003;cmp.release.value=.18;
+    dl.delayTime.value=.14;fb.gain.value=.28;dlp.type='lowpass';dlp.frequency.value=1900;wet.gain.value=.2;
+    inp.connect(lp);lp.connect(cmp);lp.connect(dl);dl.connect(dlp);dlp.connect(fb);fb.connect(dl);dlp.connect(wet);wet.connect(cmp);cmp.connect(c.destination);
+    const pw=(fn)=>{const N=24,re=new Float32Array(N),im=new Float32Array(N);for(let k=1;k<N;k++)im[k]=fn(k);return c.createPeriodicWave(re,im)};
+    c._nm={inp,w:{pulse:pw(k=>k%2?Math.exp(-k/5)/k*1.6:0),pulse25:pw(k=>Math.sin(Math.PI*k*.25)*Math.exp(-k/6)/k*1.6),saw:pw(k=>Math.exp(-k/6)/k*(k%2?1:-1))}};
+    return c._nm}
+  const WAVE={square:'pulse',sawtooth:'saw',pulse25:'pulse25'};
+  function osc(c,b,type,f,n){const o=c.createOscillator(),w=WAVE[type];if(w)o.setPeriodicWave(b.w[w]);else o.type=type||'triangle';o.frequency.setValueAtTime(f,n);return o}
+  function note(f,d,t=0,o={}){if(!on()||!f)return;try{const c=ctx(),b=bus(c),n=c.currentTime+t,type=o.type||'square',v=(o.vol||.05)*.8,g=c.createGain();
+    const a=osc(c,b,type,f,n),z=osc(c,b,type==='square'||type==='pulse25'?'triangle':type,f*1.0035,n),gz=c.createGain();gz.gain.value=type==='square'?.55:.35;
+    [a,z].forEach(x=>{if(o.to)x.frequency.exponentialRampToValueAtTime(o.to*(x===z?1.0035:1),n+d)});
+    if(o.vib){const l=c.createOscillator(),lg=c.createGain();l.frequency.value=o.vib;lg.gain.value=f*.03;l.connect(lg);lg.connect(a.frequency);lg.connect(z.frequency);l.start(n);l.stop(n+d+.2)}
+    g.gain.setValueAtTime(0,n);g.gain.linearRampToValueAtTime(v,n+.006);g.gain.setTargetAtTime(v*.7,n+.006,d*.25);g.gain.setTargetAtTime(0,n+d*.7,Math.max(.02,d*.22));
+    a.connect(g);z.connect(gz).connect(g);g.connect(b.inp);a.start(n);z.start(n);a.stop(n+d+.25);z.stop(n+d+.25)}catch(e){}}
+  function noise(d,t=0,o={}){if(!on())return;try{const c=ctx(),b=bus(c),n=c.currentTime+t,s=c.createBufferSource(),fl=c.createBiquadFilter(),g=c.createGain(),v=(o.vol||.08)*.75;
+    s.buffer=buf(c);s.loop=true;fl.type=o.filter||'lowpass';fl.frequency.setValueAtTime(Math.min(o.f||1200,3600),n);if(o.to)fl.frequency.exponentialRampToValueAtTime(Math.min(o.to,3600),n+d);fl.Q.value=o.q||1;
+    g.gain.setValueAtTime(0,n);g.gain.linearRampToValueAtTime(v,n+(o.att||.01));g.gain.setTargetAtTime(0,n+d*.5,Math.max(.015,d*.2));
+    s.connect(fl).connect(g).connect(b.inp);s.start(n);s.stop(n+d+.2)}catch(e){}}
+  const arp=(fs,step,o={})=>fs.forEach((f,i)=>note(f,o.d||step*1.15,i*step+(o.t||0),o));
+  return{note,noise,arp}}
+const SY=mkSYN(()=>{AC=AC||newAC();return AC},()=>soundOn);
+let combo=0;
+const SND={
+  page:()=>{SY.noise(.1,0,{filter:'highpass',f:3000,vol:.06});SY.noise(.12,.09,{filter:'highpass',f:2200,vol:.05})},
+  warp:()=>{SY.note(220,1.2,0,{type:'triangle',to:1760,vol:.07,vib:9});SY.noise(1.1,0,{f:400,to:3000,vol:.05,att:.2});SY.arp([1568,2093,2637],.08,{type:'sine',vol:.04,t:1.1})},
+  place:()=>{SY.note(523,.06,0,{type:'triangle',vol:.08});SY.note(784,.08,.06,{type:'triangle',vol:.07})},
+  wood:()=>{SY.noise(.05,0,{f:900,vol:.12});SY.note(196,.08,0,{type:'triangle',vol:.08})},
+  peg:()=>{SY.noise(.03,0,{f:2400,vol:.1});SY.note(880,.04,0,{type:'triangle',vol:.06})},
+  mud:()=>SY.noise(.16,0,{f:500,to:200,vol:.1}),
+  stamp:()=>{SY.noise(.08,0,{f:300,vol:.14});SY.arp([523,659,784,1047],.08,{type:'triangle',vol:.07,t:.1})},
+  drawer:()=>{SY.noise(.12,0,{f:700,to:300,vol:.08});SY.note(330,.05,.1,{type:'triangle',vol:.06})},
+};
+const sfx={
+  tap:()=>tone(520,.04),
+  ok:()=>{const k=Math.pow(2,Math.min(combo,7)/12);combo++;tone(660*k,.07);tone(880*k,.07,.07);tone(1320*k,.09,.14);if(combo>=3)SY.arp([1760*k,2349*k],.05,{type:'sine',vol:.035,t:.22})},
+  no:()=>{combo=0;tone(220,.12);tone(160,.16,.12)},
+  win:()=>[392,523,659,784,1047,1319].forEach((f,i)=>tone(f,.09,i*.09)),
+};
+/* narração: o iPhone lê o texto em português (voz do sistema). Só toca quando a criança pede. */
+const TTS={ok:'speechSynthesis' in window,v:null,on:false};
+function ttsVoice(){try{const vs=speechSynthesis.getVoices();TTS.v=vs.find(v=>/pt[-_]BR/i.test(v.lang))||vs.find(v=>/^pt/i.test(v.lang))||null}catch(e){}}
+if(TTS.ok){ttsVoice();try{speechSynthesis.onvoiceschanged=ttsVoice}catch(e){}}
+function ttsBtns(){document.querySelectorAll('[data-tts]').forEach(b=>{b.classList.toggle('on',TTS.on);b.querySelector('span').textContent=TTS.on?'PARAR':'OUVIR'})}
+function say(txt){if(!TTS.ok)return;if(TTS.on){hush();return}
+  try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(txt);u.lang='pt-BR';if(TTS.v)u.voice=TTS.v;u.rate=.9;
+    u.onend=u.onerror=()=>{TTS.on=false;ttsBtns()};speechSynthesis.speak(u);TTS.on=true;ttsBtns()}catch(e){}}
+function hush(){if(!TTS.ok)return;try{speechSynthesis.cancel()}catch(e){}TTS.on=false;ttsBtns()}
+const ttsBtn=()=>TTS.ok?`<button class="tts px pbtn" data-tts>${sprite('speaker',2)}<span>OUVIR</span></button>`:'<span></span>';
+document.addEventListener('visibilitychange',()=>{if(document.hidden)hush()});
+
+/* ---- comemoração de missão concluída (mesmo código nos dois jogos) ----
+   CEL.play({host,avatar,title,sub,stars,score:[n,total],scoreLabel,turno:{n,total,streak,fresh},lose,buttons:[{label,cls,fn}],onDone}) */
+const CEL=(()=>{
+  const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const STAR=[".....k.....","....kYk....","....kYk....","kkkkkYOkkkk","kYYYYYOOOok",".kYYYYOOok.","..kYYYOok..","..kYOkkOk..",".kYOk..kOk.",".kOk....kok","kkk.....kkk"];
+  const ON={k:'#000',Y:'#fff3a0',O:'#ffb300',o:'#d97a00'};
+  const px=(rows,s,m)=>{let r='';rows.forEach((row,y)=>{for(let x=0;x<row.length;x++){const c=row[x];if(c==='.')continue;let k=1;while(row[x+k]===c)k++;r+=`<rect x="${x}" y="${y}" width="${k}" height="1" fill="${m[c]}"/>`;x+=k-1}});
+    return `<svg viewBox="0 0 ${rows[0].length} ${rows.length}" width="${rows[0].length*s}" height="${rows.length*s}" shape-rendering="crispEdges" style="display:block">${r}</svg>`};
+  let T=[],fin=null;
+  const at=(ms,fn)=>T.push(setTimeout(fn,RM?0:ms));
+  function confetti(n,colors,from=.3){if(RM)return;let c=document.querySelector('.cel-cf');
+    if(!c){c=document.createElement('canvas');c.className='cel-cf';document.body.appendChild(c);c._P=[]}
+    const S=2,W=c.width=Math.ceil(innerWidth/S),H=c.height=Math.ceil(innerHeight/S),x=c.getContext('2d');
+    for(let i=0;i<n;i++)c._P.push({x:W/2+(Math.random()-.5)*W*.35,y:H*from,vx:(Math.random()-.5)*3.4,vy:-Math.random()*3.4-1.4,s:1+(Math.random()<.45),c:colors[Math.random()*colors.length|0],t:Math.random()*6});
+    if(c._run)return;c._run=1;let last=performance.now();
+    (function step(now){const dt=Math.min(3,(now-last)/16.7);last=now;x.clearRect(0,0,W,H);
+      c._P=c._P.filter(p=>p.y<H+4);
+      for(const p of c._P){p.vy+=.055*dt;p.vx*=.985;p.x+=p.vx*dt;p.y+=p.vy*dt;p.t+=.22*dt;x.fillStyle=p.c;
+        x.fillRect(Math.round(p.x),Math.round(p.y),Math.max(1,Math.round(p.s*Math.abs(Math.cos(p.t))+.4)),p.s)}
+      if(c._P.length)requestAnimationFrame(step);else{c._run=0;x.clearRect(0,0,W,H)}})(last)}
+  function stop(){T.forEach(clearTimeout);T=[];fin=null;const c=document.querySelector('.cel-cf');if(c){c._P=[]}}
+  function play(o){stop();const C=CEL.cfg,lose=!!o.lose,st=o.stars||0,tu=o.turno;
+    const off={k:'#000',Y:C.starOff[0],O:C.starOff[1],o:C.starOff[2]};
+    const segs=tu?Array.from({length:tu.total},(_,i)=>`<i class="${i<tu.n-(tu.fresh?1:0)?'on':''}"></i>`).join(''):'';
+    const done=tu&&tu.n>=tu.total,dias=tu?`${tu.streak} ${tu.streak===1?'DIA':'DIAS'}`:'';
+    o.host.innerHTML=`<div class="cel${lose?' lose':''}">
+      <div class="cel-hero">${lose?'':'<div class="cel-rays"></div>'}<div class="cel-av">${o.avatar||''}</div></div>
+      <h2 class="cel-t cel-pop">${o.title}</h2>${o.sub?`<p class="cel-sub">${o.sub}</p>`:''}
+      ${lose?'':`<div class="cel-stars">${[0,1,2].map(i=>`<span>${spriteRows(STAR,4,off)}</span>`).join('')}</div>`}
+      ${o.score?`<div class="cel-score"><b>0</b><span>/${o.score[1]}</span><small>${o.scoreLabel||'de primeira'}</small></div>`:''}
+      ${o.energy?`<div class="cel-en cel-pop">${spriteRows(['....kkk','...kYOk','..kYOk.','.kYOkkk','kYYYYOk','kkkYOk.','..kYk..','.kYk...','.kk....'],2,{k:'#000',Y:'#fff3a0',O:'#ffb300'})}+${o.energy} DE ENERGIA</div>`:''}
+      ${tu?`<div class="cel-turno ${C.panel}"><div class="cel-tl"><span>TURNO DE HOJE</span><b>${tu.n-(tu.fresh?1:0)}/${tu.total}</b></div><div class="cel-segs">${segs}</div>
+        ${done?`<div class="cel-banner"${tu.fresh&&tu.n>=tu.total?' hidden':''}>TURNO COMPLETO! · SEQUÊNCIA: ${dias}</div>`:''}</div>`:''}
+      <div class="cel-btns">${o.buttons.map((b,i)=>`<button class="${b.cls}" data-cb="${i}">${b.label}</button>`).join('')}</div></div>`;
+    const h=o.host,q=s=>h.querySelector(s);
+    h.querySelectorAll('[data-cb]').forEach(b=>b.onclick=e=>{e.stopPropagation();stop();o.buttons[+b.dataset.cb].fn()});
+    const stars=[...h.querySelectorAll('.cel-stars span')],sc=q('.cel-score b');
+    const starOn=i=>{stars[i].innerHTML=spriteRows(STAR,4,ON);stars[i].classList.add('cel-pop')};
+    const turnoOn=()=>{if(!tu||!tu.fresh)return;const s=h.querySelectorAll('.cel-segs i')[tu.n-1];if(s&&!s.classList.contains('on')){s.classList.add('on','flash');q('.cel-tl b').textContent=`${tu.n}/${tu.total}`}};
+    const banner=()=>{const b=q('.cel-banner');if(b&&b.hidden){b.hidden=false;b.classList.add('cel-pop');return true}};
+    const btns=()=>{q('.cel-btns').classList.add('on');if(o.onDone){const f=o.onDone;o.onDone=null;f()}};
+    fin=()=>{stop();if(sc)sc.textContent=o.score[0];for(let i=0;i<st;i++)if(!stars[i].classList.contains('cel-pop'))starOn(i);turnoOn();banner();btns()};
+    // linha do tempo
+    if(!lose)confetti(90,C.confetti);
+    let t=450;
+    if(o.score){const n=o.score[0];for(let i=1;i<=n;i++)at(t+=110,()=>{sc.textContent=i;C.beep(420+i*40,.03)});t+=150}
+    for(let i=0;i<st;i++)at(t+=300,()=>{starOn(i);C.beep(784+i*262,.12);if(i===2)confetti(30,C.confetti,.45)});
+    if(tu&&tu.fresh){at(t+=420,()=>{turnoOn();C.beep(660,.08);C.beep(990,.1,.08)});
+      if(done)at(t+=520,()=>{banner();confetti(120,C.confetti,.2);C.jingle()})}
+    at(t+=380,btns);
+    // tocar na tela pula a animação
+    h.firstElementChild.addEventListener('click',()=>{if(fin)fin()})}
+  return{play,stop,cfg:null}})();
+CEL.cfg={beep:(f,d,t=0)=>tone(f,d,t),jingle:()=>[784,988,1175,1568,1175,1568].forEach((f,i)=>tone(f,.1,i*.1)),
+  confetti:['#ffb300','#7fe3ff','#5dff9a','#ff7ab0','#f5ecdc'],starOff:['#5a4a3a','#4a3a2c','#2a2019'],panel:'px'};
+
+/* =================== navegação =================== */
+const $=s=>document.querySelector(s);
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+let current='menu',mode=null;
+function show(id){hush();if(id!=='res')CEL.stop();current=id;document.querySelectorAll('#app>.screen').forEach(s=>s.hidden=s.id!==id);window.scrollTo(0,0);if(id==='menu')renderMenu()}
+document.querySelectorAll('[data-back]').forEach(b=>b.onclick=()=>{sfx.tap();if(DL){backHome();return}show('menu')});
+document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>{b.closest('.overlay').hidden=true});
+
+/* =================== capítulos =================== */
+const readCaps=()=>CAPS.filter(c=>S.caps[c.id]);
+/* capítulo do Diário de hoje: um capítulo novo por dia; com todos lidos, relê o que foi visto há mais tempo */
+function todayCap(){const t=dkey(),nt=CAPS.find(c=>S.caps[c.id]===t);if(nt)return{c:nt,again:true};
+  const nx=CAPS.find(c=>!S.caps[c.id]);if(nx)return{c:nx,nw:true};
+  const last=c=>(S.rr[c.id]||S.caps[c.id]);return{c:[...CAPS].sort((a,b)=>last(a).localeCompare(last(b)))[0],re:true}}
+
+/* =================== menu =================== */
+const WD=['D','S','T','Q','Q','S','S'];let typing=null;
+function renderMenu(){reload();
+  const tc=todayCap(),nRead=readCaps().length,done=doneToday(),n=mainDone(dkey()),all=n>=3;
+  $('#capN').textContent=`${nRead} / ${CAPS.length}`;
+  $('#caps').innerHTML=CAPS.map((c,i)=>{const ok=!!S.caps[c.id],now=c===tc.c&&!done.includes('diario'),lock=!ok&&!now;
+    return `<button class="cap${ok?' ok':''}${now?' now':''}${lock?' lock':''}" data-cap="${i}" aria-label="Capítulo ${i+1}"><i>${lock?'?':sprite(c.ic,c.ic==='ship'?1:2)}</i><span>${lock?'CAP. '+(i+1):c.ano}</span></button>`}).join('');
+  $('#caps').querySelectorAll('[data-cap]').forEach(b=>b.onclick=()=>{const c=CAPS[+b.dataset.cap];
+    if(S.caps[c.id]){sfx.tap();openCap(c,{free:true})}else if(c===tc.c){sfx.tap();startMission('diario')}else{sfx.no();toast('Um capítulo novo por dia. Volte amanhã!')}});
+  {const oks=$('#caps').querySelectorAll('.ok'),nw=$('#caps .now')||oks[oks.length-1];if(nw)$('#caps').scrollLeft=Math.max(0,nw.offsetLeft-120)}
+  $('#turnoN').textContent=`${n} / 3`;$('#turnoN').classList.toggle('all',all);
+  let w='';for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);const c=mainDone(dkey(d));
+    w+=`<span class="day${c>=3?' full':c?' part':''}${i===0?' today':''}"><i></i>${WD[d.getDay()]}</span>`}
+  $('#week').innerHTML=w;
+  const s=streak();$('#streak').innerHTML=s?`Sequência: <b>${s} ${s===1?'dia':'dias'}</b>`:'Faça as 3 missões para começar a sequência.';
+  $('#diaSub').textContent=tc.re?`Releia: ${tc.c.t}`:`Cap. ${CAPS.indexOf(tc.c)+1}: ${tc.c.t}`;
+  const nx=MODES.find(m=>!done.includes(m));
+  document.querySelectorAll('[data-st]').forEach(el=>{const m=el.dataset.st,ok=done.includes(m),isN=m===nx;
+    el.className='st'+(ok?' ok':isN?' nx':'');el.innerHTML=ok?sprite('check',2)+'FEITO':isN?'PRÓXIMA':'A FAZER';
+    const b=el.closest('button');b.classList.toggle('done',ok);b.classList.toggle('next',isN)});
+  const cOk=done.includes('desafio');$('#casaOk').hidden=!cOk;$('#goCasa').classList.toggle('done',cOk);
+  const got=PASS.filter(p=>S.pass[p.id]).length;$('#passN').textContent=`${got} / ${PASS.length}`;
+  $('#stamps').innerHTML=PASS.map(p=>`<button class="stamp${S.pass[p.id]?' got':''}" data-pass="${p.id}"><span class="ring">${sprite(p.ic,2)}</span><span>${p.n.toUpperCase()}</span></button>`).join('');
+  $('#stamps').querySelectorAll('[data-pass]').forEach(b=>b.onclick=()=>{sfx.tap();passInfo(b.dataset.pass)});
+  const hr=new Date().getHours(),hi=hr<12?'Bom dia':hr<18?'Boa tarde':'Boa noite',who=pilot?`, piloto ${pilot}`:', piloto';
+  const txt=n===0?`> ${hi}${who}.\n> Capítulo de hoje: ${tc.c.t}.`:all?`> Turno completo.\n> A máquina volta amanhã!`:`> ${3-n===1?'Falta 1 missão':`Faltam ${3-n} missões`}.`;
+  const el=$('#term');clearInterval(typing);let i=0;el.textContent='';
+  typing=setInterval(()=>{i++;el.innerHTML=esc(txt.slice(0,i)).replace(/\n/g,'<br>');if(i>=txt.length)clearInterval(typing)},20);
+  setTimeout(newStamp,500)}
+document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{sfx.tap();startMission(b.dataset.go)});
+$('#goCasa').onclick=()=>{sfx.tap();startCasa()};
+let toastT=0;function toast(t){let el=$('#toast');if(!el){el=document.createElement('div');el.id='toast';el.className='px';
+    el.style.cssText='position:fixed;left:50%;bottom:calc(24px + var(--sab,env(safe-area-inset-bottom)));transform:translateX(-50%);z-index:90;padding:12px 14px;max-width:340px;font-size:20px;text-align:center;color:var(--ink)';document.body.appendChild(el)}
+  el.textContent=t;el.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>el.hidden=true,2400)}
+
+/* =================== passaporte =================== */
+function passInfo(id){const p=PASS.find(x=>x.id===id),d=S.pass[id];
+  $('#passBody').innerHTML=`<h2>${p.n.toUpperCase()}</h2><div class="stampbig" style="${d?'':'box-shadow:inset 0 0 0 6px #4a3a2c;transform:none;animation:none'}">${sprite(p.ic,6)}</div>
+    <p>${p.d}</p><p style="color:${d?'var(--green)':'var(--amber)'}">${d?`Carimbado em ${d.split('-').reverse().slice(0,2).join('/')}.`:'Visite com a família. Um adulto confirma a visita na área dos pais da Nave-Mãe e o carimbo aparece aqui.'}</p>
+    <button class="btn" data-close>FECHAR</button>`;
+  $('#passBody').querySelector('[data-close]').onclick=()=>{$('#passDlg').hidden=true};$('#passDlg').hidden=false}
+/* carimbo confirmado pelos pais desde a última visita: comemora */
+function newStamp(){if(current!=='menu')return;const nw=PASS.find(p=>S.pass[p.id]&&!S.passSeen.includes(p.id));if(!nw)return;
+  S.passSeen.push(nw.id);save();SND.stamp();
+  $('#passBody').innerHTML=`<h2>CARIMBO NOVO!</h2><div class="stampbig">${sprite(nw.ic,6)}</div><p style="text-align:center;color:var(--ink)">${nw.n}</p>
+    <p style="text-align:center;color:var(--amber)">+15 DE ENERGIA</p><button class="btn" data-close>QUE LEGAL!</button>`;
+  $('#passBody').querySelector('[data-close]').onclick=()=>{$('#passDlg').hidden=true;renderMenu()};$('#passDlg').hidden=false}
+
+/* =================== caderno de palavras =================== */
+function openWords(){const ws=readCaps().map(c=>c.w);
+  $('#wordList').innerHTML=ws.length?ws.map(w=>`<li><b>${w[0]}</b>${w[1]}</li>`).join(''):'<li>As palavras novas dos capítulos aparecem aqui.</li>';$('#words').hidden=false}
+$('#openWords').onclick=()=>{SND.page();openWords()};
+document.querySelectorAll('[data-words]').forEach(b=>b.onclick=()=>{SND.page();openWords()});
+
+/* =================== missões =================== */
+function startMission(m){mode=m;hush();
+  if(m==='diario'){const tc=todayCap();return openCap(tc.c,{nw:tc.nw,re:tc.re||tc.again})}
+  if(m==='linha')return startLinha();
+  if(m==='arquivo')return startArq()}
+/* sem capítulo lido ainda: manda para o Diário */
+function needDiary(host){host.innerHTML=`<div class="qbox px"><p class="qtxt">Primeiro leia o capítulo de hoje no <b style="color:var(--amber);font-weight:normal">Diário da viagem</b>.</p></div>
+  <div class="qfoot"><button class="btn" id="goDia">ABRIR O DIÁRIO</button></div>`;host.querySelector('#goDia').onclick=()=>{sfx.tap();startMission('diario')}}
+
+/* ---------- viagem no tempo (abertura do capítulo) ---------- */
+function warp(label,then){const w=$('#warp'),c=$('#warpc'),x=c.getContext('2d'),W=c.width=Math.ceil(innerWidth/3),H=c.height=Math.ceil(innerHeight/3);w.hidden=false;SND.warp();
+  const pts=Array.from({length:110},()=>({a:Math.random()*6.283,r:Math.random()*6+1,v:Math.random()*.6+.3,c:['#ffb300','#7fe3ff','#f5ecdc'][Math.random()*3|0]}));
+  const t0=performance.now(),D=1500,Y=$('#warpY');
+  (function f(t){const k=Math.min(1,(t-t0)/D);x.fillStyle='rgba(5,4,15,.3)';x.fillRect(0,0,W,H);
+    pts.forEach(p=>{const r0=p.r,r1=p.r+=p.v*(1+k*10);x.strokeStyle=p.c;x.beginPath();x.moveTo(W/2+Math.cos(p.a)*r0|0,H/2+Math.sin(p.a)*r0|0);x.lineTo(W/2+Math.cos(p.a)*r1|0,H/2+Math.sin(p.a)*r1|0);x.stroke();if(p.r>W)p.r=2});
+    Y.innerHTML=`<small>VIAJANDO PARA</small>${k<.8?String(1000+Math.floor(Math.random()*1026)):label}`;
+    if(k<1)requestAnimationFrame(f);else setTimeout(()=>{w.hidden=true;then()},380)})(t0)}
+
+/* ---------- DIÁRIO ---------- */
+let DG=null;
+function openCap(c,o={}){mode='diario';DG={c,o,pg:0,phase:'read',qs:shuffle(c.q.map((q,i)=>({q,i}))),qi:0,firsts:0,miss:false};
+  $('#dHead').textContent=`CAPÍTULO ${CAPS.indexOf(c)+1} · ${c.ano}`;$('#dTitle').textContent=c.t;
+  if(o.free){show('dia');renderDia();return}
+  warp(c.ano,()=>{show('dia');renderDia()})}
+function sceneHTML(id){return `<div class="scn" id="scn"><canvas id="scv"></canvas></div>`}
+function paintScene(id){const box=$('#scn'),cv=$('#scv'),host=box.parentElement,cw=Math.min(host.clientWidth||360,440);
+  cv.width=Math.floor(cw/2);cv.height=SC_H;cv.style.width=cv.width*2+'px';cv.style.height=SC_H*2+'px';
+  const ov=drawScene(cv,id);box.querySelectorAll('.lbl').forEach(e=>e.remove());
+  ov.forEach(o=>{const s=document.createElement('span');s.className='lbl '+o.k;s.textContent=o.t;s.style.left=o.x*2+'px';s.style.top=o.y*2+'px';box.appendChild(s)})}
+function renderDia(){hush();const c=DG.c,b=$('#dBody');
+  if(DG.phase==='read'){const p=c.pg[DG.pg],last=DG.pg===c.pg.length-1;$('#dPg').textContent=`${DG.pg+1}/${c.pg.length}`;
+    b.innerHTML=`${sceneHTML()}<div class="page">${esc(p.tx)}${last?`<div class="word"><b>PALAVRA NOVA · <em>${c.w[0]}</em></b>${esc(c.w[1])}</div>`:''}</div>
+      <div class="dots">${c.pg.map((_,i)=>`<i class="${i===DG.pg?'on':''}"></i>`).join('')}</div>
+      <div class="nav3"><button class="key px pbtn" id="dPrev" aria-label="Voltar"${DG.pg?'':' disabled'}>◀</button>${ttsBtn()}<button class="key ${last?'ok':'px'} pbtn" id="dNext" aria-label="${last?'Perguntas':'Avançar'}">${last?'?':'▶'}</button></div>`;
+    paintScene(p.sc);
+    b.querySelector('#dPrev').onclick=()=>{if(!DG.pg)return;SND.page();DG.pg--;renderDia()};
+    b.querySelector('#dNext').onclick=()=>{SND.page();if(last){DG.phase='q';$('#dPg').textContent='';renderDia()}else{DG.pg++;renderDia()}};
+    const t=b.querySelector('[data-tts]');if(t)t.onclick=()=>say(p.tx+(last?` Palavra nova: ${c.w[0]}. ${c.w[1]}`:''));return}
+  if(DG.phase==='q'){const it=DG.qs[DG.qi];$('#dPg').textContent=`PERGUNTA ${DG.qi+1}/${DG.qs.length}`;
+    quiz(b,it.q,`PERGUNTA SOBRE O CAPÍTULO`,ok=>{cardAfter(DG.c.id+':'+it.i,ok);if(ok)DG.firsts++;record('diario',ok,ok?null:it.q.k)},
+      ()=>{DG.qi++;if(DG.qi>=DG.qs.length)finishDia();else renderDia()})}}
+/* pergunta de múltipla escolha (Diário e Arquivo): a primeira alternativa é a certa */
+function quiz(host,q,tag,onAnswer,onNext){const opts=shuffle(q.a.map((t,i)=>({t,ok:i===0})));let answered=false;
+  host.innerHTML=`<div class="qbox px"><div class="qtag">${tag}</div><p class="qtxt">${esc(q.q)}</p></div>
+    <div class="opts">${opts.map((o,i)=>`<button class="opt px pbtn" data-o="${i}">${esc(o.t)}</button>`).join('')}</div>
+    <div class="fb" id="qfb"></div><div class="qfoot two" id="qfoot">${ttsBtn()}<span></span></div>`;
+  const t=host.querySelector('[data-tts]');if(t)t.onclick=()=>say(q.q+' '+opts.map((o,i)=>`${['A','B','C','D'][i]}: ${o.t}.`).join(' '));
+  host.querySelectorAll('[data-o]').forEach(b=>b.onclick=()=>{if(answered)return;answered=true;hush();const o=opts[+b.dataset.o],f=host.querySelector('#qfb');
+    if(o.ok){sfx.ok();b.classList.add('good');f.className='fb ok';f.innerHTML=`<b>ISSO!</b>${esc(q.x)}`;onAnswer(true);setTimeout(onNext,1500)}
+    else{sfx.no();b.classList.add('bad');host.querySelectorAll('[data-o]').forEach((x,i)=>{if(opts[i].ok)x.classList.add('show')});
+      f.className='fb no';f.innerHTML=`<b>QUASE!</b>${esc(q.x)}`;onAnswer(false);
+      const ft=host.querySelector('#qfoot');ft.innerHTML=`${ttsBtn()}<button class="btn nxt" id="qGo">ENTENDI</button>`;
+      const t2=ft.querySelector('[data-tts]');if(t2)t2.onclick=()=>say(q.x);ft.querySelector('#qGo').onclick=()=>{sfx.tap();onNext()}}})}
+/* revisão espaçada: caixa 0..5; acertou sobe de caixa e volta daqui a 1, 1, 3, 7, 14 ou 30 dias; errou volta para a caixa 0 */
+const INT=[1,1,3,7,14,30];
+function cardAfter(id,ok){const t=dkey(),c=S.cards[id];
+  if(!c){S.cards[id]={b:ok?1:0,due:addDays(t,1)};save();return} // primeira vez (no Diário): volta amanhã
+  c.b=ok?Math.min(5,c.b+1):0;c.due=addDays(t,INT[c.b]);save()}
+function finishDia(){const c=DG.c,t=dkey(),fr=!doneToday().includes('diario'),counts=!DG.o.free||!todayCap().nw;
+  if(!S.caps[c.id])S.caps[c.id]=t;else S.rr[c.id]=t;
+  const fresh=fr&&counts;if(fresh)markDone('diario');save();sfx.win();const n=DG.qs.length,f=DG.firsts;
+  celebrate({title:'CAPÍTULO CONCLUÍDO!',sub:c.t,stars:f===n?3:f/n>=.6?2:1,score:[f,n],energy:fresh?en(f):0,turno:turnoInfo(fresh),buttons:endButtons(()=>openCap(c,{free:true}))})}
+
+/* ---------- LINHA DO TEMPO ---------- */
+let LN=null;const LROUNDS=3;
+function poolEvents(){return [...new Set(readCaps().flatMap(c=>c.ev))].map(id=>Object.assign({id},EVENTS[id]))}
+function genRounds(){const evs=poolEvents();if(evs.length<3)return null;const newest=readCaps().slice(-1)[0].ev,R=[];
+  for(let r=0;r<LROUNDS;r++){const n=evs.length>=10?5:evs.length>=5?4:r<2?3:evs.length,pickd=[],ys=new Set();
+    const add=e=>{if(e&&!ys.has(e.y)&&!pickd.includes(e)){pickd.push(e);ys.add(e.y)}};
+    if(r<2)add(evs.find(e=>e.id===pick(newest)));shuffle(evs.slice()).forEach(e=>{if(pickd.length<n)add(e)});R.push(pickd.map(e=>e.id))}
+  return R}
+function startLinha(){mode='linha';const rs=genRounds();show('lin');
+  if(!rs){$('#tl').innerHTML='';$('#lSegs').innerHTML='';$('#lN').textContent='';needDiary($('#bank'));return}
+  LN={rs,r:0,firsts:0,miss:false,placed:[]};renderLinha()}
+function renderLinha(){const ids=LN.rs[LN.r],evs=ids.map(id=>Object.assign({id},EVENTS[id])),sorted=[...evs].sort((a,b)=>a.y-b.y);
+  $('#lN').textContent=`RODADA ${LN.r+1}/${LROUNDS}`;$('#lSegs').innerHTML=Array.from({length:LROUNDS},(_,i)=>`<i class="${i<LN.r?'on':i===LN.r?'cur':''}"></i>`).join('');
+  $('#tl').innerHTML=sorted.map((e,i)=>{const f=i<LN.placed.length;return `<div class="slot${f?' f':''}${f&&i===LN.placed.length-1&&LN.justPlaced?' new':''}">${f?`<span class="yr">${e.lb}</span>${esc(e.t)}`:i===0?'Mais antigo':i===sorted.length-1?'Mais novo':''}</div>`}).join('');
+  if(!LN.order)LN.order=shuffle(ids.slice());
+  $('#bank').innerHTML=LN.order.filter(id=>!LN.placed.includes(id)).map(id=>{const e=EVENTS[id];return `<button class="evc px pbtn" data-ev="${id}"><span class="ic">${sprite(e.ic,e.ic==='ship'?1:2)}</span><span>${esc(e.t)}</span></button>`}).join('');
+  $('#bank').querySelectorAll('[data-ev]').forEach(b=>b.onclick=()=>tapEvent(b.dataset.ev,b));LN.justPlaced=false}
+function tapEvent(id,b){const ids=LN.rs[LN.r],rest=ids.filter(x=>!LN.placed.includes(x)),oldest=rest.reduce((a,x)=>EVENTS[x].y<EVENTS[a].y?x:a,rest[0]);
+  if(id===oldest){SND.place();LN.placed.push(id);LN.justPlaced=true;$('#lfb').className='fb';$('#lfb').innerHTML='';
+    if(LN.placed.length===ids.length){renderLinha();if(!LN.miss)LN.firsts++;record('linha',!LN.miss);sfx.ok();
+      $('#lfb').className='fb ok';$('#lfb').innerHTML='<b>LINHA CERTA!</b>Do mais antigo para o mais novo.';
+      $('#bank').innerHTML=`<button class="btn" id="lGo" style="grid-column:1/-1;margin:0">${LN.r+1>=LROUNDS?'CONCLUIR':'PRÓXIMA RODADA'}</button>`;
+      $('#lGo').onclick=()=>{sfx.tap();LN.r++;LN.placed=[];LN.order=null;LN.miss=false;$('#lfb').innerHTML='';$('#lfb').className='fb';if(LN.r>=LROUNDS)finishLinha();else renderLinha()};return}
+    renderLinha();return}
+  sfx.no();b.classList.remove('shake');void b.offsetWidth;b.classList.add('shake','bad');setTimeout(()=>b.classList.remove('bad'),700);
+  if(!LN.miss){LN.miss=true;record('linha',false,'Ordem: '+EVENTS[id].t)}else errAdd('linha','Ordem: '+EVENTS[id].t);
+  $('#lfb').className='fb no';$('#lfb').innerHTML=`<b>AINDA NÃO</b>“${esc(EVENTS[id].t)}” aconteceu depois. Procure algo mais antigo.`}
+function finishLinha(){const fresh=!doneToday().includes('linha');if(fresh)markDone('linha');sfx.win();
+  celebrate({title:'LINHA DO TEMPO PRONTA!',sub:'Você colocou a história em ordem.',stars:LN.firsts===LROUNDS?3:LN.firsts>=2?2:1,score:[LN.firsts,LROUNDS],scoreLabel:'rodadas de primeira',
+    energy:fresh?en(LN.firsts):0,turno:turnoInfo(fresh),buttons:endButtons(()=>startLinha())})}
+
+/* ---------- ARQUIVO DA MEMÓRIA ---------- */
+let AQ=null;
+function arqPick(){const t=dkey(),pool=readCaps().flatMap(c=>c.q.map((q,i)=>({c,q,id:c.id+':'+i})));if(pool.length<3)return null;
+  const st=x=>S.cards[x.id]||{b:0,due:t},due=pool.filter(x=>st(x).due<=t).sort((a,b)=>st(a).due.localeCompare(st(b).due)||st(a).b-st(b).b);
+  const rest=shuffle(pool.filter(x=>!due.includes(x))).sort((a,b)=>st(a).b-st(b).b);
+  return shuffle([...due,...rest].slice(0,Math.min(6,pool.length)))}
+function startArq(){mode='arquivo';const cs=arqPick();show('arq');
+  if(!cs){$('#aSegs').innerHTML='';$('#drawers').innerHTML='';$('#aN').textContent='';needDiary($('#aBody'));return}
+  AQ={cs,i:0,firsts:0};renderArq()}
+function drawersHTML(hot,up){const cnt=[0,0,0,0,0,0];readCaps().forEach(c=>c.q.forEach((q,i)=>{const s=S.cards[c.id+':'+i];cnt[s?s.b:0]++}));
+  return ['NOVA','1','2','3','4','5'].map((l,i)=>`<i class="${i===hot?'hot':''}${i===up?' up':''}">GAV. ${l}<b>${cnt[i]}</b></i>`).join('')}
+function renderArq(){const it=AQ.cs[AQ.i],cur=(S.cards[it.id]||{b:0}).b;$('#aN').textContent=`FICHA ${AQ.i+1}/${AQ.cs.length}`;
+  $('#aSegs').innerHTML=AQ.cs.map((_,i)=>`<i class="${i<AQ.i?'on':i===AQ.i?'cur':''}"></i>`).join('');$('#drawers').innerHTML=drawersHTML(cur);
+  quiz($('#aBody'),it.q,`CAP. ${CAPS.indexOf(it.c)+1} · ${it.c.t.toUpperCase()}`,ok=>{cardAfter(it.id,ok);if(ok)AQ.firsts++;record('arquivo',ok,ok?null:it.q.k);
+    SND.drawer();$('#drawers').innerHTML=drawersHTML(-1,S.cards[it.id].b)},()=>{AQ.i++;if(AQ.i>=AQ.cs.length)finishArq();else renderArq()})}
+function finishArq(){const fresh=!doneToday().includes('arquivo');if(fresh)markDone('arquivo');sfx.win();const n=AQ.cs.length,f=AQ.firsts;
+  celebrate({title:'ARQUIVO EM DIA!',sub:'As fichas voltam quando for hora de lembrar.',stars:f===n?3:f/n>=.6?2:1,score:[f,n],energy:fresh?en(f):0,turno:turnoInfo(fresh),buttons:endButtons(()=>startArq())})}
+
+/* ---------- DESAFIO: MONTE A CASA ENXAIMEL ---------- */
+const CSTEPS=[
+  {k:'stones',n:4,t:'ALICERCE',h:'Comece pela base: toque nos 4 lugares das pedras.',snd:'wood'},
+  {k:'posts',n:5,t:'MADEIRAS EM PÉ',h:'Coloque as 5 madeiras em pé.',f:'Na casa enxaimel, a estrutura de madeira fica aparente.',snd:'wood'},
+  {k:'beams',n:3,t:'VIGAS DEITADAS',h:'Agora as 3 vigas deitadas.',snd:'wood'},
+  {k:'diag',n:2,t:'DIAGONAIS',h:'Coloque as peças na diagonal, nos cantos de baixo. Elas deixam a parede firme.',snd:'wood'},
+  {k:'pegs',n:15,t:'PREGOS DE PAU',h:'Prenda cada cruzamento com um prego de pau.',f:'As peças são presas com encaixes e pregos de pau.',snd:'peg'},
+  {k:'fill',n:5,t:'PREENCHER',h:'Escolha BARRO ou TIJOLO e toque nos espaços da parede.',f:'Os espaços são preenchidos com barro ou com tijolos.',snd:'mud'},
+  {k:'roof',n:3,t:'TELHADO',h:'Por fim, o telhado: toque para colocar as telhas.',snd:'wood'},
+];
+let CA=null;
+function startCasa(){mode='desafio';CA={s:0,stones:[],posts:[],beams:[],diag:[],pegs:[],fill:{},roof:0,mat:'b',q:shuffle(CASA_Q.slice()),qi:-1,firsts:0};show('casa');renderCasa()}
+function casaState(){const st=CA.s+1;return{st,stones:CA.stones,posts:CA.posts,beams:CA.beams,diag:CA.diag,pegs:CA.pegs,fill:CA.fill,roof:CA.roof}}
+function renderCasa(){const b=$('#cBody');$('#cSteps').innerHTML=CSTEPS.map((_,i)=>`<i class="${i<CA.s?'on':i===CA.s?'cur':''}"></i>`).join('');
+  if(CA.qi>=0){$('#cN').textContent=`PERGUNTA ${CA.qi+1}/${CA.q.length}`;const q=CA.q[CA.qi];
+    quiz(b,q,'PERGUNTA DO MESTRE CARPINTEIRO',ok=>{if(ok)CA.firsts++;record('desafio',ok,ok?null:q.k)},()=>{CA.qi++;if(CA.qi>=CA.q.length)finishCasa();else renderCasa()});return}
+  const sp=CSTEPS[CA.s];$('#cN').textContent=`PASSO ${CA.s+1}/${CSTEPS.length}`;
+  b.innerHTML=`<div class="scn" id="scn"><canvas id="scv"></canvas></div>
+    ${sp.k==='fill'?`<div class="mats"><button class="px pbtn${CA.mat==='b'?' on':''}" data-mat="b"><i style="background:#d9c49a"></i>BARRO</button><button class="px pbtn${CA.mat==='t'?' on':''}" data-mat="t"><i style="background:repeating-linear-gradient(0deg,#b84a2e 0 4px,#7d2a18 4px 5px)"></i>TIJOLO</button></div>`:''}
+    <div class="guide px"><div class="label">${sp.t} · ${countOf(sp)}/${sp.n}</div><p>${sp.h}</p>${sp.f?`<p class="fact">${sp.f}</p>`:''}</div>`;
+  const box=$('#scn'),cv=$('#scv'),cw=Math.min(b.clientWidth||360,440);cv.width=Math.floor(cw/2);cv.height=SC_H+10;cv.style.width=cv.width*2+'px';cv.style.height=(SC_H+10)*2+'px';
+  const ov=drawScene(cv,'casa',casaState()),g=ov.geo;
+  hotspots(g,sp).forEach(h=>{const e=document.createElement('button');e.className='hs';e.setAttribute('aria-label',sp.t);
+    e.style.cssText=`left:${h.x*2}px;top:${h.y*2}px;width:${h.w*2}px;height:${h.h*2}px`;e.onclick=()=>place(sp,h.i);box.appendChild(e)});
+  b.querySelectorAll('[data-mat]').forEach(x=>x.onclick=()=>{sfx.tap();CA.mat=x.dataset.mat;renderCasa()})}
+const countOf=sp=>sp.k==='fill'?Object.keys(CA.fill).length:sp.k==='roof'?CA.roof:CA[sp.k].length;
+function hotspots(g,sp){const{x0,top,cw,rh,cols,rows,bw,w,wall,base,by,hw}=g,out=[];
+  if(sp.k==='stones'){const sw=(w+4)/4;for(let i=0;i<4;i++)if(!CA.stones.includes(i))out.push({i,x:x0-2+i*sw,y:by-base-3,w:sw-1,h:base+6})}
+  if(sp.k==='posts')for(let c=0;c<=cols;c++)if(!CA.posts.includes(c))out.push({i:c,x:x0+c*cw-3,y:top,w:bw+6,h:wall})
+  if(sp.k==='beams')for(let r=rows;r>=0;r--)if(!CA.beams.includes(r))out.push({i:r,x:x0,y:top+r*rh-3,w:w,h:bw+6})
+  if(sp.k==='diag')[[0,0],[1,3]].forEach(([i,c])=>{if(!CA.diag.includes(i))out.push({i,x:x0+bw+c*cw,y:top+bw+rh,w:cw-bw,h:rh-bw})});
+  if(sp.k==='pegs')for(let r=0;r<=rows;r++)for(let c=0;c<=cols;c++){const i=r*(cols+1)+c;if(!CA.pegs.includes(i))out.push({i,x:x0+c*cw-6,y:top+r*rh-6,w:14,h:14})}
+  if(sp.k==='fill')for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){const k=r*cols+c;if((r===0&&(c===1||c===2))||(r===1&&c===2)||CA.fill[k])continue;out.push({i:k,x:x0+bw+c*cw,y:top+bw+r*rh,w:cw-bw,h:rh-bw})}
+  if(sp.k==='roof'&&CA.roof<3)out.push({i:CA.roof,x:x0-4,y:Math.max(0,top-hw-2),w:w+8,h:hw+2-Math.max(0,hw+2-top)});
+  return out}
+function place(sp,i){SND[sp.snd]();if(sp.k==='fill')CA.fill[i]=CA.mat;else if(sp.k==='roof')CA.roof++;else CA[sp.k].push(i);
+  if(countOf(sp)>=sp.n){CA.s++;sfx.ok();if(CA.s>=CSTEPS.length){CA.qi=0;CA.s=CSTEPS.length;showHouse();return}}renderCasa()}
+/* casa pronta: mostra inteira antes das perguntas */
+function showHouse(){const b=$('#cBody');$('#cSteps').innerHTML=CSTEPS.map(()=>'<i class="on"></i>').join('');$('#cN').textContent='CASA PRONTA!';
+  b.innerHTML=`<div class="scn" id="scn"><canvas id="scv"></canvas></div><div class="guide px"><div class="label">CASA PRONTA!</div><p>Casas assim foram construídas em Ivoti entre 1826 e 1950. Muitas estão de pé até hoje no Núcleo de Casas Enxaimel.</p></div>
+    <div class="qfoot"><button class="btn" id="cQ">PERGUNTAS DO CARPINTEIRO</button></div>`;
+  const cv=$('#scv'),cw=Math.min(b.clientWidth||360,440);cv.width=Math.floor(cw/2);cv.height=SC_H+10;cv.style.width=cv.width*2+'px';cv.style.height=(SC_H+10)*2+'px';
+  drawScene(cv,'casa',{st:8,fill:CA.fill,roof:3});sfx.win();$('#cQ').onclick=()=>{sfx.tap();renderCasa()}}
+function finishCasa(){const fresh=!doneToday().includes('desafio');markDone('desafio');S.escapes=(S.escapes||0)+1;save();sfx.win();const n=CA.q.length;
+  celebrate({title:'CASA ENXAIMEL PRONTA!',sub:'Um carpinteiro de verdade!',stars:CA.firsts===n?3:CA.firsts>=2?2:1,score:[CA.firsts,n],energy:fresh?8:0,turno:turnoInfo(false),buttons:endButtons(()=>startCasa())})}
+
+/* ---------- fim de missão ---------- */
+const en=f=>10+Math.min(10,f)+(isFull(dkey())?10:0); // energia (mesma regra da Nave-Mãe)
+function celebrate(o){show('res');CEL.play(Object.assign({host:$('#res'),avatar:(!o.lose&&navAvatar('cheer',2))||navAvatar('pilot',2)||sprite('hourglass',6)},o))}
+const turnoInfo=fresh=>({n:mainDone(dkey()),total:3,streak:streak(),fresh});
+function endButtons(again){const nx=MODES.find(m=>!doneToday().includes(m)),back=()=>{sfx.tap();if(DL){backHome();return}show('menu')},rep=()=>{sfx.tap();again()};
+  const T={diario:'DIÁRIO',linha:'LINHA DO TEMPO',arquivo:'ARQUIVO'};
+  return nx?[{label:`PRÓXIMA: ${T[nx]}`,cls:'btn',fn:()=>{sfx.tap();startMission(nx)}},{label:'DE NOVO',cls:'ghost px pbtn',fn:rep},{label:'VOLTAR À MÁQUINA',cls:'ghost px pbtn',fn:back}]
+    :[{label:'VOLTAR À MÁQUINA',cls:'btn',fn:back},{label:'DE NOVO',cls:'ghost px pbtn',fn:rep}]}
+
+/* =================== fundo (céu da Terra à noite) =================== */
+(function(){const c=$('#bgc'),x=c.getContext('2d');let P=[];
+  function size(){c.width=Math.ceil(innerWidth/3);c.height=Math.ceil(innerHeight/3);
+    P=Array.from({length:Math.round(c.width*c.height/300)},()=>({x:Math.random()*c.width|0,y:Math.random()*c.height|0,p:Math.random()*6.28,v:Math.random()*.02+.005}))}
+  size();addEventListener('resize',size);
+  (function f(){x.fillStyle='#100c0a';x.fillRect(0,0,c.width,c.height);
+    for(let y=0;y<c.height;y+=12)for(let i=((y/12)%2)*9;i<c.width;i+=18){x.fillStyle='#140f0c';x.fillRect(i|0,y,17,11)}
+    P.forEach(p=>{p.p+=p.v;const a=(Math.sin(p.p)+1)/2;x.fillStyle=a>.9?'#ffb300':a>.6?'#4a3a2c':'#1e1712';x.fillRect(p.x,p.y,1,1)});
+    requestAnimationFrame(f)})();
+})();
+
+/* =================== início =================== */
+$('#logo').innerHTML=sprite('hourglass',4);$('#wordIco').innerHTML=sprite('scroll',2);$('#casaIco').innerHTML=sprite('stampHouse',2);
+document.querySelectorAll('[data-ico]').forEach(el=>el.innerHTML=sprite(el.dataset.ico,2));
+addEventListener('pageshow',()=>{if(current==='menu')renderMenu()});
+show('menu');
+const RETK='ret:'+location.pathname,RP=(location.hash.match(/r=([\w.]+)/)||[])[1];
+if(RP)try{sessionStorage.setItem(RETK,RP)}catch(e){}
+const RETV=RP||(()=>{try{return sessionStorage.getItem(RETK)}catch(e){return null}})()||'';
+const RET='../?v='+APP_V+(RETV.startsWith('p.')?'#p='+RETV.slice(2):'#v=tasks'); // padrão: aba Missões; ?v= evita voltar para uma Nave-Mãe guardada (velha)
+var DL=false;
+function backHome(){location.href=RET}
+document.querySelectorAll('[data-home]').forEach(b=>b.addEventListener('click',()=>backHome()));
+function deepLink(){const m=(location.hash.match(/m=(\w+)/)||[])[1];if(!m)return;history.replaceState(null,'',location.pathname);
+  DL=RETV==='tasks';document.querySelectorAll('[data-back]').forEach(b=>b.textContent=DL?'< Missões':'< Máquina');
+  if(m==='desafio')startCasa();else if(MODES.includes(m))startMission(m)}
+deepLink();addEventListener('hashchange',deepLink);
+</script>
+</body>
+</html>
