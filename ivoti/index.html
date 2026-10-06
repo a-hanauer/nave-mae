@@ -525,7 +525,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 <script>
 /* atualização automática: compara com version.json e recarrega com ?v=<versão> no endereço (o iPhone não reaproveita a
    página guardada). Se mesmo com ?v=<versão> a página veio velha, não insiste (evita recarregar sem parar). */
-const APP_V='20261006074411';
+const APP_V='20261006080354';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris|mina|ivoti)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     const q=new URLSearchParams(location.search).get('v');
@@ -749,11 +749,60 @@ function reload(){try{const o=JSON.parse(localStorage.getItem(STORE));if(o&&o.pa
 const dkey=(d=new Date())=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 const addDays=(k,n)=>{const d=new Date(k+'T12:00');d.setDate(d.getDate()+n);return dkey(d)};
 const doneToday=()=>S.days[dkey()]||[];
-const mainDone=k=>MODES.filter(m=>(S.days[k]||[]).includes(m)).length;
-const isFull=k=>mainDone(k)>=MODES.length;
+/* =================== turno do dia sorteado (mesmo código na Nave-Mãe e em todos os jogos) ===================
+   A partir de PLAN_FROM, o turno tem PLAN_N missões sorteadas entre todos os jogos: 1 de cada planeta com jogo
+   e o resto entre todas (no máximo 2 do mesmo jogo), evitando repetir o sorteio do dia anterior. O sorteio usa
+   a data como semente, então a Nave-Mãe e os jogos chegam à mesma lista sem trocar dados. As outras missões
+   ficam abertas como treino extra. Antes de PLAN_FROM vale a regra antiga (rodízio de Matemática). */
+const PLAN_FROM='2026-10-07',PLAN_N=5;
+const PLAN_APPS=[
+  {id:'nostro9',p:'mat',s:'nostro9-stats-v1',m:['partilha','grupos','hangar']},
+  {id:'numeris',p:'mat',s:'numeris-stats-v1',m:['montar','ler','sub']},
+  {id:'mina',p:'mat',s:'mina-stats-v1',m:['carga','turno','inspecao']},
+  {id:'biblio',p:'por',s:'biblio-stats-v1',m:['leitura','palavra','ordem']},
+  {id:'ivoti',p:'his',s:'ivoti-stats-v1',m:['diario','linha','arquivo']},
+];
+const ROT_FROM='2026-10-05',ROT={nostro9:['partilha','grupos','hangar'],numeris:['montar','ler','sub'],mina:['carga','turno','inspecao']};
+const pdNum=k=>{const[y,m,d]=k.split('-').map(Number);return Math.round(Date.UTC(y,m-1,d)/864e5)};
+const pdKey=n=>new Date(n*864e5).toISOString().slice(0,10);
+function planRaw(k,avoid){let s=(pdNum(k)*2654435761^0x9e3779b9)>>>0; // mulberry32: números bem espalhados mesmo com datas seguidas
+  const r=()=>{s=(s+0x6D2B79F5)>>>0;let z=s;z=Math.imul(z^z>>>15,z|1);z^=z+Math.imul(z^z>>>7,z|61);return((z^z>>>14)>>>0)/4294967296};
+  const all=[];PLAN_APPS.forEach(a=>a.m.forEach(m=>all.push([a.id,m,a.p])));const out=[];
+  const has=x=>out.some(y=>y[0]===x[0]&&y[1]===x[1]),cnt=id=>out.filter(y=>y[0]===id).length,old=x=>avoid&&avoid.some(y=>y[0]===x[0]&&y[1]===x[1]);
+  const take=list=>{const ok=list.filter(x=>!has(x)&&cnt(x[0])<2),fr=ok.filter(x=>!old(x)),l=fr.length?fr:ok;if(l.length)out.push(l[Math.floor(r()*l.length)])};
+  [...new Set(PLAN_APPS.map(a=>a.p))].forEach(p=>take(all.filter(x=>x[2]===p)));
+  while(out.length<PLAN_N&&out.length<all.length)take(all);
+  const ord=x=>PLAN_APPS.findIndex(a=>a.id===x[0])*10+PLAN_APPS.find(a=>a.id===x[0]).m.indexOf(x[1]);
+  return out.sort((a,b)=>ord(a)-ord(b)).map(x=>[x[0],x[1]])}
+const PLAN_C={};
+/* cada dia evita o que saiu no dia anterior (calculado em sequência desde PLAN_FROM) */
+function navePlan(k){if(PLAN_C[k])return PLAN_C[k];let n0=pdNum(PLAN_FROM),n=pdNum(k),prev=null;if(n<n0)return planRaw(k,null);
+  let i=n;while(i>n0&&!PLAN_C[pdKey(i-1)])i--;prev=i>n0?PLAN_C[pdKey(i-1)]:null;
+  for(;i<=n;i++){const kk=pdKey(i);prev=PLAN_C[kk]=planRaw(kk,prev)}return PLAN_C[k]}
+/* missões do jogo que contam no turno do dia k */
+function reqFor(app,k){if(k>=PLAN_FROM)return navePlan(k).filter(x=>x[0]===app).map(x=>x[1]);
+  const a=PLAN_APPS.find(x=>x.id===app);if(!a||app==='biblio')return[];
+  if(ROT[app]){if(k<ROT_FROM)return app==='mina'?[]:ROT[app].slice();const n=pdNum(k),off={nostro9:0,numeris:1,mina:1}[app];return ROT[app].filter((_,i)=>i!==(n+off)%3)}
+  return a.m.slice()}
+/* situação do turno no dia k, lida do progresso de todos os jogos */
+function planDay(k){const rd=a=>{try{return((JSON.parse(localStorage.getItem(a.s))||{}).days||{})[k]||[]}catch(e){return[]}};
+  let done=0,total=0,anyFull=false;
+  PLAN_APPS.forEach(a=>{const r=reqFor(a.id,k),l=rd(a),d=r.filter(m=>l.includes(m)).length;done+=d;total+=r.length;if(r.length&&d>=r.length)anyFull=true});
+  return{done,total,full:k>=PLAN_FROM?total>0&&done>=total:anyFull}}
+function planStreak(){const d=new Date(),K=x=>`${x.getFullYear()}-${String(x.getMonth()+1).padStart(2,'0')}-${String(x.getDate()).padStart(2,'0')}`;let n=0;
+  if(!planDay(K(d)).full)d.setDate(d.getDate()-1);while(planDay(K(d)).full&&n<999){n++;d.setDate(d.getDate()-1)}return n}
+/* terminal: o turno da nave inteira (as missões sorteadas do dia, em todos os jogos) */
+function renderTurnoNave(){const WDN=['D','S','T','Q','Q','S','S'],K=x=>`${x.getFullYear()}-${String(x.getMonth()+1).padStart(2,'0')}-${String(x.getDate()).padStart(2,'0')}`,td=planDay(K(new Date()));
+  const tn=document.getElementById('turnoN');tn.textContent=`${td.done} / ${td.total}`;tn.classList.toggle('all',td.full);
+  let w='';for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);const p=planDay(K(d));w+=`<span class="day${p.full?' full':p.done?' part':''}${i===0?' today':''}"><i></i>${WDN[d.getDay()]}</span>`}
+  document.getElementById('week').innerHTML=w;const s=planStreak();
+  document.getElementById('streak').innerHTML=s?`Sequência: <b>${s} ${s===1?'dia':'dias'}</b>`:'Complete o turno para começar a sequência.';return td}
+const REQ=(k=dkey())=>reqFor('ivoti',k); /* missões deste jogo no turno sorteado */
+const mainDone=k=>REQ(k).filter(m=>(S.days[k]||[]).includes(m)).length;
+const isFull=k=>REQ(k).length>0&&mainDone(k)>=REQ(k).length;
 function markDone(m){const k=dkey(),l=S.days[k]||[];if(!l.includes(m)){l.push(m);S.days[k]=l}
   const ks=Object.keys(S.days).sort();while(ks.length>120)delete S.days[ks.shift()];save()}
-function streak(){const d=new Date();let n=0;if(!isFull(dkey(d)))d.setDate(d.getDate()-1);while(isFull(dkey(d))){n++;d.setDate(d.getDate()-1)}return n}
+function streak(){return planStreak()}
 function record(mode,ok,key){const m=S.modes[mode];m.a++;if(ok)m.c++;else if(key)errAdd(mode,key,true);
   const k=dkey(),d=S.log[k]=S.log[k]||{},r=d[mode]=d[mode]||[0,0];r[0]++;if(ok)r[1]++;
   const ks=Object.keys(S.log).sort();while(ks.length>120)delete S.log[ks.shift()];save()}
@@ -1101,29 +1150,25 @@ function todayCap(){const t=dkey(),nt=CAPS.find(c=>S.caps[c.id]===t);if(nt)retur
 /* =================== menu =================== */
 const WD=['D','S','T','Q','Q','S','S'];let typing=null;
 function renderMenu(){reload();
-  const tc=todayCap(),nRead=readCaps().length,done=doneToday(),n=mainDone(dkey()),all=n>=3;
+  const tc=todayCap(),nRead=readCaps().length,done=doneToday(),req=REQ(),n=mainDone(dkey()),all=n>=req.length;
   $('#capN').textContent=`${nRead} / ${CAPS.length}`;
   $('#caps').innerHTML=CAPS.map((c,i)=>{const ok=!!S.caps[c.id],now=c===tc.c&&!done.includes('diario'),lock=!ok&&!now;
     return `<button class="cap${ok?' ok':''}${now?' now':''}${lock?' lock':''}" data-cap="${i}" aria-label="Capítulo ${i+1}"><i>${lock?'?':sprite(c.ic,c.ic==='ship'?1:2)}</i><span>${lock?'CAP. '+(i+1):c.ano}</span></button>`}).join('');
   $('#caps').querySelectorAll('[data-cap]').forEach(b=>b.onclick=()=>{const c=CAPS[+b.dataset.cap];
     if(S.caps[c.id]){sfx.tap();openCap(c,{free:true})}else if(c===tc.c){sfx.tap();startMission('diario')}else{sfx.no();toast('Um capítulo novo por dia. Volte amanhã!')}});
   {const oks=$('#caps').querySelectorAll('.ok'),nw=$('#caps .now')||oks[oks.length-1];if(nw)$('#caps').scrollLeft=Math.max(0,nw.offsetLeft-120)}
-  $('#turnoN').textContent=`${n} / 3`;$('#turnoN').classList.toggle('all',all);
-  let w='';for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);const c=mainDone(dkey(d));
-    w+=`<span class="day${c>=3?' full':c?' part':''}${i===0?' today':''}"><i></i>${WD[d.getDay()]}</span>`}
-  $('#week').innerHTML=w;
-  const s=streak();$('#streak').innerHTML=s?`Sequência: <b>${s} ${s===1?'dia':'dias'}</b>`:'Faça as 3 missões para começar a sequência.';
+  renderTurnoNave();
   $('#diaSub').textContent=tc.re?`Releia: ${tc.c.t}`:`Cap. ${CAPS.indexOf(tc.c)+1}: ${tc.c.t}`;
-  const nx=MODES.find(m=>!done.includes(m));
-  document.querySelectorAll('[data-st]').forEach(el=>{const m=el.dataset.st,ok=done.includes(m),isN=m===nx;
-    el.className='st'+(ok?' ok':isN?' nx':'');el.innerHTML=ok?sprite('check',2)+'FEITO':isN?'PRÓXIMA':'A FAZER';
+  const nx=req.find(m=>!done.includes(m));
+  document.querySelectorAll('[data-st]').forEach(el=>{const m=el.dataset.st,ok=done.includes(m),isN=m===nx,ex=!req.includes(m);
+    el.className='st'+(ok?' ok':isN?' nx':ex?' xt':'');el.innerHTML=ok?sprite('check',2)+'FEITO':isN?'PRÓXIMA':ex?'TREINO EXTRA':'A FAZER';
     const b=el.closest('button');b.classList.toggle('done',ok);b.classList.toggle('next',isN)});
   const cOk=done.includes('desafio');$('#casaOk').hidden=!cOk;$('#goCasa').classList.toggle('done',cOk);
   const got=PASS.filter(p=>S.pass[p.id]).length;$('#passN').textContent=`${got} / ${PASS.length}`;
   $('#stamps').innerHTML=PASS.map(p=>`<button class="stamp${S.pass[p.id]?' got':''}" data-pass="${p.id}"><span class="ring">${sprite(p.ic,2)}</span><span>${p.n.toUpperCase()}</span></button>`).join('');
   $('#stamps').querySelectorAll('[data-pass]').forEach(b=>b.onclick=()=>{sfx.tap();passInfo(b.dataset.pass)});
   const hr=new Date().getHours(),hi=hr<12?'Bom dia':hr<18?'Boa tarde':'Boa noite',who=pilot?`, piloto ${pilot}`:', piloto';
-  const txt=n===0?`> ${hi}${who}.\n> Capítulo de hoje: ${tc.c.t}.`:all?`> Turno completo.\n> A máquina volta amanhã!`:`> ${3-n===1?'Falta 1 missão':`Faltam ${3-n} missões`}.`;
+  const txt=!req.length?`> ${hi}${who}.\n> Hoje a máquina é treino livre.`:n===0?`> ${hi}${who}.\n> Capítulo de hoje: ${tc.c.t}.`:all?`> Missões daqui feitas.\n> A máquina volta amanhã!`:`> ${req.length-n===1?'Falta 1 missão':`Faltam ${req.length-n} missões`}.`;
   const el=$('#term');clearInterval(typing);let i=0;el.textContent='';
   typing=setInterval(()=>{i++;el.innerHTML=esc(txt.slice(0,i)).replace(/\n/g,'<br>');if(i>=txt.length)clearInterval(typing)},20);
   setTimeout(newStamp,500)}
@@ -1212,7 +1257,7 @@ function cardAfter(id,ok){const t=dkey(),c=S.cards[id];
 function finishDia(){const c=DG.c,t=dkey(),fr=!doneToday().includes('diario'),counts=!DG.o.free||!todayCap().nw;
   if(!S.caps[c.id])S.caps[c.id]=t;else S.rr[c.id]=t;
   const fresh=fr&&counts;if(fresh)markDone('diario');save();sfx.win();const n=DG.qs.length,f=DG.firsts;
-  celebrate({title:'CAPÍTULO CONCLUÍDO!',sub:c.t,stars:f===n?3:f/n>=.6?2:1,score:[f,n],energy:fresh?en(f):0,turno:turnoInfo(fresh),buttons:endButtons(()=>openCap(c,{free:true}))})}
+  celebrate({title:'CAPÍTULO CONCLUÍDO!',sub:c.t,stars:f===n?3:f/n>=.6?2:1,score:[f,n],energy:fresh?en(f,'diario'):0,turno:turnoInfo(fresh&&REQ().includes('diario')),buttons:endButtons(()=>openCap(c,{free:true}))})}
 
 /* ---------- LINHA DO TEMPO ---------- */
 let LN=null;const LROUNDS=3;
@@ -1243,7 +1288,7 @@ function tapEvent(id,b){const ids=LN.rs[LN.r],rest=ids.filter(x=>!LN.placed.incl
   $('#lfb').className='fb no';$('#lfb').innerHTML=`<b>AINDA NÃO</b>“${esc(EVENTS[id].t)}” aconteceu depois. Procure algo mais antigo.`}
 function finishLinha(){const fresh=!doneToday().includes('linha');if(fresh)markDone('linha');sfx.win();
   celebrate({title:'LINHA DO TEMPO PRONTA!',sub:'Você colocou a história em ordem.',stars:LN.firsts===LROUNDS?3:LN.firsts>=2?2:1,score:[LN.firsts,LROUNDS],scoreLabel:'rodadas de primeira',
-    energy:fresh?en(LN.firsts):0,turno:turnoInfo(fresh),buttons:endButtons(()=>startLinha())})}
+    energy:fresh?en(LN.firsts,'linha'):0,turno:turnoInfo(fresh&&REQ().includes('linha')),buttons:endButtons(()=>startLinha())})}
 
 /* ---------- ARQUIVO DA MEMÓRIA ---------- */
 let AQ=null;
@@ -1261,7 +1306,7 @@ function renderArq(){const it=AQ.cs[AQ.i],cur=(S.cards[it.id]||{b:0}).b;$('#aN')
   quiz($('#aBody'),it.q,`CAP. ${CAPS.indexOf(it.c)+1} · ${it.c.t.toUpperCase()}`,ok=>{cardAfter(it.id,ok);if(ok)AQ.firsts++;record('arquivo',ok,ok?null:it.q.k);
     SND.drawer();$('#drawers').innerHTML=drawersHTML(-1,S.cards[it.id].b)},()=>{AQ.i++;if(AQ.i>=AQ.cs.length)finishArq();else renderArq()})}
 function finishArq(){const fresh=!doneToday().includes('arquivo');if(fresh)markDone('arquivo');sfx.win();const n=AQ.cs.length,f=AQ.firsts;
-  celebrate({title:'ARQUIVO EM DIA!',sub:'As fichas voltam quando for hora de lembrar.',stars:f===n?3:f/n>=.6?2:1,score:[f,n],energy:fresh?en(f):0,turno:turnoInfo(fresh),buttons:endButtons(()=>startArq())})}
+  celebrate({title:'ARQUIVO EM DIA!',sub:'As fichas voltam quando for hora de lembrar.',stars:f===n?3:f/n>=.6?2:1,score:[f,n],energy:fresh?en(f,'arquivo'):0,turno:turnoInfo(fresh&&REQ().includes('arquivo')),buttons:endButtons(()=>startArq())})}
 
 /* ---------- DESAFIO: MONTE A CASA ENXAIMEL ---------- */
 const CSTEPS=[
@@ -1310,10 +1355,10 @@ function finishCasa(){const fresh=!doneToday().includes('desafio');markDone('des
   celebrate({title:'CASA ENXAIMEL PRONTA!',sub:'Um carpinteiro de verdade!',stars:CA.firsts===n?3:CA.firsts>=2?2:1,score:[CA.firsts,n],energy:fresh?8:0,turno:turnoInfo(false),buttons:endButtons(()=>startCasa())})}
 
 /* ---------- fim de missão ---------- */
-const en=f=>10+Math.min(10,f)+(isFull(dkey())?10:0); // energia (mesma regra da Nave-Mãe)
+const en=(f,m)=>!REQ().includes(m)?5:10+Math.min(10,f)+(planDay(dkey()).full?10:0); // energia (mesma regra da Nave-Mãe): fora do turno, treino extra +5
 function celebrate(o){show('res');CEL.play(Object.assign({host:$('#res'),avatar:(!o.lose&&navAvatar('cheer',2))||navAvatar('pilot',2)||sprite('hourglass',6)},o))}
-const turnoInfo=fresh=>({n:mainDone(dkey()),total:3,streak:streak(),fresh});
-function endButtons(again){const nx=MODES.find(m=>!doneToday().includes(m)),back=()=>{sfx.tap();if(DL){backHome();return}show('menu')},rep=()=>{sfx.tap();again()};
+const turnoInfo=fresh=>{const p=planDay(dkey());return{n:p.done,total:p.total,streak:planStreak(),fresh}};
+function endButtons(again){const nx=REQ().find(m=>!doneToday().includes(m)),back=()=>{sfx.tap();if(DL){backHome();return}show('menu')},rep=()=>{sfx.tap();again()};
   const T={diario:'DIÁRIO',linha:'LINHA DO TEMPO',arquivo:'ARQUIVO'};
   return nx?[{label:`PRÓXIMA: ${T[nx]}`,cls:'btn',fn:()=>{sfx.tap();startMission(nx)}},{label:'DE NOVO',cls:'ghost px pbtn',fn:rep},{label:'VOLTAR À MÁQUINA',cls:'ghost px pbtn',fn:back}]
     :[{label:'VOLTAR À MÁQUINA',cls:'btn',fn:back},{label:'DE NOVO',cls:'ghost px pbtn',fn:rep}]}

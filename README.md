@@ -11,7 +11,7 @@ Publicado em `https://a-hanauer.github.io/nave-mae/`.
 | Matemática | Estação Nostro-9 (divisão) | `nostro-9/` |
 | Matemática | Ruínas de Numeris (números romanos) | `numeris/` |
 | Matemática | Mina de Cristais (conta armada de divisão) | `mina/` |
-| Português | em breve | |
+| Português | Biblioteca Estelar (leitura e interpretação de texto) | `biblio/` |
 | Ciências | em breve | |
 | Inglês | em breve | |
 | História (a Terra) | Máquina do Tempo (história de Ivoti/RS) | `ivoti/` |
@@ -25,13 +25,15 @@ Publicado em `https://a-hanauer.github.io/nave-mae/`.
 
 Cada app tem um botão "< Nave-Mãe" na tela inicial que volta para a aba Missões (ou para o planeta, quando a criança decolou de um planeta) (o jogo recebe `r=tasks` ou `r=p.<planeta>` no endereço e a Nave-Mãe abre `#v=tasks` ou `#p=<planeta>`). Ao entrar direto numa missão pela aba Missões, o voltar da missão vira "< Missões" e leva de volta para a lista.
 
-## Rodízio do planeta Matemática
+## Turno do dia (sorteio)
 
-O turno de Matemática tem 6 missões obrigatórias: 2 de cada jogo (Nostro-9, Numeris e Mina de Cristais). A cada dia, uma missão de cada jogo fica de fora e vira **treino extra**. A que fica de fora gira em ordem (cada missão sai 1 dia a cada 3). A função `rotReq(app, dia)` é a mesma na Nave-Mãe e nos três jogos, então todos concordam sem trocar dados. Antes de 05/10/2026 valia a regra antiga (as 3 missões de cada jogo).
+A partir de 07/10/2026, o turno tem **5 missões sorteadas** entre todos os jogos: 1 de cada planeta com jogo (Matemática, Português, História) e as outras 2 entre todas, no máximo 2 do mesmo jogo. O sorteio evita repetir as missões do dia anterior. Ele usa a data como semente (mulberry32), então a Nave-Mãe e os jogos chegam à mesma lista sem trocar dados. O bloco `PLAN_*` / `navePlan` / `reqFor` / `planDay` / `planStreak` é o mesmo na Nave-Mãe e em todos os jogos; para incluir um jogo novo no sorteio, acrescente-o em `PLAN_APPS` em todos os arquivos.
 
-- A aba Missões, os selos, o planeta e o terminal de cada jogo mostram só as 2 do dia. As de fora aparecem como TREINO EXTRA.
-- Turno completo, sequência, nível dos jogos, liberação do fliperama e área dos pais seguem as 2 do dia.
-- Energia: missão do turno +10; treino extra feito +5.
+- Todas as missões continuam abertas: as que não saíram no sorteio aparecem como **TREINO EXTRA** e o planeta mostra "FORA DO TURNO HOJE · TREINO LIVRE" no jogo sem missões do dia.
+- A aba Missões lista só as 5 do dia. O terminal de cada jogo mostra o turno da nave inteira (n / 5, a semana e a sequência).
+- Turno completo e sequência valem para as 5 juntas. Energia: missão do turno +10 (mais bônus de acertos); treino extra +5; turno completo +10.
+- Nível de Numeris e galeria da Mina: sobem a cada 6 missões principais concluídas (cada missão conta 1 vez por dia), feitas no turno ou como treino.
+- Antes de 07/10/2026 valia a regra antiga (rodízio de 2 missões de cada jogo de Matemática e as 3 da Máquina do Tempo).
 
 ## Mina de Cristais
 
@@ -54,7 +56,7 @@ Missões:
 - **Complete a conta** (4 contas): o robô ROB-8 armou a conta inteira e deixou uma casa vazia, já destacada: um algarismo do quociente, um produto ou uma subtração. A criança calcula só aquela casa (a guia mostra qual conta é: dividir, multiplicar ou subtrair). Errou: explica; na segunda vez, mostra a resposta para digitar. Ver o processo pronto e completar um passo ajuda quem está começando.
 - **Tempestade** (desafio opcional): 3 contas completas antes da tempestade chegar à mina. Cada passo certo afasta a nuvem; cada erro aproxima.
 
-Galerias (níveis): 1) divisor de 1 algarismo, dividendo até 999; 2) divisor de 1 algarismo, dividendo até 9999; 3) entra o divisor de 2 algarismos, até 19; 4) divisor de 2 algarismos até 99. Sobe depois de 2 dias com o turno completo. Os pais podem trocar a galeria na área dos pais (por exemplo, liberar o divisor de 2 algarismos antes).
+Galerias (níveis): 1) divisor de 1 algarismo, dividendo até 999; 2) divisor de 1 algarismo, dividendo até 9999; 3) entra o divisor de 2 algarismos, até 19; 4) divisor de 2 algarismos até 99. Sobe a cada 6 missões concluídas. Os pais podem trocar a galeria na área dos pais (por exemplo, liberar o divisor de 2 algarismos antes).
 
 Erros guardados por tipo (`errM`) para a área dos pais: estimativa alta, estimativa baixa, zero no quociente, multiplicação, subtração, baixar o algarismo e, em Complete a conta, o tipo de casa que errou.
 
@@ -70,7 +72,7 @@ Jogo sobre a história de Ivoti/RS para uma criança de 9 anos. História pede m
 - **Linha do tempo:** ordenar acontecimentos treina a noção de antes e depois.
 - **Lugar real e história oral:** o Passaporte de Ivoti leva a visitas e a uma entrevista com a família.
 
-Missões do turno (3 por dia, sem rodízio):
+Missões (entram no sorteio do turno):
 
 - **Diário da viagem:** abertura com a "viagem no tempo" até o ano do capítulo; páginas com cena e texto em papel antigo; a última página traz a palavra nova; no fim, 3 a 5 perguntas. Capítulos já lidos podem ser relidos tocando neles no menu; com os 12 lidos, o Diário relê o capítulo visto há mais tempo.
 - **Linha do tempo:** 3 rodadas; a criança toca no acontecimento mais antigo que falta, até a linha ficar completa. Usa só acontecimentos dos capítulos já lidos e sempre inclui um do capítulo mais recente.
@@ -82,6 +84,19 @@ Capítulos: 1 Pouso em Ivoti (visão geral e linha do tempo) · 2 Os primeiros m
 Fontes: páginas da Prefeitura de Ivoti (Ponte do Imperador, Núcleo de Casas Enxaimel, Museu Cláudio Oscar Becker, Memorial da Colônia Japonesa), Wikipédia (Ivoti e Colônia Ivoti) e Cidades do Meu Brasil. Quando as fontes divergem (ano da ponte), vale a da Prefeitura. O conteúdo fica em `CAPS`, `EVENTS`, `PASS` e `CASA_Q`, no começo do script de `ivoti/index.html`.
 
 **Passaporte de Ivoti:** 6 carimbos (Ponte do Imperador, Núcleo de Casas Enxaimel, Museu Cláudio Oscar Becker, Memorial da Colônia Japonesa, Feira das Flores e Entrevista com a família). Um adulto confirma na área dos pais (Máquina do Tempo › Passaporte de Ivoti › Confirmar visita). Na próxima vez que o jogo abre, aparece "CARIMBO NOVO!". Cada carimbo vale +15 de energia. Medalhas de honra: Máquina do Tempo (3, 6 e 12 capítulos) e Passaporte de Ivoti (1, 3 e 6 carimbos).
+
+## Biblioteca Estelar (planeta Português)
+
+Leitura e interpretação de texto. A biblioteca recebe "transmissões" da nave: 15 textos originais de gêneros variados (bilhete, receita, conto, diário, notícia, poema, carta, instruções, texto informativo), escritos para 9 anos. Os textos **crescem com o nível**: 1) textos curtos (6 textos); 2) médios (5); 3) longos (4). Sobe de nível depois de 3 Leituras com 3 acertos ou mais. O texto sempre vem antes das perguntas, e o botão de seguir só libera depois de alguns segundos (dá tempo de ler). Não há narração: a criança lê.
+
+Missões:
+
+- **Leitura da transmissão:** lê um texto (primeiro os ainda não lidos) e responde 4 perguntas, umas de informação do texto ("está escrito no texto"), outras de inferência ("pense e responda"). Depois de responder, aparece a frase do texto que traz a pista. VER TEXTO reabre o texto a qualquer momento.
+- **Palavra misteriosa:** 3 palavras difíceis, cada uma no trecho em que aparece; a criança escolhe o sentido pelo contexto. As palavras vão para o **Caderno de palavras**.
+- **Ordem dos fatos:** 2 textos narrativos ou de instruções; depois de ler, toca nos fatos na ordem em que aconteceram.
+- **Detetive** (desafio opcional): 3 casos; responde e depois toca na frase do texto que prova a resposta. No segundo erro, a frase certa pisca.
+
+Erros guardados por tipo (`errM`): informação do texto, inferência, palavra, ordem dos fatos e achar a frase que prova. O conteúdo fica em `TEXTS`, no começo do script de `biblio/index.html`.
 
 ## Abas
 
@@ -256,7 +271,7 @@ A sala cuida do resto: conversa com recorde, tela do jogo do tamanho da tela do 
  tasks:[{id:'m1',n:'Missão 1',sub:'...'}, /* ... */ {id:'desafio',n:'Desafio',sub:'...',opt:true}]}
 ```
 
-O progresso (`progress()`) sai sozinho de `store`: o app guarda os dias em `days[AAAA-MM-DD] = [missões feitas]`. Jogos do planeta Matemática levam `rot:true` e entram no rodízio (acrescente o id em `ROT` e em `rotReq`, nos quatro arquivos).
+O progresso (`progress()`) sai sozinho de `store`: o app guarda os dias em `days[AAAA-MM-DD] = [missões feitas]`. Para o jogo entrar no sorteio do turno, acrescente-o em `PLAN_APPS` (id, planeta, store, missões principais) na Nave-Mãe e em todos os jogos.
 
 Os ids dos planetas são `mat`, `por`, `cie`, `ing`, `his` e `geo`.
 

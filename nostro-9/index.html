@@ -471,7 +471,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 <script>
 /* atualização automática: compara com version.json e recarrega com ?v=<versão> no endereço (o iPhone não reaproveita a
    página guardada). Se mesmo com ?v=<versão> a página veio velha, não insiste (evita recarregar sem parar). */
-const APP_V='20261006074411';
+const APP_V='20261006080354';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     const q=new URLSearchParams(location.search).get('v');
@@ -600,15 +600,56 @@ function record(mode,ok,fact){stats[mode].a++;if(ok)stats[mode].c++;else if(fact
 const MODES=['partilha','grupos','hangar']; /* o desafio é extra e não conta para o turno */
 const dkey=(d=new Date())=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 const doneToday=()=>stats.days[dkey()]||[];
-/* =================== rodízio do planeta Matemática ===================
-   (mesmo código na Nave-Mãe e nos três jogos) A cada dia, 2 das 3 missões de cada jogo entram no turno; a outra
-   vira treino extra. A que fica de fora gira em ordem (cada missão sai 1 dia a cada 3), com um deslocamento
-   por jogo. Antes de ROT_FROM valia a regra antiga (as 3 missões). */
+/* =================== turno do dia sorteado (mesmo código na Nave-Mãe e em todos os jogos) ===================
+   A partir de PLAN_FROM, o turno tem PLAN_N missões sorteadas entre todos os jogos: 1 de cada planeta com jogo
+   e o resto entre todas (no máximo 2 do mesmo jogo), evitando repetir o sorteio do dia anterior. O sorteio usa
+   a data como semente, então a Nave-Mãe e os jogos chegam à mesma lista sem trocar dados. As outras missões
+   ficam abertas como treino extra. Antes de PLAN_FROM vale a regra antiga (rodízio de Matemática). */
+const PLAN_FROM='2026-10-07',PLAN_N=5;
+const PLAN_APPS=[
+  {id:'nostro9',p:'mat',s:'nostro9-stats-v1',m:['partilha','grupos','hangar']},
+  {id:'numeris',p:'mat',s:'numeris-stats-v1',m:['montar','ler','sub']},
+  {id:'mina',p:'mat',s:'mina-stats-v1',m:['carga','turno','inspecao']},
+  {id:'biblio',p:'por',s:'biblio-stats-v1',m:['leitura','palavra','ordem']},
+  {id:'ivoti',p:'his',s:'ivoti-stats-v1',m:['diario','linha','arquivo']},
+];
 const ROT_FROM='2026-10-05',ROT={nostro9:['partilha','grupos','hangar'],numeris:['montar','ler','sub'],mina:['carga','turno','inspecao']};
-function rotReq(app,k){const all=ROT[app];if(!all)return[];if(k<ROT_FROM)return app==='mina'?[]:all.slice();
-  const[y,m,d]=k.split('-').map(Number),n=Math.round(Date.UTC(y,m-1,d)/864e5),off={nostro9:0,numeris:1,mina:1}[app];
-  return all.filter((_,i)=>i!==(n+off)%3)}
-const REQ=(k=dkey())=>rotReq('nostro9',k); /* as missões que contam no turno do dia */
+const pdNum=k=>{const[y,m,d]=k.split('-').map(Number);return Math.round(Date.UTC(y,m-1,d)/864e5)};
+const pdKey=n=>new Date(n*864e5).toISOString().slice(0,10);
+function planRaw(k,avoid){let s=(pdNum(k)*2654435761^0x9e3779b9)>>>0; // mulberry32: números bem espalhados mesmo com datas seguidas
+  const r=()=>{s=(s+0x6D2B79F5)>>>0;let z=s;z=Math.imul(z^z>>>15,z|1);z^=z+Math.imul(z^z>>>7,z|61);return((z^z>>>14)>>>0)/4294967296};
+  const all=[];PLAN_APPS.forEach(a=>a.m.forEach(m=>all.push([a.id,m,a.p])));const out=[];
+  const has=x=>out.some(y=>y[0]===x[0]&&y[1]===x[1]),cnt=id=>out.filter(y=>y[0]===id).length,old=x=>avoid&&avoid.some(y=>y[0]===x[0]&&y[1]===x[1]);
+  const take=list=>{const ok=list.filter(x=>!has(x)&&cnt(x[0])<2),fr=ok.filter(x=>!old(x)),l=fr.length?fr:ok;if(l.length)out.push(l[Math.floor(r()*l.length)])};
+  [...new Set(PLAN_APPS.map(a=>a.p))].forEach(p=>take(all.filter(x=>x[2]===p)));
+  while(out.length<PLAN_N&&out.length<all.length)take(all);
+  const ord=x=>PLAN_APPS.findIndex(a=>a.id===x[0])*10+PLAN_APPS.find(a=>a.id===x[0]).m.indexOf(x[1]);
+  return out.sort((a,b)=>ord(a)-ord(b)).map(x=>[x[0],x[1]])}
+const PLAN_C={};
+/* cada dia evita o que saiu no dia anterior (calculado em sequência desde PLAN_FROM) */
+function navePlan(k){if(PLAN_C[k])return PLAN_C[k];let n0=pdNum(PLAN_FROM),n=pdNum(k),prev=null;if(n<n0)return planRaw(k,null);
+  let i=n;while(i>n0&&!PLAN_C[pdKey(i-1)])i--;prev=i>n0?PLAN_C[pdKey(i-1)]:null;
+  for(;i<=n;i++){const kk=pdKey(i);prev=PLAN_C[kk]=planRaw(kk,prev)}return PLAN_C[k]}
+/* missões do jogo que contam no turno do dia k */
+function reqFor(app,k){if(k>=PLAN_FROM)return navePlan(k).filter(x=>x[0]===app).map(x=>x[1]);
+  const a=PLAN_APPS.find(x=>x.id===app);if(!a||app==='biblio')return[];
+  if(ROT[app]){if(k<ROT_FROM)return app==='mina'?[]:ROT[app].slice();const n=pdNum(k),off={nostro9:0,numeris:1,mina:1}[app];return ROT[app].filter((_,i)=>i!==(n+off)%3)}
+  return a.m.slice()}
+/* situação do turno no dia k, lida do progresso de todos os jogos */
+function planDay(k){const rd=a=>{try{return((JSON.parse(localStorage.getItem(a.s))||{}).days||{})[k]||[]}catch(e){return[]}};
+  let done=0,total=0,anyFull=false;
+  PLAN_APPS.forEach(a=>{const r=reqFor(a.id,k),l=rd(a),d=r.filter(m=>l.includes(m)).length;done+=d;total+=r.length;if(r.length&&d>=r.length)anyFull=true});
+  return{done,total,full:k>=PLAN_FROM?total>0&&done>=total:anyFull}}
+function planStreak(){const d=new Date(),K=x=>`${x.getFullYear()}-${String(x.getMonth()+1).padStart(2,'0')}-${String(x.getDate()).padStart(2,'0')}`;let n=0;
+  if(!planDay(K(d)).full)d.setDate(d.getDate()-1);while(planDay(K(d)).full&&n<999){n++;d.setDate(d.getDate()-1)}return n}
+/* terminal: o turno da nave inteira (as missões sorteadas do dia, em todos os jogos) */
+function renderTurnoNave(){const WDN=['D','S','T','Q','Q','S','S'],K=x=>`${x.getFullYear()}-${String(x.getMonth()+1).padStart(2,'0')}-${String(x.getDate()).padStart(2,'0')}`,td=planDay(K(new Date()));
+  const tn=document.getElementById('turnoN');tn.textContent=`${td.done} / ${td.total}`;tn.classList.toggle('all',td.full);
+  let w='';for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);const p=planDay(K(d));w+=`<span class="day${p.full?' full':p.done?' part':''}${i===0?' today':''}"><i></i>${WDN[d.getDay()]}</span>`}
+  document.getElementById('week').innerHTML=w;const s=planStreak();
+  document.getElementById('streak').innerHTML=s?`Sequência: <b>${s} ${s===1?'dia':'dias'}</b>`:'Complete o turno para começar a sequência.';return td}
+
+const REQ=(k=dkey())=>reqFor('nostro9',k); /* as missões que contam no turno do dia */
 const countReq=(l,k=dkey())=>REQ(k).filter(m=>l.includes(m)).length;
 const isFull=k=>REQ(k).length>0&&countReq(stats.days[k]||[],k)>=REQ(k).length;
 function markDone(m){
@@ -618,12 +659,7 @@ function markDone(m){
   const keys=Object.keys(stats.days).sort();while(keys.length>120)delete stats.days[keys.shift()];
   save();return true;
 }
-function streak(){
-  const d=new Date();let n=0;
-  if(!isFull(dkey(d)))d.setDate(d.getDate()-1);
-  while(isFull(dkey(d))){n++;d.setDate(d.getDate()-1)}
-  return n;
-}
+function streak(){return planStreak()} // sequência da nave inteira (turno sorteado)
 function turnoLine(){
   const n=countReq(doneToday());
   if(n>=REQ().length){const s=streak();return `<b>Turno completo!</b> Sequência: ${s} ${s===1?'dia':'dias'}.`}
@@ -648,20 +684,10 @@ function renderMenu(){
     segs(el,pr?i:(ok?i:-1),TOTALS[m],pr?'':ok?'ok':'');
     el.hidden=m==='desafio'&&!pr;
   });
-  const tn=$('#turnoN');tn.textContent=`${n}/${req.length}`;tn.classList.toggle('all',all);
-  let w='';
-  for(let i=6;i>=0;i--){
-    const d=new Date();d.setDate(d.getDate()-i);const k=dkey(d),c=countReq(stats.days[k]||[],k);
-    w+=`<span class="day${isFull(k)?' full':c?' part':''}${i===0?' today':''}"><i></i>${WD[d.getDay()]}</span>`;
-  }
-  $('#week').innerHTML=w;
-  const s=streak();
-  $('#streak').innerHTML=s
-    ? `Sequência: <b>${s} ${s===1?'dia':'dias'}</b>`
-    : `Faça as ${req.length} missões para começar a sequência.`;
+  renderTurnoNave();
   const left=req.length-n;
-  $('#term').innerHTML=
-    n===0?`&gt; ALERTA: Alien a bordo!<br>&gt; ${req.length} missões hoje.`
+  $('#term').innerHTML=!req.length?'&gt; ALERTA: Alien a bordo!<br>&gt; Hoje a estação é treino livre.'
+    :n===0?`&gt; ALERTA: Alien a bordo!<br>&gt; ${req.length===1?'1 missão':req.length+' missões'} no turno de hoje.`
     :all?(alienDone?'&gt; Turno completo.<br>&gt; Você fugiu do Alien!'
                    :'&gt; Turno completo!<br>&gt; Encara o Alien?')
     :`&gt; ${left===1?'Falta 1 missão':`Faltam ${left} missões`}.`;
@@ -859,14 +885,14 @@ function advance(mode,S){
 
 /* ---------- fim de missão: comemoração ---------- */
 function celebrate(o){show('fim');CEL.play(Object.assign({host:$('#fim'),avatar:(!o.lose&&navAvatar('cheer',2))||navAvatar('pilot',2)||sprite('bat',4)},o))}
-const turnoInfo=fresh=>({n:countReq(doneToday()),total:REQ().length,streak:streak(),fresh});
+const turnoInfo=fresh=>{const p=planDay(dkey());return{n:p.done,total:p.total,streak:planStreak(),fresh}};
 function endButtons(again){const nx=REQ().find(m=>!doneToday().includes(m)),back=()=>{click();show('menu')},rep=()=>{click();again()};
   return nx?[{label:'Próxima missão',cls:'primary pbtn',fn:()=>{click();START[nx]()}},{label:'Jogar de novo',cls:'ghost pbtn',fn:rep},{label:'Voltar à ponte',cls:'ghost pbtn',fn:back}]
     :[{label:'Voltar à ponte',cls:'primary pbtn',fn:back},{label:'Jogar de novo',cls:'ghost pbtn',fn:rep}]}
 function missionEnd(mode,S,again,what){const {firsts,total,nw}=S;fanfare();
   // energia para peças do Hangar (mesma regra da Nave-Mãe): missão +10, acertos de primeira +1 (até 10), turno completo +10
   // fora do rodízio de hoje: treino extra, +5
-  const inT=REQ().includes(mode),en=!nw?0:inT?10+Math.min(10,firsts)+(isFull(dkey())?10:0):5;
+  const inT=REQ().includes(mode),en=!nw?0:inT?10+Math.min(10,firsts)+(planDay(dkey()).full?10:0):5;
   celebrate({title:firsts===total?'MISSÃO PERFEITA!':'MISSÃO CUMPRIDA!',sub:inT?what:'Treino extra concluído.',stars:firsts===total?3:firsts/total>=.6?2:1,
     score:[firsts,total],energy:en,turno:turnoInfo(!!nw&&inT),buttons:endButtons(again)})}
 /* abre a missão: continua de onde parou ou começa do zero */
