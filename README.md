@@ -27,13 +27,13 @@ Cada app tem um botão "< Nave-Mãe" na tela inicial que volta para a aba Missõ
 
 ## Turno do dia (sorteio)
 
-A partir de 07/10/2026, o turno tem **5 missões sorteadas** entre todos os jogos: 1 de cada planeta com jogo (Matemática, Português, História) e as outras 2 entre todas, no máximo 2 do mesmo jogo. O sorteio evita repetir as missões do dia anterior. Ele usa a data como semente (mulberry32), então a Nave-Mãe e os jogos chegam à mesma lista sem trocar dados. O bloco `PLAN_*` / `navePlan` / `reqFor` / `planDay` / `planStreak` é o mesmo na Nave-Mãe e em todos os jogos; para incluir um jogo novo no sorteio, acrescente-o em `PLAN_APPS` em todos os arquivos.
+A partir de 06/10/2026, o turno tem **5 missões sorteadas** entre todos os jogos: 1 de cada planeta com jogo (Matemática, Português, História) e as outras 2 entre todas, no máximo 2 do mesmo jogo. O sorteio evita repetir as missões do dia anterior. Ele usa a data como semente (mulberry32), então a Nave-Mãe e os jogos chegam à mesma lista sem trocar dados. O bloco `PLAN_*` / `navePlan` / `reqFor` / `planDay` / `planStreak` é o mesmo na Nave-Mãe e em todos os jogos; para incluir um jogo novo no sorteio, acrescente-o em `PLAN_APPS` em todos os arquivos.
 
 - Todas as missões continuam abertas: as que não saíram no sorteio aparecem como **TREINO EXTRA** e o planeta mostra "FORA DO TURNO HOJE · TREINO LIVRE" no jogo sem missões do dia.
 - A aba Missões lista só as 5 do dia. O terminal de cada jogo mostra o turno da nave inteira (n / 5, a semana e a sequência).
 - Turno completo e sequência valem para as 5 juntas. Energia: missão do turno +10 (mais bônus de acertos); treino extra +5; turno completo +10.
 - Nível de Numeris e galeria da Mina: sobem a cada 6 missões principais concluídas (cada missão conta 1 vez por dia), feitas no turno ou como treino.
-- Antes de 07/10/2026 valia a regra antiga (rodízio de 2 missões de cada jogo de Matemática e as 3 da Máquina do Tempo).
+- Antes de 06/10/2026 valia a regra antiga (rodízio de 2 missões de cada jogo de Matemática e as 3 da Máquina do Tempo).
 
 ## Mina de Cristais
 
