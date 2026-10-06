@@ -729,6 +729,21 @@ body[data-v="crew"] .cats{margin-top:12px;padding-bottom:10px}
 /* no navegador (fora do atalho) não há Dynamic Island nem desfoque no topo: menos folga em cima */
 html.web{--hud:calc(var(--sat,env(safe-area-inset-top)) + 52px)}
 html.web .overlay{padding-top:calc(24px + var(--sat,env(safe-area-inset-top)))}
+
+/* mapa: piloto e terminal numa tela só (como o terminal + turno dos jogos) */
+.dash .dmon{position:relative;margin:0 2px;padding:10px 12px 10px;background:repeating-linear-gradient(0deg,rgba(255,255,255,.025) 0 2px,transparent 2px 4px),#07130b;box-shadow:var(--mon)}
+.dash .dmon .pilot{margin:0;padding:0;background:none;box-shadow:none;filter:none}
+.dash .dmon .pilot:active{transform:none;opacity:.8}
+.dash .dmon .terminal{margin:0;padding:0;min-height:44px;background:none;box-shadow:none;filter:none}
+.dmon .tdiv{height:2px;margin:10px 0 9px;background:repeating-linear-gradient(90deg,var(--green) 0 6px,transparent 6px 11px);opacity:.4}
+.dmon .pport{background:#0b2414;box-shadow:inset 0 0 0 2px #1d5a2a}
+.dmon .ptitle{color:var(--green);opacity:.7}
+.dmon .pilot .name{color:var(--green);text-shadow:0 0 6px rgba(57,227,95,.35)}
+.dmon .pedit{color:var(--green)!important;opacity:.55}
+.dmon .streak{background:none;box-shadow:inset 0 0 0 2px #1d5a2a}
+.dmon .streak b{color:var(--green);text-shadow:0 0 6px rgba(57,227,95,.35)}
+.dmon .streak span{color:var(--green);opacity:.65}
+.dmon .streak.zero b,.dmon .streak.zero span{opacity:.45}
 </style>
 <script>
 /* sem zoom: bloqueia pinça e dois toques no app inteiro */
@@ -761,14 +776,16 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
   <section id="home">
 
     <div class="dash" id="dash">
-    <button class="pilot px" id="pilotBtn" aria-label="Abrir perfil">
+    <div class="dmon" id="dmon">
+    <button class="pilot" id="pilotBtn" aria-label="Abrir perfil">
       <span class="pport" id="pPort"></span>
       <span class="pinfo"><span class="ptitle" id="pTitle"></span><span class="name" id="pilotName"></span><span class="pedit" style="display:block;font-family:var(--px);font-size:7px;color:var(--dim);margin-top:8px">HANGAR ▸</span></span>
       <span class="streak" id="streak"></span>
     </button>
 
+    <div class="tdiv"></div>
     <div class="terminal"><span id="term"></span><span class="cursor"></span></div>
-    </div>
+    </div></div>
 
     <div id="arcHome"></div>
     <div class="sec"><span class="label">Mapa estelar</span></div>
@@ -916,7 +933,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 <script>
 /* atualização automática: compara com version.json e recarrega com ?v=<versão> no endereço (o iPhone não reaproveita a
    página guardada). Se mesmo com ?v=<versão> a página veio velha, não insiste (evita recarregar sem parar). */
-const APP_V='20261005215837';
+const APP_V='20261005221953';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris|mina|ivoti)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     const q=new URLSearchParams(location.search).get('v');
