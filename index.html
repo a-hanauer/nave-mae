@@ -933,7 +933,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 <script>
 /* atualização automática: compara com version.json e recarrega com ?v=<versão> no endereço (o iPhone não reaproveita a
    página guardada). Se mesmo com ?v=<versão> a página veio velha, não insiste (evita recarregar sem parar). */
-const APP_V='20261006050656';
+const APP_V='20261006074411';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris|mina|ivoti)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     const q=new URLSearchParams(location.search).get('v');
@@ -1029,7 +1029,7 @@ const APPS=[
   {id:'mina',planet:'mat',name:'Mina de Cristais',tag:'Conta armada',icon:'mine',rot:true,
    url:'mina/',store:'mina-stats-v1',
    tasks:[{id:'carga',n:'Carga guiada',sub:'Divisão passo a passo'},{id:'turno',n:'Turno completo',sub:'A conta armada inteira'},
-          {id:'inspecao',n:'Inspeção',sub:'Ache o erro do robô'},{id:'desafio',n:'Tempestade',sub:'Contas contra o tempo',opt:true}],
+          {id:'inspecao',n:'Complete a conta',sub:'Preencha a casa vazia'},{id:'desafio',n:'Tempestade',sub:'Contas contra o tempo',opt:true}],
    desc:'Arme as contas de divisão e encha os vagonetes de cristais.'},
   {id:'ivoti',planet:'his',name:'Máquina do Tempo',tag:'História de Ivoti',icon:'clock',
    url:'ivoti/',store:'ivoti-stats-v1',

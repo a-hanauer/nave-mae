@@ -295,13 +295,10 @@ button.c{cursor:pointer}
 @keyframes pop{from{transform:scale(0)}}
 .ln{position:absolute;z-index:2;background:var(--ink)}
 .ln.pl{background:var(--amber)}
-.slot{position:absolute;height:30px;box-shadow:inset 0 -3px 0 0 var(--amber);animation:slot 1s steps(1) infinite}
+.slot{position:absolute;height:30px;background:rgba(255,179,0,.16);box-shadow:inset 0 -3px 0 0 var(--amber);animation:slot 1s steps(1) infinite}
 @keyframes slot{50%{box-shadow:inset 0 -3px 0 0 rgba(255,179,0,.25)}}
 .box{position:absolute;box-shadow:inset 0 0 0 2px var(--glow);pointer-events:none}
 .box.fin{box-shadow:inset 0 0 0 2px var(--cy)}
-.hot{position:absolute;padding:0;background:transparent}
-.hot:active,.hot.picked{background:rgba(255,179,0,.18)}
-.hot.miss{background:rgba(255,74,61,.2)}
 
 /* guia: passos D · M · S · B */
 .guide{padding:10px 12px 12px;margin-bottom:14px;min-height:118px}
@@ -453,7 +450,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
   <nav class="missions">
     <button class="mission px pbtn" data-go="carga"><span class="code" data-ico="cart"></span><span class="mt"><b>Carga guiada</b><small>Divisão passo a passo</small><span class="st" data-st="carga"></span></span></button>
     <button class="mission px pbtn" data-go="turno"><span class="code" data-ico="pick"></span><span class="mt"><b>Turno completo</b><small>A conta armada inteira</small><span class="st" data-st="turno"></span></span></button>
-    <button class="mission px pbtn" data-go="inspecao"><span class="code" data-ico="robot"></span><span class="mt"><b>Inspeção</b><small>Ache o erro do robô</small><span class="st" data-st="inspecao"></span></span></button>
+    <button class="mission px pbtn" data-go="inspecao"><span class="code" data-ico="robot"></span><span class="mt"><b>Complete a conta</b><small>Preencha a casa vazia</small><span class="st" data-st="inspecao"></span></span></button>
   </nav>
 
   <button class="danger dcard" id="goDes"><span class="ey"><span>DESAFIO OPCIONAL</span><span class="ok" id="desOk" hidden>FEITO ✓</span></span><span class="dg"><span><span class="ti">TEMPESTADE!</span><span class="su">Termine 3 contas antes da tempestade chegar à mina.</span></span><span class="dico" id="desIco"></span></span></button>
@@ -508,7 +505,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 <script>
 /* atualização automática: compara com version.json e recarrega com ?v=<versão> no endereço (o iPhone não reaproveita a
    página guardada). Se mesmo com ?v=<versão> a página veio velha, não insiste (evita recarregar sem parar). */
-const APP_V='20261006050656';
+const APP_V='20261006074411';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris|mina)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     const q=new URLSearchParams(location.search).get('v');
@@ -608,31 +605,6 @@ function genConta(kind,o={}){const lv=L();
     if(kind==='g1'&&c.steps.length>3)continue;
     return c}
   return solve(745,23)}
-
-/* inspeção: o robô ROB-8 faz a conta com um erro escondido.
-   zero: esqueceu o 0 do quociente · resto: parou num algarismo pequeno (resto ≥ divisor)
-   sub: errou uma subtração · mult: errou uma multiplicação. Depois do erro, o robô segue certinho com os números errados. */
-function robot(c,t){const st=c.steps.map(s=>Object.assign({},s)),d=c.d,last=st.length-1;
-  const cont=(j)=>{for(let k=j+1;k<st.length;k++){const s=st[k];s.partial=st[k-1].rem*10+ +c.s[s.i];s.q=Math.floor(s.partial/d);s.prod=s.q*d;s.rem=s.partial-s.prod}};
-  const out=(o)=>Object.assign({t,steps:st,qTxt:st.map(s=>s.q).join(''),rem:st[last].rem},o);
-  if(t==='zero'){if(!hasZero(c))return null;
-    return out({j:-1,qTxt:st.map((s,j)=>s.q===0&&st.slice(0,j).some(x=>x.q>0)?'':s.q).join(''),hot:['q'],why:'O robô esqueceu o 0 do quociente.',ask:'Escreva o quociente certo:',ans:c.q,fixK:'zero',
-      tip:'Cada algarismo que desce põe um algarismo no quociente, mesmo quando é 0.'})}
-  if(t==='resto'){const s=st[last];if(s.q<2)return null;s.q--;s.prod=s.q*d;s.rem=s.partial-s.prod;
-    return out({j:last,hot:['q','r:'+last],why:`Sobrou ${s.rem}, e ${s.rem} é maior que ${d}: ainda cabia mais um.`,ask:'Qual é o último algarismo certo do quociente?',ans:c.steps[last].q,fixK:'low',
-      tip:'O resto sempre tem que ser menor que o divisor.'})}
-  const js=shuffle(st.map((s,j)=>j).filter(j=>st[j].q>0));
-  for(const j of js){const s=st[j];
-    if(t==='sub'){const nb=noBorrow(s.partial,s.prod),cand=[nb,s.rem+1,s.rem-1,s.rem+2,s.rem-2].filter(v=>v!=null&&v!==s.rem&&v>=0&&v<d);
-      if(!cand.length)continue;const w=cand[0]===nb&&Math.random()<.6?nb:pick(cand);s.rem=w;cont(j);
-      return out({j,hot:['r:'+j],why:`${s.partial} − ${s.prod} não dá ${w}.`,ask:`Quanto é ${s.partial} − ${s.prod}?`,ans:c.steps[j].rem,fixK:'sub',tip:'Refaça as subtrações de baixo para cima.'})}
-    if(t==='mult'){const nc=noCarry(s.q,d),cand=[nc,s.prod+1,s.prod-1,s.prod+10,s.prod-10,s.prod+2].filter(v=>v!=null&&v!==s.prod&&v>0&&s.partial-v>=0&&s.partial-v<d);
-      if(!cand.length)continue;const w=cand[0]===nc&&Math.random()<.6?nc:pick(cand);s.prod=w;s.rem=s.partial-w;cont(j);
-      return out({j,hot:['p:'+j],why:`${s.q} × ${d} não dá ${w}.`,ask:`Quanto é ${s.q} × ${d}?`,ans:c.steps[j].prod,fixK:'mult',tip:'Refaça as multiplicações: algarismo do quociente × divisor.'})}}
-  return null}
-/* erros típicos: subtrair sem "pedir emprestado" e multiplicar sem "vai um" */
-function noBorrow(a,b){const A=String(a),B=String(b).padStart(A.length,'0');let r='';for(let i=0;i<A.length;i++)r+=Math.abs(+A[i]-+B[i]);const v=+r;return v===a-b?null:v}
-function noCarry(q,d){if(d<10)return null;const u=(q*(d%10))%10,t=q*Math.floor(d/10);const v=t*10+u;return v===q*d?null:v}
 
 /* =================== memória local =================== */
 const STORE='mina-stats-v1',LVDAYS=2,MODES=['carga','turno','inspecao'];
@@ -877,12 +849,14 @@ function renderMenu(){
 document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{sfx.tap();startMission(b.dataset.go)});
 
 /* =================== missões =================== */
-const TITLES={carga:'M1 · Carga guiada',turno:'M2 · Turno completo',inspecao:'M3 · Inspeção',desafio:'Tempestade!'};
+const TITLES={carga:'M1 · Carga guiada',turno:'M2 · Turno completo',inspecao:'M3 · Complete a conta',desafio:'Tempestade!'};
 const ERR={sep:'Separar o pedaço',high:'Estimativa alta',low:'Estimativa baixa (resto ≥ divisor)',zero:'Zero no quociente',mult:'Multiplicação',sub:'Subtração',bx:'Baixar o algarismo',
-  find_zero:'Achar: zero esquecido',find_resto:'Achar: resto ≥ divisor',find_sub:'Achar: subtração errada',find_mult:'Achar: multiplicação errada'};
+  comp_q:'Casa vazia: algarismo do quociente',comp_p:'Casa vazia: multiplicação',comp_r:'Casa vazia: subtração'};
 function genQs(m){const n=ROUNDS[m],out=[],seen=new Set(),key=c=>c.D+'/'+c.d;
-  if(m==='inspecao'){for(const t of shuffle(['zero','resto','sub','mult'])){let c,g=0;
-      do{c=genConta('mix',{zero:t==='zero'})}while((!robot(c,t)||seen.has(key(c)))&&g++<300);seen.add(key(c));out.push({D:c.D,d:c.d,m:pick(['rep','med']),t})}
+  if(m==='inspecao'){const kinds=shuffle(['q','p','r','q']);for(let i=0;i<n;i++){let c,g=0;
+      do{c=genConta(L().d2?'mix':'g1',{zero:i===1})}while(seen.has(key(c))&&g++<60);seen.add(key(c));
+      const k=kinds[i],js=c.steps.map((s,j)=>j),j=k==='q'?pick(js):pick(js.filter(j=>k!=='p'||c.steps[j].q>0).length?js.filter(j=>k!=='p'||c.steps[j].q>0):js);
+      out.push({D:c.D,d:c.d,m:pick(['rep','med']),b:{k,j}})}
     return out}
   // pelo menos uma conta com 0 no quociente; no Turno completo, pelo menos uma com divisor de 2 algarismos
   const zeroAt=m==='carga'&&Math.random()<.5?-1:rnd(0,n-1),twoAt=m==='turno'&&L().d2?(zeroAt+1)%n:-1;
@@ -903,17 +877,17 @@ function startMission(m){
   if(!S.seenMan){S.seenMan=true;save();openMan()}
 }
 function newConta(){const q=R.qs[R.i],c=solve(q.D,q.d);locked=false;combo=0;
-  C={c,q,ph:mode==='inspecao'?'look':'est',sel:0,k:0,qd:[],typ:'',est:1,cur:{},miss:false,errK:[],tries:0,flash:null,fallJ:-1,msg:null,pv:false,
-    rob:mode==='inspecao'?robot(c,q.t):null};
-  if(C.rob)SND.robot();
+  C={c,q,ph:mode==='inspecao'?'fill':'est',sel:0,k:0,qd:[],typ:'',est:1,cur:{},miss:false,errK:[],tries:0,flash:null,fallJ:-1,msg:null,
+    blank:mode==='inspecao'?(q.b||{k:'q',j:0}):null};
+  if(C.blank)SND.robot();
   if(D){D.pause=false;D.last=performance.now()}
   renderSegs();render()}
 function renderSegs(){const n=ROUNDS[mode];$('#segs').innerHTML=Array.from({length:n},(_,i)=>`<i class="${i<R.i?'on':i===R.i?'cur':''}"></i>`).join('');
   $('#playN').textContent=`CONTA ${Math.min(C&&C.ph==='end'?R.i:R.i+1,n)}/${n}`}
 /* o problema contado: dividir em partes iguais (repartição) ou quantas vezes cabe (medida) */
 function storyTxt(){const c=C.c;
-  if(C.rob&&C.ph==='end')return `Conta do <b>ROB-8</b> consertada: <b>${c.D} ÷ ${c.d}</b>.`;
-  if(C.rob)return `O robô <b>ROB-8</b> armou ${c.D} ÷ ${c.d} e errou um passo. Ache o erro!`;
+  if(C.blank&&C.ph==='end')return `Conta completa: <b>${c.D} ÷ ${c.d}</b>.`;
+  if(C.blank)return `O ROB-8 armou <b>${c.D} ÷ ${c.d}</b> e deixou <b>uma casa vazia</b>.`;
   return C.q.m==='rep'?`<b>${c.D}</b> cristais repartidos igualmente em <b>${c.d}</b> vagonetes.`
     :`Cada vagonete leva <b>${c.d}</b> cristais. Quantos vagonetes enchem com <b>${c.D}</b>?`}
 function endTxt(){const c=C.c;
@@ -923,8 +897,10 @@ function endTxt(){const c=C.c;
    colunas: 0 = sinal de menos, 1..n = algarismos do dividendo; à direita da chave, o divisor e o quociente */
 const CW=30,CH=30;
 function viewOf(){const c=C.c,steps=[],end=C.ph==='end'||C.ph==='lost';
-  if(C.rob&&!end){C.rob.steps.forEach((s,j)=>steps.push({i:s.i,down:j>0,prod:String(s.prod),rem:String(s.rem)}));
-    return{steps,qTxt:C.rob.qTxt,hot:C.ph==='look',fin:true,finRem:C.rob.rem,nq:c.steps.length}}
+  if(C.blank&&!end){const b=C.blank,ty=C.typ||'',qs=c.steps.map(s=>s.q);
+    c.steps.forEach((s,j)=>{const o={i:s.i,down:j>0,prod:String(s.prod),rem:String(s.rem)};
+      if(j===b.j&&b.k==='p'){o.prod=ty;o.pslot=true}if(j===b.j&&b.k==='r'){o.rem=ty;o.rslot=true}steps.push(o)});
+    return b.k==='q'?{steps,qTxt:qs.slice(0,b.j).join(''),qNext:ty||'?',qAfter:qs.slice(b.j+1).join(''),nq:qs.length}:{steps,qTxt:qs.join(''),nq:qs.length}}
   const K=C.ph==='sep'?-1:end?c.steps.length-1:C.k;
   for(let j=0;j<=K;j++){const s=c.steps[j],cur=j===C.k&&!end,o={i:s.i,down:j>0,fall:j===C.fallJ};
     if(!cur||C.ph==='bx'){o.prod=String(s.prod);o.rem=String(s.rem)}
@@ -962,18 +938,14 @@ function boardHTML(v){const c=C.c,s=c.s,n=s.length;let h='';const rowCells={},ro
   if(v.fin&&v.steps.length){const j=v.steps.length-1,st=v.steps[j],r=st.prod!=null?rowOf[j]+2:rowOf[j],cs=rowCells[r]||[st.i+1],a=st.prod!=null?st.i+2-String(st.rem).length:Math.min(...cs);
     h+=`<i class="box fin" style="left:${a*CW}px;top:${r*CH}px;width:${(st.i+2-a)*CW}px;height:${CH}px"></i>`}
   // chave: divisor e quociente
-  const xR=(n+1)*CW+8,dS=String(c.d),nq=Math.max(v.nq,(v.qTxt||'').length+(v.qNext?1:0)),wR=Math.max(dS.length,nq)*CW+14;
+  const xR=(n+1)*CW+8,dS=String(c.d),nq=Math.max(v.nq,(v.qTxt||'').length+(v.qNext?1:0)+(v.qAfter||'').length),wR=Math.max(dS.length,nq)*CW+14;
   h+=`<i class="ln" style="left:${xR}px;top:0;width:3px;height:${CH+2}px"></i><i class="ln" style="left:${xR}px;top:${CH-1}px;width:${wR}px;height:3px"></i>`;
   for(let x=0;x<dS.length;x++)h+=`<span class="c ds" style="left:${xR+10+x*CW}px;top:0">${dS[x]}</span>`;
   const qT=v.qTxt||'';for(let x=0;x<qT.length;x++)h+=`<span class="c qt" style="left:${xR+10+x*CW}px;top:${CH+4}px">${qT[x]}</span>`;
   if(v.qNext!=null)h+=`<span class="c qn${v.qNext==='?'?' ask':''}" style="left:${xR+10+qT.length*CW}px;top:${CH+4}px">${v.qNext}</span>`;
-  // inspeção: cada linha vira área de toque
-  if(v.hot){const W=(n+1)*CW;
-    v.steps.forEach((st,j)=>{if(st.prod==null)return;const r=rowOf[j];
-      h+=`<button class="hot${C.miss&&C.lastHot==='p:'+j?' miss':''}" data-hot="p:${j}" style="left:0;top:${(r+1)*CH}px;width:${W}px;height:${CH}px" aria-label="Linha da multiplicação"></button>`;
-      h+=`<button class="hot${C.miss&&C.lastHot==='r:'+j?' miss':''}" data-hot="r:${j}" style="left:0;top:${(r+2)*CH}px;width:${W}px;height:${CH}px" aria-label="Linha da subtração"></button>`});
-    h+=`<button class="hot${C.miss&&C.lastHot==='q'?' miss':''}" data-hot="q" style="left:${xR+4}px;top:${CH+2}px;width:${wR-4}px;height:${CH}px" aria-label="Quociente"></button>`}
-  const rows=Math.max(rowsOf(c.steps),C.rob?rowsOf(C.rob.steps):0);
+  if(v.qNext!=null&&v.qAfter){h+=`<i class="slot" style="left:${xR+10+qT.length*CW}px;top:${CH+4}px;width:${CW}px"></i>`;
+    for(let x=0;x<v.qAfter.length;x++)h+=`<span class="c qt" style="left:${xR+10+(qT.length+1+x)*CW}px;top:${CH+4}px">${v.qAfter[x]}</span>`}
+  const rows=rowsOf(c.steps);
   return {h,w:xR+wR+4,hgt:rows*CH}}
 
 /* ---------- guia e controles ---------- */
@@ -988,14 +960,13 @@ function guideMsg(){const c=C.c,s=c.steps[C.k],d=c.d;
   if(C.ph==='mul')return mode==='carga'?`<b>MULTIPLIQUE:</b> ${C.cur.q} × ${d} = ${C.cur.q*d}.<span class="hint">A máquina escreve embaixo do pedaço.</span>`:`<b>MULTIPLIQUE:</b> ${C.cur.q} × ${d} = ?`;
   if(C.ph==='sub')return `<b>SUBTRAIA:</b> ${s.partial} − ${C.cur.q*d} = ?`;
   if(C.ph==='bx')return mode==='carga'?`<b>BAIXE</b> o próximo algarismo: toque no <b>${c.s[c.steps[C.k+1].i]}</b> que está brilhando.`:`<b>BAIXE</b> o próximo algarismo do dividendo: toque nele.`;
-  if(C.ph==='look')return `Toque na <b>linha</b> ou no <b>quociente</b> onde está o erro.`;
-  if(C.ph==='fix')return C.rob.ask;
+  if(C.ph==='fill'){const b=C.blank,st=c.steps[b.j];
+    return b.k==='q'?`<b>DIVIDA:</b> quantas vezes o ${d} cabe em ${st.partial}?`:b.k==='p'?`<b>MULTIPLIQUE:</b> ${st.q} × ${d} = ?`:`<b>SUBTRAIA:</b> ${st.partial} − ${st.prod} = ?`}
   return ''}
 function renderGuide(){const g=$('#guide'),hide=C.ph==='end'||C.ph==='lost';g.hidden=hide;if(hide)return;
   g.className='guide px'+(C.msg&&C.msg.t?' '+C.msg.t:'');
-  const ins=!!C.rob;
-  $('#lights').innerHTML=ins?['ACHAR','CONSERTAR'].map((t,i)=>`<i class="${(C.ph==='fix')===!!i?'on':''}">${t}</i>`).join('')
-    :['DIVIDIR','MULTIPLICAR','SUBTRAIR','BAIXAR'].map((t,i)=>`<i class="${PH_L[C.ph]===i?'on':''}">${t}</i>`).join('');
+  const lit=C.ph==='fill'?{q:0,p:1,r:2}[C.blank.k]:PH_L[C.ph];
+  $('#lights').innerHTML=['DIVIDIR','MULTIPLICAR','SUBTRAIR','BAIXAR'].map((t,i)=>`<i class="${lit===i?'on':''}">${t}</i>`).join('');
   $('#gmsg').innerHTML=guideMsg()}
 const KP=`<div class="kp">${[1,2,3,4,5].map(d=>`<button class="key px pbtn" data-k="${d}">${d}</button>`).join('')}<button class="key px pbtn" data-k="del" aria-label="Apagar">⌫</button>
   ${[6,7,8,9,0].map(d=>`<button class="key px pbtn" data-k="${d}">${d}</button>`).join('')}<button class="key ok pbtn wide" data-k="ok">OK</button></div>`;
@@ -1005,16 +976,11 @@ function renderPad(){const p=$('#pad'),c=C.c;let h='';
     h=`<div class="stp"><button class="key px pbtn" id="sMin" aria-label="Menos">−</button><div class="sv px"><span><b>${q}</b> × ${c.d} = <b>${pr}</b></span></div><button class="key px pbtn" id="sPlus" aria-label="Mais">+</button></div>
       <div class="stp2"><div class="mbar"><i class="pb" style="width:calc(${s.partial/sc*100}% - 4px)"></i><i class="qb${over?' over':''}" style="width:calc(${pr/sc*100}% - 4px)"></i><span>${over?'PASSOU!':`SOBRA ${s.partial-pr}`}</span></div>
       <button class="key ok pbtn wide" id="sOk">OK</button></div>`}
-  else if(['est','mul','sub','fix'].includes(C.ph)&&!(C.ph==='mul'&&mode==='carga'))h=KP;
-  else if(C.ph==='look')h=`<div class="ins">${C.pv?pvHTML():''}<button class="ghost px pbtn" id="pv">${C.pv?'ESCONDER A PROVA':'FAZER A PROVA REAL'}</button></div>`;
+  else if(['est','mul','sub','fill'].includes(C.ph)&&!(C.ph==='mul'&&mode==='carga'))h=KP;
   else if(C.ph==='end')h=endHTML();
   else if(C.ph==='lost')h=`<div class="endc lost px"><h3>A TEMPESTADE CHEGOU!</h3><p class="ctx">Você fez ${R.i} de ${ROUNDS.desafio} contas. Os vagonetes voltaram para a mina.</p>
     <button class="btn" id="lAgain">TENTAR DE NOVO</button><button class="ghost px pbtn" id="lBack">VOLTAR À MINA</button></div>`;
   p.innerHTML=h;bindPad()}
-/* prova real do robô: quociente × divisor + resto */
-function pvHTML(){const c=C.c,rb=C.rob,qn=+rb.qTxt,P=qn*c.d+rb.rem,okD=P===c.D,okR=rb.rem<c.d;
-  return `<div class="pvl">${rb.qTxt} × ${c.d} + ${rb.rem} = <b>${P}</b> ${okD?`<span class="y">= ${c.D} ✓</span>`:`<span class="n">≠ ${c.D} ✗</span>`}
-    ${okD&&!okR?`<br><span class="n">mas o resto ${rb.rem} não é menor que ${c.d} ✗</span>`:''}</div>`}
 function endHTML(){const c=C.c,last=R.i>=ROUNDS[mode];
   return `<div class="endc px"><div class="er"><div><span class="label">QUOCIENTE</span><b>${c.q}</b></div><div><span class="label">RESTO</span><b>${c.r}</b></div></div>
     <p class="pv"><span class="label">PROVA REAL</span>${c.q} × ${c.d} + ${c.r} = <b>${c.D} ✓</b></p>
@@ -1023,14 +989,13 @@ function endHTML(){const c=C.c,last=R.i>=ROUNDS[mode];
 function render(){if(!C)return;const b=boardHTML(viewOf()),bd=$('#board');bd.innerHTML=b.h;bd.style.width=b.w+'px';bd.style.height=b.hgt+'px';
   $('#story').innerHTML=storyTxt();renderGuide();renderPad();bindBoard()}
 function bindBoard(){$('#board').querySelectorAll('[data-dg]').forEach(b=>b.onclick=()=>tapDigit(+b.dataset.dg));
-  $('#board').querySelectorAll('[data-hot]').forEach(b=>b.onclick=()=>tapHot(b.dataset.hot))}
+}
 function bindPad(){const q=s=>$('#pad').querySelector(s);
   $('#pad').querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>key(b.dataset.k));
   if(q('#pSep'))q('#pSep').onclick=sepOk;
   if(q('#sMin'))q('#sMin').onclick=()=>{if(locked||C.est<=0)return;C.est--;SND.key(C.est);C.msg=null;render()};
   if(q('#sPlus'))q('#sPlus').onclick=()=>{if(locked||C.est>=9)return;C.est++;SND.key(C.est);C.msg=null;render()};
   if(q('#sOk'))q('#sOk').onclick=()=>{if(!locked)estimate(C.est)};
-  if(q('#pv'))q('#pv').onclick=()=>{SND.page();C.pv=!C.pv;renderPad()};
   if(q('#eNext'))q('#eNext').onclick=()=>{sfx.tap();if(R.i>=ROUNDS[mode])finishMission();else newConta()};
   if(q('#lAgain'))q('#lAgain').onclick=()=>{sfx.tap();startMission('desafio')};
   if(q('#lBack'))q('#lBack').onclick=()=>{sfx.tap();if(DL){backHome();return}show('menu')}}
@@ -1041,7 +1006,7 @@ function err(kind,msg){sfx.no();shake();C.msg={t:'no',h:msg};
   if(!C.miss){C.miss=true;record(mode,false,ERR[kind])}else if(!C.errK.includes(kind))errAdd(mode,ERR[kind]);
   C.errK.push(kind);storm(.06)}
 function good(){SND.step();storm(-.04)}
-function key(k){if(locked)return;const max=C.ph==='est'?1:4;
+function key(k){if(locked)return;const max=C.ph==='est'||(C.ph==='fill'&&C.blank.k==='q')?1:4;
   if(k==='del'){if(!C.typ)return;SND.del();C.typ=C.typ.slice(0,-1)}
   else if(k==='ok'){if(C.typ==='')return;submit();return}
   else{SND.key(+k);if(max===1)C.typ=k;else if(C.typ.length<max)C.typ=(C.typ+k).replace(/^0(?=\d)/,'')}
@@ -1071,7 +1036,7 @@ function estimate(q){const c=C.c,s=c.steps[C.k],d=c.d,t=s.q;
 function hintMul(q,d){if(d<10)return '';const t=Math.floor(d/10)*10,u=d%10;return `<span class="hint">Dica: ${q} × ${t} = ${q*t} e ${q} × ${u} = ${q*u}. Some os dois.</span>`}
 function submit(){const c=C.c,s=c.steps[C.k],v=+C.typ;
   if(C.ph==='est')return estimate(v);
-  if(C.ph==='fix')return fixSubmit(v);
+  if(C.ph==='fill')return fillSubmit(v);
   if(C.ph==='mul'){const want=C.cur.q*c.d;
     if(v!==want){C.tries++;err('mult',`${C.cur.q} × ${c.d} não é ${v}.`+(C.tries>1?` <b>${C.cur.q} × ${c.d} = ${want}</b>.`:hintMul(C.cur.q,c.d)));C.typ='';return render()}
     if(want>s.partial){flash('p',()=>{err('high',`${C.cur.q} × ${c.d} = ${want}, maior que ${s.partial}: não dá para tirar. <b>Diminua o algarismo.</b>`);toEst()});return}
@@ -1083,18 +1048,17 @@ function submit(){const c=C.c,s=c.steps[C.k],v=+C.typ;
 function stepDone(){const c=C.c;C.cur={};C.typ='';C.tries=0;
   if(C.k>=c.steps.length-1){finishConta();return}
   C.ph='bx';render()}
-/* inspeção */
-function tapHot(h){if(locked||C.ph!=='look')return;const rb=C.rob;C.lastHot=h;
-  if(rb.hot.includes(h)){good();C.ph='fix';C.typ='';C.tries=0;C.msg={t:'ok',h:`<b>Achou!</b> ${rb.why}<span class="hint">${rb.ask}</span>`};render();return}
-  const j=h==='q'?99:+h.split(':')[1],after=(rb.t==='sub'||rb.t==='mult')&&j>rb.j;C.tries++;
-  err('find_'+rb.t,after?'Esta parte só continua com os números de cima, que já vieram errados. <b>O erro começou antes.</b>'
-    :C.tries>1?`Aqui está certo. <span class="hint">Dica: ${rb.tip}</span>`:'Aqui está certo. Faça a <b>prova real</b> e confira cada passo.');render()}
-function fixSubmit(v){const rb=C.rob;
-  if(v!==rb.ans){C.tries++;err(rb.fixK,`Ainda não. ${C.tries>1?`<b>Era ${rb.ans}.</b> Digite para consertar.`:rb.tip}`);C.msg.h+=`<span class="hint">${rb.ask}</span>`;C.typ='';return render()}
-  good();SND.carts();finishConta()}
+/* complete a conta: a criança calcula só a casa vazia */
+function fillSubmit(v){const c=C.c,b=C.blank,st=c.steps[b.j],d=c.d,ans=b.k==='q'?st.q:b.k==='p'?st.prod:st.rem;
+  if(v===ans){good();SND.carts();C.msg=null;return finishConta()}
+  C.tries++;let why;
+  if(b.k==='q')why=st.partial<d?`O ${d} não cabe em ${st.partial}: é 0.`:v*d>st.partial?`${v} × ${d} = ${v*d}, passa de ${st.partial}.`:`Sobra ${st.partial-v*d}, e o ${d} ainda cabe nisso.`;
+  else if(b.k==='p')why=`${st.q} × ${d} não é ${v}.${hintMul(st.q,d)}`;
+  else why=`${st.partial} − ${st.prod} não é ${v}.`;
+  err('comp_'+b.k,why+(C.tries>1?`<span class="hint">A resposta é <b>${ans}</b>. Digite para completar.</span>`:''));C.typ='';render()}
 function finishConta(){const c=C.c;C.ph='end';C.k=c.steps.length-1;C.qd=c.steps.map(s=>s.q);
   if(!C.miss){R.firsts++;record(mode,true)}
-  R.i++;if(mode!=='desafio')save();renderSegs();sfx.ok();if(!C.rob)SND.carts();
+  R.i++;if(mode!=='desafio')save();renderSegs();sfx.ok();if(!C.blank)SND.carts();
   if(D)D.pause=true;
   render();
   if(mode==='desafio'&&R.i>=ROUNDS.desafio&&D)D.run=false}
