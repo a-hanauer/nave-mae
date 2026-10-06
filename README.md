@@ -21,7 +21,7 @@ Publicado em `https://a-hanauer.github.io/nave-mae/`.
 
 - **Primeiro acesso:** a criança digita o nome de piloto.
 - **Mapa estelar:** mostra quantas tarefas faltam hoje em cada planeta e a sequência de dias seguidos com o turno completo. Os planetas com jogos ficam sempre no topo do mapa; os que ainda estão sem sinal vêm depois. O planeta História é a Terra (mapa-múndi em pixel com a América do Sul de frente; na tela do planeta, um ponto vermelho marca Ivoti).
-- **Tela do planeta:** lista os apps, com o progresso do dia e o botão DECOLAR.
+- **Tela do planeta:** lista os jogos. O card inteiro é o botão que abre o jogo: ícone à esquerda; ao lado, nome, assunto e uma barra fina com o progresso do dia (n/total, com check quando completo); seta à direita. Jogo nunca aberto mostra NOVA.
 
 Cada app tem um botão "< Nave-Mãe" na tela inicial que volta para a aba Missões (ou para o planeta, quando a criança decolou de um planeta) (o jogo recebe `r=tasks` ou `r=p.<planeta>` no endereço e a Nave-Mãe abre `#v=tasks` ou `#p=<planeta>`). Ao entrar direto numa missão pela aba Missões, o voltar da missão vira "< Missões" e leva de volta para a lista.
 
