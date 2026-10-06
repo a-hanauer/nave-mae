@@ -14,13 +14,13 @@ Publicado em `https://a-hanauer.github.io/nave-mae/`.
 | Português | em breve | |
 | Ciências | em breve | |
 | Inglês | em breve | |
-| História | em breve | |
+| História (a Terra) | Máquina do Tempo (história de Ivoti/RS) | `ivoti/` |
 | Geografia | em breve | |
 
 ## Como funciona
 
 - **Primeiro acesso:** a criança digita o nome de piloto.
-- **Mapa estelar:** mostra quantas tarefas faltam hoje em cada planeta e a sequência de dias seguidos com o turno completo.
+- **Mapa estelar:** mostra quantas tarefas faltam hoje em cada planeta e a sequência de dias seguidos com o turno completo. Os planetas com jogos ficam sempre no topo do mapa; os que ainda estão sem sinal vêm depois. O planeta História é a Terra (mapa-múndi em pixel com a América do Sul de frente; na tela do planeta, um ponto vermelho marca Ivoti).
 - **Tela do planeta:** lista os apps, com o progresso do dia e o botão DECOLAR.
 
 Cada app tem um botão "< Nave-Mãe" na tela inicial que volta para a aba Missões (ou para o planeta, quando a criança decolou de um planeta) (o jogo recebe `r=tasks` ou `r=p.<planeta>` no endereço e a Nave-Mãe abre `#v=tasks` ou `#p=<planeta>`). Ao entrar direto numa missão pela aba Missões, o voltar da missão vira "< Missões" e leva de volta para a lista.
@@ -61,6 +61,29 @@ Erros guardados por tipo (`errM`) para a área dos pais: separar o pedaço, esti
 
 Saindo no meio, a missão continua da conta em que parou. Se a criança sai na tela da última conta, a missão é entregue quando ela voltar.
 
+## Máquina do Tempo (planeta História)
+
+Jogo sobre a história de Ivoti/RS para uma criança de 9 anos. História pede menos teste e mais narrativa, então o jogo combina:
+
+- **Narrativa:** o conteúdo vem como capítulos de uma viagem no tempo, com cena em pixel art e texto curto.
+- **Um capítulo novo por dia:** espaça o conteúdo novo.
+- **Recuperação espaçada:** cada pergunta vira uma ficha que volta no Arquivo da memória depois de 1, 1, 3, 7, 14 e 30 dias (acertou: sobe de gaveta; errou: volta para a primeira).
+- **Linha do tempo:** ordenar acontecimentos treina a noção de antes e depois.
+- **Lugar real e história oral:** o Passaporte de Ivoti leva a visitas e a uma entrevista com a família.
+
+Missões do turno (3 por dia, sem rodízio):
+
+- **Diário da viagem:** abertura com a "viagem no tempo" até o ano do capítulo; páginas com cena e texto em papel antigo; a última página traz a palavra nova; no fim, 3 a 5 perguntas. Botão OUVIR: o iPhone lê o texto e as perguntas em português (voz do sistema). Capítulos já lidos podem ser relidos tocando neles no menu; com os 12 lidos, o Diário relê o capítulo visto há mais tempo.
+- **Linha do tempo:** 3 rodadas; a criança toca no acontecimento mais antigo que falta, até a linha ficar completa. Usa só acontecimentos dos capítulos já lidos e sempre inclui um do capítulo mais recente.
+- **Arquivo da memória:** até 6 fichas por dia, primeiro as vencidas.
+- **Desafio opcional, Monte a casa enxaimel:** alicerce, madeiras em pé, vigas, diagonais, pregos de pau, preenchimento com barro ou tijolo e telhado; depois, 3 perguntas do mestre carpinteiro.
+
+Capítulos: 1 Pouso em Ivoti (visão geral e linha do tempo) · 2 Os primeiros moradores (Tradição Umbu, há ~12 mil anos; Guarani e Kaingang) · 3 A grande viagem (Hunsrück, 25/07/1824 em São Leopoldo) · 4 A Picada dos Berghahn (1826, 48 lotes no Arroio Feitoria) · 5 Casas de enxaimel (Feitoria Nova, 1826–1950; museu de 1995) · 6 Igrejas e língua (1846, 1857, 1868; dialeto do Hunsrück) · 7 A Ponte do Imperador (1857–1864, 148 m, três arcos, 30 contos de réis de D. Pedro II, IPHAN 1986) · 8 Bom Jardim (1867, distrito de São Leopoldo) · 9 Ivoti quer dizer flor (1938) · 10 Ivoti vira cidade (plebiscito 12/07/1964, lei 19/10/1964, posse 26/01/1965) · 11 Vizinhos do Japão (1966, famílias Sasada e Tanisaki; Memorial de 2011) · 12 Ivoti hoje (1992: Lindolfo Collor e Presidente Lucena; calçados, feiras).
+
+Fontes: páginas da Prefeitura de Ivoti (Ponte do Imperador, Núcleo de Casas Enxaimel, Museu Cláudio Oscar Becker, Memorial da Colônia Japonesa), Wikipédia (Ivoti e Colônia Ivoti) e Cidades do Meu Brasil. Quando as fontes divergem (ano da ponte), vale a da Prefeitura. O conteúdo fica em `CAPS`, `EVENTS`, `PASS` e `CASA_Q`, no começo do script de `ivoti/index.html`.
+
+**Passaporte de Ivoti:** 6 carimbos (Ponte do Imperador, Núcleo de Casas Enxaimel, Museu Cláudio Oscar Becker, Memorial da Colônia Japonesa, Feira das Flores e Entrevista com a família). Um adulto confirma na área dos pais (Máquina do Tempo › Passaporte de Ivoti › Confirmar visita). Na próxima vez que o jogo abre, aparece "CARIMBO NOVO!". Cada carimbo vale +15 de energia. Medalhas de honra: Máquina do Tempo (3, 6 e 12 capítulos) e Passaporte de Ivoti (1, 3 e 6 carimbos).
+
 ## Abas
 
 A barra inferior tem quatro abas:
@@ -85,7 +108,7 @@ Missão feita aparece sempre como **FEITO**. Jogar de novo uma missão feita no 
 
 **Peças com energia (no próprio Hangar):** PILOTO e NAVE mostram abas de categoria fixas junto do palco (capacete, viseira, traje, pele, emblema, equipamento, título; modelo, pintura, propulsor, adesivo, rastro) com ícone, a contagem de peças e um ponto âmbar quando dá para liberar algo ali. No palco, uma linha estilo painel de nave liga o nome da categoria (e da peça atual) à parte do piloto ou da nave que muda. Cada categoria é um carrossel que rola para os lados, com altura fixa (a tela do Hangar não rola): EM USO, DISPONÍVEL (toque para usar) ou, se ainda não foi liberada, card apagado com cadeado e o preço. Tocar numa bloqueada mostra a prévia no palco e o card vira LIBERAR ⚡ (ou FALTAM ⚡ se não der); tocar de novo libera e a peça já entra em uso. O último card leva à próxima categoria. O nome do piloto agora se edita nas configurações (Nome do piloto).
 
-- Energia por dia, por jogo: missão do turno +10, treino extra +5, acerto de primeira +1 (até 10 por missão), turno completo +10, desafio +8; a partir do 3º dia seguido, +5 por dia. Repetir missão já feita não rende (só os acertos, com o limite).
+- Energia por dia, por jogo: missão do turno +10, treino extra +5, carimbo do Passaporte de Ivoti +15, acerto de primeira +1 (até 10 por missão), turno completo +10, desafio +8; a partir do 3º dia seguido, +5 por dia. Repetir missão já feita não rende (só os acertos, com o limite).
 - O cálculo sai do histórico dos jogos e fica guardado dia a dia em `st.eLed` (nunca diminui, mesmo quando o histórico antigo é apagado). Gasto em `st.spent`. Bônus de inauguração: 60.
 - Quem já tinha peças liberadas por medalha continua com elas. As medalhas seguem como coleção.
 - Catálogo: 114 peças (capacetes, viseiras, trajes, emblemas, equipamentos, títulos, modelos, pinturas, propulsores, adesivos e rastros), de 30 a 180 de energia.
