@@ -10,6 +10,7 @@ Publicado em `https://a-hanauer.github.io/nave-mae/`.
 |---|---|---|
 | Matemática | Estação Nostro-9 (divisão) | `nostro-9/` |
 | Matemática | Ruínas de Numeris (números romanos) | `numeris/` |
+| Matemática | Mina de Cristais (conta armada de divisão) | `mina/` |
 | Português | em breve | |
 | Ciências | em breve | |
 | Inglês | em breve | |
@@ -23,6 +24,42 @@ Publicado em `https://a-hanauer.github.io/nave-mae/`.
 - **Tela do planeta:** lista os apps, com o progresso do dia e o botão DECOLAR.
 
 Cada app tem um botão "< Nave-Mãe" na tela inicial que volta para a aba Missões (ou para o planeta, quando a criança decolou de um planeta) (o jogo recebe `r=tasks` ou `r=p.<planeta>` no endereço e a Nave-Mãe abre `#v=tasks` ou `#p=<planeta>`). Ao entrar direto numa missão pela aba Missões, o voltar da missão vira "< Missões" e leva de volta para a lista.
+
+## Rodízio do planeta Matemática
+
+O turno de Matemática tem 6 missões obrigatórias: 2 de cada jogo (Nostro-9, Numeris e Mina de Cristais). A cada dia, uma missão de cada jogo fica de fora e vira **treino extra**. A que fica de fora gira em ordem (cada missão sai 1 dia a cada 3). A função `rotReq(app, dia)` é a mesma na Nave-Mãe e nos três jogos, então todos concordam sem trocar dados. Antes de 05/10/2026 valia a regra antiga (as 3 missões de cada jogo).
+
+- A aba Missões, os selos, o planeta e o terminal de cada jogo mostram só as 2 do dia. As de fora aparecem como TREINO EXTRA.
+- Turno completo, sequência, nível dos jogos, liberação do fliperama e área dos pais seguem as 2 do dia.
+- Energia: missão do turno +10; treino extra feito +5.
+
+## Mina de Cristais
+
+Conta armada de divisão pelo método da chave, no **processo longo**: o produto e a subtração ficam escritos embaixo de cada passo, numa folha quadriculada (cada quadrado é uma casa). Segue a BNCC EF04MA07 (divisor com até 2 algarismos). O divisor de 2 algarismos aparece desde o começo, misturado com o de 1 algarismo.
+
+Cada passo acende uma luz **DIVIDIR · MULTIPLICAR · SUBTRAIR · BAIXAR**:
+
+1. **Separar:** a criança toca nos algarismos da esquerda até formar o primeiro pedaço em que o divisor cabe. Separar pouco ou demais é erro.
+2. **Dividir:** escolhe o algarismo do quociente. Com divisor de 2 algarismos aparece a dica de arredondar (23 ≈ 20, pense em 7 ÷ 2).
+3. **Multiplicar:** digita algarismo × divisor. Se o produto passa do pedaço, a linha fica vermelha e ela diminui o algarismo.
+4. **Subtrair:** digita a diferença. Se sobra um número maior ou igual ao divisor, a linha fica vermelha e ela aumenta o algarismo.
+5. **Baixar:** toca no próximo algarismo do dividendo, que desce para o lado do resto.
+6. Quando o divisor não cabe, o quociente ganha um **0**.
+
+No fim de cada conta: quociente, resto, a **prova real** (quociente × divisor + resto = dividendo) e a frase do problema (repartir em vagonetes ou quantos vagonetes enchem).
+
+Missões:
+
+- **Carga guiada** (4 contas, divisor de 1 algarismo): o algarismo do quociente se escolhe com − e +, vendo uma barra do produto contra o pedaço (PASSOU! ou SOBRA N). A máquina faz a multiplicação.
+- **Turno completo** (3 contas): a criança faz todos os passos. Sempre tem uma conta com 0 no quociente e uma com divisor de 2 algarismos.
+- **Inspeção** (4 contas): o robô ROB-8 armou a conta com um erro: esqueceu o 0 do quociente, parou com resto maior que o divisor, errou uma subtração ou errou uma multiplicação. Depois do erro, o robô segue certo com os números errados. A criança toca na linha ou no quociente com erro (pode usar a prova real) e digita o valor certo.
+- **Tempestade** (desafio opcional): 3 contas completas antes da tempestade chegar à mina. Cada passo certo afasta a nuvem; cada erro aproxima.
+
+Galerias (níveis): divisores de 2 algarismos até 19, 29, 49 e 99; a partir da 3ª, dividendos de 4 algarismos com divisor de 1 algarismo. Sobe depois de 2 dias com o turno completo. Os pais podem trocar a galeria na área dos pais.
+
+Erros guardados por tipo (`errM`) para a área dos pais: separar o pedaço, estimativa alta, estimativa baixa, zero no quociente, multiplicação, subtração, baixar o algarismo e, na Inspeção, qual erro do robô não foi achado.
+
+Saindo no meio, a missão continua da conta em que parou. Se a criança sai na tela da última conta, a missão é entregue quando ela voltar.
 
 ## Abas
 
@@ -42,13 +79,13 @@ A barra inferior tem quatro abas:
   - **Nave:** a nave na plataforma. Use ◀ ▶ para trocar modelo (foguete, caça, cargueiro, disco, interceptor), pintura e propulsor.
 - **Conquistas:** parede de medalhas por categoria (bronze, prata, ouro e níveis acima). Tocar numa medalha mostra o progresso e as recompensas no painel do topo; o cabeçalho (CONQUISTAS e a contagem) e o painel ficam fixos, abaixo da Dynamic Island, enquanto a parede rola.
 
-Os jogos em que a criança aparece usam o piloto e a nave como foram customizados (hoje, o Desabamento de Numeris). A Nave-Mãe grava os desenhos prontos em `localStorage['navemae-avatar']` (`pilot` em SVG na escala 2, `ship` e `flame` na escala 1; versão `v:3`) e o jogo amplia na escala que precisar. O piloto aparece a 2 px por pixel de arte; na tela de missão cumprida ele comemora com o punho erguido (`cheer`, só cores, sem equipamento; na derrota fica a pose normal); no Desabamento a câmara cresce para caber o piloto e o teto ainda ter espaço para descer.
+Os jogos em que a criança aparece usam o piloto e a nave como foram customizados (o Desabamento de Numeris, a Tempestade da Mina de Cristais e o fliperama). A Nave-Mãe grava os desenhos prontos em `localStorage['navemae-avatar']` (`pilot` em SVG na escala 2, `ship` e `flame` na escala 1; versão `v:3`) e o jogo amplia na escala que precisar. O piloto aparece a 2 px por pixel de arte; na tela de missão cumprida ele comemora com o punho erguido (`cheer`, só cores, sem equipamento; na derrota fica a pose normal); no Desabamento a câmara cresce para caber o piloto e o teto ainda ter espaço para descer.
 
 Missão feita aparece sempre como **FEITO**. Jogar de novo uma missão feita no dia é jogo livre: começa do zero, não guarda andamento e a missão continua feita, mesmo se a criança sair no meio.
 
 **Peças com energia (no próprio Hangar):** PILOTO e NAVE mostram abas de categoria fixas junto do palco (capacete, viseira, traje, pele, emblema, equipamento, título; modelo, pintura, propulsor, adesivo, rastro) com ícone, a contagem de peças e um ponto âmbar quando dá para liberar algo ali. No palco, uma linha estilo painel de nave liga o nome da categoria (e da peça atual) à parte do piloto ou da nave que muda. Cada categoria é um carrossel que rola para os lados, com altura fixa (a tela do Hangar não rola): EM USO, DISPONÍVEL (toque para usar) ou, se ainda não foi liberada, card apagado com cadeado e o preço. Tocar numa bloqueada mostra a prévia no palco e o card vira LIBERAR ⚡ (ou FALTAM ⚡ se não der); tocar de novo libera e a peça já entra em uso. O último card leva à próxima categoria. O nome do piloto agora se edita nas configurações (Nome do piloto).
 
-- Energia por dia, por jogo: missão do dia +10, acerto de primeira +1 (até 10 por missão), turno completo +10, desafio +8; a partir do 3º dia seguido, +5 por dia. Repetir missão já feita não rende (só os acertos, com o limite).
+- Energia por dia, por jogo: missão do turno +10, treino extra +5, acerto de primeira +1 (até 10 por missão), turno completo +10, desafio +8; a partir do 3º dia seguido, +5 por dia. Repetir missão já feita não rende (só os acertos, com o limite).
 - O cálculo sai do histórico dos jogos e fica guardado dia a dia em `st.eLed` (nunca diminui, mesmo quando o histórico antigo é apagado). Gasto em `st.spent`. Bônus de inauguração: 60.
 - Quem já tinha peças liberadas por medalha continua com elas. As medalhas seguem como coleção.
 - Catálogo: 114 peças (capacetes, viseiras, trajes, emblemas, equipamentos, títulos, modelos, pinturas, propulsores, adesivos e rastros), de 30 a 180 de energia.
@@ -56,7 +93,7 @@ Missão feita aparece sempre como **FEITO**. Jogar de novo uma missão feita no 
 
 ## Sons
 
-Os três apps usam o mesmo sintetizador (`mkSYN`: notas com envelope, deslize de tom, vibrato e ruído filtrado). Cada contexto tem seu som: abas com notas diferentes, sopro ao abrir planeta, motor na decolagem, peças equipadas e bloqueadas, medalhas, dados exportados, área dos pais; nos jogos, bateria com tom subindo conforme a sala enche, equipes em acordes, esteira do hangar, raio contra o Alien, pedras com tom pelo valor do símbolo, desmoronar ao apagar, papel na tábua e contagem regressiva. Acertos seguidos sobem de tom (combo).
+Os apps usam o mesmo sintetizador (`mkSYN`: notas com envelope, deslize de tom, vibrato e ruído filtrado). Cada contexto tem seu som: abas com notas diferentes, sopro ao abrir planeta, motor na decolagem, peças equipadas e bloqueadas, medalhas, dados exportados, área dos pais; nos jogos, bateria com tom subindo conforme a sala enche, equipes em acordes, esteira do hangar, raio contra o Alien, pedras com tom pelo valor do símbolo, desmoronar ao apagar, papel na tábua e contagem regressiva; na Mina, cristal ao separar, algarismo descendo, vagonetes saindo e trovão na tempestade. Acertos seguidos sobem de tom (combo).
 
 Volta do segundo plano: ao minimizar, o iOS interrompe o áudio do app. Ao voltar, os três apps tentam retomar; se o som continuar parado, o primeiro toque cria um áudio novo (e esse toque já faz som), sem precisar fechar o app.
 
@@ -87,7 +124,7 @@ A interface é limpa, sem o estilo 16-bits, e tem filtro de período no topo (7 
 
 - **Visão geral:** acerto de primeira, missões concluídas, dias com turno completo, dias seguidos (e recorde), calendário das últimas 5 semanas, destaques (missão que precisa de atenção e ponto forte) e lista de matérias.
 - **Matéria:** números da matéria e cada jogo com suas missões.
-- **Jogo:** números do jogo, missões, gráfico dos últimos 14 dias, erros mais comuns, troca de nível (Numeris) e apagar histórico do jogo.
+- **Jogo:** números do jogo, missões, gráfico dos últimos 14 dias, erros mais comuns, troca de nível (Numeris e Mina de Cristais) e apagar histórico do jogo.
 - **Missão:** acerto, respostas, dias concluída, última vez, acerto por dia (14 dias) e o que mais errou. Os botões no topo trocam entre as missões do jogo.
 
 Faixas: Ótimo (85% ou mais), Bom (65% a 84%), Atenção (abaixo de 65%), Poucos dados (menos de 5 respostas).
@@ -186,9 +223,11 @@ A sala cuida do resto: conversa com recorde, tela do jogo do tamanho da tela do 
 
 ```js
 {id:'leitura', planet:'por', name:'Nome do app', tag:'Assunto', icon:'station',
- url:'leitura/', desc:'Descrição curta.',
- progress(){ /* ler o localStorage do app e devolver {played, done, total, extra, full} */ }}
+ url:'leitura/', store:'leitura-stats-v1', desc:'Descrição curta.',
+ tasks:[{id:'m1',n:'Missão 1',sub:'...'}, /* ... */ {id:'desafio',n:'Desafio',sub:'...',opt:true}]}
 ```
+
+O progresso (`progress()`) sai sozinho de `store`: o app guarda os dias em `days[AAAA-MM-DD] = [missões feitas]`. Jogos do planeta Matemática levam `rot:true` e entram no rodízio (acrescente o id em `ROT` e em `rotReq`, nos quatro arquivos).
 
 Os ids dos planetas são `mat`, `por`, `cie`, `ing`, `his` e `geo`.
 

@@ -901,8 +901,8 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 <script>
 /* atualização automática: compara com version.json e recarrega com ?v=<versão> no endereço (o iPhone não reaproveita a
    página guardada). Se mesmo com ?v=<versão> a página veio velha, não insiste (evita recarregar sem parar). */
-const APP_V='20261005191327';
-(function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris)\/$/,'');
+const APP_V='20261005210005';
+(function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris|mina)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     const q=new URLSearchParams(location.search).get('v');
     if(v&&v!==APP_V&&q!==v)location.replace(location.pathname+'?v='+v+H0)}catch(e){}}
@@ -973,34 +973,39 @@ const PLANETS=[
 const dkey=(d=new Date())=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 function readLS(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}}
 
+/* =================== rodízio do planeta Matemática ===================
+   (mesmo código na Nave-Mãe e nos três jogos) A cada dia, 2 das 3 missões de cada jogo entram no turno; a outra
+   vira treino extra. A que fica de fora gira em ordem (cada missão sai 1 dia a cada 3), com um deslocamento
+   por jogo. Antes de ROT_FROM valia a regra antiga (as 3 missões). */
+const ROT_FROM='2026-10-05',ROT={nostro9:['partilha','grupos','hangar'],numeris:['montar','ler','sub'],mina:['carga','turno','inspecao']};
+function rotReq(app,k){const all=ROT[app];if(!all)return[];if(k<ROT_FROM)return app==='mina'?[]:all.slice();
+  const[y,m,d]=k.split('-').map(Number),n=Math.round(Date.UTC(y,m-1,d)/864e5),off={nostro9:0,numeris:1,mina:1}[app];
+  return all.filter((_,i)=>i!==(n+off)%3)}
+
 const APPS=[
-  {id:'nostro9',planet:'mat',name:'Estação Nostro-9',tag:'Divisão',icon:'station',
+  {id:'nostro9',planet:'mat',name:'Estação Nostro-9',tag:'Divisão',icon:'station',rot:true,
    url:'nostro-9/',store:'nostro9-stats-v1',
    tasks:[{id:'partilha',n:'Dividir baterias',sub:'Partes iguais'},{id:'grupos',n:'Equipes de busca',sub:'Quantos grupos?'},
           {id:'hangar',n:'Carga do hangar',sub:'Resolva e confira'},{id:'desafio',n:'Fuja do Alien',sub:'Tabuada contra o relógio',opt:true}],
-   desc:'Salve a estação dividindo baterias, equipes e caixas.',
-   // progresso: 3 missões por dia + desafio opcional "Fuja do Alien"
-   progress(){
-     const s=readLS('nostro9-stats-v1'),days=(s&&s.days)||{};
-     const main=k=>Math.min(3,(days[k]||[]).filter(m=>m!=='desafio').length);
-     return{played:!!s,done:main(dkey()),total:3,
-       extra:{label:'Fuja do Alien',ok:(days[dkey()]||[]).includes('desafio')},
-       full:k=>main(k)>=3};
-   }},
-  {id:'numeris',planet:'mat',name:'Ruínas de Numeris',tag:'Números romanos',icon:'ruins',
+   desc:'Salve a estação dividindo baterias, equipes e caixas.'},
+  {id:'numeris',planet:'mat',name:'Ruínas de Numeris',tag:'Números romanos',icon:'ruins',rot:true,
    url:'numeris/',store:'numeris-stats-v1',
    tasks:[{id:'montar',n:'Montar a senha',sub:'Número → romano'},{id:'ler',n:'Ler as inscrições',sub:'Romano → número'},
           {id:'sub',n:'Portão da subtração',sub:'IV, IX, XL…'},{id:'desafio',n:'Desabamento',sub:'Ache as falsas',opt:true}],
-   desc:'Decifre números romanos e abra o templo.',
-   // progresso: 3 portões por dia + desafio opcional "Desabamento"
-   progress(){
-     const s=readLS('numeris-stats-v1'),days=(s&&s.days)||{};
-     const main=k=>Math.min(3,(days[k]||[]).filter(m=>m!=='desafio').length);
-     return{played:!!s,done:main(dkey()),total:3,
-       extra:{label:'Desabamento',ok:(days[dkey()]||[]).includes('desafio')},
-       full:k=>main(k)>=3};
-   }},
+   desc:'Decifre números romanos e abra o templo.'},
+  {id:'mina',planet:'mat',name:'Mina de Cristais',tag:'Conta armada',icon:'mine',rot:true,
+   url:'mina/',store:'mina-stats-v1',
+   tasks:[{id:'carga',n:'Carga guiada',sub:'Divisão passo a passo'},{id:'turno',n:'Turno completo',sub:'A conta armada inteira'},
+          {id:'inspecao',n:'Inspeção',sub:'Ache o erro do robô'},{id:'desafio',n:'Tempestade',sub:'Contas contra o tempo',opt:true}],
+   desc:'Arme as contas de divisão e encha os vagonetes de cristais.'},
 ];
+/* missões que contam no turno do dia k (jogos do planeta Matemática: as 2 do rodízio; os outros: todas as não opcionais) */
+function reqOf(a,k){return a.rot?rotReq(a.id,k):a.tasks.filter(t=>!t.opt).map(t=>t.id)}
+/* progresso de cada jogo: missões do turno feitas hoje + desafio opcional; full(k) = turno completo naquele dia */
+APPS.forEach(a=>a.progress=function(){const s=readLS(a.store),days=(s&&s.days)||{},k0=dkey(),req=reqOf(a,k0),l=days[k0]||[],ex=a.tasks.find(t=>t.opt);
+  return{played:!!s,done:req.filter(m=>l.includes(m)).length,total:req.length,
+    extra:ex?{label:ex.n,ok:l.includes(ex.id)}:null,
+    full:k=>{const r=reqOf(a,k),d=days[k]||[];return r.length>0&&r.every(m=>d.includes(m))}}});
 
 /* ---------- utilidades ---------- */
 const $=s=>document.querySelector(s);
@@ -1032,6 +1037,7 @@ const SPR={"m_rocket":["........kk........",".......kWLk.......",".......kWLk...
 "t_hng":[".....kk.....","....kWLk....","....kLCk....","...kLccMk...","...kLbbMk...","..kkLRrMkk..",".kRkLLLMkrk.","kRrkLLMMkrqk","kkkkLMMDkkkk","...kkDDkk...","....kOOk....",".....kk....."],
 "t_med":["..kkkkkkkk..","..kRRrRRrk..","...kRrRrk...","....kkkk....","...kkkkkk...","..kYYYYOok..",".kYYYOOOook.",".kYOOOOooqk.",".kYOOOooqqk.","..kOooqqqk..","...kkkkkk...","............"],
 "station":["kkkkk......kkkkk","kcCck......kbcbk","kbcbk......knbnk","kcbck......kbnbk","kbcbkMkkkkDknbnk","kcbckkLWLMkkbnbk","kbcbkLWLMLMknbnk","kkkkkLLCcMMkkkkk","....kLCcbcMk....","....kLcOobMk....","kkkkkLbbnnMkkkkk","kcCckLLLMMMkbcbk","kbcbkkMLMDkknbnk","kcbckMkkkkDkbnbk","kbcbk......knbnk","kkkkk......kkkkk"],
+"mine":["kkkkkkkkkkkkkkkk", "kSSSSSSSSSSSSSsk", "ksttttttttttttvk", "kkkkkkkkkkkkkkkk", ".ktkJJJJJJJJktk.", ".ktkJJJJJJJJktk.", ".ktkJJJJJkkJktk.", ".ktkJJJJkGXkktk.", ".ktkJkkJkGXgktk.", ".ktkkGXkkXggktk.", ".ktkkXgkkXghktk.", ".ktkkXghkXghktk.", ".ktkkkkkkkkkktk.", "kkkkQQQQQQQQkkkk", "kQUUUUUUUUUUUUQk", "kkkkkkkkkkkkkkkk"],
 "ruins":[".....kkkkkk.....","...kkSSSssskk...",".kkSSSSstsssskk.","kSSSSssstttssssk","kkkkkkkkkkkkkkkk",".kSsktttvvvktsk.",".kSsktkkkkvktsk.",".kSsktkXxkvktsk.",".kSsktkxxkvktsk.",".kSsktkXxkvktsk.",".kSsktkkkkvktsk.",".kSsktttvvvktsk.",".kSsktttvvvktsk.","kkkkkkkkkkkkkkkk","kSSSSssstttssssk","kkkkkkkkkkkkkkkk"],
 "flame":["....k.....","...kRk....","...kRrk...","..kRYrk.k.","..kRYOrkRk",".kRYYOrrRk",".kRYFYOrrk","kRYFFYOork","kRYFFYOOrk","kROYYYOork",".krOOOorqk","..kkrrrqk.","...kkkkk.."],
 "flameOff":["....k.....","...kDk....","...kDEk...","..kDDEk.k.","..kDDEEkDk",".kDDDEEEDk",".kDDMDEEEk","kDDMMDEEEk","kDDMMDEEEk","kDEDDDEEEk",".kEEEEEEkk","..kkEEEkk.","...kkkkk.."],
@@ -1326,12 +1332,12 @@ function look(){const L=Object.assign({},DEF,st.look);for(const k in L){if(!owne
 
 /* ---- métricas lidas do progresso dos apps ---- */
 function metrics(){
-  const n9=readLS('nostro9-stats-v1')||{},nu=readLS('numeris-stats-v1')||{};
-  const all=[n9.days||{},nu.days||{}];
+  const n9=readLS('nostro9-stats-v1')||{},nu=readLS('numeris-stats-v1')||{},mi=readLS('mina-stats-v1')||{};
+  const all=[n9.days||{},nu.days||{},mi.days||{}];
   const missions=all.reduce((t,d)=>t+Object.values(d).reduce((u,l)=>u+l.filter(m=>m!=='desafio').length,0),0);
   const alien=Math.max(n9.escapes||0,Object.values(n9.days||{}).filter(l=>l.includes('desafio')).length);
   const desab=Math.max(nu.escapes||0,Object.values(nu.days||{}).filter(l=>l.includes('desafio')).length);
-  const firsts=['partilha','grupos','hangar'].reduce((t,k)=>t+((n9[k]||{}).c||0),0)+['montar','ler','sub'].reduce((t,k)=>t+(((nu.modes||{})[k]||{}).c||0),0);
+  const firsts=['partilha','grupos','hangar'].reduce((t,k)=>t+((n9[k]||{}).c||0),0)+['montar','ler','sub'].reduce((t,k)=>t+(((nu.modes||{})[k]||{}).c||0),0)+['carga','turno','inspecao'].reduce((t,k)=>t+(((mi.modes||{})[k]||{}).c||0),0);
   // maior sequência de dias com algum turno completo
   const keys=[...new Set(all.flatMap(d=>Object.keys(d)))].filter(k=>APPS.some(a=>a.progress().full(k))).sort();
   let best=0,run=0,prev=null;
@@ -1636,7 +1642,7 @@ addEventListener('pageshow',()=>{$('#warp').hidden=true;checkGoals();go(view==='
 let routed=false;
 function routeHash(){const h=location.hash;let v=(h.match(/v=(\w+)/)||[])[1];const p=(h.match(/p=(\w+)/)||[])[1];
   // voltando de um jogo sem endereço de retorno: abre a aba Missões
-  if(!v&&!p&&!routed&&/\/(nostro-9|numeris)\//.test(document.referrer))v='tasks';
+  if(!v&&!p&&!routed&&/\/(nostro-9|numeris|mina)\//.test(document.referrer))v='tasks';
   routed=true;if(!v&&!p)return;
   history.replaceState(null,'',location.pathname+location.search);if(v&&VIEWS.includes(v))go(v);else if(p&&PLANETS.find(x=>x.id===p))openPlanet(p)}
 
@@ -1688,7 +1694,8 @@ document.querySelectorAll('.tabbar [data-v]').forEach(b=>b.onclick=()=>{SND.tab(
 document.querySelectorAll('#seg [data-s]').forEach(b=>b.onclick=()=>{if(b.dataset.s===sub)return;SND.tab(b.dataset.s==='vest'?2:3);go(b.dataset.s)});
 
 /* ---- missões de hoje ---- */
-function appTasks(a){const d=((readLS(a.store)||{}).days||{})[dkey()]||[];return (a.tasks||[]).map(t=>Object.assign({},t,{done:d.includes(t.id),app:a}))}
+/* fora do rodízio de hoje, a missão vira treino extra (opt) */
+function appTasks(a){const d=((readLS(a.store)||{}).days||{})[dkey()]||[],req=reqOf(a,dkey());return (a.tasks||[]).map(t=>Object.assign({},t,{opt:t.opt||!req.includes(t.id),done:d.includes(t.id),app:a}))}
 /* fliperama: liberado no dia em que o turno fica completo; devolve {min, left} ou null */
 function arcState(){if(!APPS.length||pendingCount()>0)return null;if(st.arcDay!==dkey()){st.arcDay=dkey();save()}
   const min=st.arcMin==null?10:st.arcMin;if(min<=0)return null;
@@ -1769,11 +1776,12 @@ function bindSels(host,render){host.querySelectorAll('[data-d]').forEach(b=>b.on
 const anyLocked=(cats)=>cats.some(c=>!owned(item(c,draft[c])));
 const VCATS=['title','helmet','visor','suit','skin','emblem','gear'],HCATS=['ship','paint','flame','decal','trail'];
 /* ---------- energia: calculada do histórico dos jogos (cada dia guardado no livro st.eLed, que nunca diminui) ----------
-   missão do dia +10 · acerto de primeira +1 (até 10 por missão) · turno completo +10 · desafio +8 · a partir do 3º dia seguido +5 */
+   missão do turno +10 · treino extra +5 · acerto de primeira +1 (até 10 por missão) · turno completo +10 · desafio +8 · a partir do 3º dia seguido +5 */
 function energy(){const Ld=st.eLed=st.eLed||{},per={},full={};
   APPS.forEach(a=>{const s=readLS(a.store)||{},days=s.days||{},log=s.log||{},main=a.tasks.filter(t=>!t.opt).map(t=>t.id),opt=a.tasks.filter(t=>t.opt).map(t=>t.id);
-    for(const k in days){const l=days[k]||[],dm=main.filter(m=>l.includes(m)).length;let v=dm*10;if(dm>=main.length){v+=10;full[k]=1}
-      if(opt.some(m=>l.includes(m)))v+=8;main.forEach(m=>{const r=(log[k]||{})[m];if(r)v+=Math.min(10,r[1])});per[k]=(per[k]||0)+v}});
+    for(const k in days){const l=days[k]||[],req=reqOf(a,k),dm=req.filter(m=>l.includes(m)).length,ex=main.filter(m=>!req.includes(m)&&l.includes(m)).length;
+      let v=dm*10+ex*5;if(req.length&&dm>=req.length){v+=10;full[k]=1} // treino extra (fora do rodízio do dia): +5
+      if(opt.some(m=>l.includes(m)))v+=8;req.forEach(m=>{const r=(log[k]||{})[m];if(r)v+=Math.min(10,r[1])});per[k]=(per[k]||0)+v}});
   let run=0,prev=null;Object.keys(full).sort().forEach(k=>{const d=new Date(k+'T12:00');run=prev&&Math.round((d-prev)/864e5)===1?run+1:1;prev=d;if(run>=3)per[k]=(per[k]||0)+5});
   let ch=false;for(const k in per)if(per[k]>(Ld[k]||0)){Ld[k]=per[k];ch=true}if(ch)save();
   const earned=(st.eBonus||0)+Object.values(Ld).reduce((a,b)=>a+b,0);return{earned,bal:earned-(st.spent||0)}}
@@ -1952,7 +1960,7 @@ function appData(app){
   const tot=k=>{const o=(s.modes&&s.modes[k])||s[k]||{};return{a:o.a||0,c:o.c||0}};
   const mode=k=>{if(PA.per==='all')return tot(k);let a=0,c=0;for(const d in log){const r=log[d][k];if(r&&inP(d)){a+=r[0];c+=r[1]}}return{a,c}};
   const done=k=>(days[k]||[]).filter(m=>main.includes(m)).length;
-  const isFull=k=>done(k)>=main.length;
+  const isFull=k=>{const r=reqOf(app,k),l=days[k]||[];return r.length>0&&r.every(m=>l.includes(m))};
   const chalOn=k=>(days[k]||[]).some(m=>!main.includes(m));
   const dk=Object.keys(days).filter(k=>inP(k)&&(days[k]||[]).length).sort();
   let streak=0;const d=new Date();if(!isFull(dkey(d)))d.setDate(d.getDate()-1);
@@ -2049,23 +2057,27 @@ function pgSub(id){const p=PLANETS.find(x=>x.id===id),D=APPS.filter(a=>a.planet=
   return h}
 
 const NLV=['I a X','I a XX','I a L','I a C'];
+/* jogos com nível ajustável pelos pais */
+const LVCFG={numeris:{w:'Nível',names:NLV,max:'Nível máximo.',reset:' O nível volta para I a X.'},
+  mina:{w:'Galeria',names:['Até 19','Até 29','Até 49','Até 99'],max:'Galeria mais funda.',reset:' A galeria volta para a 1 (divisores até 19).'}};
 function pgApp(id){const app=APPS.find(a=>a.id===id),d=appData(app),p=PLANETS.find(x=>x.id===app.planet);
   let h=head(app.name,`${p.name} · ${app.tag}`);
   h+=kpis([[fmtP(d.acc),'Acerto de primeira',d.acc.a?`${d.acc.c} de ${d.acc.a} respostas`:'sem respostas'],
     [d.played,'Dias jogados',d.last?`último: ${fmtDay(d.last)}`:'ainda não jogou'],
-    [d.full,'Turnos completos',`as ${d.main.length} missões no dia`],[d.streak,'Dias seguidos agora','com turno completo']]);
-  if(app.id==='numeris'){const lv=d.s.level||1,ld=(d.s.lvDays||[]).length;
-    h+=sec('Nível')+card(`<div class="pa-pad"><span class="pa-rn">Nível ${lv}: ${NLV[lv-1]}</span><span class="pa-rs">${lv<4?`Sobe sozinho depois de 2 dias com os 3 portões abertos. Progresso: ${ld} de 2.`:'Nível máximo.'}</span>`+
-      `<div class="pa-seg">${NLV.map((l,i)=>`<button data-lv="${i+1}" class="${(PA.lv||lv)===i+1?'on':''}">${l}</button>`).join('')}</div></div>`+
-      (PA.lv&&PA.lv!==lv?`<div class="pa-conf"><p>Trocar para <b>${NLV[PA.lv-1]}</b>? As missões em andamento recomeçam.</p><div class="pa-two"><button class="pa-btn" data-lvno>Cancelar</button><button class="pa-btn pri" data-lvyes>Trocar</button></div></div>`:''))}
+    [d.full,'Turnos completos',app.rot?'as 2 missões do rodízio':`as ${d.main.length} missões no dia`],[d.streak,'Dias seguidos agora','com turno completo']]);
+  const LV=LVCFG[app.id];
+  if(LV){const lv=d.s.level||1,ld=(d.s.lvDays||[]).length,NL=LV.names;
+    h+=sec(LV.w)+card(`<div class="pa-pad"><span class="pa-rn">${LV.w} ${lv}: ${NL[lv-1]}</span><span class="pa-rs">${lv<4?`Sobe sozinho depois de 2 dias com o turno completo. Progresso: ${ld} de 2.`:LV.max}</span>`+
+      `<div class="pa-seg">${NL.map((l,i)=>`<button data-lv="${i+1}" class="${(PA.lv||lv)===i+1?'on':''}">${l}</button>`).join('')}</div></div>`+
+      (PA.lv&&PA.lv!==lv?`<div class="pa-conf"><p>Trocar para <b>${NL[PA.lv-1]}</b>? As missões em andamento recomeçam.</p><div class="pa-two"><button class="pa-btn" data-lvno>Cancelar</button><button class="pa-btn pri" data-lvyes>Trocar</button></div></div>`:''))}
   h+=sec('Missões')+card(app.tasks.map(t=>missionRow(d,t)).join(''));
   const desT=app.tasks.find(t=>t.opt);
-  h+=sec('Últimos 14 dias')+card(chart(last14().map(k=>{const n=d.done(k),c=d.chalOn(k);
-    return{h:n/d.main.length,c:n>=d.main.length?'var(--good)':n?'#1a7d42':'var(--card2)',dot:c,lab:kDate(k).getDate(),
-      tip:`${fmtLong(k)} · ${n} de ${d.main.length} missões${c?` · ${desT?desT.n:'desafio'} vencido`:''}`}}))+
+  h+=sec('Últimos 14 dias')+card(chart(last14().map(k=>{const r=reqOf(app,k),tot=r.length||d.main.length,n=r.filter(m=>(d.days[k]||[]).includes(m)).length,c=d.chalOn(k);
+    return{h:n/tot,c:n>=tot?'var(--good)':n?'#1a7d42':'var(--card2)',dot:c,lab:kDate(k).getDate(),
+      tip:`${fmtLong(k)} · ${n} de ${tot} missões do turno${c?` · ${desT?desT.n:'desafio'} vencido`:''}`}}))+
     `<div class="pa-leg"><span><i style="background:var(--good)"></i> Missões do dia</span><span><i class="cd"></i> Desafio vencido</span></div>`+tip('Toque numa barra para ver o dia.'));
   h+=sec('Erros mais comuns · desde o início')+card(chips(d.erros,'Nenhum erro registrado.'));
-  h+=sec('Dados')+card(PA.reset?`<div class="pa-conf" style="border:0"><p>Apagar respostas, dias e erros de <b>${esc(app.name)}</b> neste aparelho?${app.id==='numeris'?' O nível volta para I a X.':''} Medalhas e itens da Nave-Mãe continuam.</p><div class="pa-two"><button class="pa-btn" data-rno>Cancelar</button><button class="pa-btn del" data-ryes>Apagar</button></div></div>`
+  h+=sec('Dados')+card(PA.reset?`<div class="pa-conf" style="border:0"><p>Apagar respostas, dias e erros de <b>${esc(app.name)}</b> neste aparelho?${LV?LV.reset:''} Medalhas e itens da Nave-Mãe continuam.</p><div class="pa-two"><button class="pa-btn" data-rno>Cancelar</button><button class="pa-btn del" data-ryes>Apagar</button></div></div>`
     :`<button class="pa-danger" data-reset>Apagar histórico deste jogo</button>`);
   return h}
 
@@ -2105,8 +2117,8 @@ $('#paBody').onclick=e=>{const el=e.target.closest('button');if(!el)return;const
   const cur=PA.stack[PA.stack.length-1];
   if(ds.lv){PA.lv=+ds.lv;paRender();return}
   if('lvno' in ds){PA.lv=0;paRender();return}
-  if('lvyes' in ds){const s=readLS('numeris-stats-v1')||{};s.level=PA.lv;s.lvDays=[];s.run={};
-    try{localStorage.setItem('numeris-stats-v1',JSON.stringify(s))}catch(e){}PA.lv=0;paRender();return}
+  if('lvyes' in ds){const K=APPS.find(a=>a.id===cur.app).store,s=readLS(K)||{};s.level=PA.lv;s.lvDays=[];s.run={};
+    try{localStorage.setItem(K,JSON.stringify(s))}catch(e){}PA.lv=0;paRender();return}
   if('reset' in ds){PA.reset=true;paRender();return}
   if('rno' in ds){PA.reset=false;paRender();return}
   if('ryes' in ds){localStorage.removeItem(APPS.find(a=>a.id===cur.app).store);PA.reset=false;paRender();return}
