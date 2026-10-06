@@ -301,15 +301,12 @@ html.web .screen.game:not([hidden]){min-height:calc(100dvh - 36px - var(--sat,en
 .word{margin-top:12px;padding:10px 12px;background:#2a2019;color:var(--ink);font-size:20px;box-shadow:inset 4px 0 0 0 var(--amber)}
 .word b{display:block;font-family:var(--px);font-size:8px;font-weight:normal;color:var(--amber);margin-bottom:6px;letter-spacing:.06em}
 .word b em{font-style:normal;color:#fff}
-.dots{display:flex;justify-content:center;gap:6px;margin-bottom:12px}
+.dots{display:flex;justify-content:center;align-items:center;gap:6px}
 .dots i{width:10px;height:10px;background:#140f0b;box-shadow:inset 0 0 0 2px var(--line2)}
 .dots i.on{background:var(--amber);box-shadow:none}
 .nav3{display:grid;grid-template-columns:62px 1fr 62px;gap:10px;margin-top:auto}
 .nav3 .key{height:56px}
 .key[disabled]{opacity:.35;filter:none}
-.tts{display:flex;align-items:center;justify-content:center;gap:10px;height:56px;font-family:var(--px);font-size:10px;color:var(--glow)}
-.tts.on{color:#06140c;background:var(--glow)}
-.tts.on .spr{filter:invert(1)}
 .nxt{height:56px;margin:0}
 /* perguntas */
 .qbox{padding:14px 16px;margin-bottom:14px}
@@ -371,7 +368,7 @@ html.web .screen.game:not([hidden]){min-height:calc(100dvh - 36px - var(--sat,en
 @keyframes stamp{from{transform:rotate(-8deg) scale(2.2);opacity:0}}
 .words li{display:block}
 .words li b{display:block;font-size:9px!important;margin-bottom:4px}
-@media (max-height:700px){.page{font-size:21px;padding:12px 14px}.ctitle{margin-bottom:8px}.nav3 .key,.tts,.nxt{height:50px}.opt{padding:12px}}
+@media (max-height:700px){.page{font-size:21px;padding:12px 14px}.ctitle{margin-bottom:8px}.nav3 .key,.nav3 .btn,.nxt{height:50px}.opt{padding:12px}}
 
 /* terminal + turno do dia numa tela só (menos blocos no topo) */
 .term{padding:14px 16px 12px}
@@ -528,7 +525,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 <script>
 /* atualização automática: compara com version.json e recarrega com ?v=<versão> no endereço (o iPhone não reaproveita a
    página guardada). Se mesmo com ?v=<versão> a página veio velha, não insiste (evita recarregar sem parar). */
-const APP_V='20261005221953';
+const APP_V='20261005222719';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris|mina|ivoti)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     const q=new URLSearchParams(location.search).get('v');
@@ -1027,17 +1024,6 @@ const sfx={
   no:()=>{combo=0;tone(220,.12);tone(160,.16,.12)},
   win:()=>[392,523,659,784,1047,1319].forEach((f,i)=>tone(f,.09,i*.09)),
 };
-/* narração: o iPhone lê o texto em português (voz do sistema). Só toca quando a criança pede. */
-const TTS={ok:'speechSynthesis' in window,v:null,on:false};
-function ttsVoice(){try{const vs=speechSynthesis.getVoices();TTS.v=vs.find(v=>/pt[-_]BR/i.test(v.lang))||vs.find(v=>/^pt/i.test(v.lang))||null}catch(e){}}
-if(TTS.ok){ttsVoice();try{speechSynthesis.onvoiceschanged=ttsVoice}catch(e){}}
-function ttsBtns(){document.querySelectorAll('[data-tts]').forEach(b=>{b.classList.toggle('on',TTS.on);b.querySelector('span').textContent=TTS.on?'PARAR':'OUVIR'})}
-function say(txt){if(!TTS.ok)return;if(TTS.on){hush();return}
-  try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(txt);u.lang='pt-BR';if(TTS.v)u.voice=TTS.v;u.rate=.9;
-    u.onend=u.onerror=()=>{TTS.on=false;ttsBtns()};speechSynthesis.speak(u);TTS.on=true;ttsBtns()}catch(e){}}
-function hush(){if(!TTS.ok)return;try{speechSynthesis.cancel()}catch(e){}TTS.on=false;ttsBtns()}
-const ttsBtn=()=>TTS.ok?`<button class="tts px pbtn" data-tts>${sprite('speaker',2)}<span>OUVIR</span></button>`:'<span></span>';
-document.addEventListener('visibilitychange',()=>{if(document.hidden)hush()});
 
 /* ---- comemoração de missão concluída (mesmo código nos dois jogos) ----
    CEL.play({host,avatar,title,sub,stars,score:[n,total],scoreLabel,turno:{n,total,streak,fresh},lose,buttons:[{label,cls,fn}],onDone}) */
@@ -1101,7 +1087,7 @@ const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()
 const pick=a=>a[Math.floor(Math.random()*a.length)];
 const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
 let current='menu',mode=null;
-function show(id){hush();if(id!=='res')CEL.stop();current=id;document.querySelectorAll('#app>.screen').forEach(s=>s.hidden=s.id!==id);window.scrollTo(0,0);if(id==='menu')renderMenu()}
+function show(id){if(id!=='res')CEL.stop();current=id;document.querySelectorAll('#app>.screen').forEach(s=>s.hidden=s.id!==id);window.scrollTo(0,0);if(id==='menu')renderMenu()}
 document.querySelectorAll('[data-back]').forEach(b=>b.onclick=()=>{sfx.tap();if(DL){backHome();return}show('menu')});
 document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>{b.closest('.overlay').hidden=true});
 
@@ -1167,7 +1153,7 @@ $('#openWords').onclick=()=>{SND.page();openWords()};
 document.querySelectorAll('[data-words]').forEach(b=>b.onclick=()=>{SND.page();openWords()});
 
 /* =================== missões =================== */
-function startMission(m){mode=m;hush();
+function startMission(m){mode=m;
   if(m==='diario'){const tc=todayCap();return openCap(tc.c,{nw:tc.nw,re:tc.re||tc.again})}
   if(m==='linha')return startLinha();
   if(m==='arquivo')return startArq()}
@@ -1195,15 +1181,15 @@ function paintScene(id){const box=$('#scn'),cv=$('#scv'),host=box.parentElement,
   cv.width=Math.floor(cw/2);cv.height=SC_H;cv.style.width=cv.width*2+'px';cv.style.height=SC_H*2+'px';
   const ov=drawScene(cv,id);box.querySelectorAll('.lbl').forEach(e=>e.remove());
   ov.forEach(o=>{const s=document.createElement('span');s.className='lbl '+o.k;s.textContent=o.t;s.style.left=o.x*2+'px';s.style.top=o.y*2+'px';box.appendChild(s)})}
-function renderDia(){hush();const c=DG.c,b=$('#dBody');
+function renderDia(){const c=DG.c,b=$('#dBody');
   if(DG.phase==='read'){const p=c.pg[DG.pg],last=DG.pg===c.pg.length-1;$('#dPg').textContent=`${DG.pg+1}/${c.pg.length}`;
     b.innerHTML=`${sceneHTML()}<div class="page">${esc(p.tx)}${last?`<div class="word"><b>PALAVRA NOVA · <em>${c.w[0]}</em></b>${esc(c.w[1])}</div>`:''}</div>
-      <div class="dots">${c.pg.map((_,i)=>`<i class="${i===DG.pg?'on':''}"></i>`).join('')}</div>
-      <div class="nav3"><button class="key px pbtn" id="dPrev" aria-label="Voltar"${DG.pg?'':' disabled'}>◀</button>${ttsBtn()}<button class="key ${last?'ok':'px'} pbtn" id="dNext" aria-label="${last?'Perguntas':'Avançar'}">${last?'?':'▶'}</button></div>`;
+      <div class="nav3"><button class="key px pbtn" id="dPrev" aria-label="Voltar"${DG.pg?'':' disabled'}>◀</button>
+        ${last?`<button class="btn nxt" id="dNext" style="grid-column:2/4">PERGUNTAS ▶</button>`:`<div class="dots">${c.pg.map((_,i)=>`<i class="${i===DG.pg?'on':''}"></i>`).join('')}</div><button class="key px pbtn" id="dNext" aria-label="Avançar">▶</button>`}</div>`;
     paintScene(p.sc);
     b.querySelector('#dPrev').onclick=()=>{if(!DG.pg)return;SND.page();DG.pg--;renderDia()};
     b.querySelector('#dNext').onclick=()=>{SND.page();if(last){DG.phase='q';$('#dPg').textContent='';renderDia()}else{DG.pg++;renderDia()}};
-    const t=b.querySelector('[data-tts]');if(t)t.onclick=()=>say(p.tx+(last?` Palavra nova: ${c.w[0]}. ${c.w[1]}`:''));return}
+    return}
   if(DG.phase==='q'){const it=DG.qs[DG.qi];$('#dPg').textContent=`PERGUNTA ${DG.qi+1}/${DG.qs.length}`;
     quiz(b,it.q,`PERGUNTA SOBRE O CAPÍTULO`,ok=>{cardAfter(DG.c.id+':'+it.i,ok);if(ok)DG.firsts++;record('diario',ok,ok?null:it.q.k)},
       ()=>{DG.qi++;if(DG.qi>=DG.qs.length)finishDia();else renderDia()})}}
@@ -1211,14 +1197,13 @@ function renderDia(){hush();const c=DG.c,b=$('#dBody');
 function quiz(host,q,tag,onAnswer,onNext){const opts=shuffle(q.a.map((t,i)=>({t,ok:i===0})));let answered=false;
   host.innerHTML=`<div class="qbox px"><div class="qtag">${tag}</div><p class="qtxt">${esc(q.q)}</p></div>
     <div class="opts">${opts.map((o,i)=>`<button class="opt px pbtn" data-o="${i}">${esc(o.t)}</button>`).join('')}</div>
-    <div class="fb" id="qfb"></div><div class="qfoot two" id="qfoot">${ttsBtn()}<span></span></div>`;
-  const t=host.querySelector('[data-tts]');if(t)t.onclick=()=>say(q.q+' '+opts.map((o,i)=>`${['A','B','C','D'][i]}: ${o.t}.`).join(' '));
-  host.querySelectorAll('[data-o]').forEach(b=>b.onclick=()=>{if(answered)return;answered=true;hush();const o=opts[+b.dataset.o],f=host.querySelector('#qfb');
+    <div class="fb" id="qfb"></div><div class="qfoot" id="qfoot"></div>`;
+  host.querySelectorAll('[data-o]').forEach(b=>b.onclick=()=>{if(answered)return;answered=true;const o=opts[+b.dataset.o],f=host.querySelector('#qfb');
     if(o.ok){sfx.ok();b.classList.add('good');f.className='fb ok';f.innerHTML=`<b>ISSO!</b>${esc(q.x)}`;onAnswer(true);setTimeout(onNext,1500)}
     else{sfx.no();b.classList.add('bad');host.querySelectorAll('[data-o]').forEach((x,i)=>{if(opts[i].ok)x.classList.add('show')});
       f.className='fb no';f.innerHTML=`<b>QUASE!</b>${esc(q.x)}`;onAnswer(false);
-      const ft=host.querySelector('#qfoot');ft.innerHTML=`${ttsBtn()}<button class="btn nxt" id="qGo">ENTENDI</button>`;
-      const t2=ft.querySelector('[data-tts]');if(t2)t2.onclick=()=>say(q.x);ft.querySelector('#qGo').onclick=()=>{sfx.tap();onNext()}}})}
+      const ft=host.querySelector('#qfoot');ft.innerHTML=`<button class="btn nxt" id="qGo">ENTENDI</button>`;
+      ft.querySelector('#qGo').onclick=()=>{sfx.tap();onNext()}}})}
 /* revisão espaçada: caixa 0..5; acertou sobe de caixa e volta daqui a 1, 1, 3, 7, 14 ou 30 dias; errou volta para a caixa 0 */
 const INT=[1,1,3,7,14,30];
 function cardAfter(id,ok){const t=dkey(),c=S.cards[id];

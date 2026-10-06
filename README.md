@@ -73,7 +73,7 @@ Jogo sobre a história de Ivoti/RS para uma criança de 9 anos. História pede m
 
 Missões do turno (3 por dia, sem rodízio):
 
-- **Diário da viagem:** abertura com a "viagem no tempo" até o ano do capítulo; páginas com cena e texto em papel antigo; a última página traz a palavra nova; no fim, 3 a 5 perguntas. Botão OUVIR: o iPhone lê o texto e as perguntas em português (voz do sistema). Capítulos já lidos podem ser relidos tocando neles no menu; com os 12 lidos, o Diário relê o capítulo visto há mais tempo.
+- **Diário da viagem:** abertura com a "viagem no tempo" até o ano do capítulo; páginas com cena e texto em papel antigo; a última página traz a palavra nova; no fim, 3 a 5 perguntas. Capítulos já lidos podem ser relidos tocando neles no menu; com os 12 lidos, o Diário relê o capítulo visto há mais tempo.
 - **Linha do tempo:** 3 rodadas; a criança toca no acontecimento mais antigo que falta, até a linha ficar completa. Usa só acontecimentos dos capítulos já lidos e sempre inclui um do capítulo mais recente.
 - **Arquivo da memória:** até 6 fichas por dia, primeiro as vencidas.
 - **Desafio opcional, Monte a casa enxaimel:** alicerce, madeiras em pé, vigas, diagonais, pregos de pau, preenchimento com barro ou tijolo e telhado; depois, 3 perguntas do mestre carpinteiro.
