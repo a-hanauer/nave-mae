@@ -405,6 +405,21 @@ button{cursor:pointer;touch-action:manipulation}
 .card.done{background:#10241a}
 .card.done .card-h .icon{opacity:.55}
 .card.done .card-h .tag,.card.done .extra:not(.ok){color:var(--done-ink)}
+/* card do jogo na tela do planeta: o card inteiro é o botão */
+.pcard{display:grid;grid-template-columns:72px 1fr 16px;gap:16px;align-items:center;width:100%;padding:16px;text-align:left;color:var(--ink)}
+.pcard .pc-t{display:block;min-width:0}
+.pcard .pc-n{display:block;font-family:var(--px);font-size:11px;line-height:1.5;color:var(--ink)}
+.pcard .tag{display:block;margin-top:2px;font-size:20px;line-height:1.05}
+.pc-bar{display:flex;align-items:center;gap:10px;margin-top:10px}
+.pc-bar .segs{flex:1;gap:4px}
+.pc-bar .segs i{height:8px;box-shadow:inset 0 0 0 2px var(--edge2)}
+.pc-bar .segs i.on{background:var(--green);box-shadow:none}
+.pc-bar em{display:flex;align-items:center;gap:5px;font-style:normal;font-family:var(--px);font-size:9px;line-height:1;color:var(--amber)}
+.pc-bar em.all{color:var(--green)}
+.pc-go{display:grid;place-items:center}
+.pc-go .spr rect{fill:var(--dim)}
+.pcard.done .pc-n{color:var(--done-ink)}
+.pcard.done .pc-bar .segs i{box-shadow:none;background:var(--green)}
 /* cartão compacto do jogo no planeta */
 .pc-p{display:flex;align-items:center;gap:12px;margin-top:16px}
 .pc-p .segs{flex:1}
@@ -901,7 +916,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 <script>
 /* atualização automática: compara com version.json e recarrega com ?v=<versão> no endereço (o iPhone não reaproveita a
    página guardada). Se mesmo com ?v=<versão> a página veio velha, não insiste (evita recarregar sem parar). */
-const APP_V='20261005215049';
+const APP_V='20261005215348';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris|mina|ivoti)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     const q=new URLSearchParams(location.search).get('v');
@@ -1655,13 +1670,12 @@ function openPlanet(pid){navT=performance.now();
     apps.map(a=>[a,a.progress()]).sort((x,y)=>(x[1].done>=x[1].total)-(y[1].done>=y[1].total)).forEach(([a,pr])=>{ // completos vão para o fim
       const all=pr.done>=pr.total;
       let segs='';for(let i=0;i<pr.total;i++)segs+=`<i class="${i<pr.done?'on':''}"></i>`;
-      h+=`<article class="card px${all?' done':''}">
-        <div class="card-h"><div class="icon">${sprite(a.icon,4)}</div>
-          <div><h2>${a.name.toUpperCase()}${pr.played?'':'<span class="new">NOVA</span>'}${all?'<span class="ok-tag">FEITO HOJE</span>':''}</h2><div class="tag">${a.tag}</div></div></div>
-        <div class="pc-p"><div class="segs">${segs}</div><em class="${all?'all':''}">${pr.done}/${pr.total}</em></div>
-        <div class="pc-f">${pr.extra?`<span class="extra${pr.extra.ok?' ok':''}"><span class="dot"></span><span><small>EXTRA${pr.extra.ok?' · FEITO':''}</small>${pr.extra.label}</span></span>`:'<span></span>'}
-          <button class="btn sm${all?' alt':''}" data-go="${a.id}">${all?'DE NOVO':'DECOLAR'}${sprite('go',2)}</button></div>
-      </article>`;
+      // o card inteiro abre o jogo: ícone, nome, assunto e o progresso do dia ao lado do ícone
+      h+=`<button class="card pcard px pbtn${all?' done':''}" data-go="${a.id}" aria-label="${a.name}: ${pr.done} de ${pr.total} missões hoje">
+        <span class="icon">${sprite(a.icon,4)}</span>
+        <span class="pc-t"><span class="pc-n">${a.name.toUpperCase()}${pr.played?'':'<span class="new">NOVA</span>'}</span><span class="tag">${a.tag}</span>
+          <span class="pc-bar"><span class="segs">${segs}</span><em class="${all?'all':''}">${all?sprite('check',2):''}${pr.done}/${pr.total}</em></span></span>
+        <span class="pc-go">${sprite('fwd',2)}</span></button>`;
     });
     h+=`<div class="slot"><b>SLOT VAZIO</b>Nova missão em breve</div>`;
   }
