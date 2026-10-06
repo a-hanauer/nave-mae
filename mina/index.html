@@ -465,7 +465,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 <script>
 /* atualização automática: compara com version.json e recarrega com ?v=<versão> no endereço (o iPhone não reaproveita a
    página guardada). Se mesmo com ?v=<versão> a página veio velha, não insiste (evita recarregar sem parar). */
-const APP_V='20261005210301';
+const APP_V='20261005210525';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris|mina)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     const q=new URLSearchParams(location.search).get('v');
@@ -532,12 +532,12 @@ function solve(D,d){const s=String(D);let L=1;while(L<s.length&&+s.slice(0,L)<d)
   return{D,d,s,L,steps,q:Math.floor(D/d),r:D%d}}
 const rowsOf=steps=>1+2*steps.filter(s=>s.q>0).length;
 
-/* galerias (níveis): divisor de 2 algarismos desde o começo, misturado com divisor de 1 algarismo */
+/* galerias (níveis): começa com divisor de 1 algarismo; o divisor de 2 algarismos chega na galeria 3, misturado com o de 1 */
 const LEVELS=[
-  {n:1,d2:19,four:false,txt:'Divisores até 19'},
-  {n:2,d2:29,four:false,txt:'Divisores até 29'},
-  {n:3,d2:49,four:true,txt:'Divisores até 49'},
-  {n:4,d2:99,four:true,txt:'Divisores até 99'},
+  {n:1,d2:0,four:false,sh:'÷ 1 ALGARISMO',txt:'Divisor de 1 algarismo'},
+  {n:2,d2:0,four:true,sh:'÷ 1 ALG. · ATÉ 9999',txt:'Divisor de 1 algarismo, dividendo até 9999'},
+  {n:3,d2:19,four:true,sh:'÷ ATÉ 19',txt:'Divisor de 2 algarismos, até 19'},
+  {n:4,d2:99,four:true,sh:'÷ ATÉ 99',txt:'Divisor de 2 algarismos, até 99'},
 ];
 const L=()=>LEVELS[S.level-1];
 const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
@@ -548,7 +548,7 @@ const hasZero=c=>c.steps.some(s=>s.q===0);
    o.zero: o quociente tem um 0 no meio ou no fim · o.two / o.one: força o tamanho do divisor */
 function genConta(kind,o={}){const lv=L();
   for(let g=0;g<600;g++){let d,D;
-    const two=kind==='mix'&&!o.one&&(o.two||Math.random()<.5);
+    const two=kind==='mix'&&lv.d2>0&&!o.one&&(o.two||Math.random()<.5);
     if(o.zero){d=two?rnd(11,lv.d2):rnd(2,9);const max=lv.four&&!two?9999:999,qs=[];
       for(let q=Math.max(10,Math.ceil(100/d));q*d<=max;q++)if(/0/.test(String(q).slice(1)))qs.push(q);
       if(!qs.length)continue;D=pick(qs)*d+rnd(0,d-1);if(D>max)continue}
@@ -800,7 +800,7 @@ function show(id){if(id==='menu'&&DL){DL=false;$('#playBack').textContent='< Min
 const WD=['D','S','T','Q','Q','S','S'];let typing=null;
 function renderMenu(){
   const l=L();
-  $('#nvT').textContent=`GALERIA ${l.n} · ${l.txt.toUpperCase()}`;
+  $('#nvT').textContent=`GALERIA ${l.n} · ${l.sh}`;
   if(S.level<4){$('#nvS').textContent=`Próxima: ${LVDAYS} turnos completos`;
     $('#nvP').innerHTML=Array.from({length:LVDAYS},(_,i)=>`<i class="${i<S.lvDays.length?'on':''}"></i>`).join('')}
   else{$('#nvS').textContent='A galeria mais funda!';$('#nvP').innerHTML=''}
@@ -835,7 +835,7 @@ function genQs(m){const n=ROUNDS[m],out=[],seen=new Set(),key=c=>c.D+'/'+c.d;
       do{c=genConta('mix',{zero:t==='zero'})}while((!robot(c,t)||seen.has(key(c)))&&g++<300);seen.add(key(c));out.push({D:c.D,d:c.d,m:pick(['rep','med']),t})}
     return out}
   // pelo menos uma conta com 0 no quociente; no Turno completo, pelo menos uma com divisor de 2 algarismos
-  const zeroAt=m==='carga'&&Math.random()<.5?-1:rnd(0,n-1),twoAt=m==='turno'?(zeroAt+1)%n:-1;
+  const zeroAt=m==='carga'&&Math.random()<.5?-1:rnd(0,n-1),twoAt=m==='turno'&&L().d2?(zeroAt+1)%n:-1;
   for(let i=0;i<n;i++){let c,g=0;
     do{c=genConta(m==='carga'?'g1':'mix',{zero:i===zeroAt,two:i===twoAt,one:m==='desafio'&&S.level<3})}while(seen.has(key(c))&&g++<60);
     seen.add(key(c));out.push({D:c.D,d:c.d,m:pick(['rep','med'])})}
@@ -1067,7 +1067,7 @@ $('#playBack').onclick=()=>{sfx.tap();if(D)D.run=false;if(DL){backHome();return}
 
 /* =================== nova galeria =================== */
 function checkLevel(){if(!pendingLevel)return;pendingLevel=false;const l=L();
-  $('#lvBig').textContent=`${l.n}`;$('#lvTxt').innerHTML=`Galeria ${l.n}: ${l.txt.toLowerCase()}.${l.four?' Dividendos de 4 algarismos!':''}`;
+  $('#lvBig').textContent=`${l.n}`;$('#lvTxt').innerHTML=`Galeria ${l.n}: ${l.txt.toLowerCase()}.${l.n===2?' Dividendos de 4 algarismos!':l.n===3?' Chegou o divisor de 2 algarismos!':''}`;
   setTimeout(()=>{sfx.win();$('#lvup').hidden=false},600)}
 $('#lvOk').onclick=()=>{$('#lvup').hidden=true};
 
