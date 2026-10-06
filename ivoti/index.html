@@ -390,6 +390,35 @@ html.web .screen.game:not([hidden]){min-height:calc(100dvh - 36px - var(--sat,en
 .term .day.today{opacity:1}
 .term .streak{margin:0;font-size:20px;line-height:1.1;color:var(--glow);opacity:.85}
 .term .streak b{color:var(--glow);font-weight:normal;opacity:1;text-shadow:0 0 6px var(--glow)}
+
+/* ---------- cards das missões e do desafio: mesmo padrão nos 4 jogos ----------
+   ícone 56 px à esquerda · título (Press Start 10) · subtítulo (VT 20) · status (Press Start 8) embaixo.
+   Estados: FEITO (verde, riscado), PRÓXIMA (moldura âmbar), CONTINUAR (em andamento), TREINO EXTRA, A FAZER. */
+.missions{display:grid;gap:16px;margin-bottom:22px}
+.missions .mission{display:grid;grid-template-columns:56px 1fr;gap:14px;align-items:center;min-height:88px;width:100%;padding:14px;text-align:left}
+.missions .mission .code{width:56px;height:56px;display:grid;place-items:center;background:var(--M-tile);box-shadow:inset 0 0 0 3px var(--M-line);font-size:0}
+.missions .mission .mt{display:block;min-width:0}
+.missions .mission b{display:block;font-family:var(--px);font-size:10px;line-height:1.5;font-weight:400;color:var(--M-ink);text-decoration:none}
+.missions .mission small{display:block;margin-top:4px;font-family:var(--vt);font-size:20px;line-height:1;color:var(--M-dim)}
+.missions .mission .st{display:flex;align-items:center;gap:6px;min-height:12px;margin-top:8px;font-family:var(--px);font-size:8px;line-height:1;color:var(--M-dim);text-transform:uppercase;white-space:nowrap;animation:none;text-shadow:none}
+.missions .mission .st.ok{color:var(--M-ok)}
+.missions .mission .st.nx{color:var(--M-next)}
+.missions .mission .st.mid,.missions .mission .st.go{color:var(--M-mid)}
+.missions .mission .st.xt{color:var(--M-xt)}
+.missions .mission .st.nx::after{content:"";width:0;height:0;border-left:7px solid var(--M-next);border-top:6px solid transparent;border-bottom:6px solid transparent;animation:nudge .8s steps(2) infinite}
+.missions .mission.done .code{opacity:.55}
+.missions .mission.done b,.missions .mission.done small{color:var(--M-donetxt)}
+.missions .mission.done b{text-decoration:line-through;text-decoration-thickness:2px}
+@keyframes nudge{50%{transform:translateX(4px)}}
+button.dcard{display:block;width:100%;min-height:0;margin:0 0 22px;padding:14px 16px 16px;text-align:left;animation:none}
+button.dcard .ey{display:flex;justify-content:space-between;align-items:center;gap:10px;font-family:var(--px);font-size:8px;line-height:1;letter-spacing:.1em;opacity:1}
+button.dcard .ey>span:first-child{opacity:.85}
+button.dcard .dg{display:grid;grid-template-columns:1fr 56px;gap:14px;align-items:center;margin-top:12px}
+button.dcard .ti{display:block;margin:0;text-transform:uppercase;font-family:var(--px);font-size:15px;line-height:1.3}
+button.dcard .su{display:block;margin-top:8px;font-family:var(--vt);font-size:20px;line-height:1.05;opacity:.92}
+button.dcard .dico{position:static;width:56px;height:56px;display:grid;place-items:center;background:rgba(0,0,0,.28);box-shadow:inset 0 0 0 3px rgba(0,0,0,.35)}
+button.dcard .ok,button.dcard .st{position:static;display:flex;align-items:center;gap:6px;margin:0;font-family:var(--px);font-size:8px;color:var(--M-ok);text-shadow:2px 2px 0 #000;letter-spacing:0}
+:root{--M-tile:var(--panel2);--M-line:var(--line);--M-ink:var(--ink);--M-dim:var(--dim);--M-ok:var(--green);--M-next:var(--amber);--M-mid:var(--glow);--M-xt:var(--glow);--M-donetxt:#8a9a80}
 </style>
 <script>
 /* sem zoom: bloqueia pinça e dois toques no app inteiro */
@@ -422,18 +451,12 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
   </div>
 
   <nav class="missions">
-    <button class="mission px pbtn" data-go="diario"><span class="code" data-ico="scroll"></span><span><b>Diário da viagem</b><small id="diaSub">Capítulo do dia</small><span class="st" data-st="diario"></span></span></button>
-    <button class="mission px pbtn" data-go="linha"><span class="code" data-ico="hourglass"></span><span><b>Linha do tempo</b><small>O que veio antes?</small><span class="st" data-st="linha"></span></span></button>
-    <button class="mission px pbtn" data-go="arquivo"><span class="code" data-ico="stampMuseum"></span><span><b>Arquivo da memória</b><small>Lembre o que já viu</small><span class="st" data-st="arquivo"></span></span></button>
+    <button class="mission px pbtn" data-go="diario"><span class="code" data-ico="scroll"></span><span class="mt"><b>Diário da viagem</b><small id="diaSub">Capítulo do dia</small><span class="st" data-st="diario"></span></span></button>
+    <button class="mission px pbtn" data-go="linha"><span class="code" data-ico="hourglass"></span><span class="mt"><b>Linha do tempo</b><small>O que veio antes?</small><span class="st" data-st="linha"></span></span></button>
+    <button class="mission px pbtn" data-go="arquivo"><span class="code" data-ico="stampMuseum"></span><span class="mt"><b>Arquivo da memória</b><small>Lembre o que já viu</small><span class="st" data-st="arquivo"></span></span></button>
   </nav>
 
-  <button class="danger" id="goCasa">
-    <div class="ey">DESAFIO OPCIONAL</div>
-    <div class="ti">MONTE A CASA ENXAIMEL</div>
-    <div class="su">Madeira, pregos de pau, barro e tijolo.</div>
-    <span class="ok" id="casaOk" hidden>FEITO ✓</span>
-    <span class="dico" id="casaIco"></span>
-  </button>
+  <button class="danger dcard" id="goCasa"><span class="ey"><span>DESAFIO OPCIONAL</span><span class="ok" id="casaOk" hidden>FEITO ✓</span></span><span class="dg"><span><span class="ti">MONTE A CASA ENXAIMEL</span><span class="su">Madeira, pregos de pau, barro e tijolo.</span></span><span class="dico" id="casaIco"></span></span></button>
 
   <div class="pass px">
     <div class="turno-top"><span class="label">Passaporte de Ivoti</span><span class="turno-n" id="passN">0 / 6</span></div>
@@ -501,7 +524,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 <script>
 /* atualização automática: compara com version.json e recarrega com ?v=<versão> no endereço (o iPhone não reaproveita a
    página guardada). Se mesmo com ?v=<versão> a página veio velha, não insiste (evita recarregar sem parar). */
-const APP_V='20261005214224';
+const APP_V='20261005215049';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris|mina|ivoti)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     const q=new URLSearchParams(location.search).get('v');
@@ -787,6 +810,7 @@ function spriteRows(rows,s=2,ov){const g=hdRows(rows,s,ov),h=g.length,w=g[0].len
   g.forEach((row,y)=>{let x=0;while(x<w){const c=row[x];if(!c){x++;continue}let k=1;while(row[x+k]===c)k++;r+=`<rect x="${x}" y="${y}" width="${k}" height="1" fill="${c}"/>`;x+=k}});
   return `<svg class="spr" viewBox="0 0 ${w} ${h}" width="${w*px}" height="${h*px}" shape-rendering="crispEdges" aria-hidden="true">${r}</svg>`}
 const sprite=(n,s=2,ov)=>spriteRows(SPR[n],s,ov);
+const fitS=n=>{const r=SPR[n];return r&&r[0].length*4<=48&&r.length*4<=48?4:2}; /* ícone dos cards: o maior tamanho nítido que cabe no quadro de 56 px */
 /* =================== cenas em pixel art (canvas, 1 pixel de arte = 2 px na tela) ===================
    drawScene(canvas,id) desenha o fundo e os objetos; devolve as placas de texto (HTML por cima, letra nítida). */
 const SC_H=100;
@@ -1313,8 +1337,8 @@ function endButtons(again){const nx=MODES.find(m=>!doneToday().includes(m)),back
 })();
 
 /* =================== início =================== */
-$('#logo').innerHTML=sprite('hourglass',4);$('#wordIco').innerHTML=sprite('scroll',2);$('#casaIco').innerHTML=sprite('stampHouse',2);
-document.querySelectorAll('[data-ico]').forEach(el=>el.innerHTML=sprite(el.dataset.ico,2));
+$('#logo').innerHTML=sprite('hourglass',4);$('#wordIco').innerHTML=sprite('scroll',2);$('#casaIco').innerHTML=sprite('stampHouse',fitS('stampHouse'));$('#casaOk').innerHTML=sprite('check',2)+'FEITO';
+document.querySelectorAll('[data-ico]').forEach(el=>el.innerHTML=sprite(el.dataset.ico,fitS(el.dataset.ico)));
 addEventListener('pageshow',()=>{if(current==='menu')renderMenu()});
 show('menu');
 const RETK='ret:'+location.pathname,RP=(location.hash.match(/r=([\w.]+)/)||[])[1];
