@@ -110,8 +110,9 @@ button,a{font:inherit;color:inherit;background:none;border:0;text-decoration:non
 .mission small{display:block;color:var(--dim);font-size:19px;margin-top:3px}
 .mission .st{display:flex;align-items:center;gap:6px;margin-top:8px;font-family:var(--px);font-size:8px;color:var(--amber)}
 .mission .st.ok{color:var(--green)}
-.mission .st:not(.ok):not(.mid):not(.nx){color:var(--dim)}
+.mission .st:not(.ok):not(.mid):not(.nx):not(.xt){color:var(--dim)}
 .mission .st.mid{color:var(--glow)}
+.mission .st.xt{color:#62e6ff}
 .mission.done{background:#10241a}
 .mission.done .code{opacity:.55}
 .mission.done b,.mission.done small{color:#7f9a88}
@@ -401,7 +402,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 <script>
 /* atualização automática: compara com version.json e recarrega com ?v=<versão> no endereço (o iPhone não reaproveita a
    página guardada). Se mesmo com ?v=<versão> a página veio velha, não insiste (evita recarregar sem parar). */
-const APP_V='20261005191327';
+const APP_V='20261005210005';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     const q=new URLSearchParams(location.search).get('v');
@@ -495,12 +496,22 @@ let S=(()=>{try{const o=JSON.parse(localStorage.getItem(STORE));return o?Object.
 const save=()=>{try{localStorage.setItem(STORE,JSON.stringify(S))}catch(e){}};
 const dkey=(d=new Date())=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 const doneToday=()=>S.days[dkey()]||[];
-const mainDone=k=>(S.days[k]||[]).filter(m=>m!=='desafio').length;
+/* =================== rodízio do planeta Matemática ===================
+   (mesmo código na Nave-Mãe e nos três jogos) A cada dia, 2 das 3 missões de cada jogo entram no turno; a outra
+   vira treino extra. A que fica de fora gira em ordem (cada missão sai 1 dia a cada 3), com um deslocamento
+   por jogo. Antes de ROT_FROM valia a regra antiga (as 3 missões). */
+const ROT_FROM='2026-10-05',ROT={nostro9:['partilha','grupos','hangar'],numeris:['montar','ler','sub'],mina:['carga','turno','inspecao']};
+function rotReq(app,k){const all=ROT[app];if(!all)return[];if(k<ROT_FROM)return app==='mina'?[]:all.slice();
+  const[y,m,d]=k.split('-').map(Number),n=Math.round(Date.UTC(y,m-1,d)/864e5),off={nostro9:0,numeris:1,mina:1}[app];
+  return all.filter((_,i)=>i!==(n+off)%3)}
+const REQ=(k=dkey())=>rotReq('numeris',k); /* os portões que contam no turno do dia */
+const mainDone=k=>REQ(k).filter(m=>(S.days[k]||[]).includes(m)).length;
+const isFull=k=>REQ(k).length>0&&mainDone(k)>=REQ(k).length;
 function markDone(m){const k=dkey(),l=S.days[k]||[];if(!l.includes(m)){l.push(m);S.days[k]=l}
-  // sobe de nível ao abrir os 3 portões em LVDAYS dias diferentes
-  if(m!=='desafio'&&mainDone(k)>=3&&S.level<4&&!S.lvDays.includes(k)){S.lvDays.push(k);if(S.lvDays.length>=LVDAYS){S.level++;S.lvDays=[];pendingLevel=true}}
+  // sobe de nível ao completar o turno em LVDAYS dias diferentes
+  if(m!=='desafio'&&isFull(k)&&S.level<4&&!S.lvDays.includes(k)){S.lvDays.push(k);if(S.lvDays.length>=LVDAYS){S.level++;S.lvDays=[];pendingLevel=true}}
   const ks=Object.keys(S.days).sort();while(ks.length>120)delete S.days[ks.shift()];save()}
-function streak(){const d=new Date();let n=0;if(mainDone(dkey(d))<3)d.setDate(d.getDate()-1);while(mainDone(dkey(d))>=3){n++;d.setDate(d.getDate()-1)}return n}
+function streak(){const d=new Date();let n=0;if(!isFull(dkey(d)))d.setDate(d.getDate()-1);while(isFull(dkey(d))){n++;d.setDate(d.getDate()-1)}return n}
 /* histórico para a área dos pais (na Nave-Mãe): log diário por missão e erros por missão */
 function record(mode,ok,errKey){const m=S.modes[mode];m.a++;if(ok){m.c++}
   else if(errKey){S.erros[errKey]=(S.erros[errKey]||0)+1;S.errM=S.errM||{};const e=S.errM[mode]=S.errM[mode]||{};e[errKey]=(e[errKey]||0)+1}
@@ -706,23 +717,23 @@ function renderMenu(){
   if(S.level<4){$('#nvS').textContent=`Próximo: ${LVDAYS} dias completos`;
     $('#nvP').innerHTML=Array.from({length:LVDAYS},(_,i)=>`<i class="${i<S.lvDays.length?'on':''}"></i>`).join('')}
   else{$('#nvS').textContent='Nível máximo!';$('#nvP').innerHTML=''}
-  const done=doneToday(),n=done.filter(m=>m!=='desafio').length,all=n>=3;
-  $('#turnoN').textContent=`${n} / 3`;$('#turnoN').classList.toggle('all',all);
-  let w='';for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);const c=mainDone(dkey(d));
-    w+=`<span class="day${c>=3?' full':c?' part':''}${i===0?' today':''}"><i></i>${WD[d.getDay()]}</span>`}
+  const done=doneToday(),req=REQ(),n=mainDone(dkey()),all=n>=req.length;
+  $('#turnoN').textContent=`${n} / ${req.length}`;$('#turnoN').classList.toggle('all',all);
+  let w='';for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);const k=dkey(d),c=mainDone(k);
+    w+=`<span class="day${isFull(k)?' full':c?' part':''}${i===0?' today':''}"><i></i>${WD[d.getDay()]}</span>`}
   $('#week').innerHTML=w;
   const s=streak();
-  $('#streak').innerHTML=s?`Sequência: <b>${s} ${s===1?'dia':'dias'}</b>`:'Abra os 3 para começar a sequência.';
-  const nx=MODES.find(m=>!done.includes(m)); // próximo portão: destacado
-  document.querySelectorAll('[data-st]').forEach(el=>{const m=el.dataset.st,ok=done.includes(m),r=ok?null:S.run[m],isN=m===nx&&!r;
-    el.className='st'+(ok?' ok':r?' mid':isN?' nx':'');
-    el.innerHTML=ok?sprite('check',2)+'FEITO':r?`${r.i}/${ROUNDS}`:isN?'PRÓXIMO':'FECHADO';
+  $('#streak').innerHTML=s?`Sequência: <b>${s} ${s===1?'dia':'dias'}</b>`:`Abra os ${req.length} para começar a sequência.`;
+  const nx=req.find(m=>!done.includes(m)); // próximo portão do turno: destacado
+  document.querySelectorAll('[data-st]').forEach(el=>{const m=el.dataset.st,ok=done.includes(m),r=ok?null:S.run[m],isN=m===nx&&!r,ex=!req.includes(m); // ex: fora do rodízio de hoje
+    el.className='st'+(ok?' ok':r?' mid':isN?' nx':ex?' xt':'');
+    el.innerHTML=ok?sprite('check',2)+'FEITO':r?`${r.i}/${ROUNDS}`:isN?'PRÓXIMO':ex?'TREINO EXTRA':'FECHADO';
     el.closest('button').classList.toggle('done',ok);el.closest('button').classList.toggle('next',m===nx)});
   const dOk=done.includes('desafio');$('#desOk').hidden=!dOk;$('#goDes').classList.toggle('done',dOk);
   const hr=new Date().getHours(),hi=hr<12?'Bom dia':hr<18?'Boa tarde':'Boa noite',who=pilot?`, explorador ${pilot}`:', explorador';
-  const txt=n===0?`> ${hi}${who}.\n> 3 portões fechados hoje.`
+  const txt=n===0?`> ${hi}${who}.\n> ${req.length} portões fechados hoje.`
     :all?`> Portões abertos. Até amanhã!`
-    :`> ${3-n===1?'Falta 1 portão':`Faltam ${3-n} portões`}.`;
+    :`> ${req.length-n===1?'Falta 1 portão':`Faltam ${req.length-n} portões`}.`;
   const el=$('#term');clearInterval(typing);let i=0;el.textContent='';
   typing=setInterval(()=>{i++;el.innerHTML=txt.slice(0,i).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/\n/g,'<br>');if(i>=txt.length)clearInterval(typing)},20);
 }
@@ -818,15 +829,15 @@ function hintN(n){const p=[];let r=n;if(r>=100){p.push(100);r-=100}const t=r-r%1
   return `Dica: comece pelo bloco maior.`}
 /* fim de missão: comemoração */
 function celebrate(o){show('res');CEL.play(Object.assign({host:$('#res'),avatar:(!o.lose&&navAvatar('cheer',2))||navAvatar('pilot',2)||sprite('gateOpen',4)},o))}
-const turnoInfo=fresh=>({n:Math.min(3,mainDone(dkey())),total:3,streak:streak(),fresh});
-function endButtons(again){const nx=MODES.find(m=>!doneToday().includes(m)),back=()=>{sfx.tap();show('menu')},rep=()=>{sfx.tap();again()};
+const turnoInfo=fresh=>({n:mainDone(dkey()),total:REQ().length,streak:streak(),fresh});
+function endButtons(again){const nx=REQ().find(m=>!doneToday().includes(m)),back=()=>{sfx.tap();show('menu')},rep=()=>{sfx.tap();again()};
   return nx?[{label:'PRÓXIMA MISSÃO',cls:'btn',fn:()=>{sfx.tap();startMission(nx)}},{label:'JOGAR DE NOVO',cls:'ghost px pbtn',fn:rep},{label:'VOLTAR AO TEMPLO',cls:'ghost px pbtn',fn:back}]
     :[{label:'VOLTAR AO TEMPLO',cls:'btn',fn:back},{label:'JOGAR DE NOVO',cls:'ghost px pbtn',fn:rep}]}
 function finishMission(){
   const f=R.firsts,m=mode,fresh=!doneToday().includes(m);delete S.run[m];markDone(m);save();SND.grind();sfx.win();
-  const en=fresh?10+Math.min(10,f)+(mainDone(dkey())>=3?10:0):0; // energia para peças do Hangar
-  celebrate({title:f===ROUNDS?'MISSÃO PERFEITA!':'MISSÃO CUMPRIDA!',sub:'O portão se abriu.',stars:f===ROUNDS?3:f/ROUNDS>=.6?2:1,
-    score:[f,ROUNDS],energy:en,turno:turnoInfo(fresh),buttons:endButtons(()=>startMission(m)),onDone:checkLevel});
+  const inT=REQ().includes(m),en=!fresh?0:inT?10+Math.min(10,f)+(isFull(dkey())?10:0):5; // energia para peças do Hangar (fora do rodízio: treino extra, +5)
+  celebrate({title:f===ROUNDS?'MISSÃO PERFEITA!':'MISSÃO CUMPRIDA!',sub:inT?'O portão se abriu.':'Treino extra concluído.',stars:f===ROUNDS?3:f/ROUNDS>=.6?2:1,
+    score:[f,ROUNDS],energy:en,turno:turnoInfo(fresh&&inT),buttons:endButtons(()=>startMission(m)),onDone:checkLevel});
 }
 $('#playBack').onclick=()=>{sfx.tap();if(DL){backHome();return}show('menu')};
 
