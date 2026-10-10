@@ -344,6 +344,7 @@ html.web .screen.game:not([hidden]){min-height:calc(100dvh - 36px - var(--sat,en
 .opt.show{background:#153a26}
 .fb{min-height:0;margin:0 0 12px;padding:0 14px;font-size:21px;line-height:1.15}
 .fb:not(:empty){padding:12px 14px}
+.fb.float{position:fixed;left:16px;right:16px;bottom:calc(20px + var(--sab,env(safe-area-inset-bottom)));z-index:6;max-width:420px;margin:0 auto;box-shadow:0 0 0 3px #000}
 .fb q{quotes:"“" "”";color:var(--ink)}
 .foot{display:grid;gap:10px;margin-top:auto}
 .foot.two{grid-template-columns:1fr 1fr}
@@ -354,7 +355,7 @@ html.web .screen.game:not([hidden]){min-height:calc(100dvh - 36px - var(--sat,en
 .ins b{color:var(--amber);font-weight:normal}
 .tl{position:relative;display:grid;gap:8px;padding-left:26px;margin-bottom:14px}
 .tl::before{content:"";position:absolute;left:9px;top:6px;bottom:6px;width:4px;background:var(--line2)}
-.slot{position:relative;min-height:46px;display:flex;align-items:center;gap:10px;padding:6px 10px;background:#140e1e;box-shadow:inset 0 0 0 2px var(--line);color:var(--dim);font-size:20px}
+.slot{position:relative;min-height:30px;display:flex;align-items:center;gap:10px;padding:6px 10px;background:#140e1e;box-shadow:inset 0 0 0 2px var(--line);color:var(--dim);font-size:20px}
 .slot::before{content:"";position:absolute;left:-22px;top:50%;width:12px;height:12px;margin-top:-6px;background:var(--line2)}
 .slot.f{background:var(--paper);color:#22182e;box-shadow:none}
 .slot.f::before{background:var(--amber)}
@@ -369,6 +370,16 @@ html.web .screen.game:not([hidden]){min-height:calc(100dvh - 36px - var(--sat,en
 #txt .page{margin:10px 0 16px}
 .lvup2{text-align:center}
 @media (max-height:700px){.page{font-size:21px;padding:12px 14px}.ttl{margin-bottom:8px}.opt{padding:12px}}
+/* depois de responder, as alternativas que não importam mais somem (a certa e a escolhida ficam): a resposta cabe na tela */
+#pBody.answered .opt:not(.good):not(.bad):not(.show){display:none}
+/* telas baixas (iPhone 8, Android pequeno) */
+@media (max-height:680px){.ins{font-size:19px;margin-bottom:8px}.bar{margin-bottom:10px}.play-head{margin-bottom:6px}.segs{margin-bottom:8px}.qbox{padding:10px 12px;margin-bottom:10px}.qtxt{font-size:22px}
+  .opts{gap:10px;margin-bottom:8px}.opt{padding:10px 12px;font-size:21px}.fb:not(:empty){padding:8px 12px}.fb{font-size:19px}
+  .page{font-size:20px;padding:10px 12px;margin-bottom:10px}.slot{min-height:28px;font-size:18px}.slot.f{min-height:36px}.tl{gap:5px;margin-bottom:10px}.evc{min-height:40px;font-size:18px;padding:6px 10px}.bank{gap:7px}}
+/* tela de missão cumprida em telas baixas (iPhone 8, Android): herói, estrelas e botões menores, sem rolar */
+@media (max-height:700px){.cel{gap:8px}.cel-hero{height:132px}.cel-hero>*{transform:scale(.72)}.cel-t{font-size:16px}.cel-sub{font-size:18px}
+  .cel-stars{height:54px;transform:scale(.8);margin:-4px 0}.cel-turno{padding:8px 12px}.cel-segs{margin-top:6px}.cel-btns{gap:8px}.cel-btns .btn,.cel-btns .ghost{min-height:46px;height:46px}}
+@media (max-height:600px){.cel-hero{height:104px}.cel-hero>*{transform:scale(.58)}.cel-stars{height:46px;transform:scale(.7);margin:-8px 0}.cel-score b{font-size:22px}}
 </style>
 <script>
 /* sem zoom: bloqueia pinça e dois toques no app inteiro */
@@ -426,7 +437,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 <script>
 /* atualização automática: compara com version.json e recarrega com ?v=<versão> no endereço (o iPhone não reaproveita a
    página guardada). Se mesmo com ?v=<versão> a página veio velha, não insiste (evita recarregar sem parar). */
-const APP_V='20261010104815';
+const APP_V='20261010113749';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris|mina|ivoti|biblio)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     const q=new URLSearchParams(location.search).get('v');
@@ -893,7 +904,7 @@ function startMission(m){mode=m;$('#txt').hidden=true;
   if(m==='desafio'){const t=pickText(t=>true,S.det);G={t,ph:'read',i:0,n:3,firsts:0,qs:shuffle(t.q.slice()).sort((a,b)=>(a.k==='inf'?0:1)-(b.k==='inf'?0:1)).slice(0,3)}}
   $('#pTitle').textContent=TITLES[m];show('play');render()}
 function segs(){$('#pSegs').innerHTML=Array.from({length:G.n},(_,i)=>`<i class="${i<G.i?'on':i===G.i?'cur':''}"></i>`).join('')}
-function render(){segs();const b=$('#pBody'),see=$('#seeTxt');see.hidden=true;
+function render(){segs();const b=$('#pBody'),see=$('#seeTxt');b.classList.remove('answered');see.hidden=true;
   if(mode==='leitura')return rLeitura(b);if(mode==='palavra')return rPalavra(b);if(mode==='ordem')return rOrdem(b);return rDet(b)}
 /* tela de leitura: o botão para seguir libera depois de alguns segundos (dá tempo de ler) */
 function readScreen(b,t,label,go){$('#pN').textContent='LEIA COM ATENÇÃO';
@@ -903,7 +914,7 @@ function readScreen(b,t,label,go){$('#pN').textContent='LEIA COM ATENÇÃO';
 function quiz(b,tag,q,quote,onAns,onNext,extra){const opts=shuffle(q.a.map((t,i)=>({t,ok:i===0})));let done=false;
   b.innerHTML=`${extra||''}<div class="qbox px"><div class="qtag">${tag}</div><p class="qtxt">${esc(q.q)}</p></div>
     <div class="opts">${opts.map((o,i)=>`<button class="opt px pbtn" data-o="${i}">${esc(o.t)}</button>`).join('')}</div><div class="fb" id="fb"></div><div class="foot" id="foot"></div>`;
-  b.querySelectorAll('[data-o]').forEach(x=>x.onclick=()=>{if(done)return;done=true;const o=opts[+x.dataset.o],f=b.querySelector('#fb');
+  b.querySelectorAll('[data-o]').forEach(x=>x.onclick=()=>{if(done)return;done=true;b.classList.add('answered');const o=opts[+x.dataset.o],f=b.querySelector('#fb');
     if(o.ok){sfx.ok();x.classList.add('good');f.className='fb ok';f.innerHTML=`<b>ISSO!</b>${quote}`;onAns(true);const g=G;setTimeout(()=>{if(G===g&&current==='play')onNext()},1900)}
     else{sfx.no();x.classList.add('bad');b.querySelectorAll('[data-o]').forEach((y,i)=>{if(opts[i].ok)y.classList.add('show')});f.className='fb no';f.innerHTML=`<b>QUASE!</b>${quote}`;onAns(false);
       const ft=b.querySelector('#foot');ft.innerHTML='<button class="btn" id="goN">ENTENDI</button>';ft.querySelector('#goN').onclick=()=>{sfx.tap();onNext()}}})}
@@ -938,7 +949,7 @@ function rOrdem(b){const t=G.ts[G.i];if(!t)return finish();
       render();return}
     sfx.no();x.classList.remove('shake');void x.offsetWidth;x.classList.add('shake','bad');setTimeout(()=>x.classList.remove('bad'),700);
     if(!G.miss){G.miss=true;record('ordem',false,'Ordem dos fatos')}else errAdd('ordem','Ordem dos fatos');
-    const f=b.querySelector('#fb');f.className='fb no';f.innerHTML='<b>AINDA NÃO</b>Isso aconteceu depois. Pense: o que veio antes? Se precisar, toque em VER TEXTO.'})}
+    const f=b.querySelector('#fb');f.className='fb no float';f.innerHTML='<b>AINDA NÃO</b>Isso veio depois. O que veio antes?';clearTimeout(rOrdem.t);rOrdem.t=setTimeout(()=>{if(f.isConnected&&f.classList.contains('float')){f.className='fb';f.innerHTML=''}},2600)})}
 /* ---------- DETETIVE ---------- */
 function rDet(b){const t=G.t;
   if(G.ph==='read')return readScreen(b,t,'COMEÇAR A INVESTIGAÇÃO ▶',()=>{G.ph='q';G.miss=false;render()});

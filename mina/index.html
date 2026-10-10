@@ -282,8 +282,8 @@ html.web #play:not([hidden]){min-height:calc(100dvh - 36px - var(--sat,env(safe-
 /* folha quadriculada: cada quadrado é uma casa da conta */
 .bd{position:relative;flex:none;
   background-image:linear-gradient(90deg,rgba(93,255,154,.09) 0 1px,transparent 1px),linear-gradient(0deg,rgba(93,255,154,.09) 0 1px,transparent 1px);
-  background-size:30px 30px;background-position:-1px -1px}
-.c{position:absolute;width:30px;height:30px;display:grid;place-items:center;font-family:var(--px);font-size:17px;line-height:1;color:var(--ink);padding:0}
+  background-size:var(--cw,30px) var(--cw,30px);background-position:-1px -1px}
+.c{position:absolute;width:var(--cw,30px);height:var(--cw,30px);display:grid;place-items:center;font-family:var(--px);font-size:calc(var(--cw,30px) * .57);line-height:1;color:var(--ink);padding:0}
 button.c{cursor:pointer}
 .c.dv{color:#f3fff7}
 .c.tp{background:rgba(93,255,154,.08)}
@@ -305,7 +305,7 @@ button.c{cursor:pointer}
 @keyframes pop{from{transform:scale(0)}}
 .ln{position:absolute;z-index:2;background:var(--ink)}
 .ln.pl{background:var(--amber)}
-.slot{position:absolute;height:30px;background:rgba(255,179,0,.16);box-shadow:inset 0 -3px 0 0 var(--amber);animation:slot 1s steps(1) infinite}
+.slot{position:absolute;height:var(--cw,30px);background:rgba(255,179,0,.16);box-shadow:inset 0 -3px 0 0 var(--amber);animation:slot 1s steps(1) infinite}
 @keyframes slot{50%{box-shadow:inset 0 -3px 0 0 rgba(255,179,0,.25)}}
 .box{position:absolute;box-shadow:inset 0 0 0 2px var(--glow);pointer-events:none}
 .box.fin{box-shadow:inset 0 0 0 2px var(--cy)}
@@ -372,6 +372,10 @@ button.c{cursor:pointer}
 .storm.flash{animation:lflash .25s steps(1) 2}
 @keyframes lflash{50%{background:#e9f2ee}}
 
+/* telas baixas (iPhone 8 no Safari, Android pequeno): casas menores e tudo mais justo, sem rolar */
+@media (max-height:680px){.bar{margin-bottom:10px}.endc{padding:10px 12px 12px}.er>div{padding:7px 8px}.er b{margin-top:4px;font-size:17px}.pv{margin-top:8px;font-size:9px;line-height:1.5}.endc .btn{margin-top:10px}.endc .story,.endc p:not(.pv){font-size:18px}.story{font-size:18px!important;margin-bottom:6px!important}.slate{padding:6px!important;margin-bottom:8px!important}
+  .guide{min-height:0!important;padding:8px 10px 8px;margin-bottom:8px!important}.lights{margin-bottom:6px}.lights i{padding:5px 0 4px}.gmsg{font-size:19px}.gmsg .hint{font-size:17px;margin-top:2px}
+  .kp{gap:6px}.kp .key{height:40px!important}.pad,.big1{min-height:86px!important}.stp{margin-bottom:6px}.stp .sv,.mbar{height:40px!important}.play-head{margin-bottom:6px!important}.segs{margin-bottom:8px!important}}
 @media (max-height:700px){.big1{min-height:102px}.story{min-height:0;font-size:19px;margin-bottom:8px}.slate{padding:8px;margin-bottom:10px}.guide{min-height:80px;margin-bottom:10px}.kp .key{height:46px}.pad{min-height:102px}.stp .sv,.mbar{height:46px}.storm{height:60px}.play-head{margin-bottom:8px}.segs{margin-bottom:10px}}
 
 /* manual */
@@ -429,6 +433,10 @@ button.dcard .ok,button.dcard .st{position:static;display:flex;align-items:cente
 /* logo igual ao card do jogo na Nave-Mãe: quadro de 72 px com o ícone a 4 px por pixel */
 .brand .logo{width:72px;height:72px;padding:0;background:var(--panel2);font-size:0;text-shadow:none;box-shadow:0 -4px 0 0 var(--line),0 4px 0 0 var(--line),-4px 0 0 0 var(--line),4px 0 0 0 var(--line);filter:drop-shadow(4px 4px 0 #000)}
 .brand .logo .spr{display:block}
+/* tela de missão cumprida em telas baixas (iPhone 8, Android): herói, estrelas e botões menores, sem rolar */
+@media (max-height:700px){.cel{gap:8px}.cel-hero{height:132px}.cel-hero>*{transform:scale(.72)}.cel-t{font-size:16px}.cel-sub{font-size:18px}
+  .cel-stars{height:54px;transform:scale(.8);margin:-4px 0}.cel-turno{padding:8px 12px}.cel-segs{margin-top:6px}.cel-btns{gap:8px}.cel-btns .btn,.cel-btns .ghost{min-height:46px;height:46px}}
+@media (max-height:600px){.cel-hero{height:104px}.cel-hero>*{transform:scale(.58)}.cel-stars{height:46px;transform:scale(.7);margin:-8px 0}.cel-score b{font-size:22px}}
 </style>
 <script>
 /* sem zoom: bloqueia pinça e dois toques no app inteiro */
@@ -515,7 +523,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 <script>
 /* atualização automática: compara com version.json e recarrega com ?v=<versão> no endereço (o iPhone não reaproveita a
    página guardada). Se mesmo com ?v=<versão> a página veio velha, não insiste (evita recarregar sem parar). */
-const APP_V='20261010104815';
+const APP_V='20261010113749';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris|mina)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     const q=new URLSearchParams(location.search).get('v');
@@ -944,7 +952,14 @@ function endTxt(){const c=C.c;
 
 /* ---------- o quadro: monta a conta armada casa por casa ----------
    colunas: 0 = sinal de menos, 1..n = algarismos do dividendo; à direita da chave, o divisor e o quociente */
-const CW=30,CH=30;
+/* casas da folha: 30 px; em telas baixas (iPhone 8, Android pequeno) 24 px, para a conta e o teclado caberem sem rolar */
+const CW0=innerHeight<=680?24:30;let CW=CW0,CH=CW;document.documentElement.style.setProperty('--cw',CW+'px');
+/* a folha encolhe as casas (até 18 px) quando a conta tem muitas linhas e não cabe na tela; na conta seguinte volta a crescer */
+function fitBoard(){const sl=document.querySelector('.slate');if(!sl||!C||sl.offsetParent===null)return;
+  const cs=getComputedStyle(sl),over=Math.max(0,document.scrollingElement.scrollHeight-innerHeight),avail=sl.clientHeight-over-parseFloat(cs.paddingTop)-parseFloat(cs.paddingBottom)-2,rows=rowsOf(C.c.steps);
+  const want=Math.max(16,Math.min(CW0,Math.floor(avail/rows)));
+  if(want<CW||(fitBoard.c!==C&&want!==CW)){CW=CH=want;document.documentElement.style.setProperty('--cw',CW+'px');fitBoard.c=C;render();return}
+  fitBoard.c=C}
 function viewOf(){const c=C.c,steps=[],end=C.ph==='end'||C.ph==='lost';
   if(C.blank&&!end){const b=C.blank,ty=C.typ||'',qs=c.steps.map(s=>s.q);
     c.steps.forEach((s,j)=>{const o={i:s.i,down:j>0,prod:String(s.prod),rem:String(s.rem)};
@@ -1036,7 +1051,7 @@ function endHTML(){const c=C.c,last=R.i>=ROUNDS[mode];
     ${c.steps[0].q===0?`<p class="ctx">O 0 da frente não muda o número: ${c.steps.map(s=>s.q).join('')} = ${c.q}.</p>`:''}<p class="ctx">${endTxt()}</p>
     <button class="btn" id="eNext">${last?'CONCLUIR':'PRÓXIMA CONTA'}</button></div>`}
 function render(){if(!C)return;const b=boardHTML(viewOf()),bd=$('#board');bd.innerHTML=b.h;bd.style.width=b.w+'px';bd.style.height=b.hgt+'px';
-  $('#story').innerHTML=storyTxt();renderGuide();renderPad();bindBoard()}
+  $('#story').innerHTML=storyTxt();renderGuide();renderPad();bindBoard();if(!render.b){render.b=1;fitBoard();render.b=0}}
 function bindBoard(){$('#board').querySelectorAll('[data-dg]').forEach(b=>b.onclick=()=>tapDigit(+b.dataset.dg));
 }
 function bindPad(){const q=s=>$('#pad').querySelector(s);

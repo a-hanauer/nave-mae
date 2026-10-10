@@ -333,6 +333,10 @@ html.web .screen.game:not([hidden]){min-height:calc(100dvh - 36px - var(--sat,en
 .qcard .qp b{color:var(--ink);font-weight:normal}
 .qtag{font-family:var(--px);font-size:7px;color:var(--glow);letter-spacing:.06em}
 .blank{display:inline-block;min-width:64px;border-bottom:3px solid var(--glow);color:var(--glow);text-align:center}
+/* depois de responder: some o que não importa mais (opções neutras, peças, balão da Mia), para a resposta caber na tela */
+#pBody.answered .opts .opt:not(.good):not(.bad):not(.show),#pBody.answered .tiles,#pBody.answered .mia{display:none}
+#pBody.answered .opts:not(.f3) .opt.show{display:none} /* a frase certa já aparece na resposta */
+@media (max-height:600px){#pBody.answered .tree{display:none}.mia .bub small{display:none}.bar{margin-bottom:8px}.tree{padding:6px 4px;gap:6px}.qcard{padding:8px 10px}}
 /* opções */
 .opts{display:grid;gap:12px;margin-bottom:12px}
 .opts.f3{grid-template-columns:repeat(3,1fr)}
@@ -403,6 +407,17 @@ html.web .screen.game:not([hidden]){min-height:calc(100dvh - 36px - var(--sat,en
 .dict h3{font-family:var(--px);font-size:8px;color:var(--glow);margin:14px 0 4px}
 .legend{display:flex;flex-wrap:wrap;gap:10px;margin:4px 0 6px;font-family:var(--px);font-size:7px}
 @media (max-height:700px){.qcard{padding:10px}.opt{padding:12px}.tree{gap:10px;padding:10px 6px}}
+/* telas baixas (iPhone 8, Android pequeno): árvore, peças e cartões mais justos, para a missão caber sem rolar */
+@media (max-height:680px){.bar{margin-bottom:10px}.play-head{margin-bottom:6px}.segs{margin-bottom:8px}
+  .tree{gap:8px;padding:8px 4px;margin-bottom:10px}.tg+.tg::before{top:-6px}.tp{width:46px;padding:2px 0;gap:2px}.tp .fr{width:38px;height:38px}
+  .mia{margin-bottom:8px}.mia .bub{padding:6px 10px;font-size:20px}.mia .bub small{font-size:16px}
+  .slots{min-height:48px;padding:6px;margin-bottom:8px}.slots .sl{height:34px}.tiles{gap:8px;margin-bottom:8px}.tile{min-height:40px;padding:6px 12px;font-size:23px}.slots .tile{min-height:34px;padding:4px 10px}
+  .qcard{gap:6px;margin-bottom:10px}.qcard .qd,.qcard .qd .art{font-size:26px}.opts{gap:10px;margin-bottom:8px}.opt,.opt .art{font-size:23px}.opt{padding:8px 12px}.opts.f3 .opt{min-height:80px}
+  .abtns{margin-bottom:8px}.ab{min-height:52px}.fb:not(:empty){padding:8px 12px}.fb .ans,.fb .ans .art{font-size:23px}.fb .tip{font-size:17px;margin-top:4px}.hz{margin-bottom:8px}.hzq{font-size:22px;min-height:0;margin-bottom:4px}.spk.big{padding:12px 14px}}
+/* tela de missão cumprida em telas baixas (iPhone 8, Android): herói, estrelas e botões menores, sem rolar */
+@media (max-height:700px){.cel{gap:8px}.cel-hero{height:132px}.cel-hero>*{transform:scale(.72)}.cel-t{font-size:16px}.cel-sub{font-size:18px}
+  .cel-stars{height:54px;transform:scale(.8);margin:-4px 0}.cel-turno{padding:8px 12px}.cel-segs{margin-top:6px}.cel-btns{gap:8px}.cel-btns .btn,.cel-btns .ghost{min-height:46px;height:46px}}
+@media (max-height:600px){.cel-hero{height:104px}.cel-hero>*{transform:scale(.58)}.cel-stars{height:46px;transform:scale(.7);margin:-8px 0}.cel-score b{font-size:22px}}
 </style>
 <script>
 /* sem zoom: bloqueia pinça e dois toques no app inteiro */
@@ -461,7 +476,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 <script>
 /* atualização automática: compara com version.json e recarrega com ?v=<versão> no endereço (o iPhone não reaproveita a
    página guardada). Se mesmo com ?v=<versão> a página veio velha, não insiste (evita recarregar sem parar). */
-const APP_V='20261010104815';
+const APP_V='20261010113749';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris|mina|ivoti|biblio|alemao)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     const q=new URLSearchParams(location.search).get('v');
@@ -869,10 +884,10 @@ function startMission(m){mode=m;
     G={n:8,i:0,firsts:0,lives:3,qs}}
   $('#pTitle').textContent=TITLES[m];show('play');render()}
 function segs(){$('#pSegs').innerHTML=Array.from({length:G.n},(_,i)=>`<i class="${i<G.i?'on':i===G.i?'cur':''}"></i>`).join('')}
-function render(){segs();const b=$('#pBody');if(mode==='woerter')return rWoerter(b);if(mode==='artikel')return rArtikel(b);if(mode==='baum')return rBaum(b);return rHz(b)}
+function render(){segs();const b=$('#pBody');b.classList.remove('answered');if(mode==='woerter')return rWoerter(b);if(mode==='artikel')return rArtikel(b);if(mode==='baum')return rBaum(b);return rHz(b)}
 function next(){G.i++;if(G.i>=G.n)finish();else render()}
 /* resposta: mostra a frase certa em alemão com OUVIR e a dica; certo avança sozinho, errado espera ENTENDI */
-function answer(b,ok,html,said,tip){const f=b.querySelector('#fb');say(said);
+function answer(b,ok,html,said,tip){const f=b.querySelector('#fb');say(said);b.classList.add('answered');
   f.className='fb '+(ok?'ok':'no');f.innerHTML=`<b>${ok?'RICHTIG! (CERTO!)':'QUASE!'}</b><span class="ans"><span>${html}</span>${spk(said)}</span>${tip?`<span class="tip">${tip}</span>`:''}`;
   const ft=b.querySelector('#foot');if(ok){sfx.ok();const g=G;setTimeout(()=>{if(G===g&&current==='play')next()},2300)}
   else{sfx.no();ft.innerHTML='<button class="btn" id="goN">ENTENDI</button>';ft.querySelector('#goN').onclick=()=>{sfx.tap();next()}}}
