@@ -115,6 +115,17 @@ Missões:
 
 Erros guardados por tipo (`errM`): informação do texto, inferência, palavra, ordem dos fatos e achar a frase que prova. O conteúdo fica em `TEXTS`, no começo do script de `biblio/index.html`.
 
+## Telas e aparelhos
+
+Feito para o iPhone 15 (393×852), mas ajustado para telas menores: iPhone 8 (375×667 no atalho da Tela de Início; ~375×553 no Safari com as barras) e Android (360×640). O ajuste é por altura e largura da tela (media queries), sem precisar identificar o aparelho:
+
+- **Até 740 px de altura:** no Hangar, o carrossel de peças tem altura fixa e o palco fica com o resto; o piloto (com o pet) e a nave encolhem em passos de 1/4 (até a metade) para caber (`fitStage`, refeito quando o palco muda de tamanho).
+- **Até 700/680 px:** os jogos usam espaços, teclas, cartões e fontes um pouco menores; a tela de missão cumprida encolhe o herói, as estrelas e os botões.
+- **Mina de Cristais:** as casas da folha passam de 30 para 24 px em telas baixas e, se a conta tiver muitas linhas e não couber, encolhem até 16 px (`fitBoard`); na conta seguinte voltam a crescer.
+- **Depois de responder** (Biblioteca, Máquina do Tempo e Casa Sternberg), as alternativas que não importam mais somem; ficam só a escolhida e a certa, para a explicação caber. Na Ordem dos fatos, o aviso de erro flutua por cima e some sozinho.
+- **Largura menor que 384 px** (Android 360 px, iPhone 8): a sala do fliperama encolhe a escala para as 12 casas continuarem cabendo inteiras (sem cortar a sala nem rolar para os lados); no mapa, o status dos planetas fica menor.
+- Continuam rolando de propósito as telas de lista (mapa, missões, conquistas, área dos pais) e os textos longos de leitura.
+
 ## Abas
 
 A barra inferior tem quatro abas:

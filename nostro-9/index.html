@@ -325,6 +325,8 @@ h2{margin:0;font-family:var(--px);font-size:14px;line-height:1.7;font-weight:400
   padding:16px 16px calc(16px + var(--sab,env(safe-area-inset-bottom)));animation:sheet .24s steps(4)}
 .ask+.ask{margin-top:0}
 @keyframes sheet{from{transform:translateY(100%)}}
+/* telas bem baixas (iPhone 8 no Safari, Android pequeno) */
+@media (max-height:680px){#partilha,#grupos,#hangar,#desafio,#d-play{gap:8px!important}.conta{padding:8px 8px 8px!important}.conta strong{font-size:22px!important}.key{padding:8px 0!important}#radar{height:min(120px,17dvh)!important}.story{font-size:17px!important}.scope{aspect-ratio:16/10!important}}
 @media (max-height:700px){#partilha,#grupos,#hangar,#desafio,#d-play{gap:10px}.stepper{padding:8px 14px}.story{font-size:18px}.hangar{gap:4px;padding:8px}.conta{padding:12px 8px 10px}.conta strong{font-size:26px}.key{padding:11px 0}#radar{height:min(150px,18dvh)}}
 
 /* ---- fim + pais ---- */
@@ -400,6 +402,10 @@ button.dcard .ok,button.dcard .st{position:static;display:flex;align-items:cente
 .segs:not(.mini) i{flex:1;height:10px;background:#0b0a1a;box-shadow:inset 0 0 0 2px var(--edge2);animation:none}
 .segs:not(.mini) i.on{background:var(--ok);box-shadow:none}
 .segs:not(.mini) i.cur{background:var(--amber);box-shadow:none}
+/* tela de missão cumprida em telas baixas (iPhone 8, Android): herói, estrelas e botões menores, sem rolar */
+@media (max-height:700px){.cel{gap:8px}.cel-hero{height:132px}.cel-hero>*{transform:scale(.72)}.cel-t{font-size:16px}.cel-sub{font-size:18px}
+  .cel-stars{height:54px;transform:scale(.8);margin:-4px 0}.cel-turno{padding:8px 12px}.cel-segs{margin-top:6px}.cel-btns{gap:8px}.cel-btns .btn,.cel-btns .ghost{min-height:46px;height:46px}}
+@media (max-height:600px){.cel-hero{height:104px}.cel-hero>*{transform:scale(.58)}.cel-stars{height:46px;transform:scale(.7);margin:-8px 0}.cel-score b{font-size:22px}}
 </style>
 <script>
 /* sem zoom: bloqueia pinça e dois toques no app inteiro */
@@ -510,7 +516,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 <script>
 /* atualização automática: compara com version.json e recarrega com ?v=<versão> no endereço (o iPhone não reaproveita a
    página guardada). Se mesmo com ?v=<versão> a página veio velha, não insiste (evita recarregar sem parar). */
-const APP_V='20261010104815';
+const APP_V='20261010113749';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     const q=new URLSearchParams(location.search).get('v');

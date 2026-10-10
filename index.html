@@ -118,6 +118,8 @@ button{cursor:pointer;touch-action:manipulation}
 .row .pname{font-family:var(--px);font-size:11px;line-height:1.4;color:var(--ink)}
 .row .pstat{margin-top:6px;font-size:20px;white-space:nowrap;color:var(--dim);display:flex;align-items:center;gap:6px}
 .row.r .pstat{justify-content:flex-end}
+/* telas estreitas (Android 360 px, iPhone SE): status do planeta menor, para não passar da borda */
+@media (max-width:380px){.row .pstat{font-size:17px;gap:4px}.row .pname{font-size:10px}}
 .pstat.go{color:var(--amber)}
 .pstat.ok{color:var(--green)}
 .row.off .globe .spr{filter:saturate(.25) brightness(.55)}
@@ -722,7 +724,22 @@ body[data-v="crew"] .seg button{padding:9px 0}
 /* o palco nunca fica menor que o piloto inteiro (204 px de arte com a margem do equipamento + 6 px do chão);
    em telas mais baixas quem encolhe é o carrossel */
 body[data-v="crew"] .stage{height:clamp(216px,calc(100dvh - var(--hud) - var(--con) - 360px),250px)}
-body[data-v="crew"] .vhero{bottom:6px}
+body[data-v="crew"] .vhero{bottom:6px;transform:translateX(-50%) scale(var(--hs,1));transform-origin:50% 100%}
+.padw{transform-origin:50% 100%}body[data-v="crew"] .padw{transform:translateX(-50%) scale(var(--hs,1))}
+/* telas mais baixas (iPhone 8, Android): o carrossel tem altura fixa e o palco fica com o resto; o piloto e a nave
+   encolhem em passos de 1/4 (fitStage) para caber, sem a página rolar */
+@media (max-height:740px){
+  body[data-v="crew"] .ctop{flex:1 1 auto;display:flex;flex-direction:column;min-height:0}
+  body[data-v="crew"] #vest,body[data-v="crew"] #hang{flex:0 0 auto}
+  body[data-v="crew"] .stage{height:auto;flex:1 1 0;min-height:96px;max-height:250px}
+  body[data-v="crew"] #vGrid,body[data-v="crew"] #hGrid{flex:0 0 136px}
+  body[data-v="crew"] .shop-g .shop-it{min-height:0}
+  .st-hang .win{top:12px;height:calc(100% - 84px);min-height:36px}}
+@media (max-height:620px){
+  body[data-v="crew"] .seg{margin-bottom:10px}body[data-v="crew"] .seg button{padding:6px 0}
+  body[data-v="crew"] .cats{margin-top:8px;padding-bottom:6px}
+  body[data-v="crew"] .cat{gap:3px;padding:5px 2px 4px}body[data-v="crew"] .cat .ci{height:20px}
+  body[data-v="crew"] #vGrid,body[data-v="crew"] #hGrid{flex-basis:124px}}
 .vhero .vpet{position:absolute;left:100%;bottom:0;margin-left:2px;display:flex;flex-direction:column;align-items:center}
 .vpb{position:relative;display:block;cursor:pointer}
 .vpb .vpf{display:block;transform:scaleX(-1)}
@@ -736,7 +753,7 @@ body[data-v="crew"] .vhero{bottom:6px}
 @keyframes vheart{to{transform:translateY(-26px);opacity:0}}
 .shop-it .pr.free{color:#5dff83}
 
-body[data-v="crew"] .shop-g .shop-it{min-height:120px}
+@media (min-height:741px){body[data-v="crew"] .shop-g .shop-it{min-height:120px}}
 body[data-v="crew"] .cats{margin-top:12px;padding-bottom:10px}
 #vest,#hang{flex:1;min-height:0;display:flex;flex-direction:column}
 #vGrid,#hGrid{flex:1;min-height:0;margin:0 -16px}
@@ -957,7 +974,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 <script>
 /* atualização automática: compara com version.json e recarrega com ?v=<versão> no endereço (o iPhone não reaproveita a
    página guardada). Se mesmo com ?v=<versão> a página veio velha, não insiste (evita recarregar sem parar). */
-const APP_V='20261010104815';
+const APP_V='20261010113749';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris|mina|ivoti|biblio|alemao)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     const q=new URLSearchParams(location.search).get('v');
@@ -2000,11 +2017,16 @@ function renderCloset(){const side=sub==='hang'?'hang':'vest',cats=SIDE[side],cc
     else if(shopSel===it.k){if(energy().bal>=pr(it)){buy({c,it});return}shopSel=null;SND.locked()}
     else{shopSel=it.k;SND.medal()}
     const g=b.parentNode,sl=g.scrollLeft;renderCloset();const g2=$('#'+(side==='vest'?'v':'h')+'Grid .shop-g');if(g2)g2.scrollLeft=sl});
-  shopBarRender(bal);requestAnimationFrame(()=>{callout(side,cc);const sl=document.querySelector('#'+(side==='vest'?'v':'h')+'Grid .shop-it.sel');if(sl){const g=sl.parentNode,l=sl.offsetLeft-22,r=sl.offsetLeft+sl.offsetWidth-g.clientWidth+22;if(g.scrollLeft>l)g.scrollLeft=l;else if(g.scrollLeft<r)g.scrollLeft=r}})}
+  shopBarRender(bal);fitStage();requestAnimationFrame(()=>{callout(side,cc);const sl=document.querySelector('#'+(side==='vest'?'v':'h')+'Grid .shop-it.sel');if(sl){const g=sl.parentNode,l=sl.offsetLeft-22,r=sl.offsetLeft+sl.offsetWidth-g.clientWidth+22;if(g.scrollLeft>l)g.scrollLeft=l;else if(g.scrollLeft<r)g.scrollLeft=r}})}
 function buy(x){const p=pr(x.it);if(energy().bal<p){SND.locked();return}
   st.spent=(st.spent||0)+p;st.own=st.own||[];st.own.push(x.it.k);
   st.look=Object.assign({},look(),{[x.c]:x.it.id});save();cacheAvatar();$('#logoShip').innerHTML=shipOnly(2); // liberou: já fica em uso
   const g=$('#'+(sub==='hang'?'h':'v')+'Grid .shop-g'),sl=g?g.scrollLeft:0;shopSel=null;SND.unlock();toast('Liberado!');renderCloset();updBadges();const g2=$('#'+(sub==='hang'?'h':'v')+'Grid .shop-g');if(g2)g2.scrollLeft=sl}
+/* encaixa o piloto (ou a nave) na altura do palco: escala em passos de 1/4, de 1/2 até 1 */
+function fitStage(){[['#vStage','.vhero',16],['#hStage','.padw',44]].forEach(([s,h,pad])=>{const st=$(s),el=st&&st.querySelector(h);if(!el||!st.offsetParent)return;
+  const need=el.offsetHeight+pad,have=st.clientHeight,k=Math.max(.5,Math.min(1,Math.floor(have/need*4)/4));el.style.setProperty('--hs',k)})}
+addEventListener('resize',()=>{if(view==='crew')fitStage()});
+try{const ro=new ResizeObserver(()=>fitStage());['#vStage','#hStage'].forEach(s=>{const e=document.querySelector(s);if(e)ro.observe(e)})}catch(e){}
 function shopBarRender(bal){const bar=$('#shopBar');bar.hidden=true;return;const x=shopItem();if(!x||view!=='crew'){bar.hidden=true;return}
   const can=bal>=x.it.price;
   bar.innerHTML=`<span class="sb-t"><b>${x.it.n.toUpperCase()}</b><small>${ITEMS[x.c].t}${can?'':' · faltam '+(x.it.price-bal)}</small></span>`+

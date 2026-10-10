@@ -379,6 +379,12 @@ html.web .screen.game:not([hidden]){min-height:calc(100dvh - 36px - var(--sat,en
 .words li{display:block}
 .words li b{display:block;font-size:9px!important;margin-bottom:4px}
 @media (max-height:700px){.page{font-size:21px;padding:12px 14px}.ctitle{margin-bottom:8px}.nav3 .key,.nav3 .btn,.nxt{height:50px}.opt{padding:12px}}
+/* depois de responder, as alternativas que não importam mais somem (a certa e a escolhida ficam) */
+.opts.answered .opt:not(.good):not(.bad):not(.show){display:none}
+/* telas baixas (iPhone 8, Android pequeno) */
+@media (max-height:680px){.bar{margin-bottom:10px}.play-head{margin-bottom:6px}.segs{margin-bottom:8px}.qbox{padding:10px 12px;margin-bottom:10px}.qtxt{font-size:22px}
+  .opts{gap:10px}.opt{padding:10px 12px;font-size:21px}.fb:not(:empty){padding:8px 12px}.fb{font-size:19px}.page{font-size:20px;padding:10px 12px}
+  .tl{gap:6px;margin-bottom:10px}.slot{min-height:40px;font-size:18px;padding:4px 10px}.bank{gap:8px}.evc{min-height:44px;font-size:19px;padding:6px 10px}}
 
 /* terminal + turno do dia numa tela só (menos blocos no topo) */
 .term{padding:14px 16px 12px}
@@ -430,6 +436,10 @@ button.dcard .ok,button.dcard .st{position:static;display:flex;align-items:cente
 /* logo igual ao card do jogo na Nave-Mãe: quadro de 72 px com o ícone a 4 px por pixel */
 .brand .logo{width:72px;height:72px;padding:0;background:var(--panel2);font-size:0;text-shadow:none;box-shadow:0 -4px 0 0 var(--line),0 4px 0 0 var(--line),-4px 0 0 0 var(--line),4px 0 0 0 var(--line);filter:drop-shadow(4px 4px 0 #000)}
 .brand .logo .spr{display:block}
+/* tela de missão cumprida em telas baixas (iPhone 8, Android): herói, estrelas e botões menores, sem rolar */
+@media (max-height:700px){.cel{gap:8px}.cel-hero{height:132px}.cel-hero>*{transform:scale(.72)}.cel-t{font-size:16px}.cel-sub{font-size:18px}
+  .cel-stars{height:54px;transform:scale(.8);margin:-4px 0}.cel-turno{padding:8px 12px}.cel-segs{margin-top:6px}.cel-btns{gap:8px}.cel-btns .btn,.cel-btns .ghost{min-height:46px;height:46px}}
+@media (max-height:600px){.cel-hero{height:104px}.cel-hero>*{transform:scale(.58)}.cel-stars{height:46px;transform:scale(.7);margin:-8px 0}.cel-score b{font-size:22px}}
 </style>
 <script>
 /* sem zoom: bloqueia pinça e dois toques no app inteiro */
@@ -535,7 +545,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 <script>
 /* atualização automática: compara com version.json e recarrega com ?v=<versão> no endereço (o iPhone não reaproveita a
    página guardada). Se mesmo com ?v=<versão> a página veio velha, não insiste (evita recarregar sem parar). */
-const APP_V='20261010104815';
+const APP_V='20261010113749';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris|mina|ivoti)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     const q=new URLSearchParams(location.search).get('v');
@@ -1254,7 +1264,7 @@ function quiz(host,q,tag,onAnswer,onNext){const opts=shuffle(q.a.map((t,i)=>({t,
   host.innerHTML=`<div class="qbox px"><div class="qtag">${tag}</div><p class="qtxt">${esc(q.q)}</p></div>
     <div class="opts">${opts.map((o,i)=>`<button class="opt px pbtn" data-o="${i}">${esc(o.t)}</button>`).join('')}</div>
     <div class="fb" id="qfb"></div><div class="qfoot" id="qfoot"></div>`;
-  host.querySelectorAll('[data-o]').forEach(b=>b.onclick=()=>{if(answered)return;answered=true;const o=opts[+b.dataset.o],f=host.querySelector('#qfb');
+  host.querySelectorAll('[data-o]').forEach(b=>b.onclick=()=>{if(answered)return;answered=true;host.querySelector('.opts').classList.add('answered');const o=opts[+b.dataset.o],f=host.querySelector('#qfb');
     if(o.ok){sfx.ok();b.classList.add('good');f.className='fb ok';f.innerHTML=`<b>ISSO!</b>${esc(q.x)}`;onAnswer(true);setTimeout(onNext,1500)}
     else{sfx.no();b.classList.add('bad');host.querySelectorAll('[data-o]').forEach((x,i)=>{if(opts[i].ok)x.classList.add('show')});
       f.className='fb no';f.innerHTML=`<b>QUASE!</b>${esc(q.x)}`;onAnswer(false);

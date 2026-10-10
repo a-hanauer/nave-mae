@@ -240,7 +240,7 @@ html.web{--top:calc(var(--sat,var(--sat,env(safe-area-inset-top))) + 54px)}
 <script>
 /* atualização automática: compara com version.json e recarrega com ?v=<versão> no endereço (o iPhone não reaproveita a
    página guardada). Se mesmo com ?v=<versão> a página veio velha, não insiste (evita recarregar sem parar). */
-const APP_V='20261010104815';
+const APP_V='20261010113749';
 (function(){const H0=location.hash;
   async function check(){try{const r=await fetch('../version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     const q=new URLSearchParams(location.search).get('v');
@@ -606,8 +606,11 @@ let dlgOpen=null,cam={x:0,y:0},VW=MW*T,VH=MH*T,roomOn=true,raf=0,lastT=0;
 const DV={up:[0,-1],down:[0,1],left:[-1,0],right:[1,0]};
 const STEP=165,NSTEP=260,NSLOW=480; // passo dos jogadores: normal e devagar (perto do piloto)
 const held=new Set();   // direções apertadas (direcional e teclado); cima+direita juntas = diagonal em escada
-function fit(){const st=$('#stage'),w=Math.floor(st.clientWidth/2),h=Math.floor(st.clientHeight/2);VW=Math.min(MW*T,w);VH=Math.min(MH*T,h);
-  const c=$('#rc');c.width=VW;c.height=VH;c.style.width=VW*2+'px';c.style.height=VH*2+'px'}
+/* a sala tem sempre 12 casas de largura: 2 px por pixel de arte; em telas com menos de 384 px (Android, iPhone SE) a escala diminui
+   (SC) para as 12 casas continuarem cabendo, sem rolar para os lados */
+let SC=2;
+function fit(){const st=$('#stage');SC=Math.min(2,st.clientWidth/(MW*T));const w=Math.floor(st.clientWidth/SC+.01),h=Math.floor(st.clientHeight/SC);VW=Math.min(MW*T,w);VH=Math.min(MH*T,h);
+  const c=$('#rc');c.width=VW;c.height=VH;c.style.width=VW*SC+'px';c.style.height=VH*SC+'px'}
 /* casa ocupada por alguém (parado ou chegando nela) */
 const busy=(x,y,me)=>(me!==P&&((P.x===x&&P.y===y)||(P.mv&&P.mv.tx===x&&P.mv.ty===y)))||NPC.some(n=>n!==me&&((n.x===x&&n.y===y)||(n.mv&&n.mv.tx===x&&n.mv.ty===y)));
 function canStep(d,who){const[dx,dy]=DV[d],nx=who.x+dx,ny=who.y+dy;return!solid(nx,ny)&&!busy(nx,ny,who)}
@@ -827,7 +830,7 @@ function drawRoom(t){const c=$('#rc'),x=c.getContext('2d');x.imageSmoothingEnabl
   NPC.forEach(n=>npcTick(n,t,dt));petTick(t);
   cam.x=Math.max(0,Math.min(MW*T-VW,Math.round(P.px+T/2-VW/2)));/* faixa dos controles fantasmas (em pixels da arte): o piloto nunca entra nela; perto do fim da sala, a câmera desce
      além do chão e a parte de baixo da tela fica vazia */
-  const GH=Math.ceil((($('.ghost')||{}).offsetHeight||170)/2)+10,maxY=MH*T-VH+GH;
+  const GH=Math.ceil((($('.ghost')||{}).offsetHeight||170)/SC)+10,maxY=MH*T-VH+GH;
   cam.y=Math.round(Math.min(maxY,Math.max(0,P.py-VH*.42+T,P.py+T-(VH-GH))));
   x.fillStyle='#0d0820';x.fillRect(0,0,VW,VH);
   x.drawImage(BG,-cam.x,-cam.y);

@@ -209,6 +209,8 @@ button,a{font:inherit;color:inherit;background:none;border:0;text-decoration:non
 /* telas de jogo cabem na tela do celular, sem rolar */
 #play .tablet{min-height:100px;padding:16px 12px}
 #play .tablet .cap{top:6px}
+/* telas bem baixas (iPhone 8 no Safari) */
+@media (max-height:620px){.bar{margin-bottom:10px}.play-head{margin-bottom:6px}.segs{margin-bottom:8px}#play .tablet{min-height:70px}.key{height:40px!important}.blk{height:44px!important}.chamber{height:104px!important}.fb{font-size:18px}}
 @media (max-height:700px){.blocks{margin-bottom:10px}.fb{font-size:19px;margin-top:10px}.fb:not(:empty){padding:10px 12px}.play-head{margin-bottom:10px}#play .tablet{min-height:84px}.key{height:44px}.blk{height:50px}.chamber{height:130px}}
 .tablet .cap{position:absolute;top:8px;left:10px;font-family:var(--px);font-size:7px;color:var(--st5);letter-spacing:.1em}
 
@@ -359,6 +361,10 @@ button.dcard .ok,button.dcard .st{position:static;display:flex;align-items:cente
 /* logo igual ao card do jogo na Nave-Mãe: quadro de 72 px com o ícone a 4 px por pixel */
 .brand .logo{width:72px;height:72px;padding:0;background:var(--panel2);font-size:0;text-shadow:none;box-shadow:0 -4px 0 0 var(--line),0 4px 0 0 var(--line),-4px 0 0 0 var(--line),4px 0 0 0 var(--line);filter:drop-shadow(4px 4px 0 #000)}
 .brand .logo .spr{display:block}
+/* tela de missão cumprida em telas baixas (iPhone 8, Android): herói, estrelas e botões menores, sem rolar */
+@media (max-height:700px){.cel{gap:8px}.cel-hero{height:132px}.cel-hero>*{transform:scale(.72)}.cel-t{font-size:16px}.cel-sub{font-size:18px}
+  .cel-stars{height:54px;transform:scale(.8);margin:-4px 0}.cel-turno{padding:8px 12px}.cel-segs{margin-top:6px}.cel-btns{gap:8px}.cel-btns .btn,.cel-btns .ghost{min-height:46px;height:46px}}
+@media (max-height:600px){.cel-hero{height:104px}.cel-hero>*{transform:scale(.58)}.cel-stars{height:46px;transform:scale(.7);margin:-8px 0}.cel-score b{font-size:22px}}
 </style>
 <script>
 /* sem zoom: bloqueia pinça e dois toques no app inteiro */
@@ -456,7 +462,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 <script>
 /* atualização automática: compara com version.json e recarrega com ?v=<versão> no endereço (o iPhone não reaproveita a
    página guardada). Se mesmo com ?v=<versão> a página veio velha, não insiste (evita recarregar sem parar). */
-const APP_V='20261010104815';
+const APP_V='20261010113749';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     const q=new URLSearchParams(location.search).get('v');
