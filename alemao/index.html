@@ -471,12 +471,13 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 <div class="overlay" id="dict" hidden><div class="modal px"><h2>DICIONÁRIO DA FAMÍLIA</h2>
   <div class="legend"><span class="a-der">DER: MASCULINO</span><span class="a-die">DIE: FEMININO</span><span class="a-das">DAS: NEUTRO</span><span class="a-pl">DIE: PLURAL</span></div>
   <ul class="dict" id="dictList"></ul><button class="btn" data-close>FECHAR</button></div></div>
+<div class="overlay" id="vhelp" hidden><div class="modal px"><h2>A VOZ NÃO TOCOU</h2><p id="vhTxt" style="font-size:20px;line-height:1.15;text-align:left"></p><button class="btn" data-close>ENTENDI</button></div></div>
 <div class="overlay" id="lvup" hidden><div class="modal px levelup"><div class="label">Novo nível</div><div class="big" id="lvBig"></div><p id="lvTxt"></p><button class="btn" data-close>WEITER! (VAMOS!)</button></div></div>
 
 <script>
 /* atualização automática: compara com version.json e recarrega com ?v=<versão> no endereço (o iPhone não reaproveita a
    página guardada). Se mesmo com ?v=<versão> a página veio velha, não insiste (evita recarregar sem parar). */
-const APP_V='20261010113749';
+const APP_V='20261010114737';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris|mina|ivoti|biblio|alemao)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     const q=new URLSearchParams(location.search).get('v');
@@ -841,12 +842,28 @@ function renderMenu(){
 document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{sfx.tap();startMission(b.dataset.go)});
 $('#goHz').onclick=()=>{sfx.tap();startMission('desafio')};
 
-/* =================== voz alemã (só nas palavras e frases em alemão) =================== */
-let VOICE=null;
-function pickVoice(){try{const v=speechSynthesis.getVoices();VOICE=v.find(x=>/^de([-_]|$)/i.test(x.lang)&&/anna|helena|petra|google/i.test(x.name))||v.find(x=>/^de([-_]|$)/i.test(x.lang))||null}catch(e){}}
-const canSay='speechSynthesis' in window;
-if(canSay){pickVoice();try{speechSynthesis.onvoiceschanged=pickVoice}catch(e){}}
-function say(t){if(!canSay)return false;try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='de-DE';if(VOICE)u.voice=VOICE;u.rate=.8;u.pitch=1.05;speechSynthesis.speak(u);return true}catch(e){return false}}
+/* =================== voz alemã (só nas palavras e frases em alemão) ===================
+   iPhone: a primeira fala precisa nascer de um toque (desbloqueio com uma fala muda no primeiro toque); cancelar e falar
+   na mesma hora às vezes some (espera 80 ms); a sessão de áudio "ambiente" deixa a voz muda no silencioso, então durante
+   a fala o app passa para "reprodução" e depois volta ao modo das configurações. Se a voz não começar, aparece uma ajuda. */
+let VOICE=null,spOn=false,helped=false;const UTT=[];
+const canSay='speechSynthesis' in window&&'SpeechSynthesisUtterance' in window;
+function pickVoice(){try{const v=speechSynthesis.getVoices(),de=v.filter(x=>/^de([-_]|$)/i.test(x.lang));
+  VOICE=de.find(x=>/anna|helena|petra|markus|google/i.test(x.name))||de.find(x=>x.localService)||de[0]||null}catch(e){}}
+if(canSay){pickVoice();try{speechSynthesis.addEventListener('voiceschanged',pickVoice)}catch(e){try{speechSynthesis.onvoiceschanged=pickVoice}catch(_){}}}
+function unlockSpeech(){if(spOn||!canSay)return;spOn=true;try{const u=new SpeechSynthesisUtterance(' ');u.volume=0;u.lang='de-DE';UTT.push(u);speechSynthesis.speak(u)}catch(e){}}
+['touchend','click'].forEach(k=>document.addEventListener(k,unlockSpeech,true));
+function voiceHelp(){if(helped)return;helped=true;$('#vhTxt').innerHTML=(VOICE?'':'Não achei uma <b>voz alemã</b> neste aparelho. No iPhone: Ajustes › Acessibilidade › Conteúdo Falado › Vozes › Alemão (baixe uma voz). No Android: Configurações › Idiomas › Saída de texto para voz.<br><br>')+
+  'Confira também o <b>volume</b> e, no iPhone, a chave do <b>silencioso</b>. Se mesmo assim não sair som, ligue "Tocar no silencioso" nas configurações da Nave-Mãe.';$('#vhelp').hidden=false}
+function say(t){if(!canSay){voiceHelp();return false}
+  try{if(!VOICE)pickVoice();
+    const go=()=>{try{if(navigator.audioSession)navigator.audioSession.type='playback'}catch(e){}
+      const u=new SpeechSynthesisUtterance(t);u.lang=VOICE?VOICE.lang.replace('_','-'):'de-DE';if(VOICE)u.voice=VOICE;u.rate=.85;u.pitch=1.05;u.volume=1;
+      let started=false;const back=()=>setTimeout(()=>{if(!speechSynthesis.speaking)try{navAudioMode()}catch(e){}},250);
+      u.onstart=()=>{started=true};u.onend=back;u.onerror=e=>{back();if(!/interrupted|canceled/.test(e.error||''))voiceHelp()};
+      UTT.push(u);if(UTT.length>6)UTT.shift();speechSynthesis.speak(u);if(speechSynthesis.paused)speechSynthesis.resume();
+      clearTimeout(say.w);say.w=setTimeout(()=>{if(!started&&!speechSynthesis.speaking){back();voiceHelp()}},3000)};
+    if(speechSynthesis.speaking||speechSynthesis.pending){speechSynthesis.cancel();setTimeout(go,80)}else go();return true}catch(e){voiceHelp();return false}}
 const spk=(t,cls='')=>`<button class="spk px pbtn ${cls}" data-say="${esc(t)}">${sprite('spk',2)}OUVIR</button>`;
 document.addEventListener('click',e=>{const b=e.target.closest('[data-say]');if(!b)return;e.stopPropagation();say(b.dataset.say);b.classList.add('on');setTimeout(()=>b.classList.remove('on'),600)},true);
 
