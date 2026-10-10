@@ -69,7 +69,11 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;touch-
 @keyframes dlgIn{from{transform:translateY(12px);opacity:0}}
 .dlg h4{font-family:var(--px);font-size:10px;font-weight:400;line-height:1.5;color:var(--yel);margin-bottom:6px}
 .dlg p{font-size:21px;line-height:1.1;color:var(--ink)}
-.dlg .row{display:flex;gap:10px;margin-top:12px}
+.dlg .row{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+.dlg .row button{min-width:calc(50% - 5px)}
+.dlg .foto{display:block;width:120px;margin:4px auto 2px;image-rendering:pixelated;box-shadow:0 0 0 2px #000,0 0 0 5px #f3eeff,0 0 0 7px #000}
+#flash{position:fixed;inset:0;z-index:39;background:#fff;pointer-events:none;opacity:0}
+#flash.on{opacity:.9}
 .dlg .row button{flex:1;padding:12px 6px;font-family:var(--px);font-size:9px;color:#1a0d00;background:var(--yel);box-shadow:inset 0 -4px 0 0 #b38a10,0 0 0 2px #000}
 .dlg .row button.alt{color:var(--ink);background:#2a1d55;box-shadow:inset 0 -4px 0 0 #160e33,0 0 0 2px #000}
 .dlg .row button:active{transform:translate(2px,2px)}
@@ -231,12 +235,12 @@ html.web{--top:calc(var(--sat,var(--sat,env(safe-area-inset-top))) + 54px)}
   </div>
   <div class="coin"><span class="slot"></span><span class="led" id="cLed">--:--</span><span class="slot"></span></div>
 </section>
-<div id="fade"></div>
+<div id="fade"></div><div id="flash"></div>
 
 <script>
 /* atualização automática: compara com version.json e recarrega com ?v=<versão> no endereço (o iPhone não reaproveita a
    página guardada). Se mesmo com ?v=<versão> a página veio velha, não insiste (evita recarregar sem parar). */
-const APP_V='20261006081853';
+const APP_V='20261010104815';
 (function(){const H0=location.hash;
   async function check(){try{const r=await fetch('../version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     const q=new URLSearchParams(location.search).get('v');
@@ -607,7 +611,7 @@ function fit(){const st=$('#stage'),w=Math.floor(st.clientWidth/2),h=Math.floor(
 /* casa ocupada por alguém (parado ou chegando nela) */
 const busy=(x,y,me)=>(me!==P&&((P.x===x&&P.y===y)||(P.mv&&P.mv.tx===x&&P.mv.ty===y)))||NPC.some(n=>n!==me&&((n.x===x&&n.y===y)||(n.mv&&n.mv.tx===x&&n.mv.ty===y)));
 function canStep(d,who){const[dx,dy]=DV[d],nx=who.x+dx,ny=who.y+dy;return!solid(nx,ny)&&!busy(nx,ny,who)}
-function startStep(who,d,t0){const[dx,dy]=DV[d];who.dir=d;who.mv={fx:who.x,fy:who.y,tx:who.x+dx,ty:who.y+dy};who.t0=t0;who.step++}
+function startStep(who,d,t0){const[dx,dy]=DV[d];if(who===P&&typeof petFollow==='function')petFollow(who.x,who.y,t0);who.dir=d;who.mv={fx:who.x,fy:who.y,tx:who.x+dx,ty:who.y+dy};who.t0=t0;who.step++}
 function tryMove(d,t0){P.dir=d;if(!canStep(d,P)){if(!tryMove.b||performance.now()-tryMove.b>320){SND.bump();tryMove.b=performance.now()}return false}
   startStep(P,d,t0);if(P.step%2)SND.step();P.lastAx=(d==='up'||d==='down')?'v':'h';return true}
 /* escolhe a direção com o que está apertado: uma só, ou alternando os eixos na diagonal */
@@ -624,7 +628,7 @@ function playerArrived(tEnd){A.pos=[P.x,P.y,P.dir];saveA();
   if(P.path.length){if(canStep(P.path[0],P))tryMove(P.path.shift(),tEnd);else P.wait=performance.now()}
   else if(P.goal){const g=P.goal;P.goal=null;P.dir=g.face;interact()}}
 P.onMat=isMat(P.x,P.y);
-function facing(){const[dx,dy]=DV[P.dir],x=P.x+dx,y=P.y+dy;return objAt(x,y)||NPC.find(n=>n.x===x&&n.y===y&&!n.mv)}
+function facing(){const[dx,dy]=DV[P.dir],x=P.x+dx,y=P.y+dy;return objAt(x,y)||NPC.find(n=>n.x===x&&n.y===y&&!n.mv)||(PET&&!PET.mv&&!PET.seat&&PET.x===x&&PET.y===y?PET:null)}
 function bfs(who,tx,ty,avoid){const key=(x,y)=>y*MW+x,prev=new Map([[key(who.x,who.y),null]]),q=[[who.x,who.y]];
   while(q.length){const[x,y]=q.shift();if(x===tx&&y===ty)break;for(const d of['up','down','left','right']){const[dx,dy]=DV[d],nx=x+dx,ny=y+dy,k=key(nx,ny);
     if(solid(nx,ny)||prev.has(k)||(avoid&&busy(nx,ny,who)))continue;prev.set(k,[x,y,d]);q.push([nx,ny])}}
@@ -679,15 +683,38 @@ function converse(id,who){const C=CONVERSAS[id];if(!C)return;A.npc=A.npc||{};con
   if(ok&&(s.arc===0||(s.hoje<2&&s.n%2===0))){txt=h.t;s.arc++;s.hoje++}
   else{const f=C.fatos;txt=f[s.fi%f.length];s.fi++;
     if(s.n>4&&s.fi%4===1)txt=(C.robo?'ATUALIZAÇÃO DE CONHECIMENTO, AMIGO {NOME}!|':['E aí, {nome}! Sabe o que eu descobri?|','Oi de novo, {nome}!|','Que bom te ver, {nome}!|'][s.n%3])+txt}
+  if(PET&&s.pd!==dk()){s.pd=dk();txt=(C.robo?`DETECTEI UM ${PET.NOME}. NÍVEL DE FOFURA: MÁXIMO!|`:[`Que fofo! ${PET.nome} veio junto hoje?|`,`Oi, ${PET.nome}! Oi, {nome}!|`,`Olha quem veio: ${PET.nome}!|`][s.n%3])+txt}
   saveA();sayPages(C.nome,fill(txt).split('|'),who)}
 function talk(kind){
   if(kind==='exit'){dlg('<h4>SAÍDA</h4><p>Voltar para a nave?</p>',[{t:'VOLTAR',f:()=>{SND.door();$('#fade').classList.add('on');setTimeout(home,260)}},{t:'FICAR',alt:true}]);return}
   if(kind==='intro'){dlg(`<h4>RECOMPENSA DO DIA!</h4><p>Missões completas: você ganhou ${MIN} min de fliperama. As máquinas acesas estão funcionando: ande até uma e aperte A.</p>`);return}
   if(kind==='locked'){dlg(MIN===0?'<h4>FLIPERAMA FECHADO</h4><p>Desligado na Área dos pais.</p>':'<h4>FLIPERAMA FECHADO</h4><p>As máquinas ligam quando as missões de hoje estiverem completas.</p>');return}
-  if(kind==='out'){dlg(`<h4>FICHAS DE HOJE ACABARAM</h4><p>Amanhã tem mais ${MIN} min. Complete as missões para liberar.</p>`);return}}
+  if(kind==='out'){dlg(`<h4>FICHAS DE HOJE ACABARAM</h4><p>As máquinas descansam até amanhã (mais ${MIN} min com as missões completas).</p>`);return}
+  if(kind==='outIn'){dlg(`<h4>SALA ABERTA</h4><p>As fichas de hoje acabaram e as máquinas descansam. Mas a sala está aberta: converse com a turma, tome um refri, sente no sofá, dance ou tire uma foto${PET?' com '+PET.nome:''}!</p>`);return}}
+/* ações da sala: devolve true se tratou o objeto */
+function roomAct(o){const t=performance.now();A.dia=A.dia&&A.dia.d===dk()?A.dia:{d:dk(),soda:0,pip:0,reg:{}};const D=A.dia;
+  if(o.k==='sofa'||o.k==='bench'){sitOn(o);dlg(`<h4>${o.k==='sofa'?'SOFÁ':'BANCO'}</h4><p>${o.k==='sofa'?'Você se jogou no sofá. Fofo demais!':'Uma pausa no banco.'}${PET?` ${PET.nome} sentou do lado.`:''} Mexa o direcional para levantar.</p>`);return true}
+  if(o.k==='soda'){if(P.can){dlg('<h4>REFRIGERANTE</h4><p>Você ainda está com a lata na mão. Jogue na lixeira primeiro!</p>');return true}
+    if(D.soda>=2){dlg('<h4>REFRIGERANTE</h4><p>Já foram 2 refris hoje. Que tal água fresquinha no bebedouro?</p>');return true}
+    const go=(nome,col)=>{SY.noise(.12,0,{f:180,vol:.08});SY.note(196,.08,.12,{vol:.05});SY.noise(.25,.35,{filter:'highpass',f:3000,vol:.04});D.soda++;saveA();P.dir='down';
+      act('drink',{dur:2700,col,after:()=>{P.can=col;const b=Math.random()<.5;if(b)setTimeout(()=>{SY.note(110,.22,0,{to:70,vib:30,vol:.07})},150);dlg(`<h4>${nome}</h4><p>Ahhh! ${b?'(Arroto!) Ops, com licença! ':''}A lata vazia ficou na sua mão: leve até a lixeira.</p>`)}})};
+    dlg('<h4>REFRIGERANTE</h4><p>Escolha: Suco de Cometa (laranja), Água de Saturno (com gás) ou Gás Nebulosa (uva).</p>',[{t:'COMETA',f:()=>go('SUCO DE COMETA','#ff8a1f')},{t:'SATURNO',f:()=>go('ÁGUA DE SATURNO','#2ad4ff')},{t:'NEBULOSA',f:()=>go('GÁS NEBULOSA','#b46aff')},{t:'AGORA NÃO',alt:true}]);return true}
+  if(o.k==='trash'&&P.can){P.can=null;SY.noise(.08,0,{f:2500,vol:.06});SY.arp([784,988,1319],.06,{vol:.04,t:.1});fx('star',o.x*T+5,o.y*T-6,2);dlg('<h4>LIXEIRA</h4><p>Lata na reciclagem. Muito bem! Alumínio vira lata nova de novo.</p>');return true}
+  if(o.k==='agua'){P.dir='up';act('water',{dur:1800,after:()=>dlg('<h4>BEBEDOURO</h4><p>Glub glub! Água fresquinha. O corpo e o cérebro agradecem.</p>')});return true}
+  if(o.k==='snack'){if(D.pip>=1){dlg('<h4>SALGADINHOS</h4><p>A pipoca de hoje já foi. Amanhã tem mais!</p>');return true}
+    dlg('<h4>SALGADINHOS</h4><p>Pipoca de Marte, chips de asteroide e barrinha lunar. Um saquinho de pipoca?</p>',[{t:'PIPOCA',f:()=>{D.pip++;saveA();SY.noise(.15,0,{f:300,vol:.06});P.dir='down';act('eat',{dur:2700,after:()=>dlg(`<h4>PIPOCA</h4><p>Crec, crec! Que pipoca crocante.${PET?` ${PET.nome} ficou de olho nas migalhas.`:''}</p>`)})}},{t:'AGORA NÃO',alt:true}]);return true}
+  if(o.k==='dance'){dlg('<h4>MÁQUINA DE DANÇA</h4><p>A Mel chama: "Dança comigo? Segue o ritmo!"</p>',[{t:'DANÇAR',f:()=>{act('dance',{dur:6500,after:()=>{SY.arp([523,659,784,1047],.08,{vol:.05});dlg(`<h4>MÁQUINA DE DANÇA</h4><p>Nota da máquina: A+! A Mel bateu palmas${PET?` e ${PET.nome} pulou junto`:''}.</p>`)}})}},{t:'AGORA NÃO',alt:true}]);return true}
+  if(o.k==='foto'){dlg(`<h4>CABINE DE FOTOS</h4><p>Três poses${PET?` com ${PET.nome}`:''}. Sorria!</p>`,[{t:'TIRAR FOTO',f:()=>{SND.door();act('photo',{dur:2600,after:()=>{photoUrl=makePhoto();A.fotos=(A.fotos||0)+1;saveA();SY.arp([1047,1319,1568],.07,{vol:.05});
+      dlg(`<h4>SUA FOTO!</h4><img class="foto" src="${photoUrl}" alt="Tirinha de fotos">`)}})}},{t:'AGORA NÃO',alt:true}]);return true}
+  if(o.k==='plant'){const id=o.x+','+o.y;if(D.reg[id]){dlg('<h4>PLANTA</h4><p>Já foi regada hoje. Água demais também faz mal para a planta.</p>');return true}
+    dlg('<h4>PLANTA</h4><p>Uma samambaia espacial. A terra está sequinha.</p>',[{t:'REGAR',f:()=>{D.reg[id]=1;saveA();act('rega',{dur:1500,o,after:()=>{fx('star',o.x*T+5,o.y*T-14,2);dlg('<h4>PLANTA</h4><p>A samambaia agradece! As folhas ficaram mais verdinhas.</p>')}})}},{t:'AGORA NÃO',alt:true}]);return true}
+  return false}
 function interact(){if(dlgOpen){const b=dlgOpen;if(b.length){const f=b[0];closeDlg();f.f&&f.f()}else adv();return}
+  if(P.act){if(P.act.cancel)endAct();return}
   if(isMat(P.x,P.y)){talk('exit');return}
   const o=facing();if(!o)return;
+  if(o===PET){petMenu();return}
+  if(roomAct(o))return;
   if(o.id){const n=o;n.dir=OPPD[P.dir];converse(n.id,n);return}
   if(o.k==='counter'){converse('nino',null);return}
   if(o.k==='cab'){const g=gameOf(o);
@@ -710,14 +737,94 @@ function interact(){if(dlgOpen){const b=dlgOpen;if(b.length){const f=b[0];closeD
   if(L)dlg(`<h4>${L[0]}</h4><p>${L[1]}</p>`)}
 const OPPD={up:'down',down:'up',left:'right',right:'left'};
 
+/* =================== PET E AÇÕES DA SALA ===================
+   O pet escolhido no Hangar (navemae-avatar.pet) segue o piloto uma casa atrás e não bloqueia ninguém.
+   De frente para ele, A abre CARINHO / PETISCO / BRINCAR. Ações da sala (com ou sem fichas): sentar no sofá ou
+   no banco, tomar refrigerante (e jogar a lata na lixeira), beber água, comer pipoca, dançar, tirar foto e regar plantas. */
+const PET=(()=>{const p=AV.pet;if(!p||!p.f0)return null;
+  const mk=(rows,flip)=>grid(flip?rows.map(r=>[...r].reverse().join('')):rows,p.pal);
+  return{isPet:true,id:'pet_'+p.id,sp:p.id,NOME:p.name,nome:p.name.charAt(0)+p.name.slice(1).toLowerCase(),say:p.say,trick:p.trick,sfx:p.sfx||[],
+    img:{right:[mk(p.f0),mk(p.f1)],left:[mk(p.f0,1),mk(p.f1,1)]},x:6,y:MH-2,px:6*T,py:(MH-2)*T,mv:null,t0:0,face:'left',hop:-9999,spin:-9999,seat:null}})();
+const PSTEP=STEP*1.15;
+function petSound(){if(PET)PET.sfx.forEach(s=>s[0]==='noise'?SY.noise(s[1],s[2],s[3]):SY.note(s[1],s[2],s[3],s[4]))}
+/* o pet vai para a casa que o piloto acabou de deixar */
+function petFollow(fx,fy,t0){if(!PET||PET.seat)return;if(PET.x===fx&&PET.y===fy)return;
+  if(Math.abs(PET.x-fx)+Math.abs(PET.y-fy)===1){PET.mv={fx:PET.x,fy:PET.y,tx:fx,ty:fy};PET.t0=t0;if(fx!==PET.x)PET.face=fx>PET.x?'right':'left'}
+  else{PET.x=fx;PET.y=fy;PET.mv=null}}
+function petTick(t){if(!PET)return;if(PET.mv){const k=Math.min(1,(t-PET.t0)/PSTEP);PET.px=(PET.mv.fx+(PET.mv.tx-PET.mv.fx)*k)*T;PET.py=(PET.mv.fy+(PET.mv.ty-PET.mv.fy)*k)*T;
+    if(k>=1){PET.x=PET.mv.tx;PET.y=PET.mv.ty;PET.mv=null}}else{PET.px=PET.x*T;PET.py=PET.y*T}}
+function drawPet(x,t){const p=PET,s=p.seat;let X=(s?s.x:p.px/T)*T,Y=(s?s.y:p.py/T)*T,face=p.face;
+  if(t-p.spin<900)face=Math.floor((t-p.spin)/110)%2?'left':'right';
+  const moving=!!p.mv,f=moving?Math.floor(Math.max(0,t-p.t0)/(PSTEP/2))%2:(Math.floor(t/1800)%5===0&&(t%1800)>1200?1:0);
+  let dy=0;const h=t-p.hop;if(h<520)dy=-Math.round(Math.sin(h/520*Math.PI)*6);
+  if(s)dy-=4; // no assento
+  x.drawImage(p.img[face][f],Math.round(X-cam.x),Math.round(Y+T-12+dy-cam.y))}
+/* efeitos: corações, notas, gotas, zzz */
+const FX=[];
+function fx(k,X,Y,n=1){for(let i=0;i<n;i++)FX.push({k,x:X+(Math.random()*8-4),y:Y,t0:performance.now()+i*140})}
+const FXG={heart:[".k.k.","kRkRk","kRRRk",".kRk.","..k.."],note:["..kk","..kY","..k.","kkk.","kk.."],drop:[".k.","kCk","kCk",".k."],z:["kkkk","..k.",".k..","kkkk"],star:["..k..",".kYk.","kYYYk",".kYk.","..k.."]};
+const FXP={R:'#ff5a8a',Y:'#ffd23f',C:'#7ad8ff',k:'#07060f'};const FXI={};for(const k in FXG)FXI[k]=grid(FXG[k],FXP);
+function drawFx(x,t){for(let i=FX.length-1;i>=0;i--){const e=FX[i],a=(t-e.t0)/1000;if(a<0)continue;if(a>1.1){FX.splice(i,1);continue}
+  const dy=e.k==='drop'?a*10:-a*16;x.globalAlpha=Math.max(0,1-a*.9);x.drawImage(FXI[e.k],Math.round(e.x+(e.k==='z'?a*6:0)-cam.x),Math.round(e.y+dy-cam.y));x.globalAlpha=1}}
+/* piloto sentado: corpo de frente com as pernas dobradas para a frente */
+const SIT=(()=>{const c=cnv(12,18),x=c.getContext('2d');x.drawImage(PF.down[0],0,0,12,15,0,0,12,15);
+  const k='#07060f';x.fillStyle=k;x.fillRect(3,15,6,3);x.fillStyle=PC['9'];x.fillRect(4,15,2,1);x.fillStyle=PC['0'];x.fillRect(6,15,2,1);
+  x.fillStyle=PC.K;x.fillRect(4,16,2,1);x.fillRect(6,16,2,1);return c})();
+let photoUrl=null;
+function act(k,o={}){P.act=Object.assign({k,t0:performance.now()},o);P.path=[];P.goal=null;held.clear();clearDp()}
+function endAct(silent){const a=P.act;if(!a)return;P.act=null;if(a.k==='sit'&&PET)PET.seat=null;if(!silent&&a.after)a.after()}
+function actTick(t){const a=P.act;if(!a)return;const e=t-a.t0;
+  if(a.k==='sit'&&e>6000&&Math.floor(e/900)!==a.zz){a.zz=Math.floor(e/900);fx('z',a.seat.x*T+8,a.seat.y*T-14)}
+  if(a.k==='drink'||a.k==='eat'){const g=Math.floor(e/450);if(g!==a.g&&e<a.dur-300){a.g=g;a.k==='drink'?SY.note(220+(g%2)*40,.09,0,{type:'triangle',vol:.05}):SY.noise(.06,0,{filter:'highpass',f:2200,vol:.05})}}
+  if(a.k==='water'){const g=Math.floor(e/300);if(g!==a.g){a.g=g;fx('drop',P.x*T+6,P.y*T-6);SY.note(900+Math.random()*300,.04,0,{type:'sine',vol:.03})}}
+  if(a.k==='rega'){const g=Math.floor(e/220);if(g!==a.g){a.g=g;fx('drop',a.o.x*T+4+Math.random()*8,a.o.y*T-6)}}
+  if(a.k==='dance'){const g=Math.floor(e/260);if(g!==a.g){a.g=g;const M=[523,659,784,659,587,698,880,698];SY.note(M[g%8],.12,0,{type:'triangle',vol:.045});if(g%4===0)SY.noise(.05,0,{f:200,vol:.06});if(g%6===0)fx('note',P.x*T+4,P.y*T-14);if(PET&&g%4===0)PET.hop=t}}
+  if(a.k==='photo'){const g=e<700?0:e<1300?1:e<1900?2:3;if(g!==a.g&&g>=1&&g<=3){a.g=g;SY.noise(.08,0,{filter:'highpass',f:2600,vol:.08});const fl=$('#flash');fl.classList.add('on');setTimeout(()=>fl.classList.remove('on'),90)}}
+  if(a.dur&&e>=a.dur)endAct()}
+/* desenha o piloto em ação; devolve false se não estiver em ação */
+function drawAct(x,t){const a=P.act;if(!a)return false;const e=t-a.t0,X=Math.round(P.px+2-cam.x),Y=Math.round(P.py+T-22-cam.y);
+  if(a.k==='sit'){x.drawImage(SIT,Math.round(a.seat.x*T+2-cam.x),Math.round(a.seat.y*T+T-17-cam.y));return true}
+  if(a.k==='photo')return true; // está dentro da cabine
+  if(a.k==='dance'){const st=Math.floor(e/260)%4,d=['down','left','down','right'][st];x.drawImage(PF[d][1+st%2],X,Y-(st%2));return true}
+  if(a.k==='water'){x.drawImage(PF.up[0],X,Y+(Math.floor(e/300)%2));return true}
+  if(a.k==='rega'){x.drawImage(PF[P.dir][0],X,Y);return true}
+  if(a.k==='drink'||a.k==='eat'){x.drawImage(PF.down[0],X,Y);const up=Math.floor(e/450)%2;
+    if(a.k==='drink'){x.fillStyle='#07060f';x.fillRect(X+7,Y+4-up,4,6);x.fillStyle=a.col;x.fillRect(X+8,Y+5-up,2,4);x.fillStyle='#e8eaf0';x.fillRect(X+8,Y+7-up,2,1)}
+    else{x.fillStyle='#07060f';x.fillRect(X+7,Y+7,6,6);x.fillStyle='#ff3d2e';x.fillRect(X+8,Y+9,4,3);x.fillStyle='#fff3a0';x.fillRect(X+8,Y+7-up,4,2)}
+    return true}
+  return false}
+function drawCan(x){if(!P.can||P.dir==='up')return;const X=Math.round(P.px+2-cam.x)+(P.dir==='left'?0:9),Y=Math.round(P.py+T-22-cam.y)+11;x.fillStyle='#07060f';x.fillRect(X,Y,3,4);x.fillStyle=P.can;x.fillRect(X+1,Y+1,1,2)}
+/* assento livre do sofá/banco: a casa da frente do objeto onde o piloto está */
+function sitOn(o){const sx=Math.min(o.x+o.w-1,Math.max(o.x,P.x));act('sit',{seat:{x:sx,y:o.y},cancel:true});SND.bump();
+  if(PET){const other=sx===o.x?o.x+o.w-1:o.x;if(other!==sx){PET.seat={x:other,y:o.y};PET.face=other>sx?'left':'right';PET.mv=null}}}
+function petMenu(){const p=PET,L={cachorro:'abana o rabo',gato:'se espreguiça devagar',alien:'brilha de alegria',robocao:'pisca as luzes'}[p.sp]||'olha para você';
+  p.face=OPPD[P.dir]==='left'?'left':OPPD[P.dir]==='right'?'right':p.face;
+  dlg(`<h4>${p.NOME}</h4><p>${p.nome} ${L}. O que vocês vão fazer?</p>`,[{t:'CARINHO',f:()=>petDo('carinho')},{t:'PETISCO',f:()=>petDo('petisco')},{t:'BRINCAR',f:()=>petDo('brincar')},{t:'TCHAU',alt:true}],p)}
+function petDo(k){const p=PET,t=performance.now();A.pet=A.pet||{};const s=A.pet;if(s.day!==dk()){s.day=dk();s.pet=0}
+  if(k==='carinho'){p.hop=t;petSound();fx('heart',p.px+5,p.py-4,4);dlg(`<h4>${p.NOME}</h4><p>${p.say} ${p.nome} adorou o carinho!</p>`)}
+  if(k==='petisco'){if(s.pet>=3){dlg(`<h4>${p.NOME}</h4><p>${p.nome} já ganhou 3 petiscos hoje. Barriguinha cheia!</p>`);return}
+    s.pet++;p.hop=t;SY.noise(.05,0,{filter:'highpass',f:2400,vol:.05});SY.noise(.05,.12,{filter:'highpass',f:2400,vol:.05});setTimeout(petSound,300);fx('star',p.px+5,p.py-4,2);
+    dlg(`<h4>${p.NOME}</h4><p>Nham! ${p.nome} comeu o petisco${s.pet===3?' (o último de hoje)':''}.</p>`)}
+  if(k==='brincar'){p.spin=t;p.hop=t+500;petSound();fx('star',p.px+5,p.py-4,3);dlg(`<h4>${p.NOME}</h4><p>${p.nome} ${p.trick}! Que truque!</p>`)}
+  saveA()}
+/* foto: três poses (com o pet, se tiver) numa tirinha */
+function makePhoto(){const W=44,H=140,c=cnv(W,H),x=c.getContext('2d');x.fillStyle='#f3eeff';x.fillRect(0,0,W,H);
+  const BGC=['#ff3df2','#2ad4ff','#ffd23f'];
+  for(let i=0;i<3;i++){const y0=4+i*42;x.fillStyle=BGC[i];x.fillRect(4,y0,36,38);x.fillStyle='rgba(255,255,255,.25)';for(let k=0;k<36;k+=6)x.fillRect(4+k,y0,3,38);
+    const pf=i===1?PF.left[1]:PF.down[0];x.drawImage(pf,PET?10:16,y0+13);
+    if(PET)x.drawImage(PET.img[i===1?'right':'left'][i===2?1:0],22,y0+(i===2?20:25));
+    if(i===2){x.drawImage(FXI.star,6,y0+3);x.drawImage(FXI.heart,32,y0+4)}}
+  x.fillStyle='#b8203a';x.fillRect(4,H-8,36,2);return c.toDataURL()}
+
 /* ---------- desenho da sala ---------- */
 function drawRoom(t){const c=$('#rc'),x=c.getContext('2d');x.imageSmoothingEnabled=false;const dt=Math.min(.1,(t-(lastT||t))/1000);lastT=t;
   // jogador
   if(P.mv){const k=Math.min(1,(t-P.t0)/STEP);P.px=(P.mv.fx+(P.mv.tx-P.mv.fx)*k)*T;P.py=(P.mv.fy+(P.mv.ty-P.mv.fy)*k)*T;if(k>=1){const te=arrive(P);P.px=P.x*T;P.py=P.y*T;playerArrived(te)}}
-  if(!P.mv&&!dlgOpen){const hd=heldDir();if(hd){P.path=[];P.goal=null;tryMove(hd,t)}
+  actTick(t);if(P.act){if(!dlgOpen&&heldDir()&&P.act.cancel)endAct()}
+  else if(!P.mv&&!dlgOpen){const hd=heldDir();if(hd){P.path=[];P.goal=null;tryMove(hd,t)}
     else if(P.path.length&&canStep(P.path[0],P))tryMove(P.path.shift(),t);
     else if(P.path.length&&t-P.wait>700){const g=P.goal,last=P.path.reduce((p,d)=>[p[0]+DV[d][0],p[1]+DV[d][1]],[P.x,P.y]);P.path=bfs(P,last[0],last[1],true)||[];if(!P.path.length&&g){P.goal=null}}}
-  NPC.forEach(n=>npcTick(n,t,dt));
+  NPC.forEach(n=>npcTick(n,t,dt));petTick(t);
   cam.x=Math.max(0,Math.min(MW*T-VW,Math.round(P.px+T/2-VW/2)));/* faixa dos controles fantasmas (em pixels da arte): o piloto nunca entra nela; perto do fim da sala, a câmera desce
      além do chão e a parte de baixo da tela fica vazia */
   const GH=Math.ceil((($('.ghost')||{}).offsetHeight||170)/2)+10,maxY=MH*T-VH+GH;
@@ -727,9 +834,10 @@ function drawRoom(t){const c=$('#rc'),x=c.getContext('2d');x.imageSmoothingEnabl
   {const k=Math.floor(t/400);for(let j=0;j<2;j++)for(let i=0;i<4;i++){const c=['#3a1a5a','#ff3df2','#2ad4ff','#5dff83','#ffd23f'][(i+j+k)%5];x.fillStyle=c;x.globalAlpha=.35;x.fillRect((7+i)*T+1-cam.x,(22+j)*T+1-cam.y,T-2,T-2)}x.globalAlpha=1} // pista de dança
   if(Math.floor(t/1700)%5===0){x.fillStyle='rgba(255,61,242,.12)';x.fillRect(-cam.x,6-cam.y,MW*T,3)}
   const items=OBJ.map(o=>({y:o.y*T+T,o}));
-  items.push({y:P.py+T+.5,p:P});NPC.forEach(n=>items.push({y:n.py+T+.4,p:n}));items.sort((a,b)=>a.y-b.y);
-  const near=!P.mv?facing():null,blink=Math.floor(t/400)%2;
+  items.push({y:P.act&&P.act.k==='sit'?P.act.seat.y*T+T+.6:P.py+T+.5,p:P});if(PET)items.push({y:PET.seat?PET.seat.y*T+T+.7:PET.py+T+.3,p:PET});NPC.forEach(n=>items.push({y:n.py+T+.4,p:n}));items.sort((a,b)=>a.y-b.y);
+  const near=!P.mv&&!P.act?facing():null,blink=Math.floor(t/400)%2;
   for(const it of items){
+    if(it.p===PET){drawPet(x,t);continue}if(it.p===P&&drawAct(x,t))continue;
     if(it.p){const w=it.p,img=(w===P?PF:w.img)[w.dir],st=w===P?STEP:w.st||NSTEP;
       const fr=w.mv?(((Math.floor((t-w.t0)/(st/2))+w.step)%2)?1:2):0;
       let bob=0;if(w.mode==='hockey'&&!w.mv)bob=Math.floor(t/220+(w.x))%2;
@@ -751,7 +859,8 @@ function drawRoom(t){const c=$('#rc'),x=c.getContext('2d');x.imageSmoothingEnabl
       ;x.drawImage(img,0,22,48,16,X,Y-img.height+22,48,16)}
     else{const img=SP[o.k];x.drawImage(img,X+(o.w*T-img.width)/2,Y-img.height)}
     if(near===o&&!dlgOpen)bubble(x,X+o.w*T/2-5,Y-({cab:44,claw:44,soda:44,snack:44,jukebox:44,pillar:54,luz:54,counter:52,hockey:44,dance:54,foto:56,plant:38,agua:40,placar:40}[o.k]||28)+(blink?0:-1))}
-  if(near&&near.id&&!dlgOpen)bubble(x,Math.round(near.px+T/2-5-cam.x),Math.round(near.py-20-cam.y)+(blink?0:-1));
+  if(!P.act)drawCan(x);drawFx(x,t);
+  if(near&&near.id&&!dlgOpen)bubble(x,Math.round(near.px+T/2-5-cam.x),Math.round(near.py-(near.isPet?4:20)-cam.y)+(blink?0:-1));
   $('#aBtn').classList.toggle('hint',(!!near||isMat(P.x,P.y)&&!P.mv)&&!dlgOpen)}
 function bubble(x,bx,by){x.fillStyle='#07060f';x.fillRect(bx-1,by-1,12,11);x.fillStyle='#f3eeff';x.fillRect(bx,by,10,9);x.fillRect(bx+4,by+9,2,2);
   x.fillStyle='#ff3d2e';[[4,1,2,1],[3,2,1,2],[6,2,1,2],[3,4,4,1],[3,5,1,3],[6,5,1,3]].forEach(([a,b,w,h])=>x.fillRect(bx+a,by+b,w,h))}
@@ -871,7 +980,7 @@ $('#back').onclick=()=>{if(!$('#play').hidden){pressExit();return}talk('exit')};
 Promise.all(['conversas',...JOGOS.map(id=>'jogos/'+id)].map(f=>new Promise(res=>{const s=document.createElement('script');s.src=`${f}.js?v=${APP_V}`;s.onload=s.onerror=res;document.head.append(s)}))).then(()=>{
   fit();clock();raf=requestAnimationFrame(loop);
   setTimeout(()=>{SND.door();P.onMat=true;tryMove('up',performance.now())},120);
-  setTimeout(()=>{fit();if(!unlocked())talk('locked');else if(left()<=0)talk('out');else if(A.intro!==dk()){A.intro=dk();saveA();talk('intro')}},350)});
+  setTimeout(()=>{fit();if(!unlocked())talk('locked');else if(left()<=0)talk('outIn');else if(A.intro!==dk()){A.intro=dk();saveA();talk('intro')}},350)});
 addEventListener('resize',()=>{if(!$('#room').hidden)fit()});
 </script>
 </body>

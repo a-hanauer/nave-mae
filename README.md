@@ -16,6 +16,7 @@ Publicado em `https://a-hanauer.github.io/nave-mae/`.
 | Inglês | em breve | |
 | História (a Terra) | Máquina do Tempo (história de Ivoti/RS) | `ivoti/` |
 | Geografia | em breve | |
+| Alemão | Casa Sternberg (família: palavras, der/die/das, frases) | `alemao/` |
 
 ## Como funciona
 
@@ -33,6 +34,7 @@ A partir de 06/10/2026, o turno tem **5 missões sorteadas** entre todos os jogo
 - A aba Missões lista só as 5 do dia. O terminal de cada jogo mostra o turno da nave inteira (n / 5, a semana e a sequência).
 - Turno completo e sequência valem para as 5 juntas. Energia: missão do turno +10 (mais bônus de acertos); treino extra +5; turno completo +10.
 - Nível de Numeris e galeria da Mina: sobem a cada 6 missões principais concluídas (cada missão conta 1 vez por dia), feitas no turno ou como treino.
+- A Casa Sternberg (Alemão) entra no sorteio a partir de 11/10/2026 (`from` em `PLAN_APPS`): os sorteios dos dias anteriores não mudam. Com 4 planetas, o turno tem 1 missão de cada planeta e mais 1 sorteada.
 - Antes de 06/10/2026 valia a regra antiga (rodízio de 2 missões de cada jogo de Matemática e as 3 da Máquina do Tempo).
 
 ## Mina de Cristais
@@ -84,6 +86,21 @@ Capítulos: 1 Pouso em Ivoti (visão geral e linha do tempo) · 2 Os primeiros m
 Fontes: páginas da Prefeitura de Ivoti (Ponte do Imperador, Núcleo de Casas Enxaimel, Museu Cláudio Oscar Becker, Memorial da Colônia Japonesa), Wikipédia (Ivoti e Colônia Ivoti) e Cidades do Meu Brasil. Quando as fontes divergem (ano da ponte), vale a da Prefeitura. O conteúdo fica em `CAPS`, `EVENTS`, `PASS` e `CASA_Q`, no começo do script de `ivoti/index.html`.
 
 **Passaporte de Ivoti:** 6 carimbos (Ponte do Imperador, Núcleo de Casas Enxaimel, Museu Cláudio Oscar Becker, Memorial da Colônia Japonesa, Feira das Flores e Entrevista com a família). Um adulto confirma na área dos pais (Máquina do Tempo › Passaporte de Ivoti › Confirmar visita). Na próxima vez que o jogo abre, aparece "CARIMBO NOVO!". Cada carimbo vale +15 de energia. Medalhas de honra: Máquina do Tempo (3, 6 e 12 capítulos) e Passaporte de Ivoti (1, 3 e 6 carimbos).
+
+## Casa Sternberg (planeta Alemão)
+
+Alemão para 9 anos, com o tema família. A família Sternberg mora numa casa de enxaimel no espaço; a árvore é vista pela **Mia** ("Ich bin Mia"): Opa Karl e Oma Greta; Papa Thomas, Mama Anna, Tante Lena e Onkel Jan; Mia, o irmão Max, o bebê Ben e os primos Paul e Emma. Cada pessoa tem um retrato em pixel (16×16).
+
+- **Cores dos artigos** (como na escola): **der** azul, **die** vermelho, **das** verde e plural (die) laranja. Valem nos botões, nas respostas e no dicionário.
+- **OUVIR:** só nas palavras e frases em alemão (voz alemã do aparelho, `speechSynthesis` com `de-DE`, mais devagar). Depois de cada resposta, a palavra é dita em voz alta. Os textos em português continuam sem áudio.
+- **Níveis** (sobe a cada 6 missões concluídas, uma por missão por dia; os pais podem trocar na área dos pais): 1) família perto (Vater, Mutter, Papa, Mama, Bruder, Schwester, Opa, Oma, Baby, Familie); 2) família grande e plurais (Eltern, Großeltern, Geschwister, Großvater, Großmutter, Onkel, Tante, Junge, das Mädchen); 3) frases (Cousin, Cousine, Sohn, Tochter, Kind, Kinder; *Ich habe einen/eine/ein…*, *Er/Sie heißt…*).
+- **Palavras** (6): ver o retrato e escolher a palavra (*Wer ist das?*), ouvir/ler a palavra e tocar na pessoa, ou dizer em alemão uma palavra em português. Palavras novas e as mais erradas aparecem primeiro.
+- **der · die · das** (6): o artigo de cada palavra; do nível 2, *mein/meine* (*Das ist meine Mutter. Das sind meine Eltern.*); no nível 3, *einen/eine/ein* (*Ich habe einen Bruder.*). Cada resposta traz a regra curta (der e das → mein; die e plural → meine).
+- **Árvore da família** (5): uma pessoa acende na árvore e a Mia pergunta *Wer ist das?*. Nível 1: escolher a frase certa (*Das ist mein Opa.* × *meine Opa* × outra pessoa). Do nível 2: montar a frase com peças (com peças erradas de propósito: ist/sind, mein/meine). Nível 3: *Wie heißt er/sie? — Er heißt Karl.*
+- **Hör zu!** (desafio opcional): a voz pergunta *Wo ist der Vater?* e ele toca na pessoa. 8 rodadas, 3 corações. Sem voz alemã no aparelho, a pergunta aparece escrita.
+- **Dicionário da família:** todas as palavras do nível, separadas por der/die/das/plural, com retrato, tradução e OUVIR.
+
+Erros guardados por tipo (`errM`) para a área dos pais: palavra, artigo, mein/meine, einen/eine/ein, frase e ouvir. O conteúdo fica em `FACES`, `FAM` e `W`, no começo do script de `alemao/index.html`.
 
 ## Biblioteca Estelar (planeta Português)
 
@@ -181,6 +198,15 @@ Ao criar um app novo, informe em `APPS` o campo `store` com a chave do `localSto
 
 Abra o link no Safari, toque em Compartilhar e escolha **Adicionar à Tela de Início**. A Nave-Mãe abre em tela cheia, com ícone próprio, e os apps abrem dentro dela.
 
+## Pet
+
+Categoria PET no Hangar (lado PILOTO): **Cachorro** (Caramelo), **Gato** (Pipoca), **Alienzinho** (Zuzu) e **Robô-cão** (Bip). O primeiro pet sai de graça (GRÁTIS / ESCOLHER); os outros custam energia (120 e 150). Nenhum também é uma opção.
+
+- **No Hangar:** o pet fica ao lado do piloto, olhando para ele, abanando o rabo. Tocar nele: pula, faz o som da espécie (latido, miado, blip, bipes), solta um coração e diz algo. Tocar no nome (✎) troca o nome do pet.
+- **Nos jogos:** passeia em cima do terminal do menu; tocado, pula, faz o som e fala (`<nome> torce por você!`). Na tela de missão cumprida, comemora pulando ao lado do piloto. O código é o mesmo bloco em todos os jogos (lê `navemae-avatar.pet`).
+- **No fliperama:** segue o piloto uma casa atrás (não bloqueia ninguém). De frente para ele, A abre CARINHO, PETISCO (até 3 por dia) e BRINCAR (o truque da espécie). Os personagens comentam o pet uma vez por dia. Ele senta junto no sofá, dança junto e sai na foto.
+- **Dados:** a escolha fica em `navemae-v1.look.pet`, os nomes em `navemae-v1.petNames`; a Nave-Mãe grava em `navemae-avatar.pet` o desenho (`f0`, `f1`, `pal`), o nome, a fala, o truque e o som (notas do sintetizador).
+
 ## Naves
 
 As naves são desenhadas por formas (como o piloto), com luz vindo de cima à esquerda e as rampas da pintura, em duas resoluções do mesmo desenho: **grande** (48 de largura, a 2 px por pixel, o mesmo grão do piloto) no Hangar e nas telas grandes, e **pequena** (18 de largura) no mapa, no logo e nas miniaturas. Cada modelo tem o fogo saindo dos próprios propulsores. Adesivos e pinturas valem para todos.
@@ -229,6 +255,8 @@ Depois que o turno de missões do dia fica completo, o fliperama aparece em dois
 - **Primeira entrada do dia:** aviso RECOMPENSA DO DIA com os minutos ganhos.
 - **Tempo por dia:** definido na Área dos pais (Desligado, 5, 10, 15, 20 ou 30 min; padrão 10). Andar pela sala não gasta tempo; só a partida. Se acabar no meio, a partida vai até o fim (ÚLTIMA PARTIDA) e as máquinas não aceitam outra (FICHAS DE HOJE ACABARAM). Com 1 min restante, o relógio fica vermelho e toca um aviso.
 - **Travas:** sem o turno completo de hoje, ou desligado pelos pais, a sala abre com FLIPERAMA FECHADO e as máquinas não ligam.
+- **Sem fichas, a sala continua aberta:** quando o tempo do dia acaba, o cartão da aba Missões e o atalho do mapa viram SALA ABERTA PARA PASSEAR / PASSEAR. Na sala, as máquinas descansam (FICHAS DE HOJE ACABARAM), mas dá para conversar com a turma e usar as ações da sala.
+- **Ações da sala** (com ou sem fichas): **sofá e banco** (o piloto senta; o pet senta do lado; depois de um tempo, zzz; qualquer direção levanta); **refrigerante** (Suco de Cometa, Água de Saturno ou Gás Nebulosa; até 2 por dia; às vezes um arroto; a lata vazia fica na mão até ir para a **lixeira**, que recicla); **bebedouro**; **pipoca** (1 por dia); **dançar** na máquina de dança com a Mel (música e notas no ar); **cabine de fotos** (três flashes e uma tirinha com três poses do piloto e do pet); **regar as plantas** (cada planta uma vez por dia). Os dados do dia ficam em `navemae-arcade.dia`.
 - **Recompensa:** só recorde pessoal por jogo, sem energia.
 - **Saída:** pisar no tapete verde ou tocar em NAVE pergunta se quer voltar; volta para a aba Missões.
 - **Dados:** `localStorage['navemae-arcade']` = `{day, used (segundos usados hoje), intro, best:{jogo:recorde}, plays:{jogo:partidas}}`. A liberação do dia é `navemae-v1.arcDay`, o tempo é `navemae-v1.arcMin` e as cores do piloto vêm de `navemae-avatar.ov`.

@@ -32,21 +32,20 @@ try{if('scrollRestoration' in history)history.scrollRestoration='manual'}catch(e
 </script>
 
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<meta name="theme-color" content="#0f0b16">
+<meta name="theme-color" content="#0f0b09">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="format-detection" content="telephone=no">
-<title>Ruínas de Numeris</title>
+<title>Casa Sternberg</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
 <style>
-/* sem zoom de dois toques (cada área com rolagem precisa da regra) */
 *{touch-action:manipulation}
 :root{
-  --bg:#0f0b16;--panel:#1c1624;--panel2:#2a2133;--line:#4a3b52;--line2:#7d6a86;--ink:#f1eadf;--dim:#a597a8;
-  --st1:#2b221d;--st2:#5a4838;--st3:#8f7458;--st4:#c9ab82;--st5:#e8d3ad;
-  --glow:#3ff2c4;--glow-d:#0f6b57;--amber:#ffb300;--amber-d:#b37a00;--red:#ff3d2e;--green:#39e35f;
+  --bg:#0f0b09;--panel:#1d1512;--panel2:#2a1e19;--line:#4a3428;--line2:#8a6a50;--ink:#fff4e6;--dim:#c4a890;
+  --st1:#140d0a;--st2:#3a2a20;--st3:#5a4030;--st4:#d8b890;--st5:#fff0dc;
+  --glow:#ffce00;--glow-d:#7a5a00;--amber:#ffb300;--amber-d:#b37a00;--red:#ff4a5a;--green:#5dff9a;--paper:#f6ecd8;--paper-d:#cbb994;
   --px:"Press Start 2P",monospace;--vt:"VT323",monospace;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -70,7 +69,6 @@ button,a{font:inherit;color:inherit;background:none;border:0;text-decoration:non
 .bar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 18px}
 .back{display:inline-flex;align-items:center;gap:8px;padding:11px 12px;font-family:var(--px);font-size:9px;color:var(--dim)}
 .chip{padding:11px 12px;font-family:var(--px);font-size:9px;color:var(--glow)}
-
 /* marca */
 .brand{display:flex;align-items:center;gap:14px;margin-bottom:20px}
 .logo{flex:none;width:62px;height:62px;display:grid;place-items:center;position:relative;overflow:hidden;
@@ -83,7 +81,7 @@ button,a{font:inherit;color:inherit;background:none;border:0;text-decoration:non
 .snd{flex:none;width:46px;height:46px;display:grid;place-items:center;font-family:var(--px);font-size:8px;color:var(--amber)}
 
 /* terminal */
-.term{padding:14px 16px;margin-bottom:24px;color:var(--glow);font-size:21px;background:#07140f;
+.term{padding:14px 16px;margin-bottom:24px;min-height:88px;color:var(--glow);font-size:21px;background:#07140f;
   box-shadow:0 -4px 0 0 #155446,0 4px 0 0 #155446,-4px 0 0 0 #155446,4px 0 0 0 #155446;filter:drop-shadow(4px 4px 0 #000)}
 .cursor{display:inline-block;width:10px;height:18px;background:var(--glow);vertical-align:-2px;margin-left:2px;animation:blink 1s steps(1) infinite}
 @keyframes blink{50%{opacity:0}}
@@ -120,9 +118,8 @@ button,a{font:inherit;color:inherit;background:none;border:0;text-decoration:non
 .mission small{display:block;color:var(--dim);font-size:19px;margin-top:3px}
 .mission .st{display:flex;align-items:center;gap:6px;margin-top:8px;font-family:var(--px);font-size:8px;color:var(--amber)}
 .mission .st.ok{color:var(--green)}
-.mission .st:not(.ok):not(.mid):not(.nx):not(.xt){color:var(--dim)}
+.mission .st:not(.ok):not(.mid):not(.nx){color:var(--dim)}
 .mission .st.mid{color:var(--glow)}
-.mission .st.xt{color:#62e6ff}
 .mission.done{background:#10241a}
 .mission.done .code{opacity:.55}
 .mission.done b,.mission.done small{color:#7f9a88}
@@ -143,7 +140,6 @@ button,a{font:inherit;color:inherit;background:none;border:0;text-decoration:non
 .danger .ok{position:absolute;top:14px;right:14px;font-family:var(--px);font-size:8px;color:var(--green)}
 .danger.done{animation:none;background:repeating-linear-gradient(135deg,rgba(0,0,0,.2) 0 12px,transparent 12px 24px),#3f2a1c}
 .tabua-btn{display:flex;width:100%;align-items:center;justify-content:center;gap:10px;padding:14px;font-family:var(--px);font-size:10px;color:var(--st5)}
-
 /* jogar */
 .play-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
 .play-head .label{color:var(--st4)}
@@ -155,17 +151,6 @@ button,a{font:inherit;color:inherit;background:none;border:0;text-decoration:non
 .brief b{color:var(--st5);font-weight:normal}
 .ask{font-family:var(--px);font-size:11px;line-height:1.6;text-align:center;color:var(--st5);margin:4px 0 14px}
 
-.tablet{position:relative;display:grid;place-items:center;min-height:118px;padding:20px 12px;margin-bottom:18px;
-  background:
-    linear-gradient(90deg,rgba(0,0,0,.12) 0 3px,transparent 3px) 0 0/24px 12px,
-    linear-gradient(0deg,rgba(0,0,0,.14) 0 3px,transparent 3px) 0 0/24px 24px,
-    #64503c; /* pedra mais escura: texto claro com bom contraste */
-  box-shadow:0 -4px 0 0 var(--st1),0 4px 0 0 var(--st1),-4px 0 0 0 var(--st1),4px 0 0 0 var(--st1),inset 0 -6px 0 0 var(--st2),inset 0 5px 0 0 var(--st4);
-  filter:drop-shadow(4px 4px 0 #000)}
-.glyph{font-family:var(--px);font-size:38px;letter-spacing:.06em;color:var(--glow);text-shadow:-2px -2px 0 var(--st1),2px 2px 0 var(--glow-d);word-break:break-all;text-align:center;line-height:1.3}
-.glyph.num{color:#fff6e4;text-shadow:-2px -2px 0 var(--st1),2px 2px 0 var(--st2)}
-.glyph.sm{font-size:26px}
-.glyph .ph{color:var(--st4);text-shadow:none}
 /* ---- comemoração de missão concluída (mesmo código nos dois jogos) ---- */
 .cel{display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;width:100%}
 .cel-hero{position:relative;width:100%;height:190px;display:grid;place-items:center}
@@ -206,21 +191,6 @@ button,a{font:inherit;color:inherit;background:none;border:0;text-decoration:non
 @media (prefers-reduced-motion:reduce){.cel-rays,.cel-av{animation:none}}
 .cel-btns>*{margin:0!important;width:100%}
 #res{--cel-acc:var(--glow);--cel-acc-d:var(--glow-d);--cel-acc2:var(--amber);--cel-dim:var(--dim);--cel-ink:var(--ink);--cel-ok:var(--green);--cel-edge:var(--line2);--cel-bad:var(--red);--cel-ray:rgba(63,242,196,.22)}
-/* telas de jogo cabem na tela do celular, sem rolar */
-#play .tablet{min-height:100px;padding:16px 12px}
-#play .tablet .cap{top:6px}
-@media (max-height:700px){.blocks{margin-bottom:10px}.fb{font-size:19px;margin-top:10px}.fb:not(:empty){padding:10px 12px}.play-head{margin-bottom:10px}#play .tablet{min-height:84px}.key{height:44px}.blk{height:50px}.chamber{height:130px}}
-.tablet .cap{position:absolute;top:8px;left:10px;font-family:var(--px);font-size:7px;color:var(--st5);letter-spacing:.1em}
-
-.blocks{display:grid;grid-template-columns:repeat(5,1fr);gap:9px;margin-bottom:14px}
-.blk{height:58px;display:grid;place-items:center;align-content:center;gap:4px;background:var(--st2);
-  box-shadow:0 -4px 0 0 var(--st1),0 4px 0 0 var(--st1),-4px 0 0 0 var(--st1),4px 0 0 0 var(--st1),inset 0 -6px 0 0 var(--st1),inset 0 4px 0 0 var(--st3);
-  filter:drop-shadow(4px 4px 0 #000)}
-.blk b{font-family:var(--px);font-size:20px;color:var(--glow);text-shadow:2px 2px 0 var(--glow-d)}
-.blk i{font-style:normal;font-size:18px;color:var(--st5);line-height:1}
-.blk:active{transform:translate(4px,4px);filter:none}
-.blk.lock{background:var(--panel2);box-shadow:inset 0 0 0 3px var(--line);filter:none}
-.blk.lock b,.blk.lock i{color:#9a8aa0;text-shadow:none}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .ghost{height:52px;display:flex;align-items:center;justify-content:center;gap:8px;font-family:var(--px);font-size:9px;color:var(--dim)}
 .btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;margin-top:14px;padding:17px 12px;font-family:var(--px);font-size:12px;
@@ -249,26 +219,6 @@ button,a{font:inherit;color:inherit;background:none;border:0;text-decoration:non
 .fb b{font-family:var(--px);font-size:10px;display:block;margin-bottom:6px}
 .fb.ok b{color:var(--green)}.fb.no b{color:var(--red)}
 .fb .eq{color:var(--ink)}
-
-/* desabamento */
-.chamber{position:relative;height:150px;margin-bottom:18px;overflow:hidden;background:#140f10;
-  box-shadow:0 -4px 0 0 var(--st1),0 4px 0 0 var(--st1),-4px 0 0 0 var(--st1),4px 0 0 0 var(--st1);filter:drop-shadow(4px 4px 0 #000)}
-.ceiling{position:absolute;left:0;right:0;top:0;height:10%;
-  background:linear-gradient(90deg,rgba(0,0,0,.18) 0 3px,transparent 3px) 0 0/20px 10px,linear-gradient(0deg,rgba(0,0,0,.2) 0 3px,transparent 3px) 0 0/20px 20px,var(--st2);
-  box-shadow:inset 0 -5px 0 0 var(--st1)}
-.ceiling::after{content:"";position:absolute;left:0;right:0;bottom:-6px;height:6px;
-  background:repeating-linear-gradient(90deg,var(--st1) 0 6px,transparent 6px 18px,var(--st1) 18px 21px,transparent 21px 30px)}
-.floor{position:absolute;left:0;right:0;bottom:0;height:14px;background:var(--st1)}
-.explorer{position:absolute;left:50%;bottom:14px;transform:translateX(-50%)}
-.pebble{position:absolute;width:6px;height:6px;background:var(--st3);animation:fall .9s steps(6) infinite}
-@keyframes fall{from{transform:translateY(0)}to{transform:translateY(120px)}}
-.dcount{position:absolute;right:10px;bottom:22px;font-family:var(--px);font-size:10px;color:var(--st5)}
-.tf{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.tf button{padding:18px 8px;font-family:var(--px);font-size:11px;display:flex;align-items:center;justify-content:center;gap:8px}
-.tf .v{color:var(--green)}.tf .f{color:var(--red)}
-.tf button[disabled]{opacity:.35;filter:none}
-.count{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--px);font-size:44px;color:var(--amber);text-shadow:4px 4px 0 #000;background:rgba(0,0,0,.35)}
-
 /* resultado */
 .result{text-align:center;padding:26px 18px}
 .result h2{font-family:var(--px);font-size:15px;line-height:1.5;color:var(--glow);margin:18px 0 10px}
@@ -309,7 +259,6 @@ button,a{font:inherit;color:inherit;background:none;border:0;text-decoration:non
 /* no navegador (fora do atalho) não há Dynamic Island nem desfoque no topo: menos folga em cima */
 html.web #app{padding-top:calc(20px + var(--sat,env(safe-area-inset-top)))}
 html.web .overlay{padding-top:calc(24px + var(--sat,env(safe-area-inset-top)))}
-
 /* terminal + turno do dia numa tela só (menos blocos no topo) */
 .term{padding:14px 16px 12px}
 .term .tmsg{min-height:48px}
@@ -354,11 +303,106 @@ button.dcard .ti{display:block;margin:0;text-transform:uppercase;font-family:var
 button.dcard .su{display:block;margin-top:8px;font-family:var(--vt);font-size:20px;line-height:1.05;opacity:.92}
 button.dcard .dico{position:static;width:56px;height:56px;display:grid;place-items:center;background:rgba(0,0,0,.28);box-shadow:inset 0 0 0 3px rgba(0,0,0,.35)}
 button.dcard .ok,button.dcard .st{position:static;display:flex;align-items:center;gap:6px;margin:0;font-family:var(--px);font-size:8px;color:var(--M-ok);text-shadow:2px 2px 0 #000;letter-spacing:0}
-:root{--M-tile:var(--panel2);--M-line:var(--line);--M-ink:var(--ink);--M-dim:var(--dim);--M-ok:var(--green);--M-next:var(--amber);--M-mid:var(--glow);--M-xt:#62e6ff;--M-donetxt:#7f9a88}
+:root{--M-tile:var(--panel2);--M-line:var(--line);--M-ink:var(--ink);--M-dim:var(--dim);--M-ok:var(--green);--M-next:var(--amber);--M-mid:var(--glow);--M-xt:#62e6ff;--M-donetxt:#8f86a6}
 
 /* logo igual ao card do jogo na Nave-Mãe: quadro de 72 px com o ícone a 4 px por pixel */
 .brand .logo{width:72px;height:72px;padding:0;background:var(--panel2);font-size:0;text-shadow:none;box-shadow:0 -4px 0 0 var(--line),0 4px 0 0 var(--line),-4px 0 0 0 var(--line),4px 0 0 0 var(--line);filter:drop-shadow(4px 4px 0 #000)}
 .brand .logo .spr{display:block}
+.term{background:#140d08;box-shadow:0 -4px 0 0 #5a3a14,0 4px 0 0 #5a3a14,-4px 0 0 0 #5a3a14,4px 0 0 0 #5a3a14}
+.logo{background:var(--panel2)}
+.danger{background:repeating-linear-gradient(135deg,rgba(0,0,0,.22) 0 12px,transparent 12px 24px),#8a1a1a;box-shadow:0 -4px 0 0 var(--glow),0 4px 0 0 var(--glow),-4px 0 0 0 var(--glow),4px 0 0 0 var(--glow)}
+.danger.done{background:repeating-linear-gradient(135deg,rgba(0,0,0,.2) 0 12px,transparent 12px 24px),#3a1814}
+
+/* ---------- telas de jogo ---------- */
+.screen.game:not([hidden]){display:flex;flex-direction:column;min-height:calc(100vh - 68px - var(--sat,env(safe-area-inset-top)) - var(--sab,env(safe-area-inset-bottom)));
+  min-height:calc(100dvh - 68px - var(--sat,env(safe-area-inset-top)) - var(--sab,env(safe-area-inset-bottom)))}
+html.web .screen.game:not([hidden]){min-height:calc(100dvh - 36px - var(--sat,env(safe-area-inset-top)) - var(--sab,env(safe-area-inset-bottom)))}
+#pBody{display:flex;flex-direction:column;flex:1}
+/* artigos com cor: der azul, die vermelho, das verde, plural laranja */
+.art{font-weight:normal;font-family:var(--vt)}
+.a-der{color:#5aa0ff}.a-die{color:#ff6a78}.a-das{color:#5ae08a}.a-pl{color:#ffb300}
+.noun{color:var(--ink)}
+/* cartão da pergunta */
+.qcard{display:grid;justify-items:center;gap:10px;padding:16px 14px 14px;margin-bottom:14px;text-align:center}
+.qcard .faces{display:flex;gap:6px;justify-content:center}
+.qcard .faces .spr{display:block}
+.qcard .qd{font-size:30px;line-height:1.05;color:var(--ink)}
+.qcard .qd .art{font-size:30px}
+.qcard .qq{font-family:var(--px);font-size:11px;line-height:1.5;color:var(--glow)}
+.qcard .qp{font-size:20px;color:var(--dim);margin-top:-6px}
+.qcard .qp b{color:var(--ink);font-weight:normal}
+.qtag{font-family:var(--px);font-size:7px;color:var(--glow);letter-spacing:.06em}
+.blank{display:inline-block;min-width:64px;border-bottom:3px solid var(--glow);color:var(--glow);text-align:center}
+/* opções */
+.opts{display:grid;gap:12px;margin-bottom:12px}
+.opts.f3{grid-template-columns:repeat(3,1fr)}
+.opt{text-shadow:none;padding:15px 12px;font-family:var(--vt);font-size:26px;line-height:1.05;color:var(--ink);text-align:left}
+.opt .art{font-size:26px}
+.opts.f3 .opt{display:grid;place-items:center;min-height:96px;padding:10px 4px}
+.opts.f3 .opt .faces{display:flex;gap:2px}
+.opt.good{background:#153a26;box-shadow:0 -4px 0 0 var(--green),0 4px 0 0 var(--green),-4px 0 0 0 var(--green),4px 0 0 0 var(--green)}
+.opt.bad{opacity:1;background:#3a1420;color:#ffb3bb;box-shadow:0 -4px 0 0 var(--red),0 4px 0 0 var(--red),-4px 0 0 0 var(--red),4px 0 0 0 var(--red)}
+.opt.bad .noun{color:#ffb3bb;text-decoration:line-through}
+.opt.show{background:#153a26}
+/* botões grandes der · die · das */
+.abtns{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:12px}
+.abtns.two{grid-template-columns:1fr 1fr}
+.ab{min-height:64px;font-family:var(--px);font-size:14px;color:#fff;text-shadow:2px 2px 0 #000}
+.ab.der{background:#1f4fa8;box-shadow:0 -4px 0 0 #5aa0ff,0 4px 0 0 #5aa0ff,-4px 0 0 0 #5aa0ff,4px 0 0 0 #5aa0ff}
+.ab.die{background:#a81a2a;box-shadow:0 -4px 0 0 #ff6a78,0 4px 0 0 #ff6a78,-4px 0 0 0 #ff6a78,4px 0 0 0 #ff6a78}
+.ab.das{background:#1f7a3a;box-shadow:0 -4px 0 0 #5ae08a,0 4px 0 0 #5ae08a,-4px 0 0 0 #5ae08a,4px 0 0 0 #5ae08a}
+.ab.neu{background:var(--panel2)}
+.ab.good{outline:4px solid var(--green);outline-offset:4px}
+.ab.bad{opacity:.45}
+/* resposta: frase + ouvir + dica */
+.fb{min-height:0;margin:0 0 12px;padding:0 14px;font-size:21px;line-height:1.15}
+.fb:not(:empty){padding:12px 14px}
+.fb .ans{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:6px;font-size:26px;color:var(--ink)}
+.fb .ans .art{font-size:26px}
+.fb .tip{display:block;margin-top:8px;color:var(--dim);font-size:19px}
+.spk{flex:none;display:inline-flex;align-items:center;gap:6px;padding:9px 10px;font-family:var(--px);font-size:8px;color:var(--glow)}
+.spk.on{background:var(--glow-d)}
+.spk.big{padding:16px 18px;font-size:10px}
+.foot{display:grid;gap:10px;margin-top:auto}
+.foot .btn,.foot .ghost{margin:0}
+/* árvore da família */
+.tree{display:grid;gap:14px;padding:14px 8px 12px;margin-bottom:14px}
+.tg{display:flex;justify-content:center;gap:8px;position:relative}
+.tg+.tg::before{content:"";position:absolute;left:18%;right:18%;top:-9px;height:2px;background:var(--line2)}
+.tg .cp{display:flex;gap:4px;padding:0 6px;position:relative}
+.tg .cp+.cp{margin-left:10px}
+.tp{display:grid;justify-items:center;gap:4px;width:52px;padding:4px 0;background:none;box-shadow:none;filter:none}
+.tp .fr{display:grid;place-items:center;width:44px;height:44px;background:var(--panel2);box-shadow:inset 0 0 0 2px var(--line)}
+.tp small{font-family:var(--px);font-size:6px;line-height:1;color:var(--dim);white-space:nowrap}
+.tp.me small{color:var(--glow)}
+.tp.hl .fr{box-shadow:inset 0 0 0 3px var(--glow);animation:tph .8s steps(2) infinite}
+@keyframes tph{50%{box-shadow:inset 0 0 0 3px var(--amber),0 0 0 3px rgba(255,206,0,.35)}}
+.tp.ok .fr{box-shadow:inset 0 0 0 3px var(--green);animation:none}
+.tp.no .fr{box-shadow:inset 0 0 0 3px var(--red);animation:none}
+.tp.dim{opacity:.55}
+.mia{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.mia .bub{position:relative;flex:1;padding:10px 12px;font-size:22px;line-height:1.1;color:var(--ink);background:var(--panel2);box-shadow:inset 0 0 0 2px var(--line)}
+.mia .bub small{display:block;color:var(--dim);font-size:18px}
+/* montar a frase */
+.slots{display:flex;flex-wrap:wrap;align-items:flex-end;gap:8px;min-height:56px;padding:10px;margin-bottom:12px;background:#140d08;box-shadow:inset 0 0 0 2px var(--line)}
+.slots .sl{min-width:58px;height:40px;border-bottom:3px dashed var(--line2)}
+.tiles{display:flex;flex-wrap:wrap;justify-content:flex-start;gap:10px;margin-bottom:12px}
+.tile{min-height:46px;padding:8px 14px;font-family:var(--vt);font-size:26px;line-height:1;color:var(--ink)}
+.tile.used{color:transparent;background:transparent;box-shadow:inset 0 0 0 2px var(--line);filter:none;pointer-events:none}
+.slots .tile{min-height:40px;padding:6px 12px;background:var(--paper);color:#22140a;box-shadow:none;filter:none}
+.slots.good .tile{background:#c9ffe0}.slots.bad .tile{background:#ffc9cf}
+/* Hör zu! */
+.hz{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+.hearts{display:flex;gap:6px}
+.hzq{min-height:30px;font-size:26px;color:var(--ink);text-align:center;margin-bottom:6px}
+/* dicionário */
+.dict li{display:grid;grid-template-columns:36px 1fr auto;gap:10px;align-items:center;padding:8px 0;border-bottom:2px solid var(--line)}
+.dict li .spr{display:block}
+.dict li b{font-weight:normal;font-size:24px}
+.dict li small{display:block;color:var(--dim);font-size:18px}
+.dict h3{font-family:var(--px);font-size:8px;color:var(--glow);margin:14px 0 4px}
+.legend{display:flex;flex-wrap:wrap;gap:10px;margin:4px 0 6px;font-family:var(--px);font-size:7px}
+@media (max-height:700px){.qcard{padding:10px}.opt{padding:12px}.tree{gap:10px;padding:10px 6px}}
 </style>
 <script>
 /* sem zoom: bloqueia pinça e dois toques no app inteiro */
@@ -375,12 +419,12 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 <section class="screen" id="menu">
   <div class="bar"><button class="back px pbtn" data-home>&lt; Nave-Mãe</button></div>
   <header class="brand">
-    <div class="logo" id="logo" aria-label="Ruínas de Numeris"></div>
-    <div class="t"><p>PLANETA MATEMÁTICA</p><h1>Ruínas de Numeris</h1></div>
+    <div class="logo" id="logo" aria-label="Casa Sternberg"></div>
+    <div class="t"><p>PLANETA ALEMÃO</p><h1>Casa Sternberg</h1></div>
   </header>
   <div class="term"><div class="tmsg"><span id="term"></span><span class="cursor"></span></div>
     <div class="tdiv"></div>
-    <div class="trow"><span>TURNO DE HOJE</span><span class="turno-n" id="turnoN">0 / 3</span></div>
+    <div class="trow"><span>TURNO DE HOJE</span><span class="turno-n" id="turnoN">0 / 5</span></div>
     <div class="week" id="week"></div>
     <p class="streak" id="streak"></p>
   </div>
@@ -388,76 +432,37 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
   <div class="nivel px"><div><b id="nvT"></b><span id="nvS"></span></div><div class="pips" id="nvP"></div></div>
 
   <nav class="missions">
-    <button class="mission px pbtn" data-go="montar"><span class="code" data-ico="blocks"></span><span class="mt"><b>Montar a senha</b><small>Número → romano</small><span class="st" data-st="montar"></span></span></button>
-    <button class="mission px pbtn" data-go="ler"><span class="code" data-ico="tab"></span><span class="mt"><b>Ler as inscrições</b><small>Romano → número</small><span class="st" data-st="ler"></span></span></button>
-    <button class="mission px pbtn" data-go="sub"><span class="code" data-ico="gate"></span><span class="mt"><b>Portão da subtração</b><small>IV, IX, XL…</small><span class="st" data-st="sub"></span></span></button>
+    <button class="mission px pbtn" data-go="woerter"><span class="code" id="icoW"></span><span class="mt"><b>Palavras</b><small>Wer ist das? Quem é?</small><span class="st" data-st="woerter"></span></span></button>
+    <button class="mission px pbtn" data-go="artikel"><span class="code" data-ico="tags"></span><span class="mt"><b>der · die · das</b><small>Os artigos</small><span class="st" data-st="artikel"></span></span></button>
+    <button class="mission px pbtn" data-go="baum"><span class="code" data-ico="baum"></span><span class="mt"><b>Árvore da família</b><small>Das ist mein…</small><span class="st" data-st="baum"></span></span></button>
   </nav>
 
-  <button class="danger dcard" id="goDes"><span class="ey"><span>DESAFIO OPCIONAL</span><span class="ok" id="desOk" hidden>FEITO ✓</span></span><span class="dg"><span><span class="ti">DESABAMENTO!</span><span class="su">Ache as inscrições falsas antes do teto cair.</span></span><span class="dico" id="desIco"></span></span></button>
+  <button class="danger dcard" id="goHz"><span class="ey"><span>DESAFIO OPCIONAL</span><span class="ok" id="hzOk" hidden></span></span><span class="dg"><span><span class="ti">HÖR ZU!</span><span class="su">Escute e encontre a pessoa na árvore.</span></span><span class="dico" id="hzIco"></span></span></button>
 
-  <button class="tabua-btn px pbtn" id="openTab"><span id="tabIco"></span>TÁBUA DOS SÍMBOLOS</button>
+  <button class="tabua-btn px pbtn" id="openDict"><span id="dictIco"></span>DICIONÁRIO DA FAMÍLIA</button>
 </section>
 
 <!-- JOGAR -->
-<section class="screen" id="play" hidden>
-  <div class="bar"><button class="back px pbtn" id="playBack">&lt; Templo</button><button class="chip px pbtn" data-tab>TÁBUA</button></div>
-  <div class="play-head"><span class="label" id="playTitle"></span><span class="label" id="playN"></span></div>
-  <div class="segs" id="segs"></div>
-  <div id="stage"></div>
-  <div class="fb" id="fb"></div>
+<section class="screen game" id="play" hidden>
+  <div class="bar"><button class="back px pbtn" data-back>&lt; Casa</button><button class="chip px pbtn" id="dictChip">DICIONÁRIO</button></div>
+  <div class="play-head"><span class="label" id="pTitle"></span><span class="label" id="pN"></span></div>
+  <div class="segs" id="pSegs"></div>
+  <div id="pBody"></div>
 </section>
 
-<!-- DESABAMENTO -->
-<section class="screen" id="des" hidden>
-  <div class="bar"><button class="back px pbtn" id="desBack">&lt; Templo</button><button class="chip px pbtn" data-tab>TÁBUA</button></div>
-  <div class="chamber" id="chamber">
-    <div class="ceiling" id="ceiling"></div><div id="pebbles"></div>
-    <div class="explorer" id="explorer"></div><div class="floor"></div>
-    <div class="dcount" id="dcount">0/10</div><div class="count" id="dCount" hidden></div>
-  </div>
-  <p class="ask">Verdadeira ou falsa?</p>
-  <div class="tablet"><span class="glyph" id="dq"></span></div>
-  <div class="tf"><button class="px pbtn v" id="dV">✓ VERDADEIRA</button><button class="px pbtn f" id="dF">✗ FALSA</button></div>
-  <div class="fb" id="dfb"></div>
-  <div id="dStart"></div>
-</section>
-
-<!-- RESULTADO: comemoração (montada pelo CEL) -->
 <section class="screen" id="res" hidden></section>
 </main>
 
-<!-- TÁBUA -->
-<div class="overlay" id="tab" hidden>
-  <div class="modal px">
-    <h2>TÁBUA DOS SÍMBOLOS</h2>
-    <div class="tsyms" id="tSyms"></div>
-    <ul>
-      <li><b>III</b>Iguais lado a lado somam: 1+1+1 = 3</li>
-      <li><b>VI</b>Menor depois do maior soma: 5+1 = 6</li>
-      <li><b>IV</b>Menor antes do maior subtrai: 5−1 = 4</li>
-      <li><b>✗</b>Nunca repita o mesmo símbolo 4 vezes</li>
-      <li><b>✗</b>V e L nunca se repetem</li>
-    </ul>
-    <button class="btn" id="tabClose">ENTENDI</button>
-  </div>
-</div>
-
-<!-- NOVA CÂMARA -->
-<div class="overlay" id="lvup" hidden>
-  <div class="modal px levelup">
-    <div class="label">Novo nível</div>
-    <div class="big" id="lvBig"></div>
-    <p id="lvTxt"></p>
-    <button class="btn" id="lvOk">EXPLORAR</button>
-  </div>
-</div>
-
+<div class="overlay" id="dict" hidden><div class="modal px"><h2>DICIONÁRIO DA FAMÍLIA</h2>
+  <div class="legend"><span class="a-der">DER: MASCULINO</span><span class="a-die">DIE: FEMININO</span><span class="a-das">DAS: NEUTRO</span><span class="a-pl">DIE: PLURAL</span></div>
+  <ul class="dict" id="dictList"></ul><button class="btn" data-close>FECHAR</button></div></div>
+<div class="overlay" id="lvup" hidden><div class="modal px levelup"><div class="label">Novo nível</div><div class="big" id="lvBig"></div><p id="lvTxt"></p><button class="btn" data-close>WEITER! (VAMOS!)</button></div></div>
 
 <script>
 /* atualização automática: compara com version.json e recarrega com ?v=<versão> no endereço (o iPhone não reaproveita a
    página guardada). Se mesmo com ?v=<versão> a página veio velha, não insiste (evita recarregar sem parar). */
 const APP_V='20261010104815';
-(function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris)\/$/,'');
+(function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris|mina|ivoti|biblio|alemao)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     const q=new URLSearchParams(location.search).get('v');
     if(v&&v!==APP_V&&q!==v)location.replace(location.pathname+'?v='+v+H0)}catch(e){}}
@@ -505,51 +510,53 @@ function newAC(){navAudioMode();return new (window.AudioContext||window.webkitAu
 })();
 </script>
 <script>
-/* =================== números romanos =================== */
-const TABLE=[[100,'C'],[90,'XC'],[50,'L'],[40,'XL'],[10,'X'],[9,'IX'],[5,'V'],[4,'IV'],[1,'I']];
-const VAL={I:1,V:5,X:10,L:50,C:100};
-function toRoman(n){let s='';for(const[v,r]of TABLE)while(n>=v){s+=r;n-=v}return s}
-function fromRoman(s){let t=0;for(let i=0;i<s.length;i++){const a=VAL[s[i]],b=VAL[s[i+1]]||0;t+=a<b?-a:a}return t}
-const valid=s=>!!s&&toRoman(fromRoman(s))===s;
-function tokens(s){const out=[];let i=0;while(i<s.length){const two=s.slice(i,i+2),t=TABLE.find(([,r])=>r===two)||TABLE.find(([,r])=>r===s[i]);out.push([t[1],t[0]]);i+=t[1].length}return out}
-const hasSub=s=>/IV|IX|XL|XC/.test(s);
-function explainN(n){ // 47 = 40 + 7 → XL + VII
-  const parts=[];let r=n;if(r>=100){parts.push(100);r-=100}const t=r-r%10,u=r%10;if(t)parts.push(t);if(u)parts.push(u);
-  return parts.length>1?`${n} = ${parts.join(' + ')} → ${parts.map(toRoman).join(' + ')}`:`${n} → ${toRoman(n)}`;
-}
-function groups(s){const g=[];for(const t of tokens(s)){const l=g[g.length-1];if(l&&t[0].length===1&&l[0][0]===t[0]&&!/IV|IX|XL|XC/.test(l[0]))l[0]+=t[0],l[1]+=t[1];else g.push([t[0],t[1]])}return g}
-function explainS(s){ // XXIV → XX (20) + IV (5−1) = 24
-  const tk=groups(s),txt=t=>/^(IV|IX|XL|XC)$/.test(t[0])?`${t[0]} (${VAL[t[0][1]]}−${VAL[t[0][0]]})`:`${t[0]} (${t[1]})`;
-  return tk.length>1?`${tk.map(txt).join(' + ')} = ${fromRoman(s)}`:`${txt(tk[0])} = ${fromRoman(s)}`;
-}
+/* =================== conteúdo: a família Sternberg (alemão para 9 anos, tema família) ===================
+   Retratos 16×16 (FACES). A árvore é vista pela Mia ("Ich bin Mia"). Palavras com artigo: der (azul), die (vermelho),
+   das (verde) e plural (die, laranja). p = pessoas da árvore que a palavra indica (do ponto de vista da Mia). */
+const FACES={"opa": {"rows": ["................", ".....kkkkkk.....", "....kssssssk....", "...kssssssssk...", "..kssssssssssk..", "..hhsssssssshh..", "..hskkksskkksh..", ".ksskgkkkkgkssk.", ".ksskeksskekssk.", "..kscshhhhscsk..", "..kssssmmssssk..", "...kssssssssk...", ".kkkksssssskkkk.", "kaaaaksssskaaaak", "kaaaaaaaaaaaaaak", "kaaaaaaaaaaaaaak"], "pal": {"g": "#c8faff", "k": "#0b0a1a", "e": "#0b0a1a", "c": "#ff9a8a", "m": "#a8403a", "w": "#ffffff", "s": "#f1c9a0", "h": "#e8eaf0", "a": "#3a6ad8", "r": "#e03a26"}}, "oma": {"rows": [".....khhhhk.....", ".....kkkkkk.....", "....khhhhhhk....", "...khhhhhhhhk...", "..khhhhhhhhhhk..", "..khhhhhhssshk..", "..khkkksskkkhk..", ".ksskgkkkkgkssk.", ".ksskeksskekssk.", "..kscsssssscsk..", "..kssssmmssssk..", "...kssssssssk...", ".kkkksssssskkkk.", "kaaaaksssskaaaak", "kaaaaaaaaaaaaaak", "kaaaaaaaaaaaaaak"], "pal": {"g": "#c8faff", "k": "#0b0a1a", "e": "#0b0a1a", "c": "#ff9a8a", "m": "#a8403a", "w": "#ffffff", "s": "#f1c9a0", "h": "#d8dce4", "a": "#b46aff", "r": "#e03a26"}}, "vater": {"rows": ["................", ".....kkkkkk.....", "....khhhhhhk....", "...khhhhhhhhk...", "..khhhhhhhhhhk..", "..khhhhhhssshk..", "..khsssssssshk..", ".ksssessssesssk.", ".ksssessssesssk.", "..kscshhhhscsk..", "..kshhsmmshhsk..", "...khhhhhhhhk...", ".kkkksssssskkkk.", "kaaaaksssskaaaak", "kaaaaaaaaaaaaaak", "kaaaaaaaaaaaaaak"], "pal": {"g": "#c8faff", "k": "#0b0a1a", "e": "#0b0a1a", "c": "#ff9a8a", "m": "#a8403a", "w": "#ffffff", "s": "#e8b88a", "h": "#6b4520", "a": "#1f9a7e", "r": "#e03a26"}}, "mutter": {"rows": ["................", ".....kkkkkk.....", "....khhhhhhk....", "...khhhhhhhhk...", "..khhhhhhhhhhk..", ".khhhhhhhssshhk.", ".khhsssssssshhk.", ".khssessssesshk.", ".khssessssesshk.", ".khscsssssscshk.", ".khhsssmmssshhk.", ".khhsssssssshhk.", ".khhksssssskhhk.", "kakaaksssskaakak", "kaaaaaaaaaaaaaak", "kaaaaaaaaaaaaaak"], "pal": {"g": "#c8faff", "k": "#0b0a1a", "e": "#0b0a1a", "c": "#ff9a8a", "m": "#a8403a", "w": "#ffffff", "s": "#e8b88a", "h": "#d9a020", "a": "#ff5a8a", "r": "#e03a26"}}, "bruder": {"rows": [".....k.kkkk.....", ".....khkkhk.....", "....khhhhhhk....", "...khhhhhhhhk...", "..khhhhhhhhhhk..", "..khhhhhhssshk..", "..khsssssssshk..", ".ksssessssesssk.", ".ksssessssesssk.", "..kscsssssscsk..", "..kssssmmssssk..", "...kssssssssk...", ".kkkksssssskkkk.", "kaaaaksssskaaaak", "kaaaaaaaaaaaaaak", "kaaaaaaaaaaaaaak"], "pal": {"g": "#c8faff", "k": "#0b0a1a", "e": "#0b0a1a", "c": "#ff9a8a", "m": "#a8403a", "w": "#ffffff", "s": "#e8b88a", "h": "#6b4520", "a": "#ffb300", "r": "#e03a26"}}, "schwester": {"rows": ["................", ".....kkkkkk.....", "....khhhhhhk....", "...khhhhhhhhk...", "..khhhhhhhhhhk..", "rrkhhhhhhssshkrr", "h.khsssssssshk.h", "hksssessssessskh", "hksssessssessskh", "h.kscsssssscsk.h", "..kssssmmssssk..", "...kssssssssk...", ".kkkksssssskkkk.", "kaaaaksssskaaaak", "kaaaaaaaaaaaaaak", "kaaaaaaaaaaaaaak"], "pal": {"g": "#c8faff", "k": "#0b0a1a", "e": "#0b0a1a", "c": "#ff9a8a", "m": "#a8403a", "w": "#ffffff", "s": "#e8b88a", "h": "#d9a020", "a": "#5dff83", "r": "#ff4fd8"}}, "baby": {"rows": ["........k.......", ".....kkkhkk.....", "....ksshsssk....", "...kssssssssk...", "..kssssssssssk..", "..kssssssssssk..", "..kssssssssssk..", ".ksssessssesssk.", ".ksssessssesssk.", "..kscsssssscsk..", "..ksssrpprsssk..", "...kssssssssk...", ".kkkksssssskkkk.", "kaaaaksssskaaaak", "kaaaaaaaaaaaaaak", "kaaaaaaaaaaaaaak"], "pal": {"g": "#c8faff", "k": "#0b0a1a", "e": "#0b0a1a", "c": "#ff9a8a", "m": "#a8403a", "w": "#ffffff", "s": "#f6dcb6", "h": "#d9a020", "a": "#8fd0ff", "r": "#ffb300", "p": "#ff9ab8"}}, "onkel": {"rows": ["................", "....kkkkkkkk....", "...krrrrrrrrk...", "..kkrrrrrrrrkk..", "..krrrrrrrrrrk..", "..khssssssssrrrr", "..khsssssssskkkk", ".ksssessssesssk.", ".ksssessssesssk.", "..kscshhhhscsk..", "..kssssmmssssk..", "...kssssssssk...", ".kkkksssssskkkk.", "kaaaaksssskaaaak", "kaaaaaaaaaaaaaak", "kaaaaaaaaaaaaaak"], "pal": {"g": "#c8faff", "k": "#0b0a1a", "e": "#0b0a1a", "c": "#ff9a8a", "m": "#a8403a", "w": "#ffffff", "s": "#c98f64", "h": "#2a1a10", "a": "#5a606c", "r": "#e03a26"}}, "tante": {"rows": ["................", ".....kkkkkk.....", "....khhhhhhk....", "...khhhhhhhhk...", "..khhhhhhhhhhk..", ".khhhhhhhssshhk.", ".khhsssssssshhk.", ".khssessssesshk.", ".khssessssesshk.", ".khscsssssscshk.", "..kssssmmssssk..", "...kssssssssk...", ".kkkksssssskkkk.", "kaaaaksssskaaaak", "kaaaaaaaaaaaaaak", "kaaaaaaaaaaaaaak"], "pal": {"g": "#c8faff", "k": "#0b0a1a", "e": "#0b0a1a", "c": "#ff9a8a", "m": "#a8403a", "w": "#ffffff", "s": "#c98f64", "h": "#2a1a10", "a": "#ffd23f", "r": "#e03a26"}}, "cousin": {"rows": ["................", ".....kkkkkk.....", "....khhhhhhk....", "...khhhhhhhhk...", "..khhhhhhhhhhk..", "..khhhhhhssshk..", "..khkkksskkkhk..", ".ksskgkkkkgkssk.", ".ksskeksskekssk.", "..kscsssssscsk..", "..kssssmmssssk..", "...kssssssssk...", ".kkkksssssskkkk.", "kaaaaksssskaaaak", "kaaaaaaaaaaaaaak", "kaaaaaaaaaaaaaak"], "pal": {"g": "#c8faff", "k": "#0b0a1a", "e": "#0b0a1a", "c": "#ff9a8a", "m": "#a8403a", "w": "#ffffff", "s": "#c98f64", "h": "#2a1a10", "a": "#e03a26", "r": "#e03a26"}}, "cousine": {"rows": ["................", ".....kkkkkk.....", "....khhhhhhk..k.", "...khhhhhhhhkrhk", "..khhhhhhhhhhkhk", "..khhhhhhssshkhk", "..khsssssssshkhk", ".ksssessssessshk", ".ksssessssesssk.", "..kscsssssscsk..", "..kssssmmssssk..", "...kssssssssk...", ".kkkksssssskkkk.", "kaaaaksssskaaaak", "kaaaaaaaaaaaaaak", "kaaaaaaaaaaaaaak"], "pal": {"g": "#c8faff", "k": "#0b0a1a", "e": "#0b0a1a", "c": "#ff9a8a", "m": "#a8403a", "w": "#ffffff", "s": "#c98f64", "h": "#2a1a10", "a": "#2ad4ff", "r": "#ff4fd8"}}};
+const FAM=[
+  {id:'opa',face:'opa',name:'Karl',g:0},{id:'oma',face:'oma',name:'Greta',g:0},
+  {id:'vater',face:'vater',name:'Thomas',g:1},{id:'mutter',face:'mutter',name:'Anna',g:1},{id:'tante',face:'tante',name:'Lena',g:1},{id:'onkel',face:'onkel',name:'Jan',g:1},
+  {id:'mia',face:'schwester',name:'Mia',g:2,me:true},{id:'max',face:'bruder',name:'Max',g:2},{id:'ben',face:'baby',name:'Ben',g:2},{id:'paul',face:'cousin',name:'Paul',g:2},{id:'emma',face:'cousine',name:'Emma',g:2}];
+const W=[
+  {de:'Vater',art:'der',pt:'pai',f:['vater'],lv:1,p:['vater']},
+  {de:'Mutter',art:'die',pt:'mãe',f:['mutter'],lv:1,p:['mutter']},
+  {de:'Papa',art:'der',pt:'papai',f:['vater'],lv:1,p:['vater']},
+  {de:'Mama',art:'die',pt:'mamãe',f:['mutter'],lv:1,p:['mutter']},
+  {de:'Bruder',art:'der',pt:'irmão',f:['bruder'],lv:1,p:['max','ben']},
+  {de:'Schwester',art:'die',pt:'irmã',f:['schwester'],lv:1},
+  {de:'Opa',art:'der',pt:'vovô',f:['opa'],lv:1,p:['opa']},
+  {de:'Oma',art:'die',pt:'vovó',f:['oma'],lv:1,p:['oma']},
+  {de:'Baby',art:'das',pt:'bebê',f:['baby'],lv:1,p:['ben']},
+  {de:'Familie',art:'die',pt:'família',f:['vater','mutter','schwester','bruder'],lv:1},
+  {de:'Eltern',art:'pl',pt:'pais (o pai e a mãe)',f:['vater','mutter'],lv:2,p:['vater','mutter']},
+  {de:'Großeltern',art:'pl',pt:'avós',f:['opa','oma'],lv:2,p:['opa','oma']},
+  {de:'Geschwister',art:'pl',pt:'irmãos',f:['bruder','schwester'],lv:2,p:['max','ben']},
+  {de:'Großvater',art:'der',pt:'avô',f:['opa'],lv:2,p:['opa']},
+  {de:'Großmutter',art:'die',pt:'avó',f:['oma'],lv:2,p:['oma']},
+  {de:'Onkel',art:'der',pt:'tio',f:['onkel'],lv:2,p:['onkel']},
+  {de:'Tante',art:'die',pt:'tia',f:['tante'],lv:2,p:['tante']},
+  {de:'Junge',art:'der',pt:'menino',f:['bruder'],lv:2},
+  {de:'Mädchen',art:'das',pt:'menina',f:['schwester'],lv:2,tip:'Mädchen é DAS! Toda palavra que termina em -chen é das.'},
+  {de:'Cousin',art:'der',pt:'primo',f:['cousin'],lv:3,p:['paul']},
+  {de:'Cousine',art:'die',pt:'prima',f:['cousine'],lv:3,p:['emma']},
+  {de:'Sohn',art:'der',pt:'filho',f:['bruder'],lv:3},
+  {de:'Tochter',art:'die',pt:'filha',f:['schwester'],lv:3},
+  {de:'Kind',art:'das',pt:'criança',f:['bruder'],lv:3},
+  {de:'Kinder',art:'pl',pt:'crianças',f:['bruder','schwester','baby'],lv:3}];
+const LVTXT=['FAMÍLIA PERTO','FAMÍLIA GRANDE','FRASES'];
+const ARTC={der:'#3a8aff',die:'#ff4a5a',das:'#39d36a',pl:'#ffb300'};
+const artOf=w=>w.art==='pl'?'die':w.art;
+const meinOf=w=>w.art==='der'||w.art==='das'?'mein':'meine';
+const einOf=w=>({der:'einen',die:'eine',das:'ein'})[w.art];
+const pron=w=>({der:'er',die:'sie',das:'es',pl:'sie'})[w.art];
+/* dicas que aparecem depois de responder */
+const TIP={der:'Homem e menino: der.',die:'Mulher e menina: die (mas das Mädchen!).',das:'Bebê e criança: das.',pl:'Plural é sempre die.',
+  mein:'der e das → mein · die e plural → meine.',ein:'Ich habe… der → einen · die → eine · das → ein.',ist:'Uma pessoa: ist · duas ou mais: sind.'};
 
-/* =================== câmaras (níveis) =================== */
-const LEVELS=[
-  {n:1,max:10,from:1,syms:['I','V','X'],range:'I a X'},
-  {n:2,max:20,from:11,syms:['I','V','X'],range:'I a XX'},
-  {n:3,max:50,from:21,syms:['I','V','X','L'],range:'I a L'},
-  {n:4,max:100,from:51,syms:['I','V','X','L','C'],range:'I a C'},
-];
-const ALL=['I','V','X','L','C'];
-const L=()=>LEVELS[S.level-1];
-const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
-const pick=a=>a[Math.floor(Math.random()*a.length)];
-const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
-function pickN(filter=()=>true){ // 60% no trecho novo da câmara
-  const l=L();let pool=[];for(let n=1;n<=l.max;n++)if(filter(n))pool.push(n);
-  const fresh=pool.filter(n=>n>=l.from);return pick(fresh.length&&Math.random()<.6?fresh:pool);
-}
-function uniqueList(k,gen,keyf=x=>JSON.stringify(x)){const out=[],seen=new Set();let g=0;
-  while(out.length<k&&g++<400){const q=gen(),kk=keyf(q);if(seen.has(kk)&&g<200)continue;seen.add(kk);out.push(q)}return out}
 
 /* =================== memória local =================== */
-const STORE='numeris-stats-v1',ROUNDS=5,LVN=6,MODES=['montar','ler','sub'];
-const fresh=()=>({level:1,lvDays:[],modes:{montar:{a:0,c:0},ler:{a:0,c:0},sub:{a:0,c:0},desafio:{a:0,c:0}},erros:{},days:{},run:{},log:{},errM:{},sound:true});
-let pendingLevel=false;
-let S=(()=>{try{const o=JSON.parse(localStorage.getItem(STORE));return o?Object.assign(fresh(),o):fresh()}catch(e){return fresh()}})();
-const save=()=>{try{localStorage.setItem(STORE,JSON.stringify(S))}catch(e){}};
 const dkey=(d=new Date())=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-const doneToday=()=>S.days[dkey()]||[];
 /* =================== turno do dia sorteado (mesmo código na Nave-Mãe e em todos os jogos) ===================
    A partir de PLAN_FROM, o turno tem PLAN_N missões sorteadas entre todos os jogos: 1 de cada planeta com jogo
    e o resto entre todas (no máximo 2 do mesmo jogo), evitando repetir o sorteio do dia anterior. O sorteio usa
@@ -593,42 +600,38 @@ function planDay(k){const rd=a=>{try{return((JSON.parse(localStorage.getItem(a.s
   return{done,total,full:k>=PLAN_FROM?total>0&&done>=total:anyFull}}
 function planStreak(){const d=new Date(),K=x=>`${x.getFullYear()}-${String(x.getMonth()+1).padStart(2,'0')}-${String(x.getDate()).padStart(2,'0')}`;let n=0;
   if(!planDay(K(d)).full)d.setDate(d.getDate()-1);while(planDay(K(d)).full&&n<999){n++;d.setDate(d.getDate()-1)}return n}
+
 /* terminal: o turno da nave inteira (as missões sorteadas do dia, em todos os jogos) */
 function renderTurnoNave(){const WDN=['D','S','T','Q','Q','S','S'],K=x=>`${x.getFullYear()}-${String(x.getMonth()+1).padStart(2,'0')}-${String(x.getDate()).padStart(2,'0')}`,td=planDay(K(new Date()));
   const tn=document.getElementById('turnoN');tn.textContent=`${td.done} / ${td.total}`;tn.classList.toggle('all',td.full);
   let w='';for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);const p=planDay(K(d));w+=`<span class="day${p.full?' full':p.done?' part':''}${i===0?' today':''}"><i></i>${WDN[d.getDay()]}</span>`}
   document.getElementById('week').innerHTML=w;const s=planStreak();
   document.getElementById('streak').innerHTML=s?`Sequência: <b>${s} ${s===1?'dia':'dias'}</b>`:'Complete o turno para começar a sequência.';return td}
-
-const REQ=(k=dkey())=>reqFor('numeris',k); /* os portões que contam no turno do dia */
-const mainDone=k=>REQ(k).filter(m=>(S.days[k]||[]).includes(m)).length;
-const isFull=k=>REQ(k).length>0&&mainDone(k)>=REQ(k).length;
+const STORE='alemao-stats-v1',MODES=['woerter','artikel','baum'],LVN=6;
+const fresh=()=>({level:1,lvDays:[],modes:{woerter:{a:0,c:0},artikel:{a:0,c:0},baum:{a:0,c:0},desafio:{a:0,c:0}},erros:{},errM:{},days:{},log:{},w:{},seen:[]});
+let S=(()=>{try{const o=JSON.parse(localStorage.getItem(STORE));return o?Object.assign(fresh(),o):fresh()}catch(e){return fresh()}})();
+const save=()=>{try{localStorage.setItem(STORE,JSON.stringify(S))}catch(e){}};
+const REQ=(k=dkey())=>reqFor('alemao',k);
+const doneToday=()=>S.days[dkey()]||[];
+let lvUp=false;
+/* nível: sobe a cada LVN missões principais concluídas (cada missão conta 1 vez por dia) */
 function markDone(m){const k=dkey(),l=S.days[k]||[];if(!l.includes(m)){l.push(m);S.days[k]=l}
-  // sobe ao juntar LVN pontos: cada missão principal concluída no dia vale 1 (a partir do turno sorteado);
-  // dias de turno completo da regra antiga (só a data guardada) valem 3
-  if(m!=='desafio'&&MODES.includes(m)&&S.level<4){const id=k>=PLAN_FROM?k+':'+m:k;if(!S.lvDays.includes(id)&&(k>=PLAN_FROM||isFull(k))){S.lvDays.push(id);if(lvPts()>=LVN){S.level++;S.lvDays=[];pendingLevel=true}}}
+  if(MODES.includes(m)&&S.level<3){const id=k+':'+m;if(!S.lvDays.includes(id)){S.lvDays.push(id);if(S.lvDays.length>=LVN){S.level++;S.lvDays=[];lvUp=true}}}
   const ks=Object.keys(S.days).sort();while(ks.length>120)delete S.days[ks.shift()];save()}
-const lvPts=()=>S.lvDays.reduce((s,x)=>s+(String(x).includes(':')?1:3),0);
-function streak(){return planStreak()} // sequência da nave inteira (turno sorteado)
-/* histórico para a área dos pais (na Nave-Mãe): log diário por missão e erros por missão */
-function record(mode,ok,errKey){const m=S.modes[mode];m.a++;if(ok){m.c++}
-  else if(errKey){S.erros[errKey]=(S.erros[errKey]||0)+1;S.errM=S.errM||{};const e=S.errM[mode]=S.errM[mode]||{};e[errKey]=(e[errKey]||0)+1}
-  S.log=S.log||{};const k=dkey(),d=S.log[k]=S.log[k]||{},r=d[mode]=d[mode]||[0,0];r[0]++;if(ok)r[1]++;
+function record(mode,ok,key){const m=S.modes[mode];m.a++;if(ok)m.c++;else if(key)errAdd(mode,key,true);
+  const k=dkey(),d=S.log[k]=S.log[k]||{},r=d[mode]=d[mode]||[0,0];r[0]++;if(ok)r[1]++;
   const ks=Object.keys(S.log).sort();while(ks.length>120)delete S.log[ks.shift()];save()}
+function errAdd(mode,key,ns){S.erros[key]=(S.erros[key]||0)+1;const e=S.errM[mode]=S.errM[mode]||{};e[key]=(e[key]||0)+1;if(!ns)save()}
+/* cada palavra guarda tentativas e acertos; entra no dicionário quando aparece pela primeira vez */
+function wRec(w,ok){const r=S.w[w.de]=S.w[w.de]||{a:0,c:0};r.a++;if(ok)r.c++;if(!S.seen.includes(w.de))S.seen.push(w.de)}
 /* piloto como foi customizado na Nave-Mãe (o boneco antigo fica de reserva) */
 function navAvatar(k,s){try{const a=JSON.parse(localStorage.getItem('navemae-avatar')),v=a&&a[k];if(!v)return '';
   const m=v.match(/viewBox="0 0 (\d+) (\d+)"/);return v.replace(/width="\d+" height="\d+"/,`width="${m[1]*s}" height="${m[2]*s}"`)}catch(e){return ''}}
 const pilot=(()=>{try{return (JSON.parse(localStorage.getItem('navemae-v1'))||{}).pilot||''}catch(e){return ''}})();
 
 /* =================== sprites =================== */
-/* ---------- sprites 16-bit (paleta compartilhada) ---------- */
-const PAL={"F":"#ffffff","G":"#b6ffcf","O":"#ffb300","P":"#f1c9a0","S":"#f6dcb6","T":"#b6fff0","X":"#3ff2c4","Y":"#fff3a0","g":"#39e35f","h":"#1f9a3a","k":"#0b0a1a","o":"#d97a00","p":"#c98f64","s":"#d9a066","t":"#a8703a","v":"#6b4520","w":"#3b2512","x":"#1f9a7e","z":"#0f5a4a"};
-const SPR={"gate":["..kkkkkkkkkkkkkkkk..",".kSSSSSSSstsssssssk.","kSSSkkkkkkkkkkkksssk","kSSkwwwwwwwwwwwwkssk","kSskwvvvvvvvvvvwktsk","kSskwvkkvvvvkkvwktsk","kSskwvvkXkkxkvvwktsk","kSskwvvvkXxkvvvwktsk","kSskwvvvvkkvvvvwktsk","kSskwvvvkXxkvvvwktsk","kSskwvvkXkkxkvvwktsk","kSskwvkkvvvvkkvwktsk","kSskwvvvvvvvvvvwktsk","kSskwvvvvvvvvvvwktsk","kSskwwwwwwwwwwwwktsk","kSskwkkkkkkkkkkwktsk","kkkkkkkkkkkkkkkkkkkk","kSSSSSSSssttsssssssk","kkkkkkkkkkkkkkkkkkkk"],
-"gateOpen":["..kkkkkkkkkkkkkkkk..",".kSSSSSSSssSSSSSSSk.","kSSSkkkkkkkkkkkkSSSk","kSSkTTTTTTTTTTTTkSSk","kSskTXXXXXXXXXXTksSk","kSskTXTTTTTTTTXTksSk","kSskTXTFFFFFFTXTksSk","kSskTXTFFFFFFTXTksSk","kSskTXTFFFFFFTXTksSk","kSskTXTTTTTTTTXTksSk","kSskTXXXXXXXXXXTksSk","kSskTXXXXXXXXXXTksSk","kSskxXXXXXXXXXXxksSk","kSskxxXXXXXXXXxxksSk","kSskxxxXXXXXXxxxksSk","kSskzxxxxxxxxxxzksSk","kkkkkkkkkkkkkkkkkkkk","kSSSSSSSssssSSSSSSSk","kkkkkkkkkkkkkkkkkkkk"],
-"man":["....kkkkk.....","...kYOOOOk....","..kYOOOOOok...",".kkkkkkkkkkk..","kOOOOOOOOoook.",".kkPPPPPpkkk..","..kPkPPkPpk...","..kPPPPPpk....","...kpPPpk.....","..kkXXXXkk....",".kvkXXXXxkk...","kvvkXTXXxkPk..","kvtkXXXXxkpk..","kvtkxXXxxk.k..",".kkkkkkkkk....","..kwwkwwk.....","..kwwkwwk.....","..kttkttk.....",".kttk.kttk....",".kkkk.kkkk...."],
-"tab":["kkkkkkkkkk","kSSSSSSSsk","kSkXkSXktk","kSkXkSXktk","kSkXkSXktk","kssssssstk","kkkkkkkkkk"],
-"blocks":["...kkkkkkkk...","...kSSSSSsk...","...kSkXXksk...","...kSkXXksk...","...ksssstsk...","kkkkkkkkkkkkkk","kSSSSskSSSSSsk","kSkXksksXkXksk","kSkXksksXkXksk","kssstskssssstk","kkkkkkkkkkkkkk"],
-"check":["........kk",".......kGk","kk....kGgk","kGk..kGgk.","kgGkkGgk..",".kgGGgk...","..kghk....","...kk....."]};
+const PAL={"k": "#120a0a", "W": "#ffffff", "B": "#3a8aff", "b": "#1f4fa8", "R": "#ff4a5a", "r": "#a81a2a", "G": "#39d36a", "g": "#1f8a3a", "Y": "#ffce00", "y": "#a88a00", "T": "#8a5a2a", "t": "#5a3a1a", "L": "#fff4e6", "M": "#c4a890", "D": "#8a6a50", "H": "#7ad86a", "h": "#2f9a3a", "P": "#ff9ab8"};
+const SPR={"tags": ["kkkkkkkkkkk...", "kBBBBBBBBBBk..", "kBWBBBBBBBBBk.", "kbbbbbbbbbbk..", "kkkkkkkkkkkkk.", "kRRRRRRRRRRRk.", "kRWRRRRRRRRRRk", "krrrrrrrrrrrk.", "kkkkkkkkkkkkk.", "kGGGGGGGGGGk..", "kGWGGGGGGGGGk.", "kggggggggggk..", "kkkkkkkkkkk..."], "baum": ["....kkkkkk....", "..kkHHHHHHkk..", ".kHHHHhHHHHHk.", "kHHhHHHHHHhHHk", "kHHHHHHkHHHHHk", "kHHHHHkYkHHHHk", ".kHhHHHkHHHhk.", "..kkhHHHHhkk..", "....kkTTkk....", "......Tt......", "....kkTtkk....", "...kTTTttTk...", "..kkkkkkkkkk.."], "spk": ["......k.....", ".....kk..k..", "kkkkkLk...k.", "kLLkLLk.k..k", "kLLkLLk..k.k", "kLLkLLk..k.k", "kLLkLLk.k..k", "kkkkkLk...k.", ".....kk..k..", "......k....."], "ear": ["...kkkkk....", "..kPPPPPk...", ".kPPkkkPPk..", ".kPk...kPk..", "kPPk.kkPPk..", "kPk..kPPk...", "kPk..kPk....", "kPPk.kPk....", ".kPPkPPk....", "..kPPPk.....", "...kkk......"], "heart": [".kk.kk.", "kRRkRRk", "kRWRRRk", "kRRRRRk", ".kRRRk.", "..kRk..", "...k..."], "heart0": [".kk.kk.", "kDDkDDk", "kDDDDDk", "kDDDDDk", ".kDDDk.", "..kDk..", "...k..."], "check": ["........kk", ".......kGk", "kk....kGgk", "kGk..kGgk.", "kgGkkGgk..", ".kgGGgk...", "..kghk....", "...kk....."], "book": [".kkkkk.kkkkk.", "kLLLLLkLLLLLk", "kLMMMLkLMMMLk", "kLLLLLkLLLLLk", "kLMMLLkLMMMLk", "kLLLLLkLLLLLk", "kLMMMLkLMMLLk", "kLLLLLkLLLLLk", "kYYYYYYYYYYYk", ".kkkkkkkkkkk."]};
 /* ---------- arte 16-bit: grade única de 2px ----------
    O "s" de cada desenho é o tamanho do pixel original. A arte é ampliada com Scale2x/Scale3x
    até cada pixel ficar com 2px na tela (mesma grade em todo o app) e ganha luz de cima-esquerda,
@@ -674,12 +677,9 @@ function spriteRows(rows,s=2,ov){const g=hdRows(rows,s,ov),h=g.length,w=g[0].len
   g.forEach((row,y)=>{let x=0;while(x<w){const c=row[x];if(!c){x++;continue}let k=1;while(row[x+k]===c)k++;r+=`<rect x="${x}" y="${y}" width="${k}" height="1" fill="${c}"/>`;x+=k}});
   return `<svg class="spr" viewBox="0 0 ${w} ${h}" width="${w*px}" height="${h*px}" shape-rendering="crispEdges" aria-hidden="true">${r}</svg>`}
 const sprite=(n,s=2,ov)=>spriteRows(SPR[n],s,ov);
-
-/* logo: o mesmo ícone do jogo na lista do planeta (Nave-Mãe) */
-const HUB_ICON=[".....kkkkkk.....", "...kkSSSssskk...", ".kkSSSSstsssskk.", "kSSSSssstttssssk", "kkkkkkkkkkkkkkkk", ".kSsktttvvvktsk.", ".kSsktkkkkvktsk.", ".kSsktkXxkvktsk.", ".kSsktkxxkvktsk.", ".kSsktkXxkvktsk.", ".kSsktkkkkvktsk.", ".kSsktttvvvktsk.", ".kSsktttvvvktsk.", "kkkkkkkkkkkkkkkk", "kSSSSssstttssssk", "kkkkkkkkkkkkkkkk"],HUB_PAL={"s": "#d9a066", "F": "#a8e8ff", "b": "#ffb300", "O": "#ffb300", "J": "#2a2e38", "U": "#b4bac6", "W": "#ffffff", "v": "#6b4520", "k": "#0b0a1a", "Q": "#737a88", "x": "#1f9a7e", "n": "#123a66", "X": "#3ff2c4", "D": "#5f5ca8", "Y": "#fff3a0", "o": "#d97a00", "G": "#b6ffcf", "M": "#9b98d4", "L": "#d8d6ff", "c": "#40d8ff", "h": "#1f9a3a", "t": "#a8703a", "g": "#39e35f", "C": "#c8faff", "S": "#f6dcb6"};
+const fitS=n=>{const r=SPR[n];return r&&r[0].length*4<=48&&r.length*4<=48?4:2};
+const HUB_ICON=["..........kk....",".......kk.kQk...","......kJJkkQk...",".....kJJJJkQk...","....kJKJJJJkk...","...kJKJJJJJJk...","..kJKJJJJJJJJk..",".kkkkkkkkkkkkkk.","..kRrrrrrrrrrk..","..krkkkkrrrrqk..","..krkYAkrkkkqk..","..krkAbkrkbkqk..","..krkkkkrkbkqk..","..krrrrrrkokqk..","..krrrrrrkbkqk..",".kkkkkkkkkkkkkk."],HUB_PAL={"J":"#2a2e38","K":"#454b58","Q":"#737a88","U":"#b4bac6","0":"#ada38a","1":"#f2eee2","2":"#cfc8b2","3":"#9a927a","4":"#4f4a3c","5":"#24323c","6":"#0e161c","7":"#d9a06a","8":"#a8703a","9":"#e0d8c2","=":"#6e6652","A":"#ffe066","C":"#c8faff","D":"#5f5ca8","E":"#34316e","F":"#a8e8ff","G":"#b6ffcf","L":"#d8d6ff","M":"#9b98d4","O":"#ffb300","R":"#ff7a66","S":"#f6dcb6","W":"#ffffff","X":"#3ff2c4","Y":"#fff3a0","a":"#2b2f38","b":"#ffb300","c":"#40d8ff","g":"#39e35f","h":"#1f9a3a","k":"#0b0a1a","n":"#123a66","o":"#d97a00","q":"#8a1a10","r":"#e03a26","s":"#d9a066","t":"#a8703a","u":"#8a4a00","v":"#6b4520","x":"#1f9a7e"};
 document.getElementById('logo').innerHTML=spriteRows(HUB_ICON,4,HUB_PAL);
-const fitS=n=>{const r=SPR[n];return r&&r[0].length*4<=48&&r.length*4<=48?4:2}; /* ícone dos cards: o maior tamanho nítido que cabe no quadro de 56 px */
-
 
 /* =================== som =================== */
 let AC=null;
@@ -732,24 +732,14 @@ function mkSYN(ctx,on){let nb=null;
   return{note,noise,arp}}
 const SY=mkSYN(()=>{AC=AC||newAC();return AC},()=>soundOn);
 let combo=0;
-const SND={
-  stone:s=>{const f={I:880,V:740,X:587,L:494,C:392}[s]||660;SY.noise(.06,0,{f:900,vol:.11});SY.note(f,.08,0,{type:'triangle',vol:.08})},
-  crumble:big=>{SY.noise(big?.38:.16,0,{f:1600,to:180,vol:.11});if(big)SY.note(110,.2,.05,{type:'triangle',vol:.08})},
-  key:d=>SY.note(650+d*30,.03,0,{type:'triangle',vol:.08}),
-  del:()=>SY.note(520,.05,0,{type:'triangle',to:330,vol:.08}),
-  page:()=>{SY.noise(.1,0,{filter:'highpass',f:3000,vol:.06});SY.noise(.12,.09,{filter:'highpass',f:2200,vol:.05})},
-  tick:k=>SY.note(k?660:1320,k?.06:.14,0,{vol:.05}),
-  grind:()=>{SY.noise(.6,0,{f:180,to:700,vol:.1,att:.1});SY.note(82,.5,0,{type:'triangle',vol:.08})},
-};
-const sfx={
-  tap:()=>tone(520,.04),
-  stone:()=>{tone(180,.05,0,.07);tone(140,.05,.04,.05)},
+const SND={page:()=>{SY.noise(.1,0,{filter:'highpass',f:3000,vol:.06});SY.noise(.12,.09,{filter:'highpass',f:2200,vol:.05})},
+  place:()=>{SY.note(523,.06,0,{type:'triangle',vol:.08});SY.note(784,.08,.06,{type:'triangle',vol:.07})},
+  beep:()=>SY.arp([784,1047,1319],.06,{type:'triangle',vol:.06}),
+  word:()=>SY.arp([659,880,1175],.07,{type:'sine',vol:.06})};
+const sfx={tap:()=>tone(520,.04),
   ok:()=>{const k=Math.pow(2,Math.min(combo,7)/12);combo++;tone(660*k,.07);tone(880*k,.07,.07);tone(1320*k,.09,.14);if(combo>=3)SY.arp([1760*k,2349*k],.05,{type:'sine',vol:.035,t:.22})},
   no:()=>{combo=0;tone(220,.12);tone(160,.16,.12)},
-  win:()=>[392,523,659,784,1047,1319].forEach((f,i)=>tone(f,.09,i*.09)),
-  rumble:()=>{tone(70,.18,0,.08);tone(55,.2,.12,.07)},
-  lose:()=>[440,370,311,262,196].forEach((f,i)=>tone(f,.12,i*.12)),
-};
+  win:()=>[392,523,659,784,1047,1319].forEach((f,i)=>tone(f,.09,i*.09))};
 /* ---- comemoração de missão concluída (mesmo código nos dois jogos) ----
    CEL.play({host,avatar,title,sub,stars,score:[n,total],scoreLabel,turno:{n,total,streak,fresh},lose,buttons:[{label,cls,fn}],onDone}) */
 const CEL=(()=>{
@@ -804,250 +794,217 @@ const CEL=(()=>{
     h.firstElementChild.addEventListener('click',()=>{if(fin)fin()})}
   return{play,stop,cfg:null}})();
 CEL.cfg={beep:(f,d,t=0)=>tone(f,d,t),jingle:()=>[784,988,1175,1568,1175,1568].forEach((f,i)=>tone(f,.1,i*.1)),
-  confetti:['#3ff2c4','#ffb300','#c9ab82','#ff7a3d','#f1eadf'],starOff:['#5a4a62','#46384e','#2a2133'],panel:'px'};
+  confetti:['#ffce00','#ff4a5a','#5aa0ff','#5ae08a','#fff4e6'],starOff:['#5a4030','#3a2a20','#2a1e19'],panel:'px'};
 
 /* =================== navegação =================== */
 const $=s=>document.querySelector(s);
-let current='menu';
-function show(id){if(id==='menu'&&DL){DL=false;$('#playBack').textContent=$('#desBack').textContent='< Templo'}if(id!=='res')CEL.stop();current=id;document.querySelectorAll('#app>.screen').forEach(s=>s.hidden=s.id!==id);window.scrollTo(0,0);if(id==='menu')renderMenu()}
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+let current='menu',mode=null;
+function show(id){if(id!=='res')CEL.stop();current=id;document.querySelectorAll('#app>.screen').forEach(s=>s.hidden=s.id!==id);window.scrollTo(0,0);if(id==='menu')renderMenu()}
+document.querySelectorAll('[data-back]').forEach(b=>b.onclick=()=>{sfx.tap();if(DL){backHome();return}show('menu')});
+document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>{b.closest('.overlay').hidden=true});
 
 /* =================== menu =================== */
-const WD=['D','S','T','Q','Q','S','S'];let typing=null;
+let typing=null;
 function renderMenu(){
-  const l=L();
-  const top=l.range.split(' a ')[1];
-  $('#nvT').textContent=`NÍVEL ${l.n} · ATÉ ${top}`;
-  if(S.level<4){$('#nvS').textContent=`Próximo: ${LVN} missões feitas`;
-    $('#nvP').innerHTML=Array.from({length:LVN},(_,i)=>`<i class="${i<lvPts()?'on':''}"></i>`).join('')}
-  else{$('#nvS').textContent='Nível máximo!';$('#nvP').innerHTML=''}
-  const done=doneToday(),req=REQ(),n=mainDone(dkey()),all=n>=req.length;
+  const done=doneToday(),req=REQ(),n=req.filter(m=>done.includes(m)).length,all=n>=req.length;
+  $('#nvT').textContent=`NÍVEL ${S.level} · ${LVTXT[S.level-1]}`;
+  if(S.level<3){$('#nvS').textContent=`Próximo: ${LVN} missões feitas`;$('#nvP').innerHTML=Array.from({length:LVN},(_,i)=>`<i class="${i<S.lvDays.length?'on':''}"></i>`).join('')}
+  else{$('#nvS').textContent='Já fala frases inteiras!';$('#nvP').innerHTML=''}
   renderTurnoNave();
-  const nx=req.find(m=>!done.includes(m)); // próximo portão do turno: destacado
-  document.querySelectorAll('[data-st]').forEach(el=>{const m=el.dataset.st,ok=done.includes(m),r=ok?null:S.run[m],isN=m===nx&&!r,ex=!req.includes(m); // ex: fora do rodízio de hoje
-    el.className='st'+(ok?' ok':r?' mid':isN?' nx':ex?' xt':'');
-    el.innerHTML=ok?sprite('check',2)+'FEITO':r?`CONTINUAR · ${r.i}/${ROUNDS}`:isN?'PRÓXIMA':ex?'TREINO EXTRA':'A FAZER';
-    el.closest('button').classList.toggle('done',ok);el.closest('button').classList.toggle('next',m===nx)});
-  const dOk=done.includes('desafio');$('#desOk').hidden=!dOk;$('#goDes').classList.toggle('done',dOk);
-  const hr=new Date().getHours(),hi=hr<12?'Bom dia':hr<18?'Boa tarde':'Boa noite',who=pilot?`, explorador ${pilot}`:', explorador';
-  const txt=!req.length?`> ${hi}${who}.\n> Hoje o templo é treino livre.`:n===0?`> ${hi}${who}.\n> ${req.length===1?'1 portão':req.length+' portões'} no turno de hoje.`
-    :all?`> Portões abertos. Até amanhã!`
-    :`> ${req.length-n===1?'Falta 1 portão':`Faltam ${req.length-n} portões`}.`;
+  const nx=req.find(m=>!done.includes(m));
+  document.querySelectorAll('[data-st]').forEach(el=>{const m=el.dataset.st,ok=done.includes(m),isN=m===nx,ex=!req.includes(m);
+    el.className='st'+(ok?' ok':isN?' nx':ex?' xt':'');el.innerHTML=ok?sprite('check',2)+'FEITO':isN?'PRÓXIMA':ex?'TREINO EXTRA':'A FAZER';
+    const b=el.closest('button');b.classList.toggle('done',ok);b.classList.toggle('next',isN)});
+  const dOk=done.includes('desafio');$('#hzOk').hidden=!dOk;$('#goHz').classList.toggle('done',dOk);
+  /* a saudação em alemão muda com a hora */
+  const hr=new Date().getHours(),hi=hr<12?['Guten Morgen','Bom dia']:hr<18?['Guten Tag','Boa tarde']:['Guten Abend','Boa noite'],who=pilot?`, ${pilot}`:'';
+  const txt=`> ${hi[0]}${who}! (${hi[1]})\n`+(!req.length?'> Hoje a Casa Sternberg é treino livre.':n===0?`> ${req.length===1?'1 missão':req.length+' missões'} no turno de hoje.`:all?'> Missões do turno feitas. Super!':`> ${req.length-n===1?'Falta 1 missão':`Faltam ${req.length-n} missões`}.`);
   const el=$('#term');clearInterval(typing);let i=0;el.textContent='';
-  typing=setInterval(()=>{i++;el.innerHTML=txt.slice(0,i).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/\n/g,'<br>');if(i>=txt.length)clearInterval(typing)},20);
-}
+  typing=setInterval(()=>{i++;el.innerHTML=esc(txt.slice(0,i)).replace(/\n/g,'<br>');if(i>=txt.length)clearInterval(typing)},20)}
 document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{sfx.tap();startMission(b.dataset.go)});
+$('#goHz').onclick=()=>{sfx.tap();startMission('desafio')};
+
+/* =================== voz alemã (só nas palavras e frases em alemão) =================== */
+let VOICE=null;
+function pickVoice(){try{const v=speechSynthesis.getVoices();VOICE=v.find(x=>/^de([-_]|$)/i.test(x.lang)&&/anna|helena|petra|google/i.test(x.name))||v.find(x=>/^de([-_]|$)/i.test(x.lang))||null}catch(e){}}
+const canSay='speechSynthesis' in window;
+if(canSay){pickVoice();try{speechSynthesis.onvoiceschanged=pickVoice}catch(e){}}
+function say(t){if(!canSay)return false;try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='de-DE';if(VOICE)u.voice=VOICE;u.rate=.8;u.pitch=1.05;speechSynthesis.speak(u);return true}catch(e){return false}}
+const spk=(t,cls='')=>`<button class="spk px pbtn ${cls}" data-say="${esc(t)}">${sprite('spk',2)}OUVIR</button>`;
+document.addEventListener('click',e=>{const b=e.target.closest('[data-say]');if(!b)return;e.stopPropagation();say(b.dataset.say);b.classList.add('on');setTimeout(()=>b.classList.remove('on'),600)},true);
+
+/* =================== peças de tela =================== */
+const face=(id,s=2)=>spriteRows(FACES[id].rows,s,FACES[id].pal);
+const facesOf=(w,s)=>`<span class="faces">${w.f.map(f=>face(f,w.f.length>2?2:s)).join('')}</span>`;
+const artTag=w=>`<span class="art a-${w.art}">${artOf(w)}</span>`;
+const wordHTML=w=>`${artTag(w)} <span class="noun">${w.de}</span>`;
+const full=w=>`${artOf(w)} ${w.de}`;
+const pool=()=>W.filter(w=>w.lv<=S.level);
+/* palavras novas e as que ele mais erra vêm primeiro */
+function pickWords(n,filter=()=>true){const sc=w=>{const r=S.w[w.de];return r?r.c-(r.a-r.c)*2+Math.min(r.a,3):-5};
+  return shuffle(pool().filter(filter)).sort((a,b)=>sc(a)-sc(b)).slice(0,n)}
+function others(w,n,filter=()=>true){return shuffle(pool().filter(o=>o.de!==w.de&&filter(o))).slice(0,n)}
+const sameFace=(a,b)=>a.f.join()===b.f.join();
+const PRON={opa:'er',oma:'sie',vater:'er',mutter:'sie',tante:'sie',onkel:'er',max:'er',paul:'er',emma:'sie'};
 
 /* =================== missões =================== */
-const TITLES={montar:'M1 · Montar a senha',ler:'M2 · Ler as inscrições',sub:'M3 · Portão da subtração'};
-function genQs(mode){
-  if(mode==='montar')return uniqueList(ROUNDS,()=>({n:pickN()}));
-  if(mode==='ler')return uniqueList(ROUNDS,()=>({s:toRoman(pickN())}));
-  // subtração: números que têm IV, IX, XL ou XC
-  return uniqueList(ROUNDS,()=>{
-    const n=pickN(n=>hasSub(toRoman(n))),s=toRoman(n),kind=pick(['val','write','cmp','val','write']);
-    if(kind==='cmp'){const alt=swapFirst(s);if(alt&&valid(alt))return{kind,a:s,b:alt};}
-    if(kind==='write'){const opts=uniq([s,additive(s),swapFirst(s)].filter(Boolean));if(opts.length>=3)return{kind,n,opts:shuffle(opts)}}
-    const wrong=uniq([n,addAll(s),n+1,n-1,n+2].filter(v=>v>0)).slice(0,3);if(!wrong.includes(n))wrong[2]=n;
-    return{kind:'val',s,opts:shuffle(wrong)};
-  },q=>q.kind+(q.s||q.n||q.a));
-}
-const uniq=a=>[...new Set(a)];
-const additive=s=>s.replace('XC','LXXXX').replace('XL','XXXX').replace('IX','VIIII').replace('IV','IIII');
-const addAll=s=>[...s].reduce((t,c)=>t+VAL[c],0);
-function swapFirst(s){const m=s.match(/IV|IX|XL|XC/);if(!m)return null;return s.replace(m[0],m[0][1]+m[0][0])}
+const TITLES={woerter:'PALAVRAS',artikel:'DER · DIE · DAS',baum:'ÁRVORE DA FAMÍLIA',desafio:'HÖR ZU!'};
+let G=null;
+function startMission(m){mode=m;
+  if(m==='woerter'){const ws=pickWords(6),T=shuffle(['face','face','word','word','pt','pt']);
+    G={n:ws.length,i:0,firsts:0,qs:ws.map((w,i)=>({w,t:T[i]}))}}
+  if(m==='artikel'){const L=S.level,T=L===1?['art','art','art','art','art','art']:L===2?['art','art','art','art','mein','mein']:['art','art','mein','mein','ein','ein'];
+    const qs=shuffle(T).map(t=>({t}));const used=new Set();
+    qs.forEach(q=>{const f=q.t==='ein'?(w=>w.art!=='pl'&&w.de!=='Familie'):q.t==='mein'?(w=>w.de!=='Familie'):()=>true;
+      const w=pickWords(12,f).find(x=>!used.has(x.de))||pickWords(1,f)[0];used.add(w.de);q.w=w});
+    G={n:qs.length,i:0,firsts:0,qs}}
+  if(m==='baum'){const L=S.level,T=L===1?['pick','pick','pick','pick','pick']:L===2?['pick','pick','build','build','build']:['pick','build','build','name','name'];
+    const ws=pickWords(12,w=>!!w.p&&w.de!=='Baby');const qs=[];let k=0;
+    T.forEach(t=>{if(t==='name'){const ids=shuffle(Object.keys(PRON));const id=ids[qs.length%ids.length];qs.push({t,id});return}
+      const w=ws[k++%ws.length];qs.push({t,w})});
+    G={n:qs.length,i:0,firsts:0,qs:shuffle(qs)}}
+  if(m==='desafio'){const ws=shuffle(pool().filter(w=>w.p&&w.art!=='pl'));const qs=[];for(let i=0;i<8;i++)qs.push({w:ws[i%ws.length]});
+    G={n:8,i:0,firsts:0,lives:3,qs}}
+  $('#pTitle').textContent=TITLES[m];show('play');render()}
+function segs(){$('#pSegs').innerHTML=Array.from({length:G.n},(_,i)=>`<i class="${i<G.i?'on':i===G.i?'cur':''}"></i>`).join('')}
+function render(){segs();const b=$('#pBody');if(mode==='woerter')return rWoerter(b);if(mode==='artikel')return rArtikel(b);if(mode==='baum')return rBaum(b);return rHz(b)}
+function next(){G.i++;if(G.i>=G.n)finish();else render()}
+/* resposta: mostra a frase certa em alemão com OUVIR e a dica; certo avança sozinho, errado espera ENTENDI */
+function answer(b,ok,html,said,tip){const f=b.querySelector('#fb');say(said);
+  f.className='fb '+(ok?'ok':'no');f.innerHTML=`<b>${ok?'RICHTIG! (CERTO!)':'QUASE!'}</b><span class="ans"><span>${html}</span>${spk(said)}</span>${tip?`<span class="tip">${tip}</span>`:''}`;
+  const ft=b.querySelector('#foot');if(ok){sfx.ok();const g=G;setTimeout(()=>{if(G===g&&current==='play')next()},2300)}
+  else{sfx.no();ft.innerHTML='<button class="btn" id="goN">ENTENDI</button>';ft.querySelector('#goN').onclick=()=>{sfx.tap();next()}}}
 
-let R=null,mode=null,locked=false;
-function startMission(m){
-  /* portão já feito hoje vira jogo livre: começa do zero e não guarda o andamento */
-  const free=doneToday().includes(m);mode=m;R=(!free&&S.run[m])||{qs:genQs(m),i:0,firsts:0,miss:false,built:'',typed:''};if(free)delete S.run[m];else S.run[m]=R;save();
-  $('#playTitle').textContent=TITLES[m];show('play');renderQ();
-  if(!S.seenTab){S.seenTab=true;save();openTab()}
-}
-function renderSegs(){$('#segs').innerHTML=Array.from({length:ROUNDS},(_,i)=>`<i class="${i<R.i?'on':i===R.i?'cur':''}"></i>`).join('');$('#playN').textContent=`${Math.min(R.i+1,ROUNDS)}/${ROUNDS}`}
-function fb(kind,title,body){const f=$('#fb');f.className='fb '+(kind||'');f.innerHTML=kind?`<b>${title}</b>${body||''}`:''}
-function renderQ(){
-  locked=false;fb();renderSegs();const q=R.qs[R.i],st=$('#stage');
-  if(mode==='montar'){
-    const syms=L().syms;
-    st.innerHTML=`<div class="tablet"><span class="cap">MONTE EM ROMANO</span><span class="glyph num">${q.n}</span></div>
-      <div class="tablet" style="min-height:72px"><span class="cap">SUA SENHA</span><span class="glyph sm" id="built"></span></div>
-      <div class="blocks">${ALL.map(s=>syms.includes(s)?`<button class="blk" data-s="${s}"><b>${s}</b><i>${VAL[s]}</i></button>`:`<span class="blk lock" aria-hidden="true"><b>?</b><i>—</i></span>`).join('')}</div>
-      <div class="row2"><button class="ghost px pbtn" id="bDel">⌫ APAGAR</button><button class="ghost px pbtn" id="bClr">LIMPAR</button></div>
-      <button class="btn" id="bOk">CONFIRMAR</button>`;
-    const upd=()=>{$('#built').innerHTML=R.built||'<span class="ph">_</span>';$('#bOk').disabled=!R.built};upd();
-    st.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>{if(locked||R.built.length>=9)return;SND.stone(b.dataset.s);R.built+=b.dataset.s;save();upd()});
-    $('#bDel').onclick=()=>{if(locked)return;SND.crumble();R.built=R.built.slice(0,-1);save();upd()};
-    $('#bClr').onclick=()=>{if(locked)return;SND.crumble(true);R.built='';save();upd()};
-    $('#bOk').onclick=()=>{if(locked||!R.built)return;const want=toRoman(q.n),b=R.built;
-      if(b===want)return right(`<span class="eq">${explainN(q.n)}</span>`);
-      let why;const v=fromRoman(b);
-      if(v===q.n){why=/IIII|XXXX|CCCC/.test(b)?'Vale '+q.n+', mas o mesmo símbolo não pode aparecer 4 vezes.':/VV|LL/.test(b)?'Vale '+q.n+', mas V e L nunca se repetem.':'Vale '+q.n+', mas não é a forma certa.'}
-      else why=valid(b)?`${b} vale ${v}, não ${q.n}.`:`${b} não é um número romano válido.`;
-      wrong(`${why}<br><span class="eq">${explainN(q.n)}</span>`,`${q.n}`,()=>{R.built='';save();upd()},`${why}<br>${hintN(q.n)}`);
-    };
-  }
-  else if(mode==='ler'){
-    st.innerHTML=`<div class="tablet"><span class="cap">QUANTO VALE?</span><span class="glyph">${q.s}</span></div>
-      <div class="tablet" style="min-height:64px"><span class="cap">VALOR</span><span class="glyph num sm" id="typed"></span></div>
-      <div class="keys">${[1,2,3,4,5,6,7,8,9].map(d=>`<button class="key px pbtn" data-k="${d}">${d}</button>`).join('')}
-        <button class="key px pbtn" data-k="del">⌫</button><button class="key px pbtn" data-k="0">0</button><button class="key ok pbtn" data-k="ok">OK</button></div>`;
-    const upd=()=>{$('#typed').innerHTML=R.typed||'<span class="ph">_</span>'};upd();
-    st.querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{if(locked)return;const k=b.dataset.k;
-      if(k==='del'){SND.del();R.typed=R.typed.slice(0,-1)}
-      else if(k==='ok'){if(!R.typed)return;const v=+R.typed,want=fromRoman(q.s);
-        if(v===want)return right(`<span class="eq">${explainS(q.s)}</span>`);
-        wrong(`${q.s} não vale ${v}.<br><span class="eq">${explainS(q.s)}</span>`,q.s,()=>{R.typed='';save();upd()},`Dica: separe <span class="eq">${groups(q.s).map(g=>g[0]).join(' | ')}</span>`);return}
-      else{if(R.typed.length>=3)return;SND.key(+k);R.typed=(R.typed+k).replace(/^0+/,'')}
-      save();upd()});
-  }
-  else{ // subtração
-    const pairTxt=s=>{const m=s.match(/IV|IX|XL|XC/);return m?`No ${m[0]}, o ${m[0][0]} vem antes do ${m[0][1]}: ${VAL[m[0][1]]} − ${VAL[m[0][0]]} = ${VAL[m[0][1]]-VAL[m[0][0]]}.`:''};
-    let html=`<p class="brief">Menor antes do maior <b>subtrai</b>: IV = 5 − 1</p>`;
-    if(q.kind==='val')html+=`<p class="ask">Quanto vale?</p><div class="tablet"><span class="glyph">${q.s}</span></div><div class="opts">${q.opts.map(o=>`<button class="opt n px pbtn" data-o="${o}">${o}</button>`).join('')}</div>`;
-    if(q.kind==='write')html+=`<p class="ask">Como se escreve</p><div class="tablet"><span class="glyph num">${q.n}</span></div><div class="opts">${q.opts.map(o=>`<button class="opt px pbtn" data-o="${o}">${o}</button>`).join('')}</div>`;
-    if(q.kind==='cmp'){const o=shuffle([q.a,q.b]);html+=`<p class="ask">Qual inscrição vale MAIS?</p><div class="opts">${o.map(x=>`<button class="opt px pbtn" data-o="${x}">${x}</button>`).join('')}</div>`}
-    st.innerHTML=html;
-    st.querySelectorAll('[data-o]').forEach(b=>b.onclick=()=>{if(locked||b.classList.contains('bad'))return;const o=b.dataset.o;let ok,exp,key;
-      if(q.kind==='val'){ok=+o===fromRoman(q.s);exp=`${pairTxt(q.s)}<br><span class="eq">${explainS(q.s)}</span>`;key=q.s}
-      if(q.kind==='write'){const w=toRoman(q.n);ok=o===w;exp=ok?`<span class="eq">${q.n} → ${w}</span>`:`${o===additive(w)?'Não se repete um símbolo 4 vezes.':`${o} vale ${fromRoman(o)}.`}<br><span class="eq">${q.n} → ${w}</span>`;key=String(q.n)}
-      if(q.kind==='cmp'){const hi=fromRoman(q.a)>fromRoman(q.b)?q.a:q.b,lo=hi===q.a?q.b:q.a;ok=o===hi;exp=`<span class="eq">${hi} = ${fromRoman(hi)} e ${lo} = ${fromRoman(lo)}</span>`;key=q.a+'/'+q.b}
-      const hint={val:'Dica: ache o menor antes do maior.',write:'Dica: nada se repete 4 vezes.',cmp:'Dica: antes tira, depois soma.'}[q.kind];
-      if(ok){b.classList.add('good');right(exp)}else{b.classList.add('bad');wrong(exp,key,null,hint)}});
-  }
-}
-function right(body){locked=true;sfx.ok();if(!R.miss){R.firsts++;record(mode,true)}fb('ok',R.miss?'AGORA SIM!':'CORRETO!',body);
-  setTimeout(()=>{R.i++;R.miss=false;R.built='';R.typed='';save();if(R.i>=ROUNDS)finishMission();else renderQ()},1500)}
-function wrong(body,key,reset,hint){sfx.no();$('#stage').classList.remove('shake');void $('#stage').offsetWidth;$('#stage').classList.add('shake');
-  const first=!R.miss;if(first)record(mode,false,key);R.miss=(R.miss|0)+1;save();
-  fb('no','QUASE!',first&&hint?hint:body);if(reset)reset()}
-function hintN(n){const p=[];let r=n;if(r>=100){p.push(100);r-=100}const t=r-r%10,u=r%10;if(t)p.push(t);if(u)p.push(u);
-  if(p.length>1)return `Dica: ${n} = ${p.join(' + ')}`;
-  const nx={4:5,9:10,40:50,90:100}[n];
-  if(nx)return `Dica: ${n} = ${nx} − ${nx-n}`;
-  return `Dica: comece pelo bloco maior.`}
-/* fim de missão: comemoração */
-function celebrate(o){show('res');CEL.play(Object.assign({host:$('#res'),avatar:(!o.lose&&navAvatar('cheer',2))||navAvatar('pilot',2)||sprite('gateOpen',4)},o))}
+/* ---------- PALAVRAS ---------- */
+function rWoerter(b){const q=G.qs[G.i],w=q.w;$('#pN').textContent=`${G.i+1}/${G.n}`;
+  if(!q.o)q.o=shuffle([w,...others(w,2,o=>q.t==='word'?!sameFace(o,w):true)]);
+  let top='',opts='',cls='';
+  if(q.t==='face'){top=`<div class="qcard px">${facesOf(w,4)}<span class="qq">Wer ist das?</span><span class="qp">Quem é?</span></div>`;
+    opts=q.o.map((o,i)=>`<button class="opt px pbtn" data-o="${i}">${wordHTML(o)}</button>`).join('')}
+  if(q.t==='word'){top=`<div class="qcard px"><span class="qtag">TOQUE NA PESSOA</span><span class="qd">${wordHTML(w)}</span>${spk(full(w))}</div>`;cls=' f3';
+    opts=q.o.map((o,i)=>`<button class="opt px pbtn" data-o="${i}">${facesOf(o,o.f.length>1?2:4)}</button>`).join('')}
+  if(q.t==='pt'){top=`<div class="qcard px"><span class="qtag">COMO SE DIZ EM ALEMÃO?</span><span class="qd">${esc(w.pt)}</span></div>`;
+    opts=q.o.map((o,i)=>`<button class="opt px pbtn" data-o="${i}">${wordHTML(o)}</button>`).join('')}
+  b.innerHTML=`${top}<div class="opts${cls}">${opts}</div><div class="fb" id="fb"></div><div class="foot" id="foot"></div>`;
+  let done=false;b.querySelectorAll('[data-o]').forEach(x=>x.onclick=()=>{if(done)return;done=true;const o=q.o[+x.dataset.o],ok=o===w;
+    x.classList.add(ok?'good':'bad');if(!ok)b.querySelectorAll('[data-o]').forEach((y,i)=>{if(q.o[i]===w)y.classList.add('show')});
+    if(ok)G.firsts++;wRec(w,ok);record('woerter',ok,ok?null:'Palavra: '+full(w));
+    answer(b,ok,`${wordHTML(w)} = ${esc(w.pt)}`,full(w),w.tip||'')})}
+
+/* ---------- DER · DIE · DAS (e mein/meine, einen/eine/ein) ---------- */
+function rArtikel(b){const q=G.qs[G.i],w=q.w;$('#pN').textContent=`${G.i+1}/${G.n}`;
+  let ask,btns,right,said,html,tip;
+  if(q.t==='art'){ask=`<span class="qd"><span class="blank">?</span> <span class="noun">${w.de}</span></span><span class="qp">${esc(w.pt)}</span>`;
+    btns=['der','die','das'].map(a=>`<button class="ab ${a}" data-a="${a}">${a.toUpperCase()}</button>`).join('');right=artOf(w);said=full(w);html=wordHTML(w);tip=w.tip||TIP[w.art]}
+  if(q.t==='mein'){const pl=w.art==='pl';ask=`<span class="qd">${pl?'Das sind':'Das ist'} <span class="blank">?</span> <span class="noun">${w.de}</span>.</span><span class="qp">${pl?'Estes são':'Este é'} ${pl?'meus':'meu/minha'} ${esc(w.pt)}.</span>`;
+    btns=['mein','meine'].map(a=>`<button class="ab neu" data-a="${a}">${a.toUpperCase()}</button>`).join('');right=meinOf(w);said=`${pl?'Das sind':'Das ist'} ${right} ${w.de}.`;
+    html=`${pl?'Das sind':'Das ist'} <span class="art a-${w.art}">${right}</span> <span class="noun">${w.de}</span>.`;tip=`${full(w)} → ${right} ${w.de}. ${TIP.mein}`}
+  if(q.t==='ein'){ask=`<span class="qd">Ich habe <span class="blank">?</span> <span class="noun">${w.de}</span>.</span><span class="qp">Eu tenho um(a) ${esc(w.pt)}.</span>`;
+    btns=['einen','eine','ein'].map(a=>`<button class="ab neu" data-a="${a}">${a.toUpperCase()}</button>`).join('');right=einOf(w);said=`Ich habe ${right} ${w.de}.`;
+    html=`Ich habe <span class="art a-${w.art}">${right}</span> <span class="noun">${w.de}</span>.`;tip=`${full(w)} → ${right} ${w.de}. ${TIP.ein}`}
+  b.innerHTML=`<div class="qcard px">${facesOf(w,w.f.length>1?2:4)}${ask}</div><div class="abtns${q.t==='mein'?' two':''}">${btns}</div><div class="fb" id="fb"></div><div class="foot" id="foot"></div>`;
+  let done=false;b.querySelectorAll('[data-a]').forEach(x=>x.onclick=()=>{if(done)return;done=true;const ok=x.dataset.a===right;
+    b.querySelectorAll('[data-a]').forEach(y=>{if(y.dataset.a===right)y.classList.add('good');else if(y===x)y.classList.add('bad')});
+    if(ok)G.firsts++;wRec(w,ok);record('artikel',ok,ok?null:q.t==='art'?'Artigo: '+full(w):q.t==='mein'?'mein / meine':'einen / eine / ein');
+    answer(b,ok,html,said,tip)})}
+
+/* ---------- ÁRVORE DA FAMÍLIA ---------- */
+function treeHTML(hl=[],o={}){const P=id=>FAM.find(x=>x.id===id),tp=id=>{const p=P(id);return `<button class="tp${p.me?' me':''}${hl.includes(id)?' hl':''}${o.dim&&!hl.includes(id)?' dim':''}" data-p="${id}"><span class="fr">${face(p.face,2)}</span><small>${p.me?'ICH':p.name.toUpperCase()}</small></button>`};
+  return `<div class="tree px">
+    <div class="tg"><span class="cp">${tp('opa')}${tp('oma')}</span></div>
+    <div class="tg"><span class="cp">${tp('vater')}${tp('mutter')}</span><span class="cp">${tp('tante')}${tp('onkel')}</span></div>
+    <div class="tg"><span class="cp">${tp('mia')}${tp('max')}${tp('ben')}</span><span class="cp">${tp('paul')}${tp('emma')}</span></div></div>`}
+const miaSays=(de,pt)=>`<div class="mia">${face('schwester',2)}<span class="bub">${de}<small>${pt}</small></span></div>`;
+function sentence(w){const pl=w.art==='pl';return[pl?'Das':'Das',pl?'sind':'ist',meinOf(w),w.de]}
+function rBaum(b){const q=G.qs[G.i];$('#pN').textContent=`${G.i+1}/${G.n}`;
+  if(q.t==='name'){const p=FAM.find(x=>x.id===q.id),pr=PRON[q.id],Pr=pr==='er'?'Er':'Sie',ans=[Pr,'heißt',p.name];
+    q.tiles=q.tiles||shuffle([...ans,Pr==='Er'?'Sie':'Er','ist']);
+    return build(b,treeHTML([q.id],{dim:true})+miaSays(`Wie heißt ${pr}?`,`Como ${pr==='er'?'ele':'ela'} se chama?`),ans,q.tiles,`${Pr} heißt ${p.name}.`,`${pr==='er'?'Homem':'Mulher'} → ${pr}. ${Pr} heißt = ${pr==='er'?'ele':'ela'} se chama.`,'Frase: er / sie')}
+  const w=q.w,hl=w.art==='pl'?w.p:[w.p[0]],ans=sentence(w),said=ans.join(' ')+'.';
+  const top=treeHTML(hl,{dim:true})+miaSays('Ich bin Mia. Wer ist das?','Eu sou a Mia. Quem é?');
+  if(q.t==='build'){q.tiles=q.tiles||shuffle([...ans,ans[1]==='ist'?'sind':'ist',ans[2]==='mein'?'meine':'mein']);
+    return build(b,top,ans,q.tiles,said,`${TIP.ist} ${TIP.mein}`,'Frase: '+said)}
+  // escolher a frase certa
+  if(!q.o){const wrongP=`${ans[0]} ${ans[1]} ${ans[2]==='mein'?'meine':'mein'} ${w.de}.`,o2=others(w,1,x=>!!x.p&&!sameFace(x,w)&&x.art!=='pl'&&x.de!=='Papa'&&x.de!=='Mama')[0],wrongW=o2?sentence(o2).join(' ')+'.':`Das sind meine ${w.de}.`;
+    q.o=shuffle([said,wrongP,wrongW])}
+  b.innerHTML=`${top}<div class="opts">${q.o.map((s,i)=>`<button class="opt px pbtn" data-o="${i}">${esc(s)}</button>`).join('')}</div><div class="fb" id="fb"></div><div class="foot" id="foot"></div>`;
+  let done=false;b.querySelectorAll('[data-o]').forEach(x=>x.onclick=()=>{if(done)return;done=true;const ok=q.o[+x.dataset.o]===said;
+    x.classList.add(ok?'good':'bad');if(!ok)b.querySelectorAll('[data-o]').forEach((y,i)=>{if(q.o[i]===said)y.classList.add('show')});
+    if(ok)G.firsts++;wRec(w,ok);record('baum',ok,ok?null:'Frase: '+said);answer(b,ok,esc(said),said,`${full(w)} = ${esc(w.pt)}. ${TIP.mein}`)})}
+/* montar a frase com as peças: toque na peça para pôr na frase; toque na frase para tirar */
+function build(b,top,ans,tiles,said,tip,errKey){const q=G.qs[G.i];q.put=q.put||[];
+  const draw=()=>{b.innerHTML=`${top}<div class="slots" id="slots">${q.put.map((ti,k)=>`<button class="tile px pbtn" data-rm="${k}">${esc(tiles[ti])}</button>`).join('')}${Array.from({length:ans.length-q.put.length},()=>'<i class="sl"></i>').join('')}</div>
+      <div class="tiles">${tiles.map((t,i)=>`<button class="tile px pbtn${q.put.includes(i)?' used':''}" data-t="${i}">${esc(t)}</button>`).join('')}</div><div class="fb" id="fb"></div><div class="foot" id="foot"></div>`;
+    b.querySelectorAll('[data-t]').forEach(x=>x.onclick=()=>{if(q.fin)return;const i=+x.dataset.t;if(q.put.includes(i))return;q.put.push(i);SND.place();
+      if(q.put.length===ans.length)check();else draw()});
+    b.querySelectorAll('#slots [data-rm]').forEach(x=>x.onclick=()=>{if(q.fin)return;q.put.splice(+x.dataset.rm,1);sfx.tap();draw()})};
+  const check=()=>{const got=q.put.map(i=>tiles[i]),ok=got.join(' ')===ans.join(' ');q.fin=true;draw();
+    b.querySelector('#slots').classList.add(ok?'good':'bad');if(ok)G.firsts++;if(q.w)wRec(q.w,ok);record('baum',ok,ok?null:errKey);
+    answer(b,ok,esc(said),said,tip)};
+  draw()}
+
+/* ---------- HÖR ZU! (desafio): ouve e toca na pessoa ---------- */
+function rHz(b){const q=G.qs[G.i],w=q.w,said=`Wo ist ${full(w)}?`;$('#pN').textContent=`${G.i+1}/${G.n}`;
+  const hearts=Array.from({length:3},(_,i)=>sprite(i<G.lives?'heart':'heart0',3)).join('');
+  b.innerHTML=`<div class="hz"><span class="hearts">${hearts}</span>${spk(said,'big')}</div><div class="hzq" id="hzq">${canSay&&VOICE?'Escute e toque na pessoa.':esc(said)}</div>${treeHTML([])}<div class="fb" id="fb"></div><div class="foot" id="foot"></div>`;
+  setTimeout(()=>{if(G&&G.qs[G.i]===q)say(said)},300);
+  let done=false;b.querySelectorAll('[data-p]').forEach(x=>x.onclick=()=>{if(done)return;done=true;const ok=w.p.includes(x.dataset.p);
+    x.classList.add(ok?'ok':'no');if(!ok){G.lives--;b.querySelectorAll('[data-p]').forEach(y=>{if(w.p.includes(y.dataset.p))y.classList.add('hl')})}
+    $('#hzq').innerHTML=`${esc(said)}`;if(ok)G.firsts++;wRec(w,ok);record('desafio',ok,ok?null:'Ouvir: '+full(w));
+    const f=b.querySelector('#fb'),ft=b.querySelector('#foot');f.className='fb '+(ok?'ok':'no');
+    f.innerHTML=`<b>${ok?'RICHTIG!':'NEIN! (NÃO!)'}</b><span class="ans"><span>${wordHTML(w)} = ${esc(w.pt)}</span>${spk(full(w))}</span>`;
+    if(ok)sfx.ok();else sfx.no();
+    if(G.lives<=0){ft.innerHTML='<button class="btn" id="goN">VER RESULTADO</button>';ft.querySelector('#goN').onclick=()=>{sfx.tap();finish(true)};return}
+    ft.innerHTML=`<button class="btn" id="goN">${G.i+1>=G.n?'CONCLUIR':'PRÓXIMA'}</button>`;ft.querySelector('#goN').onclick=()=>{sfx.tap();next()}})}
+
+/* ---------- fim de missão ---------- */
+function finish(lose){const m=mode,f=G.firsts,n=G.n,fresh=!doneToday().includes(m),inT=REQ().includes(m);
+  if(!lose)markDone(m);save();if(!lose)sfx.win();
+  const en=lose||!fresh?0:m==='desafio'?8:inT?10+Math.min(10,f)+(planDay(dkey()).full?10:0):5;
+  const T={woerter:['WÖRTER GELERNT!','Palavras aprendidas!'],artikel:['SUPER!','der, die, das: você está pegando o jeito.'],baum:['TOLL!','Você conhece a família Sternberg!'],desafio:lose?['OH NEIN!','Os corações acabaram. Tente de novo!']:['DU HAST GUTE OHREN!','Você tem ótimos ouvidos!']}[m];
+  celebrate({title:T[0],sub:T[1],lose,stars:lose?0:f===n?3:f/n>=.6?2:1,score:[f,n],energy:en,turno:turnoInfo(!lose&&fresh&&inT),buttons:endButtons(()=>startMission(m)),onDone:()=>{if(lvUp){lvUp=false;
+    $('#lvBig').textContent=S.level;$('#lvTxt').textContent=`Nível ${S.level}: ${LVTXT[S.level-1].toLowerCase()}. ${S.level===2?'Agora com tios, avós e plurais!':'Agora com frases: Ich habe…, er heißt…'}`;setTimeout(()=>{sfx.win();$('#lvup').hidden=false},600)}}})}
+function celebrate(o){show('res');CEL.play(Object.assign({host:$('#res'),avatar:(!o.lose&&navAvatar('cheer',2))||navAvatar('pilot',2)||face('schwester',4)},o))}
 const turnoInfo=fresh=>{const p=planDay(dkey());return{n:p.done,total:p.total,streak:planStreak(),fresh}};
-function endButtons(again){const nx=REQ().find(m=>!doneToday().includes(m)),back=()=>{sfx.tap();show('menu')},rep=()=>{sfx.tap();again()};
-  return nx?[{label:'PRÓXIMA MISSÃO',cls:'btn',fn:()=>{sfx.tap();startMission(nx)}},{label:'JOGAR DE NOVO',cls:'ghost px pbtn',fn:rep},{label:'VOLTAR AO TEMPLO',cls:'ghost px pbtn',fn:back}]
-    :[{label:'VOLTAR AO TEMPLO',cls:'btn',fn:back},{label:'JOGAR DE NOVO',cls:'ghost px pbtn',fn:rep}]}
-function finishMission(){
-  const f=R.firsts,m=mode,fresh=!doneToday().includes(m);delete S.run[m];markDone(m);save();SND.grind();sfx.win();
-  const inT=REQ().includes(m),en=!fresh?0:inT?10+Math.min(10,f)+(planDay(dkey()).full?10:0):5; // energia para peças do Hangar (fora do rodízio: treino extra, +5)
-  celebrate({title:f===ROUNDS?'MISSÃO PERFEITA!':'MISSÃO CUMPRIDA!',sub:inT?'O portão se abriu.':'Treino extra concluído.',stars:f===ROUNDS?3:f/ROUNDS>=.6?2:1,
-    score:[f,ROUNDS],energy:en,turno:turnoInfo(fresh&&inT),buttons:endButtons(()=>startMission(m)),onDone:checkLevel});
-}
-$('#playBack').onclick=()=>{sfx.tap();if(DL){backHome();return}show('menu')};
+function endButtons(again){const nx=REQ().find(m=>!doneToday().includes(m)),back=()=>{sfx.tap();if(DL){backHome();return}show('menu')},rep=()=>{sfx.tap();again()};
+  return nx?[{label:`PRÓXIMA: ${TITLES[nx]}`,cls:'btn',fn:()=>{sfx.tap();startMission(nx)}},{label:'DE NOVO',cls:'ghost px pbtn',fn:rep},{label:'VOLTAR À CASA',cls:'ghost px pbtn',fn:back}]
+    :[{label:'VOLTAR À CASA',cls:'btn',fn:back},{label:'DE NOVO',cls:'ghost px pbtn',fn:rep}]}
 
-/* =================== nova câmara =================== */
-function checkLevel(){if(!pendingLevel)return;pendingLevel=false;const l=L(),nw=l.syms.filter(s=>!LEVELS[S.level-2].syms.includes(s));
-  const top=l.range.split(' a ')[1];$('#lvBig').textContent=nw.length?`${nw[0]} = ${VAL[nw[0]]}`:`${top}`;
-  $('#lvTxt').innerHTML=`Agora até ${top} (${l.max}).${nw.length?' Símbolo novo!':''}`;
-  setTimeout(()=>{sfx.win();$('#lvup').hidden=false},600)}
-$('#lvOk').onclick=()=>{$('#lvup').hidden=true};
+/* =================== dicionário =================== */
+function openDict(){const by=[['der','DER · MASCULINO'],['die','DIE · FEMININO'],['das','DAS · NEUTRO'],['pl','DIE · PLURAL']];
+  $('#dictList').innerHTML=by.map(([a,t])=>{const ws=pool().filter(w=>w.art===a);if(!ws.length)return '';
+    return `<h3 class="a-${a}">${t}</h3>`+ws.map(w=>`<li>${face(w.f[0],2)}<span><b>${wordHTML(w)}</b><small>${esc(w.pt)}${S.seen.includes(w.de)?'':' · nova'}</small></span>${spk(full(w))}</li>`).join('')}).join('');
+  $('#dict').hidden=false}
+$('#openDict').onclick=()=>{SND.page();openDict()};$('#dictChip').onclick=()=>{SND.page();openDict()};
 
-/* =================== desabamento =================== */
-const NEED=10;let D=null;
-function fakes(){ // inscrições falsas possíveis na câmara atual
-  const l=L(),out=[];
-  for(let n=1;n<=l.max;n++){const s=toRoman(n);
-    const add=(f,why)=>{if(f!==s&&!valid(f)&&[...f].every(c=>l.syms.includes(c)))out.push({s:f,ok:false,why})};
-    if(s.endsWith('IV'))add(s.replace(/IV$/,'IIII'),`O I não pode aparecer 4 vezes. ${n} = ${s}.`);
-    if(s.endsWith('IX'))add(s.replace(/IX$/,'VIIII'),`O I não pode aparecer 4 vezes. ${n} = ${s}.`);
-    if(s.includes('XL'))add(s.replace('XL','XXXX'),`O X não pode aparecer 4 vezes. ${n} = ${s}.`);
-    if(s.endsWith('VIII'))add(s.replace(/VIII$/,'IIX'),`Só um símbolo menor pode vir antes. ${n} = ${s}.`);
-    if(s.endsWith('III')&&!s.endsWith('VIII'))add(s.replace(/III$/,'IIV'),`Só um símbolo menor pode vir antes. ${n} = ${s}.`);
-    if(/X$/.test(s)&&n%10===0&&n<40)add(s.replace(/X$/,'VV'),`V nunca se repete. ${n} = ${s}.`);
-    if(n%10===5)add(s.replace(/V$/,'VX'),`V nunca vem antes de um maior. ${n} = ${s}.`);
-    if(n===49)add('IL','O I só pode vir antes de V e X. 49 = XLIX.');
-    if(n===99)add('IC','O I só pode vir antes de V e X. 99 = XCIX.');
-    if(n===100)add('LL','L nunca se repete. 100 = C.');
-    if(n===45)add('VL','V nunca vem antes de um maior. 45 = XLV.');
-  }
-  return out;
-}
-function desQ(){const f=fakes();if(Math.random()<.5&&f.length)return pick(f);const n=pickN();return{s:toRoman(n),ok:true,why:`${explainS(toRoman(n))}`}}
-function openDes(){
-  const saved=doneToday().includes('desafio')?0:(S.run.desafio||{}).c||0;
-  D={c:saved,danger:saved?.3:.1,run:false,pause:false,tab:false,q:null,last:0,to:0};
-  $('#explorer').innerHTML=navAvatar('pilot',2)||sprite('man',2);show('des');
-  {const eh=$('#explorer').offsetHeight;$('#chamber').style.height=eh>100?(eh+80)+'px':''} /* piloto alto: a câmara cresce para o teto ter espaço de descer */
-  drawDes();
-  $('#dfb').className='fb';$('#dfb').innerHTML='';$('#dStart').innerHTML='';
-  nextD();setBtns(false);
-  // contagem 3-2-1 e começa sozinho
-  const c=$('#dCount');let k=3;c.hidden=false;c.textContent=k;SND.tick(1);
-  const iv=setInterval(()=>{if(current!=='des'){clearInterval(iv);c.hidden=true;return}k--;
-    if(k>0){c.textContent=k;SND.tick(1)}else{clearInterval(iv);c.hidden=true;SND.tick(0);D.run=true;setBtns(true);D.last=performance.now();requestAnimationFrame(tickD)}},700);
-}
-function setBtns(on){$('#dV').disabled=$('#dF').disabled=!on}
-function resume(){clearTimeout(D.to);D.pause=false;D.last=performance.now();nextD()}
-function nextD(){let q;do q=desQ();while(D.q&&q.s===D.q.s);D.q=q;$('#dq').textContent=q.s;$('#dfb').className='fb';$('#dfb').innerHTML=''}
-/* o teto desce até encostar no capacete do piloto, seja qual for o tamanho dele */
-function drawDes(){const ch=$('#chamber').clientHeight,eh=$('#explorer').offsetHeight||40,top0=ch*.1,low=ch-14-eh-8;
-  $('#ceiling').style.height=Math.round(top0+D.danger*Math.max(0,low-top0))+'px';$('#dcount').textContent=`${D.c}/${NEED}`;
-  const p=$('#pebbles');const k=Math.round(D.danger*6);if(p.childElementCount!==k)p.innerHTML=Array.from({length:k},(_,i)=>`<i class="pebble" style="left:${12+i*15}%;top:${8+D.danger*60}%;animation-delay:${i*.13}s"></i>`).join('')}
-function tickD(t){if(!D||!D.run||current!=='des')return;const dt=(t-D.last)/1000;D.last=t;
-  if(!D.pause&&!D.tab){const secs=[50,42,38,34][S.level-1];D.danger+=dt/secs;
-    if(D.danger>=1){D.danger=1;drawDes();return loseD()}
-    if(Math.random()<dt*.35)sfx.rumble();drawDes()}
-  requestAnimationFrame(tickD)}
-function answerD(said){if(!D||!D.run||D.tab)return;if(D.pause)return resume(); // tocar durante o aviso pula para a próxima
-  const q=D.q,ok=said===q.ok;
-  if(ok){sfx.ok();D.c++;D.danger=Math.max(0,D.danger-.12);record('desafio',true);if(!doneToday().includes('desafio'))S.run.desafio={c:D.c};save();drawDes();
-    if(D.c>=NEED)return winD();
-    D.pause=true;$('#dfb').className='fb ok';$('#dfb').innerHTML=`<b>ISSO!</b>${q.ok?'':q.why}`;D.to=setTimeout(resume,q.ok?700:1800)}
-  else{sfx.no();D.danger=Math.min(.99,D.danger+.1);record('desafio',false,q.s);drawDes();$('#chamber').classList.remove('shake');void $('#chamber').offsetWidth;$('#chamber').classList.add('shake');
-    D.pause=true;$('#dfb').className='fb no';$('#dfb').innerHTML=`<b>${q.ok?'ERA VERDADEIRA':'ERA FALSA'}</b>${q.why}`;D.to=setTimeout(resume,2600)}}
-$('#dV').onclick=()=>answerD(true);$('#dF').onclick=()=>answerD(false);
-function winD(){D.run=false;delete S.run.desafio;S.escapes=(S.escapes||0)+1;const dfresh=!doneToday().includes('desafio');markDone('desafio');save();sfx.win();
-  celebrate({title:'VOCÊ ESCAPOU!',sub:'O teto não te pegou!',stars:3,score:[NEED,NEED],scoreLabel:'acertos',energy:dfresh?8:0,turno:turnoInfo(false),
-    buttons:endButtons(()=>{S.run.desafio={c:0};openDes()}),onDone:checkLevel})}
-function loseD(){D.run=false;S.run.desafio={c:0};save();sfx.lose();setBtns(false);
-  $('#dfb').className='fb no';$('#dfb').innerHTML=`<b>O TETO DESABOU!</b>Você fez ${D.c} de ${NEED}.`;
-  $('#dStart').innerHTML=`<button class="btn" id="dGo2">TENTAR DE NOVO</button>`;$('#dGo2').onclick=()=>openDes()}
-$('#goDes').onclick=()=>{sfx.tap();openDes()};
-$('#desBack').onclick=()=>{if(D){D.run=false;clearTimeout(D.to)}sfx.tap();if(DL){backHome();return}show('menu')};
-
-/* =================== tábua =================== */
-function openTab(){const l=L();$('#tSyms').innerHTML=ALL.map(s=>{const on=l.syms.includes(s);return `<span class="s${on?'':' lock'}"><b>${on?s:'?'}</b><i>${on?VAL[s]:'—'}</i></span>`}).join('');
-  $('#tab').hidden=false;if(D)D.tab=true}
-$('#openTab').onclick=()=>{SND.page();openTab()};
-document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{SND.page();openTab()});
-$('#tabClose').onclick=()=>{$('#tab').hidden=true;if(D){D.tab=false;D.last=performance.now()}};
-
-/* =================== som on/off =================== */
-
-/* =================== fundo (poeira e tochas) =================== */
+/* =================== fundo: telhados de enxaimel no espaço =================== */
 (function(){const c=$('#bgc'),x=c.getContext('2d');let P=[];
   function size(){c.width=Math.ceil(innerWidth/3);c.height=Math.ceil(innerHeight/3);
-    P=Array.from({length:Math.round(c.width*c.height/260)},()=>({x:Math.random()*c.width,y:Math.random()*c.height,v:Math.random()*.08+.02,b:Math.random()}))}
+    P=Array.from({length:Math.round(c.width*c.height/320)},()=>({x:Math.random()*c.width|0,y:Math.random()*c.height|0,p:Math.random()*6.28,v:Math.random()*.02+.005}))}
   size();addEventListener('resize',size);
-  (function f(t){x.fillStyle='#0f0b16';x.fillRect(0,0,c.width,c.height);
-    for(let y=0;y<c.height;y+=8)for(let i=((y/8)%2)*6;i<c.width;i+=12){x.fillStyle='#140f1c';x.fillRect(i|0,y,11,7)}
-    P.forEach(p=>{p.y+=p.v;if(p.y>c.height)p.y=0;x.fillStyle=p.b>.9?'#1f5a4c':p.b>.6?'#3a2f2a':'#241c2c';x.fillRect(p.x|0,p.y|0,1,1)});
-    requestAnimationFrame(f)})(0);
+  (function f(){x.fillStyle='#0f0b09';x.fillRect(0,0,c.width,c.height);
+    for(let y=0;y<c.height;y+=14)for(let i=((y/14)%2)*5;i<c.width;i+=10){x.fillStyle='#170f0c';x.fillRect(i|0,y,3,12)}
+    P.forEach(p=>{p.p+=p.v;const a=(Math.sin(p.p)+1)/2;x.fillStyle=a>.9?'#ffce00':a>.6?'#5a3a14':'#1c130e';x.fillRect(p.x,p.y,1,1)});
+    requestAnimationFrame(f)})();
 })();
 
 /* =================== início =================== */
-$('#tabIco').innerHTML=sprite('tab',2);$('#desIco').innerHTML=sprite('man',fitS('man'));$('#desOk').innerHTML=sprite('check',2)+'FEITO';
+$('#hzIco').innerHTML=sprite('spk',4);$('#hzOk').innerHTML=sprite('check',2)+'FEITO';$('#dictIco').innerHTML=sprite('book',2);$('#icoW').innerHTML=face('oma',2);
 document.querySelectorAll('[data-ico]').forEach(el=>el.innerHTML=sprite(el.dataset.ico,fitS(el.dataset.ico)));
 addEventListener('pageshow',()=>{if(current==='menu')renderMenu()});
 show('menu');
-/* atalho vindo da Nave-Mãe: #m=montar abre a missão direto */
-/* de onde veio (aba Missões ou planeta): o "< Nave-Mãe" volta para lá; entrando direto numa missão pela aba Missões,
-   o voltar da missão também volta para a aba Missões */
 const RETK='ret:'+location.pathname,RP=(location.hash.match(/r=([\w.]+)/)||[])[1];
 if(RP)try{sessionStorage.setItem(RETK,RP)}catch(e){}
 const RETV=RP||(()=>{try{return sessionStorage.getItem(RETK)}catch(e){return null}})()||'';
 const RET='../?v='+APP_V+(RETV.startsWith('p.')?'#p='+RETV.slice(2):'#v=tasks'); // padrão: aba Missões; ?v= evita voltar para uma Nave-Mãe guardada (velha)
-var DL=false; // (var: show() usa antes desta linha) entrou direto numa missão pela aba Missões
+var DL=false;
 function backHome(){location.href=RET}
-/* "< Nave-Mãe" é um botão (link com a camada de vibração não navegava no iPhone) */
 document.querySelectorAll('[data-home]').forEach(b=>b.addEventListener('click',()=>backHome()));
 function deepLink(){const m=(location.hash.match(/m=(\w+)/)||[])[1];if(!m)return;history.replaceState(null,'',location.pathname);
-  DL=RETV==='tasks';$('#playBack').textContent=$('#desBack').textContent=DL?'< Missões':'< Templo';
-  if(m==='desafio')openDes();else if(MODES.includes(m))startMission(m)}
+  DL=RETV==='tasks';document.querySelectorAll('[data-back]').forEach(b=>b.textContent=DL?'< Missões':'< Casa');
+  if(m==='desafio'||MODES.includes(m))startMission(m)}
 deepLink();addEventListener('hashchange',deepLink);
 </script>
 <script>

@@ -515,7 +515,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 <script>
 /* atualização automática: compara com version.json e recarrega com ?v=<versão> no endereço (o iPhone não reaproveita a
    página guardada). Se mesmo com ?v=<versão> a página veio velha, não insiste (evita recarregar sem parar). */
-const APP_V='20261006081853';
+const APP_V='20261010104815';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris|mina)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     const q=new URLSearchParams(location.search).get('v');
@@ -576,16 +576,17 @@ const PLAN_APPS=[
   {id:'mina',p:'mat',s:'mina-stats-v1',m:['carga','turno','inspecao']},
   {id:'biblio',p:'por',s:'biblio-stats-v1',m:['leitura','palavra','ordem']},
   {id:'ivoti',p:'his',s:'ivoti-stats-v1',m:['diario','linha','arquivo']},
+  {id:'alemao',p:'ale',s:'alemao-stats-v1',m:['woerter','artikel','baum'],from:'2026-10-11'}, // entra no sorteio a partir de 'from' (os dias anteriores não mudam)
 ];
 const ROT_FROM='2026-10-05',ROT={nostro9:['partilha','grupos','hangar'],numeris:['montar','ler','sub'],mina:['carga','turno','inspecao']};
 const pdNum=k=>{const[y,m,d]=k.split('-').map(Number);return Math.round(Date.UTC(y,m-1,d)/864e5)};
 const pdKey=n=>new Date(n*864e5).toISOString().slice(0,10);
 function planRaw(k,avoid){let s=(pdNum(k)*2654435761^0x9e3779b9)>>>0; // mulberry32: números bem espalhados mesmo com datas seguidas
   const r=()=>{s=(s+0x6D2B79F5)>>>0;let z=s;z=Math.imul(z^z>>>15,z|1);z^=z+Math.imul(z^z>>>7,z|61);return((z^z>>>14)>>>0)/4294967296};
-  const all=[];PLAN_APPS.forEach(a=>a.m.forEach(m=>all.push([a.id,m,a.p])));const out=[];
+  const all=[];PLAN_APPS.filter(a=>!a.from||k>=a.from).forEach(a=>a.m.forEach(m=>all.push([a.id,m,a.p])));const out=[];
   const has=x=>out.some(y=>y[0]===x[0]&&y[1]===x[1]),cnt=id=>out.filter(y=>y[0]===id).length,old=x=>avoid&&avoid.some(y=>y[0]===x[0]&&y[1]===x[1]);
   const take=list=>{const ok=list.filter(x=>!has(x)&&cnt(x[0])<2),fr=ok.filter(x=>!old(x)),l=fr.length?fr:ok;if(l.length)out.push(l[Math.floor(r()*l.length)])};
-  [...new Set(PLAN_APPS.map(a=>a.p))].forEach(p=>take(all.filter(x=>x[2]===p)));
+  [...new Set(all.map(x=>x[2]))].forEach(p=>take(all.filter(x=>x[2]===p)));
   while(out.length<PLAN_N&&out.length<all.length)take(all);
   const ord=x=>PLAN_APPS.findIndex(a=>a.id===x[0])*10+PLAN_APPS.find(a=>a.id===x[0]).m.indexOf(x[1]);
   return out.sort((a,b)=>ord(a)-ord(b)).map(x=>[x[0],x[1]])}
@@ -596,7 +597,7 @@ function navePlan(k){if(PLAN_C[k])return PLAN_C[k];let n0=pdNum(PLAN_FROM),n=pdN
   for(;i<=n;i++){const kk=pdKey(i);prev=PLAN_C[kk]=planRaw(kk,prev)}return PLAN_C[k]}
 /* missões do jogo que contam no turno do dia k */
 function reqFor(app,k){if(k>=PLAN_FROM)return navePlan(k).filter(x=>x[0]===app).map(x=>x[1]);
-  const a=PLAN_APPS.find(x=>x.id===app);if(!a||app==='biblio')return[];
+  const a=PLAN_APPS.find(x=>x.id===app);if(!a||app==='biblio'||app==='alemao')return[];
   if(ROT[app]){if(k<ROT_FROM)return app==='mina'?[]:ROT[app].slice();const n=pdNum(k),off={nostro9:0,numeris:1,mina:1}[app];return ROT[app].filter((_,i)=>i!==(n+off)%3)}
   return a.m.slice()}
 /* situação do turno no dia k, lida do progresso de todos os jogos */
@@ -1182,6 +1183,43 @@ function deepLink(){const m=(location.hash.match(/m=(\w+)/)||[])[1];if(!m)return
   DL=RETV==='tasks';$('#playBack').textContent=DL?'< Missões':'< Mina';
   if(m==='desafio'||MODES.includes(m))startMission(m)}
 deepLink();addEventListener('hashchange',deepLink);
+</script>
+<script>
+/* pet do piloto (escolhido no Hangar da Nave-Mãe, lido de navemae-avatar.pet): passeia em cima do terminal e,
+   tocado, pula, faz o som dele e fala. Na tela de missão cumprida ele comemora ao lado do piloto. Mesmo código em todos os jogos. */
+(function(){let p=null;try{p=(JSON.parse(localStorage.getItem('navemae-avatar'))||{}).pet}catch(e){}
+  if(!p||!p.f0||typeof spriteRows!=='function')return;
+  const svg=rows=>spriteRows(rows.map(r=>[...r].reverse().join('')),2,p.pal); // virado para a esquerda
+  const nome=p.name.charAt(0)+p.name.slice(1).toLowerCase();
+  const st=document.createElement('style');st.textContent=`
+.npet{position:absolute;z-index:2;display:block;cursor:pointer;-webkit-user-select:none;user-select:none}
+.npet i{display:block;font-style:normal}.npet svg{display:block}.npet .pf1{position:absolute;left:0;top:0;opacity:0;animation:npwag 1.6s steps(1) infinite}
+@keyframes npwag{0%{opacity:0}70%{opacity:1}80%{opacity:0}88%{opacity:1}96%{opacity:0}}
+.npet-h,.npet-b{display:block;position:relative}
+.npet.on-term{right:18px;bottom:calc(100% + 4px);animation:nptrol 16s steps(48) infinite}
+.npet.on-term .npet-b{animation:npface 16s steps(1) infinite}
+@keyframes nptrol{0%,40%{transform:translateX(0)}52%,86%{transform:translateX(-96px)}98%,100%{transform:translateX(0)}}
+@keyframes npface{0%{transform:none}86%{transform:scaleX(-1)}98%{transform:none}}
+.npet.on-term.walk .pf1{animation-duration:.3s}
+.npet-h.hop{animation:nphop .5s steps(5)}
+@keyframes nphop{0%{transform:translateY(0)}20%{transform:translateY(-10px)}40%{transform:translateY(-14px)}60%{transform:translateY(-10px)}80%{transform:translateY(-2px)}100%{transform:translateY(0)}}
+.npet.on-cel{right:-44px;bottom:0}
+.npet.on-cel .npet-h{animation:nphop .6s steps(6) infinite}
+.cel-av{position:relative}
+.npet-say{position:absolute;bottom:100%;right:-4px;margin-bottom:6px;padding:4px 5px 3px;font-family:"Press Start 2P",monospace;font-size:7px;font-weight:400;line-height:1;color:#ffd23f;background:rgba(7,6,15,.85);white-space:nowrap;opacity:0;transition:opacity .15s steps(2);pointer-events:none}
+.npet-say.on{opacity:1}`;document.head.append(st);
+  function snd(){try{if(typeof SY==='undefined')return;(p.sfx||[]).forEach(s=>s[0]==='noise'?SY.noise(s[1],s[2],s[3]):SY.note(s[1],s[2],s[3],s[4]))}catch(e){}}
+  let n=0;
+  function make(cls){const el=document.createElement('span');el.className='npet '+cls;el.setAttribute('aria-label',nome);
+    el.innerHTML=`<b class="npet-say"></b><span class="npet-h"><span class="npet-b"><i class="pf0">${svg(p.f0)}</i><i class="pf1">${svg(p.f1)}</i></span></span>`;
+    el.addEventListener('click',e=>{e.stopPropagation();const h=el.querySelector('.npet-h'),s=el.querySelector('.npet-say');
+      h.classList.remove('hop');void h.offsetWidth;h.classList.add('hop');snd();n++;
+      s.textContent=[p.say,`${nome} torce por você!`,'♥',`${nome} ${p.trick}!`][n%4];s.classList.add('on');clearTimeout(s._t);s._t=setTimeout(()=>s.classList.remove('on'),1500)});
+    return el}
+  function put(){const t=document.querySelector('.term,.terminal');if(t&&!t.querySelector('.npet')){if(getComputedStyle(t).position==='static')t.style.position='relative';t.append(make('on-term'))}
+    document.querySelectorAll('.cel-av').forEach(av=>{if(av.innerHTML&&!av.querySelector('.npet'))av.append(make('on-cel'))})}
+  put();new MutationObserver(put).observe(document.body,{childList:true,subtree:true});
+})();
 </script>
 </body>
 </html>
