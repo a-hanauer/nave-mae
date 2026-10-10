@@ -723,6 +723,19 @@ body[data-v="crew"] .seg button{padding:9px 0}
    em telas mais baixas quem encolhe é o carrossel */
 body[data-v="crew"] .stage{height:clamp(216px,calc(100dvh - var(--hud) - var(--con) - 360px),250px)}
 body[data-v="crew"] .vhero{bottom:6px}
+.vhero .vpet{position:absolute;left:100%;bottom:0;margin-left:2px;display:flex;flex-direction:column;align-items:center}
+.vpb{position:relative;display:block;cursor:pointer}
+.vpb .vpf{display:block;transform:scaleX(-1)}
+.vpb i{display:block}.vpb .pf1{position:absolute;left:0;top:0;opacity:0;animation:pwag 1.8s steps(1) infinite}
+@keyframes pwag{0%{opacity:0}70%{opacity:1}80%{opacity:0}88%{opacity:1}96%{opacity:0}}
+.vpb.hop{animation:phop .5s steps(5)}
+@keyframes phop{0%{transform:translateY(0)}20%{transform:translateY(-10px)}40%{transform:translateY(-14px)}60%{transform:translateY(-10px)}80%{transform:translateY(-2px)}100%{transform:translateY(0)}}
+.vpn{position:absolute;bottom:100%;margin-bottom:6px;padding:4px 5px 3px;font-family:var(--px);font-size:7px;font-weight:400;line-height:1;color:var(--amber);background:rgba(7,6,15,.72);white-space:nowrap;cursor:pointer}
+.vpn i{font-style:normal;margin-left:4px;color:var(--dim)}
+.vheart{position:absolute;left:50%;top:-6px;margin-left:-7px;pointer-events:none;animation:vheart .9s ease-out forwards}
+@keyframes vheart{to{transform:translateY(-26px);opacity:0}}
+.shop-it .pr.free{color:#5dff83}
+
 body[data-v="crew"] .shop-g .shop-it{min-height:120px}
 body[data-v="crew"] .cats{margin-top:12px;padding-bottom:10px}
 #vest,#hang{flex:1;min-height:0;display:flex;flex-direction:column}
@@ -944,8 +957,8 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 <script>
 /* atualização automática: compara com version.json e recarrega com ?v=<versão> no endereço (o iPhone não reaproveita a
    página guardada). Se mesmo com ?v=<versão> a página veio velha, não insiste (evita recarregar sem parar). */
-const APP_V='20261006081853';
-(function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris|mina|ivoti|biblio)\/$/,'');
+const APP_V='20261010104815';
+(function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris|mina|ivoti|biblio|alemao)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     const q=new URLSearchParams(location.search).get('v');
     if(v&&v!==APP_V&&q!==v)location.replace(location.pathname+'?v='+v+H0)}catch(e){}}
@@ -1012,6 +1025,9 @@ const PLANETS=[
    pal:['#06173f','#0c3a86','#2a7ad8','#9fd2ff'],land:['#1b4d1c','#3b8f33','#86c95e'],feat:'earth'},
   {id:'geo',name:'Geografia',tag:'Mapas, lugares e paisagens.',
    pal:['#062f3a','#0d6f86','#2ed3e0','#bff7ff'],land:['#14502a','#2a9a45','#6be07f'],feat:'land'},
+  /* Alemão: faixas preta, vermelha e dourada, como a bandeira */
+  {id:'ale',name:'Alemão',tag:'Família, palavras e frases.',
+   pal:['#5a0a0a','#a81a1a','#e03a26','#ff9a8a'],bands3:[['#040406','#121216','#24242c','#4a4a5c'],['#5a0a0a','#a81a1a','#e03a26','#ff9a8a'],['#6a4a00','#b88a00','#ffce00','#fff3a0']],feat:'tricolor'},
 ];
 
 const dkey=(d=new Date())=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
@@ -1029,16 +1045,17 @@ const PLAN_APPS=[
   {id:'mina',p:'mat',s:'mina-stats-v1',m:['carga','turno','inspecao']},
   {id:'biblio',p:'por',s:'biblio-stats-v1',m:['leitura','palavra','ordem']},
   {id:'ivoti',p:'his',s:'ivoti-stats-v1',m:['diario','linha','arquivo']},
+  {id:'alemao',p:'ale',s:'alemao-stats-v1',m:['woerter','artikel','baum'],from:'2026-10-11'}, // entra no sorteio a partir de 'from' (os dias anteriores não mudam)
 ];
 const ROT_FROM='2026-10-05',ROT={nostro9:['partilha','grupos','hangar'],numeris:['montar','ler','sub'],mina:['carga','turno','inspecao']};
 const pdNum=k=>{const[y,m,d]=k.split('-').map(Number);return Math.round(Date.UTC(y,m-1,d)/864e5)};
 const pdKey=n=>new Date(n*864e5).toISOString().slice(0,10);
 function planRaw(k,avoid){let s=(pdNum(k)*2654435761^0x9e3779b9)>>>0; // mulberry32: números bem espalhados mesmo com datas seguidas
   const r=()=>{s=(s+0x6D2B79F5)>>>0;let z=s;z=Math.imul(z^z>>>15,z|1);z^=z+Math.imul(z^z>>>7,z|61);return((z^z>>>14)>>>0)/4294967296};
-  const all=[];PLAN_APPS.forEach(a=>a.m.forEach(m=>all.push([a.id,m,a.p])));const out=[];
+  const all=[];PLAN_APPS.filter(a=>!a.from||k>=a.from).forEach(a=>a.m.forEach(m=>all.push([a.id,m,a.p])));const out=[];
   const has=x=>out.some(y=>y[0]===x[0]&&y[1]===x[1]),cnt=id=>out.filter(y=>y[0]===id).length,old=x=>avoid&&avoid.some(y=>y[0]===x[0]&&y[1]===x[1]);
   const take=list=>{const ok=list.filter(x=>!has(x)&&cnt(x[0])<2),fr=ok.filter(x=>!old(x)),l=fr.length?fr:ok;if(l.length)out.push(l[Math.floor(r()*l.length)])};
-  [...new Set(PLAN_APPS.map(a=>a.p))].forEach(p=>take(all.filter(x=>x[2]===p)));
+  [...new Set(all.map(x=>x[2]))].forEach(p=>take(all.filter(x=>x[2]===p)));
   while(out.length<PLAN_N&&out.length<all.length)take(all);
   const ord=x=>PLAN_APPS.findIndex(a=>a.id===x[0])*10+PLAN_APPS.find(a=>a.id===x[0]).m.indexOf(x[1]);
   return out.sort((a,b)=>ord(a)-ord(b)).map(x=>[x[0],x[1]])}
@@ -1049,7 +1066,7 @@ function navePlan(k){if(PLAN_C[k])return PLAN_C[k];let n0=pdNum(PLAN_FROM),n=pdN
   for(;i<=n;i++){const kk=pdKey(i);prev=PLAN_C[kk]=planRaw(kk,prev)}return PLAN_C[k]}
 /* missões do jogo que contam no turno do dia k */
 function reqFor(app,k){if(k>=PLAN_FROM)return navePlan(k).filter(x=>x[0]===app).map(x=>x[1]);
-  const a=PLAN_APPS.find(x=>x.id===app);if(!a||app==='biblio')return[];
+  const a=PLAN_APPS.find(x=>x.id===app);if(!a||app==='biblio'||app==='alemao')return[];
   if(ROT[app]){if(k<ROT_FROM)return app==='mina'?[]:ROT[app].slice();const n=pdNum(k),off={nostro9:0,numeris:1,mina:1}[app];return ROT[app].filter((_,i)=>i!==(n+off)%3)}
   return a.m.slice()}
 /* situação do turno no dia k, lida do progresso de todos os jogos */
@@ -1076,6 +1093,11 @@ const APPS=[
    tasks:[{id:'carga',n:'Carga guiada',sub:'Divisão passo a passo'},{id:'turno',n:'Turno completo',sub:'A conta armada inteira'},
           {id:'inspecao',n:'Complete a conta',sub:'Preencha a casa vazia'},{id:'desafio',n:'Tempestade',sub:'Contas contra o tempo',opt:true}],
    desc:'Arme as contas de divisão e encha os vagonetes de cristais.'},
+  {id:'alemao',planet:'ale',name:'Casa Sternberg',tag:'Alemão · Família',icon:'haus',
+   url:'alemao/',store:'alemao-stats-v1',
+   tasks:[{id:'woerter',n:'Palavras',sub:'Wer ist das? Quem é?'},{id:'artikel',n:'der · die · das',sub:'Os artigos'},
+          {id:'baum',n:'Árvore da família',sub:'Das ist mein…'},{id:'desafio',n:'Hör zu!',sub:'Escute e encontre',opt:true}],
+   desc:'Alemão com a família Sternberg: palavras da família, der/die/das, mein/meine e frases. Com OUVIR nas palavras.'},
   {id:'biblio',planet:'por',name:'Biblioteca Estelar',tag:'Leitura e interpretação',icon:'book',
    url:'biblio/',store:'biblio-stats-v1',
    tasks:[{id:'leitura',n:'Leitura da transmissão',sub:'Leia e responda'},{id:'palavra',n:'Palavra misteriosa',sub:'O sentido pelo contexto'},
@@ -1127,6 +1149,7 @@ const SPR={"m_rocket":["........kk........",".......kWLk.......",".......kWLk...
 "station":["kkkkk......kkkkk","kcCck......kbcbk","kbcbk......knbnk","kcbck......kbnbk","kbcbkMkkkkDknbnk","kcbckkLWLMkkbnbk","kbcbkLWLMLMknbnk","kkkkkLLCcMMkkkkk","....kLCcbcMk....","....kLcOobMk....","kkkkkLbbnnMkkkkk","kcCckLLLMMMkbcbk","kbcbkkMLMDkknbnk","kcbckMkkkkDkbnbk","kbcbk......knbnk","kkkkk......kkkkk"],
 "mine":["kkkkkkkkkkkkkkkk", "kSSSSSSSSSSSSSsk", "ksttttttttttttvk", "kkkkkkkkkkkkkkkk", ".ktkJJJJJJJJktk.", ".ktkJJJJJJJJktk.", ".ktkJJJJJkkJktk.", ".ktkJJJJkGXkktk.", ".ktkJkkJkGXgktk.", ".ktkkGXkkXggktk.", ".ktkkXgkkXghktk.", ".ktkkXghkXghktk.", ".ktkkkkkkkkkktk.", "kkkkQQQQQQQQkkkk", "kQUUUUUUUUUUUUQk", "kkkkkkkkkkkkkkkk"],
 "clock":["kkkkkkkkkkkkkkkk", "ktttttttttttttsk", "kkkkkkkkkkkkkkkk", "..kFFFFFFFFFFk..", "..kFYYYYYYYYFk..", "...kFYYYYYYFk...", "....kFYYYYFk....", ".....kFYYFk.....", "......kFYk......", ".....kFFYFk.....", "....kFFFYFFk....", "...kFFYYYYFFk...", "..kFYYYYYYYYFk..", "kkkkkkkkkkkkkkkk", "ktttttttttttttsk", "kkkkkkkkkkkkkkkk"],"md_pass":["...kkkkkkkkkk...", "...kRRrRRrRRk...", "...kRRrRRrRRk...", "...kRRrRRrRRk...", "....kRrRRrRk....", ".....kkkkkk.....", ".......kk.......", "....kkkkkkkk....", "...kk111112kk...", "..kk11141122kk..", "..k1114441222k..", ".k111444442233k.", ".k114444444233k.", ".k111414142333k.", ".k111441443334k.", ".k212414143344k.", "..k2444444434k..", "..kk22233334kk..", "...kk333344kk...", "....kkkkkkkk....", ".......kk......."],"md_clock":["...kkkkkkkkkk...", "...kRRrRRrRRk...", "...kRRrRRrRRk...", "...kRRrRRrRRk...", "....kRrRRrRk....", ".....kkkkkk.....", ".......kk.......", "....kkkkkkkk....", "...kk111112kk...", "..kk11444422kk..", "..k1141111422k..", ".k111411142233k.", ".k114111414233k.", ".k114114414333k.", ".k114111114334k.", ".k212411142344k.", "..k2224444434k..", "..kk22233334kk..", "...kk333344kk...", "....kkkkkkkk....", ".......kk......."],
+"haus":["..........kk....",".......kk.kQk...","......kJJkkQk...",".....kJJJJkQk...","....kJKJJJJkk...","...kJKJJJJJJk...","..kJKJJJJJJJJk..",".kkkkkkkkkkkkkk.","..kRrrrrrrrrrk..","..krkkkkrrrrqk..","..krkYAkrkkkqk..","..krkAbkrkbkqk..","..krkkkkrkbkqk..","..krrrrrrkokqk..","..krrrrrrkbkqk..",".kkkkkkkkkkkkkk."],
 "book":["................", ".kkkkkk..kkkkkk.", "kWWWWWWkkWWWWWWk", "kWkkkkWkkWkkkkWk", "kWWWWWWkkWWWWWWk", "kWkkkWWkkWkkkkWk", "kWWWWWWkkWWWWWWk", "kWkkkkWkkWkkkWWk", "kWWWWWWkkWWWWWWk", "kLLLLLLkkLLLLLLk", "kDDDDDDDDDDDDDDk", "kEEEEEEEEEEEEEEk", ".kkkkkkkkkkkkkk."],
 "ruins":[".....kkkkkk.....","...kkSSSssskk...",".kkSSSSstsssskk.","kSSSSssstttssssk","kkkkkkkkkkkkkkkk",".kSsktttvvvktsk.",".kSsktkkkkvktsk.",".kSsktkXxkvktsk.",".kSsktkxxkvktsk.",".kSsktkXxkvktsk.",".kSsktkkkkvktsk.",".kSsktttvvvktsk.",".kSsktttvvvktsk.","kkkkkkkkkkkkkkkk","kSSSSssstttssssk","kkkkkkkkkkkkkkkk"],
 "flame":["....k.....","...kRk....","...kRrk...","..kRYrk.k.","..kRYOrkRk",".kRYYOrrRk",".kRYFYOrrk","kRYFFYOork","kRYFFYOOrk","kROYYYOork",".krOOOorqk","..kkrrrqk.","...kkkkk.."],
@@ -1184,6 +1207,9 @@ function hdRows(rows,s,ov){const key=s+'|'+rows.join('/')+'|'+(ov?JSON.stringify
 function spriteRows(rows,s=2,ov){const g=hdRows(rows,s,ov),h=g.length,w=g[0].length,px=s/Math.max(1,Math.round(s/GRID));let r='';
   g.forEach((row,y)=>{let x=0;while(x<w){const c=row[x];if(!c){x++;continue}let k=1;while(row[x+k]===c)k++;r+=`<rect x="${x}" y="${y}" width="${k}" height="1" fill="${c}"/>`;x+=k}});
   return `<svg class="spr" viewBox="0 0 ${w} ${h}" width="${w*px}" height="${h*px}" shape-rendering="crispEdges" aria-hidden="true">${r}</svg>`}
+/* pets: arte de lado (olhando para a direita), 16×12; f0/f1 = passos (ou rabinho); som em notas do sintetizador */
+const PETS={"cachorro": {"f0": [".........kkkk...", "........kddaaak.", "........kddaeakk", "..k.....kdaaacck", ".kak....kkaaacrk", ".kak.kkkkgaakkk.", "..kakaaaaagaak..", "...kaaaaaaaak...", "...kbaaaaaabk...", "...kbkkkkkkbk...", "...kbk....kbk...", "...kk.....kk...."], "f1": [".........kkkk...", "........kddaaak.", "........kddaeakk", "........kdaaacck", "..kk....kkaaacrk", ".kaakkkkkgaakkk.", "..kkaaaaaagaak..", "...kaaaaaaaak...", "...kbaaaaaabk...", "..kbkkkkkkkbk...", "..kbk.....kbk...", "..kk.....kk....."], "pal": {"k": "#1a0f08", "a": "#d9a066", "b": "#a8703a", "c": "#f6dcb6", "d": "#6b4520", "e": "#0b0a1a", "r": "#ff6a7a", "w": "#ffffff", "g": "#e03a26"}, "nome": "CARAMELO", "say": "AU AU!", "trick": "deu a patinha", "sfx": [["noise", 0.07, 0, {"f": 1100, "to": 500, "vol": 0.1}], ["note", 330, 0.07, 0, {"to": 220, "vol": 0.05}], ["noise", 0.07, 0.16, {"f": 1100, "to": 500, "vol": 0.1}], ["note", 330, 0.07, 0.16, {"to": 220, "vol": 0.05}]]}, "gato": {"f0": [".........k...k..", "........kak.kak.", "........kadkdak.", "..k.....kaaaaak.", ".kak....kaekeak.", ".kak....kaaaaak.", "..kak.kkkgggkk..", "...kaaaaaaaak...", "...kbaaaaaabk...", "...kbkkkkkkbk...", "...kbk....kbk...", "...kk.....kk...."], "f1": [".........k...k..", "........kak.kak.", "........kadkdak.", "........kaaaaak.", "..kk....kaekeak.", ".kaak...kaaaaak.", "..kkak.kkgggkk..", "...kaaaaaaaak...", "...kbaaaaaabk...", "..kbkkkkkkkbk...", "..kbk.....kbk...", "..kk.....kk....."], "pal": {"k": "#120a1a", "a": "#9aa0ac", "b": "#5a606c", "c": "#e8eaf0", "d": "#ff9ab8", "e": "#5dff83", "r": "#ff6a7a", "w": "#ffffff", "g": "#3a6ad8"}, "nome": "PIPOCA", "say": "MIAU!", "trick": "ronronou bem baixinho", "sfx": [["note", 620, 0.26, 0, {"to": 900, "type": "triangle", "vol": 0.06, "vib": 7}], ["note", 900, 0.22, 0.26, {"to": 560, "type": "triangle", "vol": 0.05, "vib": 7}]]}, "alien": {"f0": [".......d....d...", "......kdk..kdk..", ".......k.kk.k...", ".......kkaakk...", "......kaaaaaak..", ".....kawekaweak.", ".....kaeekaeeak.", ".....kaaaaaaaak.", "......kaarraak..", ".....kcaaaaaack.", "......kkbkkbkk..", ".......k..k....."], "f1": ["......d....d....", ".....kdk..kdk...", "......k.kk.k....", ".......kkaakk...", "......kaaaaaak..", ".....kawekaweak.", ".....kaeekaeeak.", ".....kaaaaaaaak.", "......kaarraak..", ".....kcaaaaaack.", "......kkbkkbkk..", "................"], "pal": {"k": "#0a1a0f", "a": "#5dff83", "b": "#1f9a3a", "c": "#c8ffb0", "d": "#ff4fd8", "e": "#0b0a1a", "r": "#ffd23f", "w": "#ffffff", "g": "#2ad4ff"}, "nome": "ZUZU", "say": "BLIP BLOP!", "trick": "mudou de cor", "sfx": [["note", 1200, 0.06, 0, {"type": "sine", "to": 1800, "vol": 0.06}], ["note", 900, 0.06, 0.08, {"type": "sine", "to": 600, "vol": 0.06}], ["note", 1500, 0.09, 0.16, {"type": "sine", "to": 2200, "vol": 0.05}]]}, "robocao": {"f0": ["..........d.....", "..........k.....", ".........kkkk...", "........kaaaak..", "..k.....kaeeakk.", "..d.....kaaaaagk", "..k.kkkkkkaakkk.", "...kaaaaaaaak...", "...kbrbrbrbbk...", "...kgkkkkkkgk...", "...kgk....kgk...", "...kk.....kk...."], "f1": ["..........d.....", "..........k.....", ".........kkkk...", "........kaaaak..", "........kaeeakk.", "..d.....kaaaaagk", "..kkkkkkkkaakkk.", "...kaaaaaaaak...", "...kbbrbrbrbk...", "..kgkkkkkkkgk...", "..kgk.....kgk...", "..kk.....kk....."], "pal": {"k": "#0b0a1a", "a": "#c8ccd2", "b": "#737a88", "c": "#e8eaf0", "d": "#ff3d2e", "e": "#40d8ff", "r": "#ffb300", "w": "#ffffff", "g": "#454b58"}, "nome": "BIP", "say": "BIP BIP!", "trick": "piscou as luzes", "sfx": [["note", 1047, 0.06, 0, {"type": "square", "vol": 0.05}], ["note", 1568, 0.06, 0.1, {"type": "square", "vol": 0.05}], ["noise", 0.05, 0.2, {"filter": "highpass", "f": 3000, "vol": 0.04}]]}};
+Object.assign(SPR,{"ic_pet":["...kk..kk...","..kLLkkLLk..","..kLMkkLMk..","kk.kk..kk.kk","kLk......kLk","kMk.kkkk.kMk",".k.kLLLLk.k.","..kLLLLLLk..",".kLLLLLLLMk.",".kLLLLLLMMk.","..kMMMMMMk..","...kkkkkk..."]});
 Object.assign(SPR,{"ic_helmet": ["....kkkk....", "..kkLLLLkk..", ".kLLLLLLLMk.", ".kLLkkkkkMk.", "kLkccccccckk", "kLkcWcccccMk", "kLkccccccckk", "kMMkkkkkkkMk", ".kMMMMMMMMk.", "..kkkkkkkk..", "............", "............"], "ic_visor": ["............", "..kkkkkkkk..", ".kccccccccck", "kcWWcccccccD", "kcWccccccccD", "kccccccccccD", ".kcccccccckk", "..kkkkkkkk..", "............", "............", "............", "............"], "ic_suit": ["...kk..kk...", "..kLLkkLLk..", ".kLLLLLLLLk.", "kLLkOOOOkLMk", "kLLkOYYOkLMk", "kLLkkkkkkLMk", "kLLLLLLLLLMk", "kkLLLMMLLLkk", ".kLLLkkLLMk.", ".kLLMk.kLMk.", ".kkkkk.kkkk.", "............"], "ic_skin": ["...kkkkkk...", "..kSSSSSSk..", ".kSSSSSSSSk.", ".kSkkSSkkSk.", ".kSSSSSSSSk.", ".kSSSSSSSSk.", ".kSSkSSkSSk.", "..kSSkkSSk..", "...kkSSkk...", ".....kk.....", "............", "............"], "ic_emblem": ["kkkkkkkkkk..", "kDDDDDDDDk..", "kDDDODDDDk..", "kDDOOODDDk..", "kDOOOOODDk..", "kDDOOODDDk..", "kDDODODDDk..", "kDDDDDDDDk..", "kkkkkkkkkk..", "............", "............", "............"], "ic_gear": ["........kk..", ".......kWWk.", "......kWLk..", ".....kWLk...", "....kWLk....", "...kWLk.....", "..kMMk......", ".kMMMMk.....", "kMMkMMk.....", "kMk.kk......", ".k..........", "............"], "ic_title": ["..kkkkkkkk..", ".kYYYYYYYYk.", "kYOOOOOOOOYk", "kYOkkkkkkOYk", "kYOOOOOOOOYk", ".kYYYYYYYYk.", "..kkrkkrkk..", "...krk.krk..", "...krk.krk..", "...kk...kk..", "............", "............"], "ic_ship": [".....kk.....", "....kLLk....", "...kLccLk...", "...kLccMk...", "...kLLLMk...", "..kkLLLMkk..", ".krkLLLMkrk.", "krrkLMMMkrrk", "kkkkkkkkkkkk", "...kOkkOk...", "...kYk.kYk..", "............"], "ic_paint": ["......kk....", ".....kWLk...", ".....kLMk...", "....kLMk....", "...kkkkk....", "..kOOOOk....", "..kOOOk.....", ".kOOOk......", ".kOOk.......", "kOOk........", "kkk.........", "............"], "ic_flame": ["....k.......", "...kOk..k...", "...kOk.kOk..", "..kOYOkkOk..", "..kOYYOkOk..", ".kOYYYYOOk..", ".kOYWWYYOk..", ".kOYWWWYOk..", "..kOYYYOk...", "...kkkkk....", "............", "............"], "ic_decal": ["..kkkkkkkk..", ".kWWWWWWWWk.", "kWWWWOWWWWWk", "kWWWOOOWWWWk", "kWWOOOOOWWWk", "kWWWOOOWWWkk", "kWWWOWOWWkLk", "kWWWWWWWkLk.", ".kkkkkkkkk..", "............", "............", "............"], "ic_trail": ["...k........", "..kYk...k...", "...k...kYk..", ".......kYk..", ".k......k...", "kYk..k......", ".k..kYk.....", "....kYk..k..", ".....k..kYk.", "..k......k..", ".kYk........", "..k........."]}); // ícones das abas de categoria do Hangar
 SPR.arcSt=["...........kk...........","..........kYOk..........","..........kOOk..........","...........kk...........","...........kk...........",
   "......kkkkkkkkkkkk......","....kkLLLLLLLLLLLLkk....","...kLLWLLLLLLLLLLLLMk...","..kLLccLLRRLLccLLRRLMk..","..kLLccLLRRLLccLLRRLMk..",
@@ -1401,6 +1427,7 @@ const ITEMS={
     {id:'chamas',n:'Chamas',p:'chamas',c:['#ff8a1f','#c83a10'],price:120},
     {id:'galaxia',n:'Galáxia',p:'xadrez',c:['#b46aff','#3a1a6a'],price:120},
     {id:'faixav',n:'Faixa verde',p:'faixa',c:['#5dff83','#1f9a3a'],price:30},{id:'raiov',n:'Raios verdes',p:'raio',c:['#c8ff6a','#4a9a10'],price:80},{id:'chamasv',n:'Chamas verdes',p:'chamas',c:['#8dff3a','#2a8a10'],price:120}]},
+  pet:{t:'Pet',list:[{id:'none',n:'Nenhum'},{id:'cachorro',n:'Cachorro',price:120},{id:'gato',n:'Gato',price:120},{id:'alien',n:'Alienzinho',price:150},{id:'robocao',n:'Robô-cão',price:150}]},
   trail:{t:'Rastro',list:[
     {id:'none',n:'Nenhum'},
     {id:'fumaca',n:'Fumaça',p:'fumaca',c:{a:'#e8e8f0',b:'#9a9ab0'},price:30},
@@ -1411,7 +1438,7 @@ const ITEMS={
     {id:'arco',n:'Arco-íris',p:'arco',c:{a:'#ff4a4a',b:'#ff9a2a',c:'#ffe24a',d:'#4ae06a',e:'#4aa8ff',f:'#a86aff'},price:180},
     {id:'gosma',n:'Gosma',p:'bolhas',c:{a:'#c8ff8a',b:'#4ab81a'},price:50},{id:'estrelasv',n:'Estrelas verdes',p:'estrelas',c:{a:'#d8ffb0',b:'#39e35f'},price:50}]},
 };
-const DEF={helmet:'branco',visor:'ciano',suit:'lilas',skin:'p1',emblem:'estrela',gear:'none',title:'cadete',ship:'rocket',paint:'prata',flame:'laranja',decal:'none',trail:'none'};
+const DEF={pet:'none',helmet:'branco',visor:'ciano',suit:'lilas',skin:'p1',emblem:'estrela',gear:'none',title:'cadete',ship:'rocket',paint:'prata',flame:'laranja',decal:'none',trail:'none'};
 const item=(cat,id)=>ITEMS[cat].list.find(x=>x.id===id)||ITEMS[cat].list[0];
 for(const c in ITEMS)ITEMS[c].list.forEach(it=>it.k=c+':'+it.id);
 const OLDREQ={'visor:rosa':'a3','ship:disc':'a3','gear:rastreador':'a3','title:cacador':'a10','emblem:alien':'a10','flame:rosa':'a10','suit:laranja':'d3','flame:verde':'d3','gear:macarico':'d3'};
@@ -1424,6 +1451,9 @@ if(!st.mig3){st.own=st.own||[];for(const c in ITEMS)ITEMS[c].list.forEach(it=>{i
   st.eBonus=60;st.spent=0;st.mig3=1;try{localStorage.setItem(ST,JSON.stringify(st))}catch(e){}}
 for(const c in ITEMS)ITEMS[c].list.forEach(it=>{if(it.req){it.price=REQP[it.req]||80;delete it.req}});
 const owned=it=>!it.price||(st.own||[]).includes(it.k);
+/* preço que vale agora: o primeiro pet sai de graça */
+const hasPet=()=>ITEMS.pet.list.some(p=>p.price&&(st.own||[]).includes(p.k));
+const pr=it=>it.k&&it.k.startsWith('pet:')&&it.price&&!hasPet()?0:it.price;
 function look(){const L=Object.assign({},DEF,st.look);for(const k in L){if(!owned(item(k,L[k])))L[k]=DEF[k]}return L}
 
 /* ---- métricas lidas do progresso dos apps ---- */
@@ -1455,10 +1485,25 @@ function trimRows(rows){const E=r=>!/[^.]/.test(r);let t=0,b=rows.length-1;while
   const C=x=>rows.every(r=>r[x]==='.');let l=0,r=rows[0].length-1;while(l<r&&C(l))l++;while(r>l&&C(r))r--;return rows.map(row=>row.slice(l,r+1))}
 function cacheAvatar(){try{const L=look(),fo=item('flame',L.flame).c;
   const pr=trimRows(pilotRows(L));
-  localStorage.setItem('navemae-avatar',JSON.stringify({v:3,ov:pilotOv(L),pilot:spriteRows(pr,2,pilotOv(L)),cheer:spriteRows(cheerRows(L),2,pilotOv(L)),
+  localStorage.setItem('navemae-avatar',JSON.stringify({v:3,pet:petData(L.pet),ov:pilotOv(L),pilot:spriteRows(pr,2,pilotOv(L)),cheer:spriteRows(cheerRows(L),2,pilotOv(L)),
     ship:spriteRows(shipRows(L),1,shipOv(L)),shipPx:(()=>{const o=shipOv(L),fo=item('flame',L.flame).c,col=c=>o[c]||fo[c]||PAL[c]||'#ff00ff',map=r=>r.map(l=>[...l].map(c=>c==='.'?'.':c));
       const rows=shipRows(L),pal={};[rows,SPR['fs1_'+L.ship],SPR['fs2_'+L.ship]].forEach(g=>g&&g.forEach(l=>[...l].forEach(c=>{if(c!=='.')pal[c]=col(c)})));return{rows,f1:SPR['fs1_'+L.ship],f2:SPR['fs2_'+L.ship],pal}})(), /* nave em pixels para os jogos (Patrulha Estelar) */
     flame:[spriteRows(SPR['fs1_'+L.ship]||SPR.fl1,1,fo),spriteRows(SPR['fs2_'+L.ship]||SPR.fl2,1,fo)]}))}catch(e){}}
+/* ---------- pet: no palco do Hangar ao lado do piloto, nos jogos e no fliperama ---------- */
+const petName=id=>((st.petNames||{})[id])||(PETS[id]||{}).nome||'';
+function petData(id){const p=PETS[id];return p?{id,name:petName(id),say:p.say,trick:p.trick,sfx:p.sfx,f0:p.f0,f1:p.f1,pal:p.pal}:null}
+function petSfx(p){(p.sfx||[]).forEach(s=>s[0]==='noise'?SY.noise(s[1],s[2],s[3]):SY.note(s[1],s[2],s[3],s[4]))}
+const HEART=[".kk.kk.","kRRkRRk","kRWRRRk","kRRRRRk",".kRRRk.","..kRk..","...k..."];
+function petStage(id){const p=PETS[id];if(!p)return '';
+  return `<span class="vpet"><b class="vpn" id="vpName">${esc(petName(id))}<i>✎</i></b><span class="vpb" id="vpBody"><span class="vpf"><i class="pf0">${spriteRows(p.f0,2,p.pal)}</i><i class="pf1">${spriteRows(p.f1,2,p.pal)}</i></span></span></span>`}
+/* tocar no pet: pula, faz o som dele, solta corações e diz algo; tocar no nome: troca o nome */
+function bindPet(){const b=$('#vpBody'),n=$('#vpName');if(!b)return;const id=draft.pet,p=PETS[id];
+  b.onclick=e=>{e.stopPropagation();b.classList.remove('hop');void b.offsetWidth;b.classList.add('hop');petSfx(p);
+    const h=document.createElement('span');h.className='vheart';h.innerHTML=spriteRows(HEART,2,{R:'#ff5a8a',W:'#ffd6e8'});b.append(h);setTimeout(()=>h.remove(),900);
+    st.petLove=(st.petLove||0)+1;const L=[p.say,p.say,`${petName(id)} ${p.trick}!`,'♥'];n.firstChild.textContent=L[st.petLove%L.length];clearTimeout(bindPet.t);
+    bindPet.t=setTimeout(()=>{if(n.isConnected)n.firstChild.textContent=petName(id)},1500);save()};
+  n.onclick=e=>{e.stopPropagation();if(!owned(item('pet',id))){SND.locked();return}SND.open();nameMode='pet';$('#nameDlg h2').textContent='NOME DO PET';$('#nameIn').value=petName(id);$('#nameDlg').hidden=false}}
+let nameMode='pilot';
 const pilotFull=(s,L=look())=>spriteRows(pilotRows(L),s,pilotOv(L));
 /* retrato: cabeça e ombros recortados do corpo inteiro */
 const pilotSVG=(s,L=look())=>spriteRows(pilotRows(L).slice(PPAD,PPAD+24).map(r=>r.slice(PPAD+3,PPAD+27)),s,pilotOv(L));
@@ -1497,6 +1542,7 @@ function shipSVG(s,L=look()){const fo=item('flame',L.flame).c,tr=item('trail',L.
 }
 /* miniatura de um item para listas */
 function thumb(cat,it,s=2){const L=Object.assign(look(),{[cat]:it.id});
+  if(cat==='pet')return PETS[it.id]?spriteRows(PETS[it.id].f0,s*2,PETS[it.id].pal):'<b style="font-family:var(--px);font-size:8px;color:var(--dim)">—</b>';
   if(cat==='ship'||cat==='paint'||cat==='decal')return shipOnly(s,L);
   if(cat==='trail')return it.p?`<span class="fx" style="position:relative;display:block;width:${36*s}px;height:${12*s}px">${trailSVG(it,s*2)}</span>`:'<b style="font-family:var(--px);font-size:8px;color:var(--dim)">—</b>';
   if(cat==='flame')return sprite('fl2',s*2,it.c);
@@ -1553,6 +1599,7 @@ function planetSVG(p,s=3,r=12){
       if(p.feat==='craters')for(const[c1,c2,cr]of craters){const q=(nx-c1)**2+(ny-c2)**2;if(q<cr*cr){sh-=.32;if(q>(cr*.7)**2&&nx-c1<0)sh+=.25}}
       if(p.feat==='spots'&&noise(x*1.6*12/r,y*1.6*12/r,seed)>.62)sh-=.3;
       if(p.feat==='land'&&noise(x*12/r,y*12/r,seed)>.55)pal=p.land.concat(p.pal[3]);
+      if(p.feat==='tricolor'){const b=ny+.06*Math.sin(nx*9+1.5);pal=p.bands3[b<-.33?0:b<.33?1:2];sh+=.12*Math.sin(ny*22)}
       let cloud=false,here=false;
       if(p.feat==='earth'){ // continentes, gelo nos polos e nuvens
         /* projeção ortográfica de um mapa-múndi de 10° por casa, olhando para a América do Sul */
@@ -1680,7 +1727,7 @@ function renderHome(){
   $('#streak').innerHTML=`${sprite(s?'flame':'flameOff',2)}<div><b>${s}</b><span>${s===1?'DIA':'DIAS'}<br>SEGUIDOS</span></div>`;
 
   const as=arcState(),ah=$('#arcHome');
-  ah.innerHTML=as?`<button class="arcp${as.left?'':' off'}" id="arcHomeGo"><span class="arcp-st">${spriteRows(SPR.arcSt,2,ARC_OV)}</span><span class="arcp-t"><b>FLIPERAMA</b><small>${as.left?`RECOMPENSA DO DIA · ${Math.ceil(as.left/60)} MIN`:'FICHAS DE HOJE ACABARAM'}</small></span>${as.left?`<span class="arcp-go">ENTRAR${sprite('fwd',2)}</span>`:''}</button>`:'';
+  ah.innerHTML=as?`<button class="arcp${as.left?'':' off'}" id="arcHomeGo"><span class="arcp-st">${spriteRows(SPR.arcSt,2,ARC_OV)}</span><span class="arcp-t"><b>FLIPERAMA</b><small>${as.left?`RECOMPENSA DO DIA · ${Math.ceil(as.left/60)} MIN`:'FICHAS ACABARAM · SALA ABERTA'}</small></span><span class="arcp-go">${as.left?'ENTRAR':'PASSEAR'}${sprite('fwd',2)}</span></button>`:'';
   if(as)$('#arcHomeGo').onclick=()=>goArc($('#arcHomeGo'));
   const map=$('#map');
   let h='';
@@ -1772,7 +1819,7 @@ addEventListener('pageshow',()=>{$('#warp').hidden=true;checkGoals();go(view==='
 let routed=false;
 function routeHash(){const h=location.hash;let v=(h.match(/v=(\w+)/)||[])[1];const p=(h.match(/p=(\w+)/)||[])[1];
   // voltando de um jogo sem endereço de retorno: abre a aba Missões
-  if(!v&&!p&&!routed&&/\/(nostro-9|numeris|mina|ivoti|biblio)\//.test(document.referrer))v='tasks';
+  if(!v&&!p&&!routed&&/\/(nostro-9|numeris|mina|ivoti|biblio|alemao)\//.test(document.referrer))v='tasks';
   routed=true;if(!v&&!p)return;
   history.replaceState(null,'',location.pathname+location.search);if(v&&VIEWS.includes(v))go(v);else if(p&&PLANETS.find(x=>x.id===p))openPlanet(p)}
 
@@ -1831,7 +1878,7 @@ function arcState(){if(!APPS.length||pendingCount()>0)return null;if(st.arcDay!=
   const min=st.arcMin==null?10:st.arcMin;if(min<=0)return null;
   const ar=(()=>{try{return JSON.parse(localStorage.getItem('navemae-arcade'))||{}}catch(e){return{}}})(),used=ar.day===dkey()?ar.used||0:0;
   return{min,left:Math.max(0,min*60-used)}}
-const goArc=el=>{if(el.classList.contains('off')){SND.locked();return}takeoff({url:'fliperama/'},'#r=tasks')};
+const goArc=el=>{takeoff({url:'fliperama/'},'#r=tasks')}; // sem fichas a sala continua aberta: dá para passear, conversar e tomar um refri
 function pendingCount(){return APPS.flatMap(appTasks).filter(t=>!t.opt&&!t.done).length}
 function renderTasks(){
   const all=APPS.flatMap(appTasks),req=all.filter(t=>!t.opt),ok=req.filter(t=>t.done).length;
@@ -1849,8 +1896,8 @@ function renderTasks(){
     const as=arcState();
     if(as){const lf=as.left,full=lf>=as.min*60;
       h=`<button class="arch${lf?'':' off'}" id="arcGo"><span class="arch-sky">${adStars()}<span class="arch-st">${spriteRows(SPR.arcSt,2,ARC_OV)}</span><span class="arch-sign">FLIPERAMA</span></span>
-        <span class="arch-b"><small>${lf?'RECOMPENSA DO DIA':'FICHAS DE HOJE ACABARAM'}</small><b>${lf?(full?`VOCÊ GANHOU ${as.min} MIN!`:`RESTAM ${Math.ceil(lf/60)} MIN`):'VOLTE AMANHÃ'}</b></span>
-        ${lf?`<span class="arch-go">ENTRAR NO FLIPERAMA ${sprite('fwd',2)}</span>`:''}</button>`+h}
+        <span class="arch-b"><small>${lf?'RECOMPENSA DO DIA':'FICHAS DE HOJE ACABARAM'}</small><b>${lf?(full?`VOCÊ GANHOU ${as.min} MIN!`:`RESTAM ${Math.ceil(lf/60)} MIN`):'SALA ABERTA PARA PASSEAR'}</b></span>
+        <span class="arch-go">${lf?'ENTRAR NO FLIPERAMA':'ENTRAR NA SALA'} ${sprite('fwd',2)}</span></button>`+h}
   }
   const nxA=APPS.find(a=>appTasks(a).some(t=>!t.opt&&!t.done)),nx=nxA&&nxA.id+':'+appTasks(nxA).find(t=>!t.opt&&!t.done).id; // próxima obrigatória (só uma na lista)
   if(allDone){h+=`<button class="tdone-tg px${tDoneOpen?' open':''}" id="tDoneTg"><span>MISSÕES FEITAS (${ok})</span>${sprite('fwd',2)}</button>`;
@@ -1882,8 +1929,8 @@ function bindTasks(){$('#tList').querySelectorAll('[data-m]').forEach(b=>b.oncli
 let toastT=0;function toast(t){const el=$('#toast');el.textContent=t;el.hidden=false;el.style.bottom=$('#shopBar').hidden?'':'calc(170px + env(safe-area-inset-bottom))';clearTimeout(toastT);toastT=setTimeout(()=>el.hidden=true,2600)}
 $('#pilotBtn').onclick=()=>{SND.open();go('vest')};
 document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>{b.closest('.overlay').hidden=true});
-$('#nmEdit').onclick=()=>{SND.open();$('#cfg').hidden=true;$('#nameIn').value=st.pilot;$('#nameDlg').hidden=false};
-$('#nameForm').onsubmit=e=>{e.preventDefault();const v=$('#nameIn').value.trim().toUpperCase();if(v){st.pilot=v;save()}$('#nameDlg').hidden=true;if(view==='vest')renderVest()};
+$('#nmEdit').onclick=()=>{SND.open();$('#cfg').hidden=true;nameMode='pilot';$('#nameDlg h2').textContent='NOME DO PILOTO';$('#nameIn').value=st.pilot;$('#nameDlg').hidden=false};
+$('#nameForm').onsubmit=e=>{e.preventDefault();const v=$('#nameIn').value.trim().toUpperCase();if(v&&nameMode==='pet'){st.petNames=st.petNames||{};st.petNames[look().pet]=v;save();cacheAvatar();$('#nameDlg').hidden=true;renderCloset();return}if(v){st.pilot=v;save()}$('#nameDlg').hidden=true;if(view==='vest')renderVest()};
 
 /* ---- seletores ◀ ▶ (rascunho permite ver itens bloqueados) ---- */
 let draft=null;
@@ -1916,12 +1963,12 @@ function energy(){const Ld=st.eLed=st.eLed||{},per={},full={};
   let run=0,prev=null;Object.keys(full).sort().forEach(k=>{const d=new Date(k+'T12:00');run=prev&&Math.round((d-prev)/864e5)===1?run+1:1;prev=d;if(run>=3)per[k]=(per[k]||0)+5});
   let ch=false;for(const k in per)if(per[k]>(Ld[k]||0)){Ld[k]=per[k];ch=true}if(ch)save();
   const earned=(st.eBonus||0)+Object.values(Ld).reduce((a,b)=>a+b,0);return{earned,bal:earned-(st.spent||0)}}
-const minPrice=()=>{let m=1e9;for(const c in ITEMS)ITEMS[c].list.forEach(it=>{if(it.price&&!owned(it)&&c!=='skin')m=Math.min(m,it.price)});return m};
+const minPrice=()=>{let m=1e9;for(const c in ITEMS)ITEMS[c].list.forEach(it=>{if(it.price&&!owned(it)&&c!=='skin')m=Math.min(m,pr(it))});return m};
 /* ---------- Hangar: vitrine de peças em PILOTO e NAVE ----------
    Abas de categoria fixas no topo; cada peça aparece como EM USO, DISPONÍVEL (toque para usar) ou com o preço
    (toque para ver a prévia no palco e liberar com energia). */
-const SIDE={vest:['helmet','visor','suit','skin','emblem','gear','title'],hang:['ship','paint','flame','decal','trail']};
-const SHORT={helmet:'CAPACETE',visor:'VISEIRA',suit:'TRAJE',skin:'PELE',emblem:'EMBLEMA',gear:'EQUIPAM.',title:'TÍTULO',ship:'MODELO',paint:'PINTURA',flame:'PROPULSOR',decal:'ADESIVO',trail:'RASTRO'};
+const SIDE={vest:['helmet','visor','suit','skin','emblem','gear','title','pet'],hang:['ship','paint','flame','decal','trail']};
+const SHORT={helmet:'CAPACETE',visor:'VISEIRA',suit:'TRAJE',skin:'PELE',emblem:'EMBLEMA',gear:'EQUIPAM.',title:'TÍTULO',pet:'PET',ship:'MODELO',paint:'PINTURA',flame:'PROPULSOR',decal:'ADESIVO',trail:'RASTRO'};
 let curCat={vest:'helmet',hang:'ship'},shopSel=null;
 /* selo de energia na aba Hangar: aparece quando já dá para liberar alguma peça */
 function updBadges(){const b=$('#hBadge');if(!b)return;b.hidden=energy().bal<minPrice();b.innerHTML=sprite('en',2)}
@@ -1931,31 +1978,31 @@ function renderCloset(){const side=sub==='hang'?'hang':'vest',cats=SIDE[side],cc
   const x=shopItem();if(x&&!cats.includes(x.c))shopSel=null;
   draft=Object.assign({},L,shopItem()?{[shopItem().c]:shopItem().it.id}:{});
   // abas de categoria
-  $('#cats').innerHTML=cats.map(c=>{const list=ITEMS[c].list,own=list.filter(owned).length,can=list.some(it=>!owned(it)&&bal>=it.price);
+  $('#cats').innerHTML=cats.map(c=>{const list=ITEMS[c].list,own=list.filter(owned).length,can=list.some(it=>!owned(it)&&bal>=pr(it));
     return `<button class="cat${c===cc?' on':''}" data-cat="${c}"><span class="ci">${sprite('ic_'+c,2)}</span><span class="cl">${SHORT[c]}</span><small>${own}/${list.length}</small>${can?'<i class="cdot" title="Dá para liberar"></i>':''}</button>`}).join('');
   // vitrine da categoria
   const list=ITEMS[cc].list,i=cats.indexOf(cc),nx=cats[(i+1)%cats.length];
   $(side==='vest'?'#vGrid':'#hGrid').innerHTML=`<div class="shop-g">`+list.map(it=>{const o=owned(it),eq=L[cc]===it.id,sl=shopSel===it.k;
-      const tag=eq?`<span class="pr eq">${sprite('check',2)}EM USO</span>`:o?`<span class="pr own">DISPONÍVEL</span>`:`<span class="pr${bal<it.price?' no':''}">${sprite('en',2)}${it.price}</span>`;
+      const tag=eq?`<span class="pr eq">${sprite('check',2)}EM USO</span>`:o?`<span class="pr own">DISPONÍVEL</span>`:(pr(it)?`<span class="pr${bal<pr(it)?' no':''}">${sprite('en',2)}${pr(it)}</span>`:`<span class="pr free">GRÁTIS</span>`);
       // peça bloqueada em prévia: o próprio card vira o botão de liberar (toque de novo)
-      const lib=sl&&!o?(bal>=it.price?`<span class="pr lib">LIBERAR ${sprite('en',2)}${it.price}</span>`:`<span class="pr no">FALTAM ${sprite('en',2)}${it.price-bal}</span>`):tag;
+      const lib=sl&&!o?(!pr(it)?`<span class="pr lib">ESCOLHER</span>`:bal>=pr(it)?`<span class="pr lib">LIBERAR ${sprite('en',2)}${pr(it)}</span>`:`<span class="pr no">FALTAM ${sprite('en',2)}${pr(it)-bal}</span>`):tag;
       return `<button class="shop-it px${eq?' eq':o?' own':' lk'}${sl?' sel':''}" data-k="${it.k}">${o?'':`<span class="lkic">${sprite('lock',2)}</span>`}<span class="th">${thumb(cc,it,2)}</span><span class="nm">${cc==='title'?'':it.n.toUpperCase()}</span>${lib}</button>`}).join('')+
     `<button class="shop-it nextc px" data-cat="${nx}"><span class="th">${sprite('ic_'+nx,4)}</span><span class="nm">PRÓXIMO</span><span class="pr">${SHORT[nx]} ${sprite('fwd',2)}</span></button></div>`;
   // palco
   if(side==='vest'){document.querySelectorAll('[data-lk]').forEach(el=>{if(!el.innerHTML)el.innerHTML=sprite('locker',4,{L:'#8a93a3',M:'#646c7c',D:'#454b57',E:'#2b2f38'}).repeat(+el.dataset.lk)});
-    $('#vHero').innerHTML=pilotFull(2,draft);$('#vTag').hidden=!shopSel}
+    $('#vHero').innerHTML=pilotFull(2,draft)+petStage(draft.pet);bindPet();$('#vTag').hidden=!shopSel}
   else{hangScene();$('#hTag').hidden=!shopSel}
   // toques
   document.querySelectorAll('#cats [data-cat],.nextc').forEach(b=>b.onclick=()=>{curCat[side]=b.dataset.cat;shopSel=null;SND.tab(cats.indexOf(b.dataset.cat)%4);renderCloset();
     const on=$('#cats .on');if(on)on.scrollIntoView({inline:'center',block:'nearest'});const g=$('#'+(side==='vest'?'v':'h')+'Grid .shop-g');if(g)g.scrollLeft=0});
   document.querySelectorAll('.shop-it[data-k]').forEach(b=>b.onclick=()=>{const[c,id]=b.dataset.k.split(':'),it=item(c,id);
     if(owned(it)){shopSel=null;if(look()[c]!==id){st.look=Object.assign({},look(),{[c]:id});save();cacheAvatar();$('#logoShip').innerHTML=shipOnly(2);SND.equip(1)}else SND.medal()}
-    else if(shopSel===it.k){if(energy().bal>=it.price){buy({c,it});return}shopSel=null;SND.locked()}
+    else if(shopSel===it.k){if(energy().bal>=pr(it)){buy({c,it});return}shopSel=null;SND.locked()}
     else{shopSel=it.k;SND.medal()}
     const g=b.parentNode,sl=g.scrollLeft;renderCloset();const g2=$('#'+(side==='vest'?'v':'h')+'Grid .shop-g');if(g2)g2.scrollLeft=sl});
   shopBarRender(bal);requestAnimationFrame(()=>{callout(side,cc);const sl=document.querySelector('#'+(side==='vest'?'v':'h')+'Grid .shop-it.sel');if(sl){const g=sl.parentNode,l=sl.offsetLeft-22,r=sl.offsetLeft+sl.offsetWidth-g.clientWidth+22;if(g.scrollLeft>l)g.scrollLeft=l;else if(g.scrollLeft<r)g.scrollLeft=r}})}
-function buy(x){if(energy().bal<x.it.price){SND.locked();return}
-  st.spent=(st.spent||0)+x.it.price;st.own=st.own||[];st.own.push(x.it.k);
+function buy(x){const p=pr(x.it);if(energy().bal<p){SND.locked();return}
+  st.spent=(st.spent||0)+p;st.own=st.own||[];st.own.push(x.it.k);
   st.look=Object.assign({},look(),{[x.c]:x.it.id});save();cacheAvatar();$('#logoShip').innerHTML=shipOnly(2); // liberou: já fica em uso
   const g=$('#'+(sub==='hang'?'h':'v')+'Grid .shop-g'),sl=g?g.scrollLeft:0;shopSel=null;SND.unlock();toast('Liberado!');renderCloset();updBadges();const g2=$('#'+(sub==='hang'?'h':'v')+'Grid .shop-g');if(g2)g2.scrollLeft=sl}
 function shopBarRender(bal){const bar=$('#shopBar');bar.hidden=true;return;const x=shopItem();if(!x||view!=='crew'){bar.hidden=true;return}
@@ -1975,7 +2022,7 @@ const PPT={helmet:[20,10],visor:[26,15],skin:[22,20],suit:[18,42],emblem:[13,29]
 function callout(side,cat){const host=$(side==='vest'?'#vCall':'#hCall');if(!host)return;const stg=host.parentElement,sr=stg.getBoundingClientRect();
   if(!sr.width){host.innerHTML='';return}
   let tx=null,ty=null,mk=12;
-  if(side==='vest'){const el=$('#vHero svg');if(el&&cat!=='title'){const r=el.getBoundingClientRect();let p=PPT[cat];if(cat==='gear')p=p[draft.gear]||p.none;
+  if(side==='vest'){const el=$('#vHero svg'),pe=cat==='pet'&&$('#vHero .vpb');if(pe){const r=pe.getBoundingClientRect();tx=r.left-sr.left+r.width/2;ty=r.top-sr.top+r.height*.3}else if(el&&cat!=='title'&&cat!=='pet'){const r=el.getBoundingClientRect();let p=PPT[cat];if(cat==='gear')p=p[draft.gear]||p.none;
       const R=pilotRows(draft);tx=r.left-sr.left+p[0]/R[0].length*r.width;ty=r.top-sr.top+p[1]/R.length*r.height}}
   else{const sh=$('#hShip .fx'),body=sh&&sh.firstElementChild;if(sh&&body){const r=body.getBoundingClientRect(),parts=sh.children;
       if(cat==='ship'){tx=r.left-sr.left+r.width/2;ty=r.top-sr.top+r.height*.28;mk=16}
@@ -2192,7 +2239,8 @@ const NLV=['I a X','I a XX','I a L','I a C'];
 const IV_PASS=[['ponte','Ponte do Imperador'],['nucleo','Núcleo de Casas Enxaimel'],['museu','Museu Cláudio Oscar Becker'],['memorial','Memorial da Colônia Japonesa'],['feira','Feira das Flores'],['familia','Entrevista com a família']];
 /* jogos com nível ajustável pelos pais */
 const LVCFG={numeris:{w:'Nível',names:NLV,max:'Nível máximo.',reset:' O nível volta para I a X.'},
-  mina:{w:'Galeria',names:['1 alg.','1 alg. +','Até 19','Até 99'],max:'Galeria mais funda.',reset:' A galeria volta para a 1 (divisor de 1 algarismo).'}};
+  mina:{w:'Galeria',names:['1 alg.','1 alg. +','Até 19','Até 99'],max:'Galeria mais funda.',reset:' A galeria volta para a 1 (divisor de 1 algarismo).'},
+  alemao:{w:'Nível',names:['Família perto','Família grande','Frases'],max:'Nível máximo: frases.',reset:''}};
 function pgApp(id){const app=APPS.find(a=>a.id===id),d=appData(app),p=PLANETS.find(x=>x.id===app.planet);
   let h=head(app.name,`${p.name} · ${app.tag}`);
   h+=kpis([[fmtP(d.acc),'Acerto de primeira',d.acc.a?`${d.acc.c} de ${d.acc.a} respostas`:'sem respostas'],
@@ -2200,7 +2248,7 @@ function pgApp(id){const app=APPS.find(a=>a.id===id),d=appData(app),p=PLANETS.fi
     [d.full,'Dias completos','as missões dele no turno do dia'],[d.streak,'Dias seguidos agora','com as missões dele feitas']]);
   const LV=LVCFG[app.id];
   if(LV){const lv=d.s.level||1,ld=Math.min(6,(d.s.lvDays||[]).reduce((s,x)=>s+(String(x).includes(':')?1:3),0)),NL=LV.names;
-    h+=sec(LV.w)+card(`<div class="pa-pad"><span class="pa-rn">${LV.w} ${lv}: ${NL[lv-1]}</span><span class="pa-rs">${lv<4?`Sobe sozinho a cada 6 missões concluídas (uma por missão por dia). Progresso: ${ld} de 6.`:LV.max}</span>`+
+    h+=sec(LV.w)+card(`<div class="pa-pad"><span class="pa-rn">${LV.w} ${lv}: ${NL[lv-1]}</span><span class="pa-rs">${lv<NL.length?`Sobe sozinho a cada 6 missões concluídas (uma por missão por dia). Progresso: ${ld} de 6.`:LV.max}</span>`+
       `<div class="pa-seg">${NL.map((l,i)=>`<button data-lv="${i+1}" class="${(PA.lv||lv)===i+1?'on':''}">${l}</button>`).join('')}</div></div>`+
       (PA.lv&&PA.lv!==lv?`<div class="pa-conf"><p>Trocar para <b>${NL[PA.lv-1]}</b>? As missões em andamento recomeçam.</p><div class="pa-two"><button class="pa-btn" data-lvno>Cancelar</button><button class="pa-btn pri" data-lvyes>Trocar</button></div></div>`:''))}
   if(app.id==='ivoti'){const pas=d.s.pass||{},nc=Object.keys(d.s.caps||{}).length;
