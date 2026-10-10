@@ -240,7 +240,7 @@ html.web{--top:calc(var(--sat,var(--sat,env(safe-area-inset-top))) + 54px)}
 <script>
 /* atualização automática: compara com version.json e recarrega com ?v=<versão> no endereço (o iPhone não reaproveita a
    página guardada). Se mesmo com ?v=<versão> a página veio velha, não insiste (evita recarregar sem parar). */
-const APP_V='20261010113749';
+const APP_V='20261010114737';
 (function(){const H0=location.hash;
   async function check(){try{const r=await fetch('../version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     const q=new URLSearchParams(location.search).get('v');
@@ -614,8 +614,11 @@ function fit(){const st=$('#stage');SC=Math.min(2,st.clientWidth/(MW*T));const w
 /* casa ocupada por alguém (parado ou chegando nela) */
 const busy=(x,y,me)=>(me!==P&&((P.x===x&&P.y===y)||(P.mv&&P.mv.tx===x&&P.mv.ty===y)))||NPC.some(n=>n!==me&&((n.x===x&&n.y===y)||(n.mv&&n.mv.tx===x&&n.mv.ty===y)));
 function canStep(d,who){const[dx,dy]=DV[d],nx=who.x+dx,ny=who.y+dy;return!solid(nx,ny)&&!busy(nx,ny,who)}
-function startStep(who,d,t0){const[dx,dy]=DV[d];if(who===P&&typeof petFollow==='function')petFollow(who.x,who.y,t0);who.dir=d;who.mv={fx:who.x,fy:who.y,tx:who.x+dx,ty:who.y+dy};who.t0=t0;who.step++}
-function tryMove(d,t0){P.dir=d;if(!canStep(d,P)){if(!tryMove.b||performance.now()-tryMove.b>320){SND.bump();tryMove.b=performance.now()}return false}
+function startStep(who,d,t0){const[dx,dy]=DV[d];if(who===P&&typeof petFollow==='function')petFollow(who.x,who.y);who.dir=d;who.mv={fx:who.x,fy:who.y,tx:who.x+dx,ty:who.y+dy};who.t0=t0;who.step++}
+function tryMove(d,t0){
+  if(PET&&held.size&&!PET.seat&&!petMoving()){const[dx,dy]=DV[d];if(PET.x===P.x+dx&&PET.y===P.y+dy){const now=performance.now();
+    if(P.dir!==d||!P.petT){P.dir=d;P.petT=now;return false}if(now-P.petT<380)return false}}
+  P.dir=d;if(!canStep(d,P)){if(!tryMove.b||performance.now()-tryMove.b>320){SND.bump();tryMove.b=performance.now()}return false}
   startStep(P,d,t0);if(P.step%2)SND.step();P.lastAx=(d==='up'||d==='down')?'v':'h';return true}
 /* escolhe a direção com o que está apertado: uma só, ou alternando os eixos na diagonal */
 function heldDir(){const ds=[...held];if(!ds.length)return null;
@@ -631,7 +634,7 @@ function playerArrived(tEnd){A.pos=[P.x,P.y,P.dir];saveA();
   if(P.path.length){if(canStep(P.path[0],P))tryMove(P.path.shift(),tEnd);else P.wait=performance.now()}
   else if(P.goal){const g=P.goal;P.goal=null;P.dir=g.face;interact()}}
 P.onMat=isMat(P.x,P.y);
-function facing(){const[dx,dy]=DV[P.dir],x=P.x+dx,y=P.y+dy;return objAt(x,y)||NPC.find(n=>n.x===x&&n.y===y&&!n.mv)||(PET&&!PET.mv&&!PET.seat&&PET.x===x&&PET.y===y?PET:null)}
+function facing(){const[dx,dy]=DV[P.dir],x=P.x+dx,y=P.y+dy;return objAt(x,y)||NPC.find(n=>n.x===x&&n.y===y&&!n.mv)||(PET&&!petMoving()&&!PET.seat&&PET.x===x&&PET.y===y?PET:null)}
 function bfs(who,tx,ty,avoid){const key=(x,y)=>y*MW+x,prev=new Map([[key(who.x,who.y),null]]),q=[[who.x,who.y]];
   while(q.length){const[x,y]=q.shift();if(x===tx&&y===ty)break;for(const d of['up','down','left','right']){const[dx,dy]=DV[d],nx=x+dx,ny=y+dy,k=key(nx,ny);
     if(solid(nx,ny)||prev.has(k)||(avoid&&busy(nx,ny,who)))continue;prev.set(k,[x,y,d]);q.push([nx,ny])}}
@@ -748,17 +751,23 @@ const PET=(()=>{const p=AV.pet;if(!p||!p.f0)return null;
   const mk=(rows,flip)=>grid(flip?rows.map(r=>[...r].reverse().join('')):rows,p.pal);
   return{isPet:true,id:'pet_'+p.id,sp:p.id,NOME:p.name,nome:p.name.charAt(0)+p.name.slice(1).toLowerCase(),say:p.say,trick:p.trick,sfx:p.sfx||[],
     img:{right:[mk(p.f0),mk(p.f1)],left:[mk(p.f0,1),mk(p.f1,1)]},x:6,y:MH-2,px:6*T,py:(MH-2)*T,mv:null,t0:0,face:'left',hop:-9999,spin:-9999,seat:null}})();
-const PSTEP=STEP*1.15;
+/* o pet anda pela trilha das casas que o piloto deixou, na mesma velocidade dele e em movimento contínuo (sem saltos):
+   cada passo do piloto acrescenta a casa de onde ele saiu; se o pet ficar para trás, apressa o passo */
+const PSPD=T/STEP;
+const petMoving=()=>PET&&performance.now()-(PET.moveT||0)<120;
+function petFollow(fx,fy){if(!PET||PET.seat)return;const tr=PET.trail||(PET.trail=[]),l=tr[tr.length-1];if(l&&l[0]===fx&&l[1]===fy)return;
+  tr.push([fx,fy]);if(tr.length>4)tr.splice(0,tr.length-4)}
 function petSound(){if(PET)PET.sfx.forEach(s=>s[0]==='noise'?SY.noise(s[1],s[2],s[3]):SY.note(s[1],s[2],s[3],s[4]))}
-/* o pet vai para a casa que o piloto acabou de deixar */
-function petFollow(fx,fy,t0){if(!PET||PET.seat)return;if(PET.x===fx&&PET.y===fy)return;
-  if(Math.abs(PET.x-fx)+Math.abs(PET.y-fy)===1){PET.mv={fx:PET.x,fy:PET.y,tx:fx,ty:fy};PET.t0=t0;if(fx!==PET.x)PET.face=fx>PET.x?'right':'left'}
-  else{PET.x=fx;PET.y=fy;PET.mv=null}}
-function petTick(t){if(!PET)return;if(PET.mv){const k=Math.min(1,(t-PET.t0)/PSTEP);PET.px=(PET.mv.fx+(PET.mv.tx-PET.mv.fx)*k)*T;PET.py=(PET.mv.fy+(PET.mv.ty-PET.mv.fy)*k)*T;
-    if(k>=1){PET.x=PET.mv.tx;PET.y=PET.mv.ty;PET.mv=null}}else{PET.px=PET.x*T;PET.py=PET.y*T}}
+function petTick(t){if(!PET)return;const dt=Math.min(50,t-(PET.lt||t));PET.lt=t;if(PET.seat)return;const tr=PET.trail||(PET.trail=[]);
+  let left=PSPD*(tr.length>1?1.5:1)*dt;
+  while(tr.length&&left>0){const[tx,ty]=tr[0],X=tx*T,Y=ty*T,dx=X-PET.px,dy=Y-PET.py,d=Math.hypot(dx,dy);
+    if(Math.abs(dx)>.3)PET.face=dx>0?'right':'left';
+    if(d<=left){PET.px=X;PET.py=Y;PET.x=tx;PET.y=ty;tr.shift();left-=d;PET.dist=(PET.dist||0)+d}
+    else{PET.px+=dx/d*left;PET.py+=dy/d*left;PET.dist=(PET.dist||0)+left;left=0}
+    PET.moveT=t}}
 function drawPet(x,t){const p=PET,s=p.seat;let X=(s?s.x:p.px/T)*T,Y=(s?s.y:p.py/T)*T,face=p.face;
   if(t-p.spin<900)face=Math.floor((t-p.spin)/110)%2?'left':'right';
-  const moving=!!p.mv,f=moving?Math.floor(Math.max(0,t-p.t0)/(PSTEP/2))%2:(Math.floor(t/1800)%5===0&&(t%1800)>1200?1:0);
+  const moving=petMoving(),f=moving?Math.floor((p.dist||0)/7)%2:(Math.floor(t/1800)%5===0&&(t%1800)>1200?1:0);
   let dy=0;const h=t-p.hop;if(h<520)dy=-Math.round(Math.sin(h/520*Math.PI)*6);
   if(s)dy-=4; // no assento
   x.drawImage(p.img[face][f],Math.round(X-cam.x),Math.round(Y+T-12+dy-cam.y))}
@@ -799,7 +808,7 @@ function drawAct(x,t){const a=P.act;if(!a)return false;const e=t-a.t0,X=Math.rou
 function drawCan(x){if(!P.can||P.dir==='up')return;const X=Math.round(P.px+2-cam.x)+(P.dir==='left'?0:9),Y=Math.round(P.py+T-22-cam.y)+11;x.fillStyle='#07060f';x.fillRect(X,Y,3,4);x.fillStyle=P.can;x.fillRect(X+1,Y+1,1,2)}
 /* assento livre do sofá/banco: a casa da frente do objeto onde o piloto está */
 function sitOn(o){const sx=Math.min(o.x+o.w-1,Math.max(o.x,P.x));act('sit',{seat:{x:sx,y:o.y},cancel:true});SND.bump();
-  if(PET){const other=sx===o.x?o.x+o.w-1:o.x;if(other!==sx){PET.seat={x:other,y:o.y};PET.face=other>sx?'left':'right';PET.mv=null}}}
+  if(PET){const other=sx===o.x?o.x+o.w-1:o.x;if(other!==sx){PET.seat={x:other,y:o.y};PET.face=other>sx?'left':'right';PET.trail=[]}}}
 function petMenu(){const p=PET,L={cachorro:'abana o rabo',gato:'se espreguiça devagar',alien:'brilha de alegria',robocao:'pisca as luzes'}[p.sp]||'olha para você';
   p.face=OPPD[P.dir]==='left'?'left':OPPD[P.dir]==='right'?'right':p.face;
   dlg(`<h4>${p.NOME}</h4><p>${p.nome} ${L}. O que vocês vão fazer?</p>`,[{t:'CARINHO',f:()=>petDo('carinho')},{t:'PETISCO',f:()=>petDo('petisco')},{t:'BRINCAR',f:()=>petDo('brincar')},{t:'TCHAU',alt:true}],p)}
@@ -823,6 +832,7 @@ function makePhoto(){const W=44,H=140,c=cnv(W,H),x=c.getContext('2d');x.fillStyl
 function drawRoom(t){const c=$('#rc'),x=c.getContext('2d');x.imageSmoothingEnabled=false;const dt=Math.min(.1,(t-(lastT||t))/1000);lastT=t;
   // jogador
   if(P.mv){const k=Math.min(1,(t-P.t0)/STEP);P.px=(P.mv.fx+(P.mv.tx-P.mv.fx)*k)*T;P.py=(P.mv.fy+(P.mv.ty-P.mv.fy)*k)*T;if(k>=1){const te=arrive(P);P.px=P.x*T;P.py=P.y*T;playerArrived(te)}}
+  if(!heldDir())P.petT=0;
   actTick(t);if(P.act){if(!dlgOpen&&heldDir()&&P.act.cancel)endAct()}
   else if(!P.mv&&!dlgOpen){const hd=heldDir();if(hd){P.path=[];P.goal=null;tryMove(hd,t)}
     else if(P.path.length&&canStep(P.path[0],P))tryMove(P.path.shift(),t);
