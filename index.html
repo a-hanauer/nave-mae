@@ -974,7 +974,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 <script>
 /* atualização automática: compara com version.json e recarrega com ?v=<versão> no endereço (o iPhone não reaproveita a
    página guardada). Se mesmo com ?v=<versão> a página veio velha, não insiste (evita recarregar sem parar). */
-const APP_V='20261010114737';
+const APP_V='20261016123936';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris|mina|ivoti|biblio|alemao)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     const q=new URLSearchParams(location.search).get('v');
@@ -2276,7 +2276,7 @@ function pgApp(id){const app=APPS.find(a=>a.id===id),d=appData(app),p=PLANETS.fi
   if(app.id==='ivoti'){const pas=d.s.pass||{},nc=Object.keys(d.s.caps||{}).length;
     h+=sec('Passaporte de Ivoti')+card(IV_PASS.map(([id,n])=>`<div class="pa-row off"><span class="pa-rm"><span class="pa-rn">${n}</span><span class="pa-rs">${pas[id]?`Visitado: ${fmtDay(pas[id])}`:'Ainda não visitado'}</span></span><span class="pa-rr" style="width:auto"><button class="pa-btn${pas[id]?'':' pri'}" style="padding:0 14px;height:36px" data-pass="${id}">${pas[id]?'Desfazer':'Confirmar visita'}</button></span></div>`).join(''))+
       note('Confirme quando a criança visitar o lugar (ou fizer a entrevista). O carimbo aparece no jogo e vale +15 de energia.');
-    h+=sec('Capítulos')+card(`<div class="pa-pad"><span class="pa-rn">${nc} de 12 capítulos lidos</span><span class="pa-rs">Um capítulo novo por dia. As perguntas voltam no Arquivo da memória em 1, 3, 7, 14 e 30 dias.</span></div>`)}
+    h+=sec('Capítulos')+card(`<div class="pa-pad"><span class="pa-rn">${nc} de 17 capítulos lidos</span><span class="pa-rs">Um capítulo novo por dia. As perguntas voltam no Arquivo da memória em 1, 3, 7, 14 e 30 dias.</span></div>`)}
   h+=sec('Missões')+card(app.tasks.map(t=>missionRow(d,t)).join(''));
   const desT=app.tasks.find(t=>t.opt);
   h+=sec('Últimos 14 dias')+card(chart(last14().map(k=>{const r=reqOf(app,k),tot=r.length||d.main.length,n=r.filter(m=>(d.days[k]||[]).includes(m)).length,c=d.chalOn(k);
