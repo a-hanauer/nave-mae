@@ -545,7 +545,7 @@ document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 <script>
 /* atualização automática: compara com version.json e recarrega com ?v=<versão> no endereço (o iPhone não reaproveita a
    página guardada). Se mesmo com ?v=<versão> a página veio velha, não insiste (evita recarregar sem parar). */
-const APP_V='20261010114737';
+const APP_V='20261016123936';
 (function(){const H0=location.hash,base=location.pathname.replace(/[^/]*$/,''),root=base.replace(/(nostro-9|numeris|mina|ivoti)\/$/,'');
   async function check(){try{const r=await fetch(root+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();
     const q=new URLSearchParams(location.search).get('v');
@@ -595,24 +595,29 @@ function newAC(){navAudioMode();return new (window.AudioContext||window.webkitAu
 </script>
 <script>
 /* =================== conteúdo: a história de Ivoti ===================
-   Fontes: Prefeitura de Ivoti (Ponte do Imperador, Núcleo de Casas Enxaimel, Museu Cláudio Oscar Becker,
-   Memorial da Colônia Japonesa), Wikipédia (Ivoti, Colônia Ivoti) e Cidades do Meu Brasil.
+   Fonte principal: o texto da escola "História do Município de Ivoti" (Instituto Ivoti, por Ricardo Cury, 6/1/2016),
+   que é o que o Sebastião estuda; quando outra fonte discorda, vale o texto da escola. Complementos: Prefeitura de Ivoti
+   (Ponte do Imperador, Núcleo de Casas Enxaimel, Museu Cláudio Oscar Becker, Memorial da Colônia Japonesa) e Wikipédia.
    Cada capítulo: páginas (cena + texto), palavra nova, acontecimentos da linha do tempo e perguntas
    (a primeira alternativa é a certa; o jogo embaralha). Texto curto, para leitura de criança de 9 anos. */
 const EVENTS={
-  povos:{y:-12000,lb:'HÁ 12 MIL ANOS',t:'Os primeiros povos vivem na região',ic:'arrow'},
+  povos:{y:-10500,lb:'HÁ 10.500 ANOS',t:'Os primeiros povos vivem na região (Tradição Umbu)',ic:'arrow'},
+  tropa:{y:1750,lb:'SÉCULO XVIII',t:'Tropeiros passam pela região levando gado',ic:'cow'},
   colono:{y:1824,lb:'1824',t:'Primeiros imigrantes alemães chegam a São Leopoldo',ic:'ship'},
-  picada:{y:1826,lb:'1826',t:'Famílias alemãs começam a morar à beira do Arroio Feitoria',ic:'person'},
+  picada:{y:1826,lb:'1826',t:'Famílias do Hunsrück recebem 48 lotes no Arroio Feitoria',ic:'person'},
   evang:{y:1846,lb:'1846',t:'Começa a comunidade evangélica',ic:'church'},
   catol:{y:1857,lb:'1857',t:'Pedra fundamental da igreja católica',ic:'church'},
+  troca:{y:1860,lb:'1857–1866',t:'Colonos trocam milho, feijão e aipim por tecidos e louças',ic:'sack'},
   ponte:{y:1864,lb:'1864',t:'Fica pronta a Ponte do Imperador',ic:'stampBridge'},
-  bomj:{y:1867,lb:'1867',t:'O lugar passa a se chamar Bom Jardim',ic:'scroll'},
+  enchente:{y:1866,lb:'1857–1866',t:'Fugindo das enchentes, moradores sobem e nasce o Centro',ic:'arrow'},
+  bomj:{y:1867,lb:'1867',t:'O lugar é conhecido como Bom Jardim',ic:'scroll'},
   ivoti:{y:1938,lb:'1938',t:'O nome muda para Ivoti, que quer dizer flor',ic:'flowerP'},
   cidade:{y:1964,lb:'1964',t:'Ivoti vira município',ic:'urna'},
   posse:{y:1965,lb:'1965',t:'Toma posse o primeiro prefeito de Ivoti',ic:'scroll'},
-  japao:{y:1966,lb:'1966',t:'Chegam as primeiras famílias japonesas',ic:'stampSakura'},
+  japao:{y:1966,lb:'1966',t:'26 famílias japonesas formam a Colônia Japonesa',ic:'stampSakura'},
+  fabricas:{y:1975,lb:'ANOS 70',t:'Fábricas de calçados crescem e chegam novos moradores',ic:'shoe'},
   iphan:{y:1986,lb:'1986',t:'A Ponte do Imperador vira patrimônio do Brasil',ic:'stampBridge'},
-  dist92:{y:1992,lb:'1992',t:'Lindolfo Collor e Presidente Lucena viram municípios',ic:'scroll'},
+  dist92:{y:1992,lb:'1992',t:'Presidente Lucena e Lindolfo Collor viram municípios',ic:'scroll'},
   museu:{y:1995,lb:'1995',t:'Abre o Museu Cláudio Oscar Becker',ic:'stampMuseum'},
   memor:{y:2011,lb:'2011',t:'Abre o Memorial da Colônia Japonesa',ic:'stampSakura'},
   hoje:{y:2026,lb:'HOJE',t:'Você estuda a história de Ivoti',ic:'hourglass'},
@@ -622,130 +627,191 @@ const CAPS=[
   pg:[{sc:'space',tx:'Piloto, a Nave-Mãe chegou ao planeta Terra! Lá embaixo fica o Brasil. No sul do Brasil fica o estado do Rio Grande do Sul.'},
       {sc:'cidade',tx:'No Rio Grande do Sul existe uma cidade chamada Ivoti. Ela é conhecida como a Cidade das Flores.'},
       {sc:'maquina',tx:'A Nave-Mãe tem uma Máquina do Tempo. A cada dia, ela leva você a uma época da história de Ivoti.'},
-      {sc:'linha',tx:'Primeiro viveram aqui os povos indígenas, há milhares de anos. Depois chegaram imigrantes alemães. Em 1964, Ivoti virou cidade. E hoje você está aqui!'}],
+      {sc:'linha',tx:'Primeiro viveram aqui os habitantes nativos, há milhares de anos. Depois passaram os tropeiros e chegaram imigrantes alemães. Em 1964, Ivoti virou cidade. E hoje você está aqui!'}],
   w:['LINHA DO TEMPO','Os acontecimentos em ordem, do mais antigo para o mais novo.'],
   ev:['povos','picada','cidade','hoje'],
   q:[{k:'Estado de Ivoti',q:'Em que estado fica Ivoti?',a:['Rio Grande do Sul','Santa Catarina','Bahia'],x:'Ivoti fica no Rio Grande do Sul, no sul do Brasil.'},
      {k:'Apelido de Ivoti',q:'Qual é o apelido de Ivoti?',a:['Cidade das Flores','Cidade das Pedras','Cidade do Mar'],x:'Ivoti é a Cidade das Flores.'},
-     {k:'O que veio primeiro',q:'O que veio primeiro na história de Ivoti?',a:['Os povos indígenas','Os imigrantes alemães','A cidade de Ivoti'],x:'Os povos indígenas viveram aqui milhares de anos antes de todos.'}]},
- {id:'povos',ano:'HÁ 12 MIL ANOS',t:'Os primeiros moradores',ic:'arrow',
-  pg:[{sc:'mata',tx:'Muito antes de existir cidade, já viviam pessoas nesta região. Elas chegaram há uns 12 mil anos!'},
-      {sc:'mata2',tx:'Esses povos caçavam, pescavam e coletavam frutos na mata. Eles faziam pontas de flecha de pedra.'},
-      {sc:'escava',tx:'Como sabemos disso? Arqueólogos acham pontas de flecha enterradas no chão. Os cientistas chamam esses povos de Tradição Umbu.'},
-      {sc:'mata3',tx:'Mais tarde, povos indígenas como os Guarani e os Kaingang viveram no Rio Grande do Sul. Até o nome Ivoti vem de uma língua indígena!'}],
+     {k:'O que veio primeiro',q:'O que veio primeiro na história de Ivoti?',a:['Os habitantes nativos (indígenas)','Os imigrantes alemães','A cidade de Ivoti'],x:'Os habitantes nativos viveram aqui milhares de anos antes de todos.'}]},
+ {id:'povos',ano:'HÁ 10.500 ANOS',t:'Os primeiros moradores',ic:'arrow',
+  pg:[{sc:'mata',tx:'Por milhares de anos, as terras onde hoje fica o município de Ivoti pertenceram aos habitantes nativos: os povos indígenas.'},
+      {sc:'mata2',tx:'A presença indígena mais antiga no lugar é de 10.500 anos atrás! Esses povos caçavam, pescavam e faziam pontas de flecha de pedra.'},
+      {sc:'escava',tx:'Como sabemos disso? Arqueólogos acham objetos antigos enterrados no chão. Eles chamam esses povos de Tradição Umbu.'},
+      {sc:'mata3',tx:'Mais tarde, povos como os Guarani e os Kaingang viveram no Rio Grande do Sul. Até o nome Ivoti vem de uma língua indígena!'}],
   w:['ARQUEÓLOGO','Cientista que estuda objetos antigos para descobrir como as pessoas viviam.'],
   ev:['povos'],
-  q:[{k:'Primeiros moradores: quando',q:'Há quanto tempo chegaram os primeiros moradores da região?',a:['Uns 12 mil anos','Uns 100 anos','Uns 10 anos'],x:'Eles chegaram há uns 12 mil anos.'},
-     {k:'Pontas de flecha',q:'O que esses povos faziam de pedra?',a:['Pontas de flecha','Pontes','Casas'],x:'Eles faziam pontas de flecha de pedra.'},
+  q:[{k:'Primeiros moradores: quando',q:'De quando é a presença indígena mais antiga em Ivoti?',a:['De 10.500 anos atrás','De 100 anos atrás','De 10 anos atrás'],x:'Ela remete a 10.500 anos atrás.'},
+     {k:'Tradição Umbu',q:'Como os arqueólogos chamam esses primeiros povos?',a:['Tradição Umbu','Tradição Colona','Povo do Mar'],x:'Os arqueólogos chamam de Tradição Umbu.'},
+     {k:'Habitantes nativos',q:'A quem pertenciam as terras de Ivoti por milhares de anos?',a:['Aos habitantes nativos (indígenas)','Aos imigrantes japoneses','Ao imperador'],x:'Aos habitantes nativos, os povos indígenas.'},
      {k:'Arqueólogo',q:'Quem estuda objetos antigos enterrados no chão?',a:['O arqueólogo','O astronauta','O dentista'],x:'O arqueólogo estuda objetos antigos.'},
      {k:'Língua do nome Ivoti',q:'O nome Ivoti vem de que língua?',a:['Tupi-guarani, uma língua indígena','Alemão','Japonês'],x:'Ivoti vem do tupi-guarani.'}]},
+ {id:'tropa',ano:'SÉCULO XVIII',t:'Bandeirantes e tropeiros',ic:'cow',
+  pg:[{sc:'trilha',tx:'Muito tempo depois, os bandeirantes paulistas abriram estradas embrenhadas na mata, isto é, escondidas no meio da mata fechada.'},
+      {sc:'tropa',tx:'No século XVIII (os anos 1700), a região passou a ser percorrida por tropeiros. Eles viajavam levando tropas de gado e de mulas.'},
+      {sc:'tropa2',tx:'Assim, este lugar passou a fazer parte da rota do gado nos estados do sul do Brasil.'}],
+  w:['TROPEIRO','Quem viajava conduzindo tropas de gado e mulas, levando e trazendo mercadorias.'],
+  ev:['tropa'],
+  q:[{k:'Bandeirantes',q:'Quem abriu estradas no meio da mata da região?',a:['Os bandeirantes paulistas','Os imigrantes japoneses','Os astronautas'],x:'Os bandeirantes paulistas abriram estradas embrenhadas na mata.'},
+     {k:'Embrenhada',q:'O que quer dizer uma estrada "embrenhada" na mata?',a:['Escondida no meio da mata fechada','Feita de asfalto','Construída no mar'],x:'Embrenhada é escondida no meio da mata fechada.'},
+     {k:'Século XVIII',q:'Em que século os tropeiros passaram a percorrer a região?',a:['No século XVIII (anos 1700)','No século XXI','Há 10.500 anos'],x:'No século XVIII, os anos 1700.'},
+     {k:'Rota do gado',q:'A região passou a fazer parte de qual rota?',a:['A rota do gado','A rota do ouro','A rota dos navios'],x:'A rota do gado nos estados do sul.'}]},
  {id:'viagem',ano:'1824',t:'A grande viagem',ic:'ship',
   pg:[{sc:'mar',tx:'Em 1824, o Brasil tinha um imperador: Dom Pedro I. O governo convidou famílias da Alemanha para morar e plantar no sul do Brasil.'},
       {sc:'mar2',tx:'Muitas famílias vinham de uma região alemã chamada Hunsrück. Elas cruzaram o Oceano Atlântico de navio. A viagem durava meses!'},
       {sc:'porto',tx:'No dia 25 de julho de 1824, os primeiros imigrantes alemães chegaram a São Leopoldo, pertinho de onde hoje é Ivoti. Por isso, 25 de julho é o Dia do Colono.'}],
   w:['IMIGRANTE','Pessoa que sai do seu país para morar em outro.'],
   ev:['colono'],
-  q:[{k:'País dos imigrantes',q:'De qual país vieram esses imigrantes?',a:['Alemanha','Japão','Portugal'],x:'Eles vieram da Alemanha, de uma região chamada Hunsrück.'},
+  q:[{k:'País dos imigrantes',q:'De qual país vieram esses imigrantes?',a:['Alemanha','Japão','Portugal'],x:'Eles vieram da Alemanha, a maioria da região do Hunsrück.'},
      {k:'Como cruzaram o oceano',q:'Como eles cruzaram o oceano?',a:['De navio','De avião','De trem'],x:'De navio, numa viagem de meses.'},
      {k:'Dia do Colono',q:'Em que dia de 1824 chegaram os primeiros a São Leopoldo?',a:['25 de julho','25 de dezembro','1º de janeiro'],x:'25 de julho, o Dia do Colono.'},
      {k:'Imigrante',q:'O que é um imigrante?',a:['Quem muda de país para morar','Quem nunca sai de casa','Quem constrói navios'],x:'Imigrante é quem sai do seu país para morar em outro.'}]},
- {id:'picada',ano:'1826',t:'A Picada dos Berghahn',ic:'person',
-  pg:[{sc:'lotes',tx:'Por volta de 1826, famílias de imigrantes chegaram aqui. A terra foi dividida em 48 lotes ao longo do Arroio Feitoria.'},
-      {sc:'picada',tx:'Tudo era mata fechada. Para chegar aos lotes, eles abriam caminhos no meio da mata, chamados picadas.'},
-      {sc:'placa_bh',tx:'Uma das primeiras famílias era a família Berghahn. Por isso, o lugar ganhou o nome de Berghahnerschneiss: a Picada dos Berghahn.'},
-      {sc:'roca',tx:'As famílias derrubavam árvores, construíam casas e plantavam para comer e para vender.'}],
+ {id:'picada',ano:'1826',t:'Os primeiros colonos',ic:'person',
+  pg:[{sc:'lotes',tx:'Por volta de 1826, Ivoti recebeu várias famílias de origem germânica (alemã). A maioria vinha da região do Hunsrück.'},
+      {sc:'picada',tx:'Elas se instalaram em 48 lotes de terra ao longo do Arroio Feitoria e nas Colônias de Bom Jardim. Para chegar, abriam picadas: caminhos no meio da mata.'},
+      {sc:'choupana',tx:'Primeiro, as famílias ergueram choupanas de palha: casinhas simples, com telhado de palha.'},
+      {sc:'placa_bh',tx:'Uma das primeiras famílias era a família Berghahn. Por isso, o lugar ganhou o nome de Berghahnerschneiss: a Picada dos Berghahn.'}],
   w:['ARROIO','Um rio pequeno. Os lotes ficavam ao longo do Arroio Feitoria.'],
   ev:['picada'],
-  q:[{k:'Arroio Feitoria',q:'Os lotes ficavam ao longo de qual arroio?',a:['Arroio Feitoria','Arroio Dourado','Rio Amazonas'],x:'Os lotes ficavam ao longo do Arroio Feitoria.'},
-     {k:'Picada',q:'O que é uma picada?',a:['Um caminho aberto na mata','Uma comida alemã','Um tipo de barco'],x:'Picada é um caminho aberto no meio da mata.'},
-     {k:'Primeiro nome',q:'Qual foi o primeiro nome do lugar?',a:['Picada dos Berghahn','Ivoti','Bom Jardim'],x:'Berghahnerschneiss, a Picada dos Berghahn.'},
-     {k:'48 lotes',q:'Em quantos lotes a terra foi dividida?',a:['48','4','1.000'],x:'Em 48 lotes.'}]},
+  q:[{k:'48 lotes',q:'Em quantos lotes de terra as famílias se instalaram?',a:['48','4','1.000'],x:'Em 48 lotes ao longo do Arroio Feitoria.'},
+     {k:'Arroio Feitoria',q:'Os lotes ficavam ao longo de qual arroio?',a:['Arroio Feitoria','Arroio Dourado','Rio Amazonas'],x:'Ao longo do Arroio Feitoria.'},
+     {k:'Região do Hunsrück',q:'De que região da Alemanha vinha a maioria das famílias?',a:['Do Hunsrück','De Berlim','De Tóquio'],x:'Da região do Hunsrück.'},
+     {k:'Choupanas de palha',q:'Como eram as primeiras casas das famílias?',a:['Choupanas de palha','Prédios de vidro','Casas de pedra grés'],x:'Primeiro ergueram choupanas de palha.'},
+     {k:'Picada',q:'O que é uma picada?',a:['Um caminho aberto na mata','Uma comida alemã','Um tipo de barco'],x:'Picada é um caminho aberto no meio da mata.'}]},
  {id:'enxaimel',ano:'1826–1950',t:'Casas de enxaimel',ic:'stampHouse',
-  pg:[{sc:'nucleo',tx:'Os imigrantes construíam casas com uma técnica europeia chamada enxaimel.'},
-      {sc:'enx_esq',tx:'Primeiro montavam a estrutura de madeira, com peças em pé, deitadas e na diagonal. As peças eram presas com encaixes e pregos de pau.'},
-      {sc:'enx_cheia',tx:'Depois preenchiam os espaços com barro ou com tijolos. A madeira fica aparecendo por fora, formando desenhos.'},
-      {sc:'nucleo2',tx:'No bairro Feitoria Nova fica um dos maiores conjuntos de casas enxaimel do Brasil, feitas entre 1826 e 1950. Numa delas funciona o Museu Cláudio Oscar Becker.'}],
-  w:['ENXAIMEL','Casa com esqueleto de madeira aparente, preenchido com barro ou tijolos.'],
+  pg:[{sc:'nucleo',tx:'Mais tarde, no lugar das choupanas, os imigrantes construíram casas enxaimel. Elas eram totalmente diferentes da arquitetura gaúcha: eram casas medievais, como as da Europa.'},
+      {sc:'enx_esq',tx:'A casa era montada com encaixes de madeira: peças em pé, deitadas e na diagonal, presas com pregos de pau.'},
+      {sc:'enx_cheia',tx:'Os espaços entre as madeiras eram preenchidos com pedras e barro, e as paredes eram revestidas de cal, que deixa tudo branquinho.'},
+      {sc:'cozinha',tx:'Ao lado da casa havia um prédio menor só para a cozinha, com a chapa de fogão. Em alemão do Hunsrück, ela se chama kochplatt!'},
+      {sc:'nucleo2',tx:'No bairro Feitoria Nova fica o Núcleo de Casas Enxaimel, um dos maiores do Brasil. Numa das casas funciona o Museu Cláudio Oscar Becker.'}],
+  w:['ENXAIMEL','Casa com esqueleto de madeira aparente, preenchido com pedras e barro.'],
   ev:['museu'],
-  q:[{k:'Pregos de pau',q:'Como eram presas as madeiras da casa enxaimel?',a:['Com encaixes e pregos de pau','Com parafusos de ferro','Com fita adesiva'],x:'Com encaixes e pregos de pau.'},
-     {k:'Preenchimento',q:'Com o que se preenchiam os espaços entre as madeiras?',a:['Barro ou tijolos','Vidro','Papelão'],x:'Com barro ou com tijolos.'},
-     {k:'Bairro do Núcleo',q:'Em que bairro de Ivoti fica o Núcleo de Casas Enxaimel?',a:['Feitoria Nova','Copacabana','Centro de Porto Alegre'],x:'No bairro Feitoria Nova.'},
+  q:[{k:'Enxaimel e arquitetura gaúcha',q:'Como eram as casas enxaimel perto das outras casas gaúchas?',a:['Totalmente diferentes: eram casas medievais','Iguais a todas as outras','Feitas de vidro'],x:'Elas destoavam totalmente da arquitetura gaúcha: eram casas medievais.'},
+     {k:'Preenchimento',q:'Com o que se preenchiam os espaços entre as madeiras?',a:['Pedras e barro','Vidro','Papelão'],x:'Com pedras e barro.'},
+     {k:'Cal',q:'Com o que as paredes eram revestidas?',a:['Com uma camada de cal','Com papel de parede','Com azulejos'],x:'Com uma camada de cal.'},
+     {k:'Kochplatt',q:'O que é a kochplatt?',a:['A chapa de fogão para cozinhar','Uma ponte de pedra','Uma dança alemã'],x:'Kochplatt é a chapa de fogão, que ficava no prédio da cozinha.'},
+     {k:'Pregos de pau',q:'Como eram presas as madeiras da casa enxaimel?',a:['Com encaixes e pregos de pau','Com parafusos de ferro','Com fita adesiva'],x:'Com encaixes e pregos de pau.'},
      {k:'Museu na casa',q:'O que funciona numa casa enxaimel do Núcleo?',a:['Um museu','Um aeroporto','Um shopping'],x:'O Museu Cláudio Oscar Becker.'}]},
+ {id:'diabo',ano:'1826–1856',t:'O Buraco do Diabo',ic:'tamandua',
+  pg:[{sc:'mata3',tx:'Nos primeiros anos, tudo era novo e estranho para os imigrantes. Era difícil se adaptar à vida nas matas subtropicais, quentes e úmidas.'},
+      {sc:'tamandua',tx:'Eles nunca tinham visto muitos dos animais daqui. Até um tamanduá foi confundido com o diabo!'},
+      {sc:'buraco',tx:'Por isso, até hoje, um dos lugares mais encantadores da cidade se chama Buraco do Diabo.'},
+      {sc:'nucleo',tx:'Lá fica o Núcleo de Casas Enxaimel restaurado. Ele é um ponto de referência e faz parte da identidade de quem é de Ivoti.'}],
+  w:['ESTRANHAMENTO','A sensação de que tudo é diferente e esquisito, num lugar novo.'],
+  ev:['picada'],
+  q:[{k:'Tamanduá e o diabo',q:'Que animal os imigrantes confundiram com o diabo?',a:['O tamanduá','A vaca','O cachorro'],x:'Até tamanduá foi confundido com o "diabo"!'},
+     {k:'Buraco do Diabo',q:'Como se chama até hoje um dos lugares mais encantadores de Ivoti?',a:['Buraco do Diabo','Vale do Anjo','Toca do Tatu'],x:'Buraco do Diabo.'},
+     {k:'O que há no Buraco do Diabo',q:'O que fica no Buraco do Diabo?',a:['O Núcleo de Casas Enxaimel','O aeroporto','A praia'],x:'O Núcleo de Casas Enxaimel restaurado.'},
+     {k:'Estranhamento',q:'Por que os imigrantes estranharam tanto o lugar?',a:['Tudo era novo: a mata e os animais','Porque fazia muito frio como no polo','Porque não tinha água'],x:'Era difícil se adaptar à vida nas matas subtropicais.'}]},
  {id:'fe',ano:'1846',t:'Igrejas e língua',ic:'church',
   pg:[{sc:'igreja',tx:'As famílias também se reuniam para rezar. A comunidade evangélica começou em 1846.'},
       {sc:'pedra',tx:'A pedra fundamental da igreja católica foi colocada em 1857. A da igreja evangélica, em 1868.'},
-      {sc:'conversa',tx:'Em casa, os imigrantes falavam um dialeto alemão do Hunsrück. Até hoje muitos moradores mais velhos de Ivoti falam esse dialeto!'}],
+      {sc:'conversa',tx:'Em casa, os imigrantes falavam um dialeto alemão do Hunsrück. Até hoje muitos moradores de Ivoti conservam esse dialeto!'}],
   w:['PEDRA FUNDAMENTAL','A primeira pedra de uma construção, colocada numa cerimônia.'],
   ev:['evang','catol'],
   q:[{k:'Dialeto',q:'Que língua os imigrantes falavam em casa?',a:['Um dialeto alemão','Japonês','Inglês'],x:'Um dialeto alemão do Hunsrück, falado até hoje.'},
      {k:'Pedra fundamental',q:'O que é a pedra fundamental?',a:['A primeira pedra de uma construção','A pedra mais pesada do rio','Uma pedra preciosa'],x:'É a primeira pedra de uma construção.'},
      {k:'Comunidade de 1846',q:'Qual comunidade começou em 1846?',a:['A evangélica','A japonesa','A dos tropeiros'],x:'A comunidade evangélica começou em 1846.'}]},
+ {id:'trocas',ano:'1857–1866',t:'Lugar de trocas',ic:'sack',
+  pg:[{sc:'vila',tx:'Aos poucos, a colônia foi crescendo. No cruzamento das picadas com a estrada surgiu um entreposto: um lugar de trocas e comércio.'},
+      {sc:'venda',tx:'Ali os agricultores trocavam sacos de milho, feijão e aipim por coisas que não tinham em casa: tecidos, tamancos de madeira e louças.'},
+      {sc:'tropa2',tx:'Eles também podiam negociar com os tropeiros, que passavam pela estrada.'}],
+  w:['ENTREPOSTO','Lugar onde as pessoas se encontram para trocar e vender mercadorias.'],
+  ev:['troca'],
+  q:[{k:'O que os colonos davam',q:'O que os agricultores levavam para trocar?',a:['Milho, feijão e aipim','Ouro e diamantes','Carros e motos'],x:'Sacos de milho, feijão e aipim.'},
+     {k:'O que os colonos recebiam',q:'O que eles recebiam na troca?',a:['Tecidos, tamancos e louças','Celulares','Navios'],x:'Tecidos, tamancos de madeira e louças.'},
+     {k:'Entreposto',q:'O que é um entreposto?',a:['Um lugar de trocas e comércio','Uma ponte','Uma escola'],x:'É um lugar de trocas e comércio.'},
+     {k:'Com quem negociavam',q:'Com quem mais os agricultores podiam negociar ali?',a:['Com os tropeiros','Com os astronautas','Com os piratas'],x:'Com os tropeiros que passavam.'}]},
  {id:'ponte',ano:'1857–1864',t:'A Ponte do Imperador',ic:'stampBridge',
-  pg:[{sc:'arroio',tx:'Os colonos precisavam levar seus produtos para vender. Mas o Arroio Feitoria atrapalhava o caminho.'},
-      {sc:'ponte_obra',tx:'O imperador Dom Pedro II mandou 30 contos de réis, o dinheiro da época, para fazer uma ponte. A obra durou de 1857 a 1864.'},
-      {sc:'ponte',tx:'A ponte tem 148 metros e três grandes arcos. Foi feita de pedra grés empilhada e encaixada. Só as três colunas levam cimento.'},
+  pg:[{sc:'arroio',tx:'Passava tanta gente por ali que logo se percebeu: era preciso construir uma ponte sobre o Arroio Feitoria.'},
+      {sc:'ponte_obra',tx:'O imperador Dom Pedro II mandou o dinheiro para a obra. Por isso ela se chama Ponte do Imperador! A ponte foi construída entre 1857 e 1864.'},
+      {sc:'ponte',tx:'A ponte tem 148 metros e três grandes arcos. Foi feita de pedra grés empilhada e encaixada.'},
       {sc:'ponte_iphan',tx:'Em 1986, a ponte foi tombada pelo IPHAN. Isso quer dizer que ela é patrimônio histórico do Brasil e precisa ser protegida.'}],
   w:['PATRIMÔNIO','Algo tão importante para a história que todos devem cuidar e proteger.'],
   ev:['ponte','iphan'],
-  q:[{k:'Dinheiro da ponte',q:'Quem mandou o dinheiro para construir a ponte?',a:['O imperador Dom Pedro II','Os imigrantes japoneses','O prefeito de Ivoti'],x:'Dom Pedro II mandou 30 contos de réis.'},
+  q:[{k:'Dinheiro da ponte',q:'Quem mandou o dinheiro para construir a ponte?',a:['O imperador Dom Pedro II','Os imigrantes japoneses','O prefeito de Ivoti'],x:'Dom Pedro II; daí seu nome, Ponte do Imperador.'},
+     {k:'Por que a ponte',q:'Por que precisaram de uma ponte?',a:['Passava muita gente pelo Arroio Feitoria','Para corridas de carro','Para pescar'],x:'O movimento de pessoas na área já era grande.'},
+     {k:'Anos da ponte',q:'Entre que anos a ponte foi construída?',a:['1857 e 1864','1964 e 1965','1500 e 1600'],x:'Entre 1857 e 1864.'},
      {k:'Arcos da ponte',q:'Quantos grandes arcos tem a Ponte do Imperador?',a:['Três','Um','Dez'],x:'Três grandes arcos.'},
-     {k:'Material da ponte',q:'De que é feita a ponte?',a:['Pedra grés','Madeira','Ferro'],x:'De pedra grés empilhada e encaixada.'},
-     {k:'Tamanho da ponte',q:'Quanto mede a ponte?',a:['148 metros','14 metros','1.480 metros'],x:'148 metros.'},
-     {k:'Para que a ponte',q:'Por que construíram a ponte?',a:['Para levar produtos e vender','Para corridas de carro','Para pescar'],x:'Para os colonos levarem seus produtos para vender.'}]},
+     {k:'Material da ponte',q:'De que é feita a ponte?',a:['Pedra grés','Madeira','Ferro'],x:'De pedra grés empilhada e encaixada.'}]},
+ {id:'enchente',ano:'1857–1866',t:'Enchentes e o Centro',ic:'arrow',
+  pg:[{sc:'arroio',tx:'O Arroio Feitoria era uma fonte de vida: dava água para as pessoas, os animais e as plantações.'},
+      {sc:'enchente',tx:'Mas, com as chuvas de inverno, o arroio enchia e virava um transtorno. A água arrastava boa parte do que as famílias tinham conquistado.'},
+      {sc:'morro',tx:'Aos poucos, os moradores ribeirinhos (que moravam na beira do arroio) foram morar nas partes mais altas. Assim nasceu o Centro de Ivoti!'}],
+  w:['RIBEIRINHO','Quem mora na beira de um rio ou arroio.'],
+  ev:['enchente'],
+  q:[{k:'Quando o arroio enchia',q:'Quando o Arroio Feitoria virava um transtorno?',a:['Com as chuvas de inverno','No Natal','Quando fazia sol'],x:'Com as chuvas de inverno.'},
+     {k:'Origem do Centro',q:'Como surgiu o Centro de Ivoti?',a:['Moradores fugiram das enchentes para as partes altas','Com a chegada de um navio','Com a construção do aeroporto'],x:'Os ribeirinhos foram morar nas áreas mais altas: deu origem ao Centro.'},
+     {k:'Ribeirinho',q:'O que é um morador ribeirinho?',a:['Quem mora na beira de um rio','Quem mora no alto do morro','Quem mora no mar'],x:'Ribeirinho mora na beira do rio ou do arroio.'},
+     {k:'Fonte de vida',q:'Por que o arroio era uma "fonte de vida"?',a:['Dava água para pessoas, animais e plantas','Dava ouro','Tinha um castelo'],x:'Ele dava água para tudo crescer.'}]},
  {id:'bomjardim',ano:'1867',t:'Bom Jardim',ic:'scroll',
-  pg:[{sc:'vila',tx:'O lugar foi crescendo: mais famílias, casas, igrejas e comércio.'},
-      {sc:'placa_bj',tx:'Em 1867, uma lei mudou o nome de Picada dos Berghahn para Bom Jardim.'},
+  pg:[{sc:'vila2',tx:'O lugar foi crescendo: mais famílias, casas, igrejas e comércio.'},
+      {sc:'placa_bj',tx:'Em 1867, estas terras eram conhecidas pelo nome de Bom Jardim.'},
       {sc:'distrito',tx:'Bom Jardim ainda não era uma cidade. Era um distrito, uma parte do município de São Leopoldo.'}],
   w:['DISTRITO','Uma parte de um município. O distrito não tem prefeito próprio.'],
   ev:['bomj'],
-  q:[{k:'Nome de 1867',q:'Qual nome o lugar ganhou em 1867?',a:['Bom Jardim','Ivoti','Nova Alemanha'],x:'Bom Jardim.'},
+  q:[{k:'Nome de 1867',q:'Por qual nome estas terras eram conhecidas em 1867?',a:['Bom Jardim','Ivoti','Nova Alemanha'],x:'Bom Jardim.'},
      {k:'Município de Bom Jardim',q:'Bom Jardim era um distrito de qual município?',a:['São Leopoldo','Gramado','Pelotas'],x:'De São Leopoldo.'},
      {k:'Distrito',q:'O que é um distrito?',a:['Uma parte de um município','Um país','Um tipo de escola'],x:'Distrito é uma parte de um município.'}]},
  {id:'flor',ano:'1938',t:'Ivoti quer dizer flor',ic:'flowerP',
-  pg:[{sc:'placa_iv',tx:'Em 1938, o nome mudou de novo: Bom Jardim passou a se chamar Ivoti.'},
-      {sc:'flores',tx:'Ivoti vem do tupi-guarani e quer dizer flor. Um nome indígena para um lugar cheio de flores!'},
+  pg:[{sc:'placa_iv',tx:'Em 1938, finalmente surgiu o nome Ivoti!'},
+      {sc:'flores',tx:'O nome vem do tupi-guarani "ipoti-catu", que significa flor.'},
+      {sc:'jardins',tx:'O nome combina com uma tradição da cidade: plantar flores na frente das casas, formando jardins multicoloridos.'},
       {sc:'feira',tx:'Por isso Ivoti é a Cidade das Flores. Na primavera acontece a Feira das Flores, no Núcleo de Casas Enxaimel.'}],
   w:['TUPI-GUARANI','Família de línguas de povos indígenas do Brasil.'],
   ev:['ivoti'],
-  q:[{k:'Significado de Ivoti',q:'O que quer dizer Ivoti?',a:['Flor','Pedra','Rio'],x:'Ivoti quer dizer flor, em tupi-guarani.'},
-     {k:'Ano do nome Ivoti',q:'Em que ano o nome mudou para Ivoti?',a:['1938','1826','2000'],x:'Em 1938.'},
-     {k:'Nome antes de Ivoti',q:'Qual era o nome antes de Ivoti?',a:['Bom Jardim','Picada dos Japoneses','Flores do Sul'],x:'Bom Jardim.'},
-     {k:'Feira das Flores',q:'Em que estação acontece a Feira das Flores?',a:['Na primavera','No inverno','No verão'],x:'Na primavera.'}]},
+  q:[{k:'Significado de Ivoti',q:'O que quer dizer Ivoti?',a:['Flor','Pedra','Rio'],x:'Vem do tupi-guarani "ipoti-catu", que significa flor.'},
+     {k:'Ipoti-catu',q:'De qual palavra tupi-guarani vem o nome Ivoti?',a:['Ipoti-catu','Kochplatt','Sakura'],x:'De "ipoti-catu".'},
+     {k:'Ano do nome Ivoti',q:'Em que ano surgiu o nome Ivoti?',a:['1938','1826','2000'],x:'Em 1938.'},
+     {k:'Tradição das flores',q:'Qual tradição combina com o nome Ivoti?',a:['Plantar flores na frente das casas','Pescar no inverno','Construir pontes'],x:'Plantar flores na frente das casas, formando jardins multicoloridos.'},
+     {k:'Nome antes de Ivoti',q:'Qual era o nome antes de Ivoti?',a:['Bom Jardim','Picada dos Japoneses','Flores do Sul'],x:'Bom Jardim.'}]},
  {id:'cidade',ano:'1964',t:'Ivoti vira cidade',ic:'urna',
-  pg:[{sc:'vila2',tx:'Os moradores queriam ter prefeito e vereadores próprios. Para isso, o distrito precisava se emancipar.'},
-      {sc:'urna',tx:'Em 12 de julho de 1964 houve um plebiscito: os moradores votaram se queriam a emancipação. Ganhou o sim!'},
-      {sc:'lei',tx:'Em 19 de outubro de 1964, o governador Ildo Meneghetti assinou a lei que criou o município de Ivoti. Por isso o aniversário de Ivoti é 19 de outubro!'},
+  pg:[{sc:'vila2',tx:'Ivoti crescia em dinheiro e em número de pessoas: era um crescimento econômico e demográfico.'},
+      {sc:'urna',tx:'No início dos anos 1960 começou o processo de emancipação: os moradores queriam prefeito e vereadores próprios. Em 12 de julho de 1964, eles votaram, e ganhou o sim!'},
+      {sc:'lei',tx:'A Lei de Criação do Município é de 19 de outubro de 1964. Essa data é festejada até hoje com muita alegria: é o aniversário de Ivoti!'},
       {sc:'posse',tx:'Em 26 de janeiro de 1965 tomaram posse o primeiro prefeito e os primeiros vereadores de Ivoti.'}],
   w:['EMANCIPAÇÃO','Quando um distrito vira município, com prefeito próprio.'],
   ev:['cidade','posse'],
-  q:[{k:'Aniversário de Ivoti',q:'Quando é o aniversário de Ivoti?',a:['19 de outubro','25 de julho','7 de setembro'],x:'19 de outubro: o dia da lei que criou o município, em 1964.'},
-     {k:'Plebiscito',q:'O que é um plebiscito?',a:['Uma votação do povo','Uma festa de rua','Um tipo de ponte'],x:'Plebiscito é uma votação em que o povo decide.'},
-     {k:'Quem assinou a lei',q:'Quem assinou a lei que criou o município?',a:['O governador Ildo Meneghetti','O imperador Dom Pedro II','A família Berghahn'],x:'O governador Ildo Meneghetti.'},
+  q:[{k:'Aniversário de Ivoti',q:'Quando é o aniversário de Ivoti?',a:['19 de outubro','25 de julho','7 de setembro'],x:'19 de outubro: o dia da Lei de Criação do Município, em 1964.'},
+     {k:'Ano da emancipação',q:'Em que ano Ivoti virou município?',a:['1964','1826','1938'],x:'Em 1964.'},
+     {k:'Crescimento demográfico',q:'O que quer dizer crescimento demográfico?',a:['Aumentar o número de pessoas','Aumentar o número de pontes','Diminuir a cidade'],x:'É quando a população cresce.'},
      {k:'Emancipação',q:'O que é emancipação?',a:['Um distrito virar município','Mudar de casa','Plantar flores'],x:'É quando um distrito vira município.'}]},
  {id:'japao',ano:'1966',t:'Vizinhos do Japão',ic:'stampSakura',
-  pg:[{sc:'japao',tx:'Em 1966 chegaram a Ivoti duas famílias de imigrantes japoneses: os Sasada e os Tanisaki.'},
-      {sc:'uvas',tx:'Depois vieram outras famílias. Elas plantavam, entre outras coisas, uva. Hoje Ivoti tem a maior colônia japonesa do Rio Grande do Sul.'},
-      {sc:'memorial',tx:'Em 2011 abriu o Memorial da Colônia Japonesa, num prédio que antes era uma escola, na Rua Sakura. Sakura é a flor de cerejeira!'}],
-  w:['MEMORIAL','Lugar que guarda objetos e histórias para ninguém esquecer.'],
+  pg:[{sc:'japao',tx:'Em 1966, a prefeitura reservou terras para 26 famílias de imigrantes japoneses. Foi um belo exemplo de diversidade cultural!'},
+      {sc:'uvas',tx:'Assim surgiu a Colônia Japonesa, que produz uvas de mesa, kiwi, hortaliças e flores.'},
+      {sc:'memorial',tx:'Em 2011 abriu o Memorial da Colônia Japonesa, na Rua Sakura. Sakura é a flor de cerejeira!'}],
+  w:['DIVERSIDADE CULTURAL','Pessoas de culturas diferentes vivendo juntas e trocando o que sabem.'],
   ev:['japao','memor'],
-  q:[{k:'Ano dos japoneses',q:'Em que ano chegaram as primeiras famílias japonesas?',a:['1966','1824','1500'],x:'Em 1966.'},
-     {k:'Primeiras famílias japonesas',q:'Quantas famílias japonesas chegaram primeiro?',a:['Duas','Cem','Nenhuma'],x:'Duas: os Sasada e os Tanisaki.'},
-     {k:'Sakura',q:'O que quer dizer sakura?',a:['Flor de cerejeira','Ponte de pedra','Casa de barro'],x:'Sakura é a flor de cerejeira.'},
-     {k:'Memorial',q:'O que é um memorial?',a:['Um lugar que guarda histórias','Uma loja de doces','Um estádio'],x:'Um lugar que guarda objetos e histórias.'}]},
+  q:[{k:'Ano dos japoneses',q:'Em que ano chegaram as famílias japonesas?',a:['1966','1824','1500'],x:'Em 1966.'},
+     {k:'Famílias japonesas',q:'Para quantas famílias japonesas a prefeitura reservou terras?',a:['26','2','260'],x:'Para 26 famílias.'},
+     {k:'Produtos da Colônia Japonesa',q:'O que a Colônia Japonesa produz?',a:['Uvas de mesa, kiwi, hortaliças e flores','Navios e aviões','Sapatos de ferro'],x:'Uvas de mesa, kiwi, hortaliças e flores.'},
+     {k:'Sakura',q:'O que quer dizer sakura?',a:['Flor de cerejeira','Ponte de pedra','Casa de barro'],x:'Sakura é a flor de cerejeira.'}]},
+ {id:'fabricas',ano:'ANOS 70',t:'Fábricas e novos bairros',ic:'shoe',
+  pg:[{sc:'oficina',tx:'Nos fundos das casas dos imigrantes havia pequenas oficinas. Com o tempo, elas cresceram e viraram fábricas de calçados e curtumes.'},
+      {sc:'fabrica',tx:'Nos anos 1970, as fábricas passaram a vender para outros países e precisaram de mais mão de obra, isto é, mais trabalhadores.'},
+      {sc:'bairro',tx:'Chegaram famílias do norte do Rio Grande do Sul e de Santa Catarina. Elas foram morar na cidade e fizeram surgir bairros inteiros!'}],
+  w:['CURTUME','Fábrica que prepara o couro dos animais, usado para fazer calçados.'],
+  ev:['fabricas'],
+  q:[{k:'Oficinas viram fábricas',q:'No que se transformaram as oficinas nos fundos das casas?',a:['Em fábricas de calçados e curtumes','Em igrejas','Em pontes'],x:'Em fábricas de calçados e curtumes.'},
+     {k:'Mão de obra',q:'O que é mão de obra?',a:['Os trabalhadores','As máquinas','O dinheiro'],x:'Mão de obra são as pessoas que trabalham.'},
+     {k:'De onde vieram os migrantes',q:'De onde vieram os novos moradores dos anos 70?',a:['Do norte do RS e de Santa Catarina','Do Japão','Da Lua'],x:'Do norte do nosso estado e de Santa Catarina.'},
+     {k:'Curtume',q:'O que faz um curtume?',a:['Prepara o couro','Faz pão','Constrói casas'],x:'O curtume prepara o couro para fazer calçados.'}]},
  {id:'hoje',ano:'1992–HOJE',t:'Ivoti hoje',ic:'hourglass',
-  pg:[{sc:'mapa92',tx:'Em 1992, dois distritos de Ivoti viraram municípios: Lindolfo Collor e Presidente Lucena.'},
-      {sc:'hoje',tx:'Hoje Ivoti tem fábricas de calçados, feiras como a das Flores e a do Mel, casas enxaimel e a cultura japonesa.'},
+  pg:[{sc:'mapa92',tx:'Em 1992, Ivoti deu origem a duas novas cidades: Presidente Lucena (antes chamada Arroio Veado) e Lindolfo Collor (antes Picada Capivara).'},
+      {sc:'hoje',tx:'Hoje Ivoti tem cerca de 20 mil habitantes, numa área de 63 km². Muita gente ainda fala o dialeto que os imigrantes trouxeram.'},
+      {sc:'festa',tx:'Nas festas de Ivoti tem chope, as doceiras ainda preparam cucas e roscas, e tem linguiça cozida. Tudo com gostinho de colônia!'},
       {sc:'familia',tx:'A história continua sendo escrita. Pergunte a alguém da sua família: como era Ivoti quando essa pessoa era criança?'}],
   w:['HISTÓRIA ORAL','Aprender o passado ouvindo as lembranças das pessoas.'],
   ev:['dist92','hoje'],
-  q:[{k:'Distritos de 1992',q:'Quais distritos de Ivoti viraram municípios em 1992?',a:['Lindolfo Collor e Presidente Lucena','Gramado e Canela','Porto Alegre e Pelotas'],x:'Lindolfo Collor e Presidente Lucena.'},
-     {k:'Fábricas de Ivoti',q:'Que tipo de fábrica é importante em Ivoti?',a:['De calçados','De aviões','De navios'],x:'Fábricas de calçados.'},
+  q:[{k:'Cidades de 1992',q:'Quais cidades nasceram de Ivoti em 1992?',a:['Presidente Lucena e Lindolfo Collor','Gramado e Canela','Porto Alegre e Pelotas'],x:'Presidente Lucena e Lindolfo Collor.'},
+     {k:'Nome antigo de Presidente Lucena',q:'Qual era o nome antigo de Presidente Lucena?',a:['Arroio Veado','Picada Capivara','Bom Jardim'],x:'Arroio Veado. Lindolfo Collor era Picada Capivara.'},
+     {k:'Habitantes de Ivoti',q:'Quantos habitantes Ivoti tem hoje, mais ou menos?',a:['Cerca de 20 mil','Cerca de 20','Cerca de 2 milhões'],x:'Cerca de 20 mil habitantes.'},
+     {k:'Doces das festas',q:'O que as doceiras preparam nas festas de Ivoti?',a:['Cucas e roscas','Sushi','Pizza'],x:'Cucas e roscas, com gostinho de colônia.'},
      {k:'História oral',q:'Como aprender história com a família?',a:['Ouvindo as lembranças das pessoas','Só jogando videogame','Não dá para aprender'],x:'Ouvindo as lembranças das pessoas: é a história oral.'}]},
 ];
 /* passaporte: visitas de verdade, confirmadas por um adulto na área dos pais da Nave-Mãe */
 const PASS=[
   {id:'ponte',n:'Ponte do Imperador',ic:'stampBridge',d:'A ponte de pedra de 1857–1864 sobre o Arroio Feitoria, no Núcleo de Casas Enxaimel, a 1 km do centro. Aberta sempre, de graça.'},
-  {id:'nucleo',n:'Núcleo de Casas Enxaimel',ic:'stampHouse',d:'Casas enxaimel originais na Rua da Cascata, bairro Feitoria Nova. Aberto sempre, de graça.'},
+  {id:'nucleo',n:'Núcleo de Casas Enxaimel',ic:'stampHouse',d:'Casas enxaimel originais no lugar chamado Buraco do Diabo, Rua da Cascata, bairro Feitoria Nova. Aberto sempre, de graça.'},
   {id:'museu',n:'Museu Cláudio Oscar Becker',ic:'stampMuseum',d:'Museu numa casa enxaimel do tempo da colonização, dentro do Núcleo de Casas Enxaimel.'},
   {id:'memorial',n:'Memorial da Colônia Japonesa',ic:'stampSakura',d:'Na Rua Sakura, bairro Palmares. Terça a sexta, 8h–12h e 13h–17h; sábado, domingo e feriado, 10h–12h e 13h–17h. Confira antes de ir.'},
   {id:'feira',n:'Feira das Flores',ic:'stampFlower',d:'Na primavera, no Núcleo de Casas Enxaimel.'},
@@ -754,7 +820,9 @@ const PASS=[
 /* desafio: perguntas do mestre carpinteiro, no fim da construção */
 const CASA_Q=[
   {k:'Casa: pregos de pau',q:'Na casa enxaimel, como as madeiras ficam presas?',a:['Com encaixes e pregos de pau','Com cola','Com pregos de ouro'],x:'Encaixes e pregos de pau.'},
-  {k:'Casa: preenchimento',q:'Com o que se preenchem os espaços entre as madeiras?',a:['Barro ou tijolos','Areia solta','Folhas de papel'],x:'Barro ou tijolos.'},
+  {k:'Casa: preenchimento',q:'Com o que se preenchiam os espaços entre as madeiras?',a:['Pedras e barro','Areia solta','Folhas de papel'],x:'Pedras e barro (mais tarde, também tijolos).'},
+  {k:'Casa: cal',q:'O que revestia as paredes da casa enxaimel?',a:['Uma camada de cal','Plástico','Tinta neon'],x:'Uma camada de cal.'},
+  {k:'Casa: kochplatt',q:'Onde ficava a kochplatt, a chapa de fogão?',a:['Num prédio menor ao lado da casa','No telhado','Dentro do arroio'],x:'Num prédio menor em anexo, que abrigava a cozinha.'},
   {k:'Casa: madeira aparente',q:'O que aparece por fora de uma casa enxaimel?',a:['A estrutura de madeira','Os canos de água','Nada, é toda pintada'],x:'A madeira fica aparecendo, formando desenhos.'},
 ];
 
@@ -835,7 +903,7 @@ const pilot=(()=>{try{return (JSON.parse(localStorage.getItem('navemae-v1'))||{}
 
 /* =================== sprites =================== */
 const PAL={"k": "#140c08", "W": "#ffffff", "T": "#3b2416", "t": "#6b4528", "s": "#a87a4a", "B": "#d9c49a", "b": "#b79e70", "R": "#b84a2e", "r": "#7d2a18", "G": "#d6d0c2", "g": "#9a9486", "q": "#5e5a52", "O": "#e0703e", "o": "#9a3e1e", "L": "#6cc84f", "l": "#2f7a2a", "z": "#1a4a1a", "A": "#5ab4ea", "a": "#23608f", "P": "#ff7ab0", "p": "#c03a78", "Y": "#ffd84a", "y": "#c99a1a", "S": "#f1c9a0", "d": "#c98f64", "C": "#3a6ab0", "c": "#233a66", "M": "#efe6d0", "m": "#b3a684", "V": "#8a4ac0", "v": "#4a1a6a", "K": "#ffd0e0", "H": "#ff8fb8", "U": "#d4d8e0", "u": "#8a8f99", "n": "#4a4e57", "X": "#ffe27a", "x": "#c9962a", "E": "#e03a26", "e": "#8a1a10", "F": "#a8e8ff", "f": "#4a8ab0"};
-const SPR={"arrow": ["....k....", "...kGk...", "...kGgk..", "..kGGgk..", "..kGggk..", ".kGGgggk.", ".kGgggqk.", "kGGggggqk", "kGgggqqqk", ".kkgqqkk.", "...kqk...", "...kqk...", "....k...."], "ship": ["............kk............", "...........kEEk...........", "...........k..............", "......k....k.......k......", "...kkkkkkk.k....kkkkkkk...", "...kMMMMMk.k....kMMMMMk...", "...kMMMMMk.kk...kMMMMMk...", "...kMMMMMk.kMk..kMMMMMk...", "...kMMMMMk.kMMk.kMMMMMk...", "...kmmmmmk.kMMMkkmmmmmk...", "...kkkkkkk.kkkkkkkkkkkk...", "......k....k.......k......", "kkkkkkkkkkkkkkkkkkkkkkkkkk", "kssssssssssssssssssssssssk", ".kttttttttttttttttttttttk.", "..kTTTTTTTTTTTTTTTTTTTTk..", "...kkkkkkkkkkkkkkkkkkkk..."], "person": ["...kkkk...", "..kttttk..", ".kkkkkkkk.", "..kSSSSk..", "..kSkSkk..", "..kSSSdk..", "...kddk...", "..kMMMMk..", ".kMMMMMmk.", "kSkMMMMkSk", "kdkMMMmkdk", "..kCCCck..", "..kCCcck..", "..kCk.kck.", "..kCk.kck.", "..kTk.kTk.", "..kkk.kkk."], "urna": ["..kkkkkkkkkk..", "..kUUnnnnUUk..", ".kkkkkkkkkkkk.", ".kUUUUUUUUUuk.", ".kUCCCCCCCCuk.", ".kUCWWCWWWCuk.", ".kUCCCCCCCCuk.", ".kUUUUUUUUUuk.", ".kUUUUUUUUuuk.", ".kuuuuuuuuuuk.", ".kkkkkkkkkkkk."], "scroll": [".kkkkkkkkkkkk.", "kMMMMMMMMMMmmk", ".kkkkkkkkkkkk.", "..kMMMMMMMMk..", "..kMmmmmmmMk..", "..kMMMMMMMMk..", "..kMmmmmmMMk..", "..kMMMMMMMMk..", "..kMmmmmmmMk..", "..kMMMMMcMMk..", "..kMMMMcMcMk..", ".kkkkkkkkkkkk.", "kMMMMMMMMMMmmk", ".kkkkkkkkkkkk."], "grape": ["...kk...", "..ktk...", ".kVVkk..", "kVVVVVk.", "kVvVVvk.", ".kVVVVk.", ".kVvVk..", "..kVVk..", "...kk..."], "shoe": ["..kkkk..........", "..kttk..........", "..kttkkkkk......", "..ktsssssskk....", "..ktsstsssssk...", ".kttttttttttskk.", "ktTTTTTTTTTTTTsk", "kkkkkkkkkkkkkkkk"], "flowerP": ["..kk..", "kkPPkk", "kPYYPk", ".kPPk.", "..lk..", ".kllk.", "..lk.."], "church": [".......kk.......", "......kXXk......", ".......kk.......", "......kook......", ".....kOOOok.....", "....kOOOOOok....", "....kMMMMMmk....", "....kMkkkkmk....", "....kMkFFkmk....", "....kMMMMMmk....", "..kkkkkkkkkkkk..", ".kOOOOOOOOOOook.", "kOOOOOOOOOOOOOok", "kkkkkkkkkkkkkkkk", ".kMMMMMMMMMMMmk.", ".kMkFkMMMMkFkmk.", ".kMkFkMkkMkFkmk.", ".kMMMMMktkMMMmk.", ".kMMMMMktkMMMmk.", ".kkkkkkkkkkkkkk."], "stampBridge": ["kkkkkkkkkkkkkkkkkkkkkk", "kGGGGGGGGGGGGGGGGGGGGk", "kggggggggggggggggggggk", "kggg..gggg..gggg..gggk", "kgg....gg....gg....ggk", "kgg....gg....gg....ggk", "kggAAAAggAAAAggAAAAggk", "kggAAAAggAAAAggAAAAggk", ".AAAAAAAAAAAAAAAAAAAA.", "..aaaaaaaaaaaaaaaaaa.."], "stampHouse": [".....kk.....", "....kOOk....", "...kOOOOk...", "..kOOOOOOk..", ".kkkkkkkkkk.", ".kTTTTTTTTk.", ".kTBTBTkTBk.", ".kTTBTTTTTk.", ".kTBTBTkTTk.", ".kTTTTTkTTk.", ".kkkkkkkkkk."], "stampMuseum": [".....kk.....", "...kkMMkk...", ".kkMMMMMMkk.", "kkkkkkkkkkkk", ".kMk.kMk.kMk", ".kMk.kMk.kMk", ".kMk.kMk.kMk", ".kMk.kMk.kMk", "kkkkkkkkkkkk", "kmmmmmmmmmmk", "kkkkkkkkkkkk"], "stampSakura": ["....kk..kk..", "...kKKkkHKk.", "..kKHHKKHHk.", "..kKHYHKKk..", "...kKHHKk...", "..kkKkKKk...", ".kHKkk.kk...", ".kKHk.......", "..kk........"], "stampFlower": ["....kkkk....", "..kkPPPPkk..", ".kPPYYYYPPk.", ".kPYYYYYYPk.", ".kPPYYYYPPk.", "..kkPPPPkk..", "....klk.....", "..kk.lk.kk..", ".kllk.lkllk.", "..kk..lk.k..", "......k....."], "stampFamily": ["..kkk...kkk.", ".kttsk.kMMMk", ".kSSSk.kSSSk", ".kSkSk.kSkSk", "..kSk...kSk.", ".kCCCk.kPPPk", "kCCCCCkPPPPk", "kCCCCCkPPPPk", ".kk.kk.kk.kk"], "hourglass": ["kkkkkkkkkkkkkk", "ktttttttttttsk", "kkkkkkkkkkkkkk", ".kFFFFFFFFFFk.", ".kFYYYYYYYYFk.", "..kFYYYYYYFk..", "...kFYYYYFk...", "....kFYYFk....", ".....kFYk.....", "....kFFYFk....", "...kFFFYFFk...", "..kFFFYYYFFk..", ".kFYYYYYYYYFk.", "kkkkkkkkkkkkkk", "ktttttttttttsk", "kkkkkkkkkkkkkk"], "speaker": ["....k..", "...kk..", "kkkWk.k", "kWWWk..", "kWWWk.k", "kkkWk..", "...kk.k", "....k.."], "check": ["........kk", ".......kLk", "kk....kLlk", "kLk..kLlk.", "klLkkLlk..", ".klLLlk...", "..klzk....", "...kk....."], "tree": ["....kkkk....", "..kkLLLLkk..", ".kLLLLlLLLk.", "kLLlLLLLlLLk", "kLLLLLlLLLLk", "kLlLLLLLLlLk", ".kLLLlLLLLk.", "..kkLLLLkk..", "....ktk.....", "....ktk.....", "...kttk....."], "araucaria": ["......kk......", "....kkllkk....", "..kkllLLllkk..", "kkllLLLLLLllkk", ".kkkkkkkkkkkk.", "......kt......", "....kkllkk....", "..kkllLLllkk..", ".kkkkkkkkkkkk.", "......kt......", "......kt......", "......kt......", "......kt......", "......kt......"], "sakura": ["....kkkk..kkk...", "..kkKKHHkkKHHk..", ".kKKHKKKHHKKHHk.", "kKHHKKHKKKHKKHk.", "kKKKHHKKHHKKKKkk", ".kkKKKkKKKKkkkk.", "...kkktkkkkk....", "......ktk.......", "......ktk.......", ".....kttk.......", ".....kttk......."]};
+const SPR={"cow":["............kk..", "..........kkMMk.", "k........kMMMMkk", "kk.kkkkkkkMkMMMk", ".ktsssMMssMMMMMk", ".ksssMMMsssMKKKk", ".kssssMMssssMkk.", ".ksMMssssssssk..", "..kttkkkkkkttk..", "..kTk.....kTk...", "..kkk.....kkk..."],"tamandua":["kkk.................", "kuukk...............", "kuuuuk..kkkkkk......", ".kuuuukkuuuuuukk....", "..kuuuuunnnnnuuukkk.", "...kuuunnnnnuuuuuuuk", "....kuuuuuuuuuukkkk.", ".....kunkkkkkunk....", ".....kkk.....kkk...."],"sack":["...kkkk...", "..kmBBmk..", "...kkkk...", "..kBBBBk..", ".kBBYYBBk.", "kBBYyYYBBk", "kBBYYyYBBk", "kBBBYYBBBk", "kbBBBBBBbk", ".kbbbbbbk.", "..kkkkkk.."],"hut":["........kk......", "......kkYYkk....", "....kkYYyYYYkk..", "..kkYYyYYYYyYYkk", "kkYYYYYYyYYYYYYk", "kkkkkkkkkkkkkkkk", ".kssstsssstsssk.", ".kstssskkkssstk.", ".kssssskTkssssk.", ".ksstsskTksstsk.", ".kkkkkkkkkkkkkk."],"factory":["..kk............", "..kuk...........", "..kuk..k..k..k..", "..kuk.kRkkRkkRk.", ".kkukkRRRRRRRRRk", ".kGGGGGGGGGGGGGk", ".kGAAGGAAGGAAGGk", ".kGAAGGAAGGAAGGk", ".kGGGGGGGGGGGGGk", ".kGGGkttkGGGGGGk", ".kGGGkttkGGGGGGk", ".kkkkkkkkkkkkkkk"],"cuca":["..kkkkkkkk..", ".kXYXYXYXYk.", "kYXyXYXyXYYk", "kssssssssssk", "ktssssssssk.", ".kkkkkkkkk.."],"arrow": ["....k....", "...kGk...", "...kGgk..", "..kGGgk..", "..kGggk..", ".kGGgggk.", ".kGgggqk.", "kGGggggqk", "kGgggqqqk", ".kkgqqkk.", "...kqk...", "...kqk...", "....k...."], "ship": ["............kk............", "...........kEEk...........", "...........k..............", "......k....k.......k......", "...kkkkkkk.k....kkkkkkk...", "...kMMMMMk.k....kMMMMMk...", "...kMMMMMk.kk...kMMMMMk...", "...kMMMMMk.kMk..kMMMMMk...", "...kMMMMMk.kMMk.kMMMMMk...", "...kmmmmmk.kMMMkkmmmmmk...", "...kkkkkkk.kkkkkkkkkkkk...", "......k....k.......k......", "kkkkkkkkkkkkkkkkkkkkkkkkkk", "kssssssssssssssssssssssssk", ".kttttttttttttttttttttttk.", "..kTTTTTTTTTTTTTTTTTTTTk..", "...kkkkkkkkkkkkkkkkkkkk..."], "person": ["...kkkk...", "..kttttk..", ".kkkkkkkk.", "..kSSSSk..", "..kSkSkk..", "..kSSSdk..", "...kddk...", "..kMMMMk..", ".kMMMMMmk.", "kSkMMMMkSk", "kdkMMMmkdk", "..kCCCck..", "..kCCcck..", "..kCk.kck.", "..kCk.kck.", "..kTk.kTk.", "..kkk.kkk."], "urna": ["..kkkkkkkkkk..", "..kUUnnnnUUk..", ".kkkkkkkkkkkk.", ".kUUUUUUUUUuk.", ".kUCCCCCCCCuk.", ".kUCWWCWWWCuk.", ".kUCCCCCCCCuk.", ".kUUUUUUUUUuk.", ".kUUUUUUUUuuk.", ".kuuuuuuuuuuk.", ".kkkkkkkkkkkk."], "scroll": [".kkkkkkkkkkkk.", "kMMMMMMMMMMmmk", ".kkkkkkkkkkkk.", "..kMMMMMMMMk..", "..kMmmmmmmMk..", "..kMMMMMMMMk..", "..kMmmmmmMMk..", "..kMMMMMMMMk..", "..kMmmmmmmMk..", "..kMMMMMcMMk..", "..kMMMMcMcMk..", ".kkkkkkkkkkkk.", "kMMMMMMMMMMmmk", ".kkkkkkkkkkkk."], "grape": ["...kk...", "..ktk...", ".kVVkk..", "kVVVVVk.", "kVvVVvk.", ".kVVVVk.", ".kVvVk..", "..kVVk..", "...kk..."], "shoe": ["..kkkk..........", "..kttk..........", "..kttkkkkk......", "..ktsssssskk....", "..ktsstsssssk...", ".kttttttttttskk.", "ktTTTTTTTTTTTTsk", "kkkkkkkkkkkkkkkk"], "flowerP": ["..kk..", "kkPPkk", "kPYYPk", ".kPPk.", "..lk..", ".kllk.", "..lk.."], "church": [".......kk.......", "......kXXk......", ".......kk.......", "......kook......", ".....kOOOok.....", "....kOOOOOok....", "....kMMMMMmk....", "....kMkkkkmk....", "....kMkFFkmk....", "....kMMMMMmk....", "..kkkkkkkkkkkk..", ".kOOOOOOOOOOook.", "kOOOOOOOOOOOOOok", "kkkkkkkkkkkkkkkk", ".kMMMMMMMMMMMmk.", ".kMkFkMMMMkFkmk.", ".kMkFkMkkMkFkmk.", ".kMMMMMktkMMMmk.", ".kMMMMMktkMMMmk.", ".kkkkkkkkkkkkkk."], "stampBridge": ["kkkkkkkkkkkkkkkkkkkkkk", "kGGGGGGGGGGGGGGGGGGGGk", "kggggggggggggggggggggk", "kggg..gggg..gggg..gggk", "kgg....gg....gg....ggk", "kgg....gg....gg....ggk", "kggAAAAggAAAAggAAAAggk", "kggAAAAggAAAAggAAAAggk", ".AAAAAAAAAAAAAAAAAAAA.", "..aaaaaaaaaaaaaaaaaa.."], "stampHouse": [".....kk.....", "....kOOk....", "...kOOOOk...", "..kOOOOOOk..", ".kkkkkkkkkk.", ".kTTTTTTTTk.", ".kTBTBTkTBk.", ".kTTBTTTTTk.", ".kTBTBTkTTk.", ".kTTTTTkTTk.", ".kkkkkkkkkk."], "stampMuseum": [".....kk.....", "...kkMMkk...", ".kkMMMMMMkk.", "kkkkkkkkkkkk", ".kMk.kMk.kMk", ".kMk.kMk.kMk", ".kMk.kMk.kMk", ".kMk.kMk.kMk", "kkkkkkkkkkkk", "kmmmmmmmmmmk", "kkkkkkkkkkkk"], "stampSakura": ["....kk..kk..", "...kKKkkHKk.", "..kKHHKKHHk.", "..kKHYHKKk..", "...kKHHKk...", "..kkKkKKk...", ".kHKkk.kk...", ".kKHk.......", "..kk........"], "stampFlower": ["....kkkk....", "..kkPPPPkk..", ".kPPYYYYPPk.", ".kPYYYYYYPk.", ".kPPYYYYPPk.", "..kkPPPPkk..", "....klk.....", "..kk.lk.kk..", ".kllk.lkllk.", "..kk..lk.k..", "......k....."], "stampFamily": ["..kkk...kkk.", ".kttsk.kMMMk", ".kSSSk.kSSSk", ".kSkSk.kSkSk", "..kSk...kSk.", ".kCCCk.kPPPk", "kCCCCCkPPPPk", "kCCCCCkPPPPk", ".kk.kk.kk.kk"], "hourglass": ["kkkkkkkkkkkkkk", "ktttttttttttsk", "kkkkkkkkkkkkkk", ".kFFFFFFFFFFk.", ".kFYYYYYYYYFk.", "..kFYYYYYYFk..", "...kFYYYYFk...", "....kFYYFk....", ".....kFYk.....", "....kFFYFk....", "...kFFFYFFk...", "..kFFFYYYFFk..", ".kFYYYYYYYYFk.", "kkkkkkkkkkkkkk", "ktttttttttttsk", "kkkkkkkkkkkkkk"], "speaker": ["....k..", "...kk..", "kkkWk.k", "kWWWk..", "kWWWk.k", "kkkWk..", "...kk.k", "....k.."], "check": ["........kk", ".......kLk", "kk....kLlk", "kLk..kLlk.", "klLkkLlk..", ".klLLlk...", "..klzk....", "...kk....."], "tree": ["....kkkk....", "..kkLLLLkk..", ".kLLLLlLLLk.", "kLLlLLLLlLLk", "kLLLLLlLLLLk", "kLlLLLLLLlLk", ".kLLLlLLLLk.", "..kkLLLLkk..", "....ktk.....", "....ktk.....", "...kttk....."], "araucaria": ["......kk......", "....kkllkk....", "..kkllLLllkk..", "kkllLLLLLLllkk", ".kkkkkkkkkkkk.", "......kt......", "....kkllkk....", "..kkllLLllkk..", ".kkkkkkkkkkkk.", "......kt......", "......kt......", "......kt......", "......kt......", "......kt......"], "sakura": ["....kkkk..kkk...", "..kkKKHHkkKHHk..", ".kKKHKKKHHKKHHk.", "kKHHKKHKKKHKKHk.", "kKKKHHKKHHKKKKkk", ".kkKKKkKKKKkkkk.", "...kkktkkkkk....", "......ktk.......", "......ktk.......", ".....kttk.......", ".....kttk......."]};
 /* ---------- arte 16-bit: grade única de 2px ----------
    O "s" de cada desenho é o tamanho do pixel original. A arte é ampliada com Scale2x/Scale3x
    até cada pixel ficar com 2px na tela (mesma grade em todo o app) e ganha luz de cima-esquerda,
@@ -1007,6 +1075,40 @@ function drawScene(cv,id,arg){const W=cv.width,H=cv.height,X=cv.getContext('2d')
     house(W*.62,H*.82,24,{});flowers(H*.86,H-2,16);S('sakura',W*.9,H*.86,{c:1});break}
   case 'familia':{day();gnd();house(W*.75,H*.84,40,{});R('#6b4528',W*.18,H*.86,30,3);R('#6b4528',W*.2,H*.89,2,6);R('#6b4528',W*.18+26,H*.89,2,6);person(W*.24,H*.9,2);person(W*.34,H*.98,0,1);A({t:'COMO ERA?',x:W*.34,y:H*.38,k:'bub'});break}
   case 'casa':{day();gnd();ov.geo=house(W/2,H*.95,Math.round(W*.56),Object.assign({ghost:1,roofK:.38},arg));break}
+  /* cenas do texto da escola (tropeiros, choupana, cozinha, tamanduá, trocas, enchente, fábricas, festa) */
+  case 'trilha':{old();hills(H*.5,'#3f6a35',5,.05,2);trees(H*.58,10,['araucaria','tree'],6);ground(H*.62,'#2f5a2a');
+    for(let i=0;i<14;i++)R('#a87a4a',W*.1+i*W*.06,H*.98-i*H*.025,W*.08,3);trees(H*1.02,6,['tree'],12);person(W*.42,H*.86,3);person(W*.56,H*.8,2,1);A({t:'BANDEIRANTES',x:W*.5,y:H*.18,k:'sg'});break}
+  case 'tropa':case 'tropa2':{old();hills(H*.5,'#5a8a4a',5,.05,1);ground(H*.58,'#6a9a4a','#5a8a3a');R('#c8a070',0,H*.78,W,10);R('#b08a5a',0,H*.78,W,1);
+    const n=id==='tropa'?4:2;for(let i=0;i<n;i++)S('cow',W*(.12+i*.18),H*.86,{c:1});person(W*(.14+n*.18),H*.92,2);
+    if(id==='tropa2'){S('sack',W*.72,H*.9,{c:1});S('sack',W*.82,H*.9,{c:1});}A({t:id==='tropa'?'TROPEIROS':'ROTA DO GADO',x:W*.5,y:H*.2,k:'sg'});break}
+  case 'choupana':{old();hills(H*.55,'#3f6a35',5,.05,2);trees(H*.6,8,['araucaria','tree'],8);ground(H*.66,'#4a8a3a');S('hut',W*.36,H*.92,{c:1,s:3});person(W*.72,H*.97);S('hut',W*.86,H*.72,{c:1});break}
+  case 'cozinha':{day();gnd();house(W*.32,H*.86,44,{});
+    const x0=W*.66,y0=H*.62,w=W*.24,h=H*.24;R('#140c08',x0-1,y0-1,w+2,h+2);R('#efe6d0',x0,y0,w,h);R('#9a3e1e',x0-4,y0-8,w+8,8);R('#140c08',x0+w*.3,y0+h*.35,w*.45,h*.4);R('#e0703e',x0+w*.3,y0+h*.35,w*.45,2);
+    for(let i=0;i<3;i++)R('#d6d0c2',x0+w*.4+i*4,y0-14-i*4,3,3);A({t:'KOCHPLATT',x:x0+w/2,y:H*.3,k:'bub'});break}
+  case 'tamandua':{dawn();hills(H*.55,'#1f4a2a',8,.04,2);trees(H*.7,8,['araucaria','tree'],8);ground(H*.78,'#2f5a2a');
+    S('tamandua',W*.62,H*.95,{c:1,s:2});person(W*.18,H*.98,0,0);A({t:'O DIABO?!',x:W*.22,y:H*.42,k:'bub'});break}
+  case 'buraco':{day();hills(H*.35,'#3f7a35',10,.06,1);R('#2f6a2a',0,H*.55,W,H*.45);hills(H*.62,'#4f8f45',3,.08,2);ground(H*.75,'#5aa04a','#4a8a3a');
+    house(W*.42,H*.86,26,{});house(W*.7,H*.84,22,{fill:{0:'t',3:'t',7:'t'}});A(sign(W*.16,H*.86,'BURACO DO DIABO'));break}
+  case 'venda':{day();gnd();R('#6b4528',W*.08,H*.66,W*.84,5);R('#a87a4a',W*.08,H*.62,W*.84,4);R('#6b4528',W*.1,H*.71,3,H*.18);R('#6b4528',W*.88,H*.71,3,H*.18);
+    S('sack',W*.16,H*.62,{c:1});S('sack',W*.27,H*.62,{c:1,ov:{Y:'#f0e0a0',y:'#a08060'}});S('sack',W*.38,H*.62,{c:1,ov:{Y:'#7a3a2a',y:'#4a1a10'}});
+    R('#3a6ab0',W*.56,H*.5,W*.1,H*.12);R('#ff7ab0',W*.58,H*.53,W*.1,H*.09);S('shoe',W*.76,H*.62,{c:1});R('#ffffff',W*.84,H*.55,8,5);R('#9fd2ff',W*.85,H*.56,6,1);
+    person(W*.3,H*.98);person(W*.68,H*.98,1,1);A({t:'TROCA!',x:W*.5,y:H*.3,k:'bub'});break}
+  case 'enchente':{sky(['#4a5566','#6a7788','#8a97a8']);for(let i=0;i<70;i++){const x=rnd()*W,y=rnd()*H*.7;R('#c8d8ea',x,y,1,4)}
+    hills(H*.45,'#3f6a35',5,.05,1);house(W*.25,H*.74,30,{});house(W*.7,H*.72,26,{});R('#3a6a8f',0,H*.66,W,H*.34);R('#7ab4da',0,H*.66,W,2);
+    for(let i=0;i<30;i++)R('#9fd8ff',rnd()*W,H*.7+rnd()*H*.28,4,1);R('#a87a4a',W*.45,H*.74,10,3);A({t:'CHUVAS DE INVERNO',x:W*.5,y:H*.18,k:'sg'});break}
+  case 'morro':{day();for(let x=0;x<W;x++){const h=H*.35+H*.35*(x/W);R('#4f8f45',x,h,1,H-h)}ground(H*.86,'#5aa04a');river(H*.88,10);
+    house(W*.16,H*.42,22,{});house(W*.34,H*.5,20,{});S('church',W*.08,H*.38,{c:1});person(W*.58,H*.68,1);person(W*.66,H*.74,0,1);A(sign(W*.3,H*.28,'CENTRO'));break}
+  case 'jardins':{day();gnd();house(W*.25,H*.82,32,{});house(W*.72,H*.82,30,{fill:{0:'t',3:'t',7:'t'}});flowers(H*.84,H-2,46);break}
+  case 'oficina':{day();gnd();house(W*.32,H*.84,40,{});R('#140c08',W*.66-1,H*.6-1,W*.26+2,H*.26+2);R('#b79e70',W*.66,H*.6,W*.26,H*.26);R('#6b4528',W*.64,H*.56,W*.3,5);
+    R('#6b4528',W*.7,H*.72,W*.18,3);S('shoe',W*.79,H*.71,{c:1});person(W*.79,H*.98,3);break}
+  case 'fabrica':{day();gnd();S('factory',W*.5,H*.86,{c:1,s:3});for(let i=0;i<4;i++)R('#d6d0c2',W*.5-15+i*4,H*.38-i*7,4,4);S('shoe',W*.12,H*.97,{c:1});
+    person(W*.82,H*.98,0);person(W*.9,H*.98,1,1);break}
+  case 'bairro':{day();gnd();for(let r=0;r<2;r++)for(let i=0;i<5;i++){const x=W*.08+i*W*.19,y=H*.62+r*H*.16;R('#140c08',x-1,y-1,W*.13+2,H*.1+2);R(['#efe6d0','#f0d0a0','#d0e0f0'][(i+r)%3],x,y,W*.13,H*.1);R('#9a3e1e',x-2,y-4,W*.13+4,4);R('#6b4528',x+W*.05,y+H*.05,4,H*.05)}
+    person(W*.3,H*.99,2);person(W*.42,H*.99,3,1);A({t:'NOVOS BAIRROS',x:W*.5,y:H*.2,k:'sg'});break}
+  case 'festa':{day();gnd();R('#6b4528',W*.12,H*.74,W*.76,5);R('#ffffff',W*.12,H*.72,W*.76,2);R('#6b4528',W*.16,H*.79,3,H*.12);R('#6b4528',W*.82,H*.79,3,H*.12);
+    S('cuca',W*.3,H*.72,{c:1,s:2});for(let i=0;i<3;i++){R('#ffd84a',W*.52+i*12,H*.66,6,8);R('#ffffff',W*.52+i*12,H*.65,6,2)}R('#b84a2e',W*.72,H*.69,14,3);
+    for(let i=0;i<9;i++)R(['#e03a26','#ffd84a','#3a6ab0'][i%3],W*.08+i*W*.1,H*.36+(i%2)*3,6,5);R('#6b4528',W*.06,H*.36,W*.88,1);
+    person(W*.2,H*.99);person(W*.5,H*.99,1,1);person(W*.8,H*.99,2,1);break}
   default:day();gnd()}
   return ov}
 /* nave do piloto (pixels da Nave-Mãe) */
